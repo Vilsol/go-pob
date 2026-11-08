@@ -146,6 +146,48 @@ func TestPassiveTreeJSON(t *testing.T) {
 	}
 }
 
+// PoB-PoE2's TreeData/0_5/tree.lua: node 10636's icon, connection art and unlock constraint, node 10100's attribute
+// options, and the nodeOverlay entry for Normal nodes
+func TestPassiveTreeJSONCarriesTheArtNames(t *testing.T) {
+	raw, err := PassiveTreeJSON()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var tj treeJSON
+	if err := json.Unmarshal([]byte(raw), &tj); err != nil {
+		t.Fatal(err)
+	}
+	i := slices.IndexFunc(tj.Nodes, func(n treeNodeJSON) bool { return n.ID == 10636 })
+	if i < 0 || !slices.Equal(tj.Nodes[i].UnlockConstraint, []int{5571}) {
+		t.Fatalf("node 10636 unlock constraint %+v", tj.Nodes[i].UnlockConstraint)
+	}
+	var art struct {
+		Sprites     map[string]map[string]json.RawMessage `json:"sprites"`
+		NodeOverlay map[string]map[string]string          `json:"nodeOverlay"`
+		Nodes       map[string]treeArtNode                `json:"nodes"`
+	}
+	if err := json.Unmarshal(tj.Art, &art); err != nil {
+		t.Fatal(err)
+	}
+	if n := art.Nodes["10636"]; n.Icon != "Art/2DArt/SkillIcons/passives/dmgreduction.dds" || n.ConnectionArt != "CharacterPlanned" {
+		t.Fatalf("node 10636 art %+v", n)
+	}
+	want := []treeArtOption{
+		{Name: "Strength", Icon: "Art/2DArt/SkillIcons/passives/plusstrength.dds"},
+		{Name: "Dexterity", Icon: "Art/2DArt/SkillIcons/passives/plusdexterity.dds"},
+		{Name: "Intelligence", Icon: "Art/2DArt/SkillIcons/passives/plusintelligence.dds"},
+	}
+	if got := art.Nodes["10100"].Options; !slices.Equal(got, want) {
+		t.Fatalf("node 10100 options %+v", got)
+	}
+	if got := art.NodeOverlay["Normal"]; got["alloc"] != "PSSkillFrameActive" || got["unalloc"] != "PSSkillFrame" {
+		t.Fatalf("Normal overlay %v", got)
+	}
+	if _, ok := art.Sprites["frame"]; !ok {
+		t.Fatalf("no frame sheet among %d sprite groups", len(art.Sprites))
+	}
+}
+
 // PoB-PoE2's TreeData/0_5/tree.json classes, by integerId
 func TestTreeClassesAreTheTreesClasses(t *testing.T) {
 	got, err := TreeClasses()
@@ -277,6 +319,14 @@ func TestJewelRadiusData(t *testing.T) {
 	if !slices.Equal(st.JewelRadiusIndex, []int{26725, 3}) {
 		t.Fatalf("jewel radius index %v, PoB [26725 3]", st.JewelRadiusIndex)
 	}
+	// the fixture's <Socket> items 8 and 16
+	jewels := map[int]TreeJewel{}
+	for _, j := range st.Jewels {
+		jewels[j.Socket] = j
+	}
+	if jewels[26725] != (TreeJewel{Socket: 26725, Title: "Sol Spark", BaseName: "Time-Lost Ruby"}) || jewels[62152].BaseName != "Sapphire" {
+		t.Fatalf("jewels %+v", st.Jewels)
+	}
 	raw, err := PassiveTreeJSON()
 	if err != nil {
 		t.Fatal(err)
@@ -338,5 +388,41 @@ func TestResetTree(t *testing.T) {
 	}
 	if !strings.Contains(savedSpec(calc), "64789") {
 		t.Fatalf("undo did not restore the tree: %s", savedSpec(calc))
+	}
+}
+
+// PassiveTreeView.lua:503-529 (PoB-PoE2): with a point spent off the Warrior's start, a click on Titan's start asks
+// first; Connect Path then paths the tree to the Warrior, keeps the spent point and allocates the clicked node.
+func TestClickNodeConnectPathConnectsTheTreeToTheClickedClass(t *testing.T) {
+	calc, _ := openFixture(t, "sorceress_spark.xml")
+	if res := click(t, calc, 44871, 0); res != tree2.ClickChanged {
+		t.Fatalf("click 44871: %d", res)
+	}
+	if res := click(t, calc, 32534, 0); res != tree2.ClickConfirmClassChange {
+		t.Fatalf("click on Titan's start: %d, want the Class Change popup", res)
+	}
+	res, err := calc.ClickNodeConnectPath(32534, 0, 0)
+	if err != nil || tree2.ClickResult(res) != tree2.ClickChanged {
+		t.Fatalf("Connect Path: %d %v", res, err)
+	}
+	spec, _ := calc.spec()
+	if spec.CurClass.Name != "Warrior" || !spec.Nodes[32534].Alloc || !spec.Nodes[44871].Alloc {
+		t.Fatalf("class %s, Titan start %v, 44871 %v", spec.CurClass.Name, spec.Nodes[32534].Alloc, spec.Nodes[44871].Alloc)
+	}
+	if !spec.IsClassConnected(spec.CurClassID) {
+		t.Fatal("the tree is not connected to the Warrior start")
+	}
+}
+
+// PassiveTreeView.lua:2086-2093 (PoB-PoE2): the tree state carries the note a node's tooltip shows
+func TestTreeStateCarriesNodeNotes(t *testing.T) {
+	calc, _ := openFixture(t, "sorceress_spark.xml")
+	calc.SetTreeNodeNote(44871, "take this first")
+	st, err := calc.TreeState()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !slices.Equal(st.Notes, []TreeNote{{ID: 44871, Text: "take this first"}}) {
+		t.Fatalf("notes %+v", st.Notes)
 	}
 }

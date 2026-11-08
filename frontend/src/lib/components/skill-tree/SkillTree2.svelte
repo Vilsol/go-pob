@@ -4,7 +4,23 @@
   import SearchField from '$lib/design/SearchField.svelte';
   import { isTypingTarget } from '$lib/design/keys';
   import { createTree2Renderer, type Tree2Renderer } from './gl_renderer2';
-  import { buildScene2, clampView, nodeAt2, screenToTree, treeToScreen, zoomAbout, zoomOf, type Tree2, type Tree2Node, type View2 } from './scene2';
+  import { buildAtlas2, sheetPath2 } from '$lib/skill_tree/tree2_art';
+  import {
+    attachArt2,
+    buildScene2,
+    clampView,
+    nodeAt2,
+    nodeShown2,
+    screenToTree,
+    treeToScreen,
+    zoomAbout,
+    zoomOf,
+    scaleOf,
+    SPRITE2_FLOATS,
+    type Tree2,
+    type Tree2Node,
+    type View2
+  } from './scene2';
   import { searchResults } from './tree2_search';
 
   type TreeState = {
@@ -14,6 +30,12 @@
     ascendClassBaseName: string;
     // the jewelRadiusIndex of each socketed jewel that has one
     jewelRadiusIndex?: Record<number, number>;
+    // spec.curClassName; without it the class background follows the allocated class start
+    className?: string;
+    // the jewel in each socket that holds one
+    jewels?: { socket: number; title: string; baseName: string; unique: boolean }[];
+    // each node's author note
+    notes?: Record<number, string>;
   };
 
   interface Props {
@@ -24,16 +46,43 @@
     onclick: (id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number) => Promise<number | undefined>;
     onattribute: (id: number, attributeIndex: number, allocMode: number) => void;
     onhover: (id: number, allocMode: number) => Promise<{ path: number[]; depends: number[] }>;
+    // the pointer left the hovered node
+    onunhover?: () => void;
+    // the Class Change popup's Connect Path (PassiveTreeView.lua:520-528); the tree2.ClickResult
+    onconnect?: (id: number, hotkey: number, allocMode: number) => Promise<number | undefined>;
     // spec:Undo and spec:Redo
     onundo?: () => void;
     onredo?: () => void;
     // the hosting page's search matches; without them the tree has its own search box
     matches?: Set<number>;
+    // the data version's root on the data host, which the tree's art loads from
+    artBase?: string;
+    // the compared spec's allocated nodes, drawn as PassiveTreeView.lua draws its compareSpec
+    compared?: Set<number>;
   }
 
-  let { data, spec, busy = false, onclick, onattribute, onhover, onundo, onredo, matches }: Props = $props();
+  let {
+    data,
+    spec,
+    busy = false,
+    onclick,
+    onattribute,
+    onhover,
+    onunhover,
+    onconnect,
+    onundo,
+    onredo,
+    matches,
+    artBase = 'https://data.pob.gg/data/0.5',
+    compared
+  }: Props = $props();
 
-  const scene = $derived(buildScene2(data));
+  // a tree without sprites keeps its vector shapes
+  const scene = $derived.by(() => {
+    const s = buildScene2(data);
+    if (data.art?.sprites && Object.keys(data.art.sprites).length) attachArt2(s, data.art, buildAtlas2(data.art.sprites), artBase);
+    return s;
+  });
   let canvas = $state<HTMLCanvasElement>();
   let box = $state<HTMLDivElement>();
   let renderer = $state.raw<Tree2Renderer | undefined>();
@@ -48,7 +97,17 @@
   /* PassiveSpec.lua:52 */
   let allocMode = $state(0);
 
-  type Probe = { frame?: (f: unknown) => void; screenOf?: (id: number) => { x: number; y: number } | undefined; renderer?: string };
+  type Probe = {
+    frame?: (f: unknown) => void;
+    screenOf?: (id: number) => { x: number; y: number } | undefined;
+    focus?: (id: number) => void;
+    // the art a test probes the canvas against: a sprite's sheet and place, and the sprites drawn from each sheet
+    sprite?: (name: string) => { url: string; x: number; y: number; w: number; h: number } | undefined;
+    sheetCounts?: () => Record<string, number>;
+    icon?: (id: number) => string | undefined;
+    scale?: () => number;
+    renderer?: string;
+  };
   const probe = () => (globalThis as { __tree2Probe?: Probe }).__tree2Probe;
 
   const alloc = $derived(new Set(spec.alloc));
@@ -64,6 +123,16 @@
   );
   /* PassiveTreeView.lua:1186 */
   const searchR = $derived(140 / zoomOf(view) ** 0.2);
+  // a switched or attribute-chosen node draws its option's icon (PassiveTree.lua:592-613)
+  const icons = $derived.by(() => {
+    const out = new Map<number, string>();
+    for (const [id, t] of Object.entries(spec.text)) {
+      const icon = data.art?.nodes[id]?.options?.find((o) => o.name === t.name)?.icon;
+      if (icon) out.set(Number(id), icon);
+    }
+    return out;
+  });
+  const jewels = $derived(new Map((spec.jewels ?? []).map((j) => [j.socket, j])));
   $effect(() => {
     renderer?.setState({
       alloc,
@@ -75,7 +144,11 @@
       search,
       searchR,
       specAllocMode: allocMode,
-      jewelRadiusIndex: new Map(Object.entries(spec.jewelRadiusIndex ?? {}).map(([k, v]) => [Number(k), v]))
+      jewelRadiusIndex: new Map(Object.entries(spec.jewelRadiusIndex ?? {}).map(([k, v]) => [Number(k), v])),
+      className: spec.className,
+      icons,
+      jewels,
+      compared
     });
   });
   $effect(() => {
@@ -90,8 +163,36 @@
       hovered: hovered?.id,
       alloc: spec.alloc.length,
       renderer: renderer?.kind,
-      overlays: scene.counts.strokes - scene.connectors.length
+      overlays: scene.counts.strokes - scene.counts.connectorStrokes,
+      sprites: scene.counts.under + scene.counts.over,
+      lines: scene.counts.lines,
+      compared: compared?.size
     });
+
+  // a node's position on the canvas, in CSS pixels
+  export const project = (id: number) => {
+    const n = scene.byId.get(id);
+    return n && treeToScreen(scene, view, n.x, n.y);
+  };
+  /* PassiveTreeView.lua:206-209, 1500-1514: a step in or out about the pointer, or about the centre with the pointer
+     off the canvas; fit shows the whole tree */
+  let pointerIn = false;
+  export const zoom = (how: 'in' | 'out' | 'fit') => {
+    if (how === 'fit') {
+      view = { ...view, zoomLevel: 0, zoomX: 0, zoomY: 0 };
+      return;
+    }
+    const at = pointerIn ? mouse : { x: view.width / 2, y: view.height / 2 };
+    view = clampView(zoomAbout(view, how === 'in' ? 1 : -1, at.x, at.y));
+  };
+  /* PassiveTreeView.lua:1517-1526 */
+  const focus = (id: number) => {
+    const n = scene.byId.get(id);
+    if (!n) return;
+    const v = { ...view, zoomLevel: 20 };
+    const k = scaleOf(scene, v);
+    view = { ...v, zoomX: -n.x * k, zoomY: -n.y * k };
+  };
 
   const resize = () => {
     if (!box) return;
@@ -104,9 +205,23 @@
     const p = probe();
     if (p) {
       p.renderer = renderer.kind;
-      p.screenOf = (id) => {
-        const n = scene.byId.get(id);
-        return n && treeToScreen(scene, view, n.x, n.y);
+      p.screenOf = project;
+      p.focus = focus;
+      p.sprite = (name) => {
+        const sp = scene.art?.atlas.byName.get(name);
+        return sp && { url: `${scene.art!.base}/${sheetPath2(scene.art!.atlas.sheets[sp.sheet])}`, x: sp.x, y: sp.y, w: sp.w, h: sp.h };
+      };
+      p.icon = (id) => scene.art?.data.nodes[String(id)]?.icon;
+      p.scale = () => scaleOf(scene, view);
+      p.sheetCounts = () => {
+        const out: Record<string, number> = {};
+        for (const layer of ['under', 'lines', 'over'] as const) {
+          for (let i = 0; i < scene.counts[layer]; i++) {
+            const name = sheetPath2(scene.art!.atlas.sheets[scene[layer][i * SPRITE2_FLOATS + 10]]);
+            out[name] = (out[name] ?? 0) + 1;
+          }
+        }
+        return out;
       };
     }
     const ro = new ResizeObserver(resize);
@@ -133,7 +248,10 @@
     hovered = node;
     hoverPath = new Set();
     hoverDep = new Set();
-    if (!node) return;
+    if (!node) {
+      onunhover?.();
+      return;
+    }
     const seq = ++hoverSeq;
     void onhover(node.id, allocMode).then((h) => {
       if (seq !== hoverSeq) return;
@@ -181,8 +299,8 @@
   /* PassiveTreeView.lua:378-391: "2"/S Strength, "3"/D Dexterity, "1"/I Intelligence */
   const hotkey = () => (hotkeys.has('2') || hotkeys.has('s') ? 1 : hotkeys.has('3') || hotkeys.has('d') ? 2 : hotkeys.has('1') || hotkeys.has('i') ? 3 : 0);
 
-  const click = async (node: Tree2Node, right: boolean, confirm = false) => {
-    const res = await onclick(node.id, right, hotkey(), confirm, allocMode);
+  const click = async (node: Tree2Node, right: boolean, confirm = false, connect = false) => {
+    const res = connect && onconnect ? await onconnect(node.id, hotkey(), allocMode) : await onclick(node.id, right, hotkey(), confirm, allocMode);
     if (res === 2) attributeFor = node;
     else if (res === 3) classChangeFor = node;
     hovered = undefined;
@@ -190,15 +308,25 @@
     setHover(nodeAt2(scene, t.x, t.y));
   };
 
+  /* PassiveTreeView.lua:251-255: a Ctrl+click zooms in, a Ctrl+right-click out, and allocates nothing */
+  const ctrlZoom = (e: MouseEvent, right: boolean) => {
+    if (!e.ctrlKey) return false;
+    const p = local(e);
+    view = clampView(zoomAbout(view, right ? -2 : 2, p.x, p.y));
+    return true;
+  };
+
   const pointerUp = (e: PointerEvent) => {
     const wasClick = down && !dragging && e.button === 0;
     down = undefined;
     dragging = false;
+    if (wasClick && ctrlZoom(e, false)) return;
     if (wasClick && hovered && !busy) void click(hovered, false);
   };
 
   const contextMenu = (e: MouseEvent) => {
     e.preventDefault();
+    if (ctrlZoom(e, true)) return;
     if (hovered && !busy) void click(hovered, true);
   };
 
@@ -217,6 +345,10 @@
   };
 
   const ATTRIBUTES = ['Strength', 'Dexterity', 'Intelligence'];
+  /* PassiveTreeView.lua:478-488: the base class whose ascendancies hold the clicked node's */
+  const classChangeName = $derived(
+    data.art?.classes?.find((c) => c.ascendancies?.some((a) => (a.id ?? a.name) === classChangeFor?.ascendancy))?.name ?? classChangeFor?.ascendancy
+  );
   const shownName = $derived(hovered ? (spec.text[hovered.id]?.name ?? hovered.name) : '');
   const shownStats = $derived(hovered ? (spec.text[hovered.id]?.stats ?? hovered.stats ?? []) : []);
 </script>
@@ -233,7 +365,11 @@
       style:height="{view.height}px"
       onpointerdown={pointerDown}
       onpointermove={pointerMove}
-      onpointerleave={() => !down && setHover(undefined)}
+      onpointerenter={() => (pointerIn = true)}
+      onpointerleave={() => {
+        pointerIn = false;
+        if (!down) setHover(undefined);
+      }}
       onwheel={wheel}
       oncontextmenu={contextMenu}></canvas>
   </div>
@@ -256,7 +392,7 @@
     </div>
   {/if}
 
-  {#if hovered && !attributeFor && !classChangeFor}
+  {#if hovered && !attributeFor && !classChangeFor && nodeShown2({ alloc, hovered: hovered.id }, hovered)}
     <div
       role="tooltip"
       aria-label="Node tooltip"
@@ -271,6 +407,11 @@
           {#each shownStats as stat, i (i)}<li class="whitespace-pre-line">{stat}</li>{/each}
         </ul>
       {/if}
+      <!-- PassiveTreeView.lua:2085-2093 (PoB-PoE2) -->
+      <div class="border-t border-line px-3 py-2 text-12 text-text-2">
+        <p class="m-0">Shift + Right-Click to add a build note (PoE2 .build export)</p>
+        {#if spec.notes?.[hovered.id]}<p class="m-0 whitespace-pre-line text-text" aria-label="Node note">Note: {spec.notes[hovered.id]}</p>{/if}
+      </div>
     </div>
   {/if}
 
@@ -296,12 +437,13 @@
   {/if}
 
   {#if classChangeFor}
-    <!-- PassiveTreeView.lua:511-531 (PoB-PoE2), without Connect Path -->
+    <!-- PassiveTreeView.lua:511-531 (PoB-PoE2) -->
     <div
       role="dialog"
       aria-label="Class Change"
       class="absolute top-4 left-1/2 z-dock flex -translate-x-1/2 flex-col gap-2 rounded-md border border-line-strong bg-ground p-3 text-14">
-      <span>Changing class to {classChangeFor.ascendancy} will reset your passive tree.</span>
+      <span>Changing class to {classChangeName} will reset your passive tree.</span>
+      <span>This can be avoided by connecting one of the {classChangeName} starting nodes to your tree.</span>
       <div class="flex gap-2">
         <Button
           onclick={() => {
@@ -309,6 +451,14 @@
             classChangeFor = undefined;
             void click(n, false, true);
           }}>Continue</Button>
+        {#if onconnect}
+          <Button
+            onclick={() => {
+              const n = classChangeFor!;
+              classChangeFor = undefined;
+              void click(n, false, true, true);
+            }}>Connect Path</Button>
+        {/if}
         <Button onclick={() => (classChangeFor = undefined)}>Cancel</Button>
       </div>
     </div>

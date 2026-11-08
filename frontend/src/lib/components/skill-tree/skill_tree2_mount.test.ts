@@ -47,15 +47,34 @@ const mount = (results: number[]) => {
   const onclick = vi.fn((...call: [number, boolean, number, boolean, number]) => Promise.resolve(call.length ? results.shift() : undefined));
   const onattribute = vi.fn();
   const onhover = vi.fn((...[id]: [number, number]) => Promise.resolve({ path: [id, 3], depends: [] as number[] }));
+  const onunhover = vi.fn();
+  const onconnect = vi.fn(() => Promise.resolve(1));
   const view = render(SkillTree2, {
     data: tree,
-    spec: { alloc: [1, 2, 3], allocMode: {}, text: { 4: { name: 'Replaced Four', stats: ['20% increased Life'] } }, ascendClassBaseName: '' },
+    spec: {
+      alloc: [1, 2, 3],
+      allocMode: {},
+      text: { 4: { name: 'Replaced Four', stats: ['20% increased Life'] } },
+      ascendClassBaseName: '',
+      notes: { 4: 'take it early' }
+    },
     onclick,
     onattribute,
-    onhover
+    onhover,
+    onunhover,
+    onconnect,
+    compared: new Set([1, 2])
   });
   const canvas = view.container.querySelector('canvas')!;
-  return { canvas, onclick, onattribute, onhover };
+  return {
+    canvas,
+    onclick,
+    onattribute,
+    onhover,
+    onunhover,
+    onconnect,
+    component: view.component as unknown as { zoom: (how: 'in' | 'out' | 'fit') => void; project: (id: number) => { x: number; y: number } | undefined }
+  };
 };
 
 const press = async (canvas: HTMLCanvasElement, p: { x: number; y: number }) => {
@@ -162,6 +181,54 @@ describe('the PoE2 tree view', () => {
     await fireEvent.keyDown(field, { key: 's' });
     await press(canvas, at(5));
     expect(onclick.mock.calls).toEqual([[5, false, 0, false, 0]]);
+  });
+
+  it("reports leaving a node for the empty canvas, shows the node's note, and hands the compared spec to the renderer", async () => {
+    const { canvas, onunhover } = mount([]);
+    await vi.waitFor(() => expect(views.at(-1)?.width).toBe(W));
+    await fireEvent.pointerMove(canvas, { clientX: at(4).x, clientY: at(4).y });
+    // PassiveTreeView.lua:2086-2093
+    expect((await screen.findByRole('tooltip', { name: 'Node tooltip' })).textContent).toContain('Note: take it early');
+    expect([...(states.at(-1)?.compared ?? [])]).toEqual([1, 2]);
+    await fireEvent.pointerMove(canvas, { clientX: 5, clientY: 5 });
+    expect(onunhover).toHaveBeenCalledTimes(1);
+  });
+
+  it('zooms by 2 on a Ctrl+click and out on a Ctrl+right-click, allocating nothing (PassiveTreeView.lua:251-255)', async () => {
+    const { canvas, onclick } = mount([1]);
+    await vi.waitFor(() => expect(views.at(-1)?.width).toBe(W));
+    const zoom = views.at(-1)!.zoomLevel;
+    const p = at(4);
+    await fireEvent.pointerMove(canvas, { clientX: p.x, clientY: p.y });
+    await fireEvent.pointerDown(canvas, { clientX: p.x, clientY: p.y, button: 0, ctrlKey: true });
+    await fireEvent.pointerUp(window, { clientX: p.x, clientY: p.y, button: 0, ctrlKey: true });
+    await vi.waitFor(() => expect(views.at(-1)!.zoomLevel).toBe(zoom + 2));
+    await fireEvent.contextMenu(canvas, { clientX: p.x, clientY: p.y, ctrlKey: true });
+    await vi.waitFor(() => expect(views.at(-1)!.zoomLevel).toBe(zoom));
+    expect(onclick).not.toHaveBeenCalled();
+  });
+
+  it('zooms a step at a time for the page, and projects a node onto the canvas (PassiveTreeView.lua:206-209)', async () => {
+    const { component } = mount([]);
+    await vi.waitFor(() => expect(views.at(-1)?.width).toBe(W));
+    const zoom = views.at(-1)!.zoomLevel;
+    component.zoom('in');
+    await vi.waitFor(() => expect(views.at(-1)!.zoomLevel).toBe(zoom + 1));
+    component.zoom('out');
+    component.zoom('out');
+    await vi.waitFor(() => expect(views.at(-1)!.zoomLevel).toBe(zoom - 1));
+    expect(component.project(4)).toEqual(at(4));
+  });
+
+  it('offers Connect Path in the Class Change popup, which connects instead of resetting (PassiveTreeView.lua:513-529)', async () => {
+    const { canvas, onclick, onconnect } = mount([3]);
+    await vi.waitFor(() => expect(views.at(-1)?.width).toBe(W));
+    await press(canvas, at(4));
+    const dialog = await screen.findByRole('dialog', { name: 'Class Change' });
+    expect(dialog.textContent).toContain('This can be avoided by connecting one of the');
+    await fireEvent.click(Array.from(dialog.querySelectorAll('button')).find((b) => b.textContent?.trim() === 'Connect Path')!);
+    expect(onconnect.mock.calls).toEqual([[4, 0, 0]]);
+    expect(onclick).toHaveBeenCalledTimes(1);
   });
 
   it('undoes with Ctrl+Z and redoes with Ctrl+Y, not while typing in the search (TreeTab.lua:355-364)', async () => {

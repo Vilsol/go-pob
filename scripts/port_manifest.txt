@@ -349,6 +349,7 @@ wasm2/exposition/notes.go           GO-NATIVE  crystalline binding surface for t
 wasm2/exposition/pages.go           GO-NATIVE  crystalline binding surface for the PoE2 Skills and Items pages (SkillListControl and AddItemTooltip's title and mod lines)
 wasm2/exposition/skills.go          GO-NATIVE  crystalline binding surface for the PoE2 Skills page's edits (SkillsTab.lua's controls over the last calculation)
 wasm2/exposition/tree.go            GO-NATIVE  crystalline binding surface for the PoE2 frontend's passive tree
+wasm2/exposition/tree_art.go        GO-NATIVE  crystalline binding surface for the PoE2 tree view's art names (PassiveTree.lua's assets, nodeOverlay and connectionArt), read from the tree's data
 wasm2/exposition/tree_class.go      GO-NATIVE  crystalline binding surface for the PoE2 class and ascendancy dropdowns (Build.lua's classDrop and ascendDrop)
 wasm2/exposition/tree_notes.go      GO-NATIVE  crystalline binding surface for the PoE2 tree's per-node author notes (PassiveTreeView.lua's Shift+right-click note popup)
 wasm2/exposition/tree_specs.go      GO-NATIVE  crystalline binding surface for the PoE2 tree list (TreeTab.lua's specList, PassiveSpecListControl.lua)

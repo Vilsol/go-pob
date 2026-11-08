@@ -95,6 +95,10 @@ export type Poe2TreeState = {
   ascUsed: number;
   // the jewelRadiusIndex of the jewel in each socket whose jewel has a radius
   jewelRadiusIndex: Record<number, number>;
+  // the jewel in each socket that holds one (PassiveTreeView.lua:961-969, PoB-PoE2)
+  jewels?: { socket: number; title: string; baseName: string; unique: boolean }[];
+  // each node's author note (PassiveTreeView.lua:2086-2093, PoB-PoE2)
+  notes?: Record<number, string>;
   // Build.lua:202-216, 1025-1103 (PoB-PoE2)
   levelAuto?: boolean;
   progress?: Poe2Progress;
@@ -373,6 +377,8 @@ class PoB2Worker {
         used: st.Used,
         ascUsed: st.AscUsed,
         jewelRadiusIndex,
+        jewels: (st.Jewels ?? []).map((j) => ({ socket: j.Socket, title: j.Title, baseName: j.BaseName, unique: j.Unique })),
+        notes: Object.fromEntries((st.Notes ?? []).map((n) => [n.ID, n.Text])),
         levelAuto: st.LevelAutoMode,
         progress: {
           level: st.Progress.Level,
@@ -509,6 +515,14 @@ class PoB2Worker {
     return result === ClickResult.Changed ? { result, calc: await this.view() } : { result };
   }
 
+  /* PassiveTreeView.lua:520-528 (PoB-PoE2): the Class Change popup's Connect Path for a click on another class's
+     ascendancy node */
+  async TreeClickConnect(id: number, hotkey: number, allocMode: number): Promise<Poe2Click> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    const result = this.calc.ClickNodeConnectPath(id, hotkey, allocMode).unwrap();
+    return result === ClickResult.Changed ? { result, calc: await this.view() } : { result };
+  }
+
   /* TreeTab.lua:851-876 (PoB-PoE2) */
   async TreeAllocateAttribute(id: number, attributeIndex: number, allocMode: number): Promise<Poe2Calc> {
     this.calc?.AllocateAttributeNode(id, attributeIndex, allocMode).unwrap();
@@ -532,6 +546,11 @@ class PoB2Worker {
   TreeSpecs(): { labels: string[]; active: number } {
     const v = this.calc?.TreeSpecs();
     return { labels: [...(v?.Labels ?? [])], active: v?.Active ?? 1 };
+  }
+
+  /* TreeTab.lua:444, 581-586 (PoB-PoE2): the compared spec's allocated nodes, specID 1-based */
+  TreeSpecAlloc(specID: number): number[] {
+    return [...(this.calc?.TreeSpecAlloc(specID).unwrap() ?? [])];
   }
 
   /* PassiveSpecListControl.lua:77-85, TreeTab.lua:67-78 (PoB-PoE2) */

@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strconv"
 	"strings"
 	"testing"
@@ -207,5 +208,23 @@ func TestTreeSpecsOracleIsCurrent(t *testing.T) {
 		if !bytes.Equal(got, want) {
 			t.Errorf("testdata/tree_specs_%s_pob.jsonl is stale; PoB-PoE2 now writes:\n%s", scenario, got)
 		}
+	}
+}
+
+// TreeTab.lua:444, 581-586 (PoB-PoE2): the compared spec is the chosen one, the last when the choice is past the list
+func TestTreeSpecAllocIsTheComparedSpecsAllocation(t *testing.T) {
+	calc, _ := openFixture(t, "sorceress_spark.xml")
+	click(t, calc, 44871, 0)
+	if err := calc.NewTreeSpec("other"); err != nil {
+		t.Fatal(err)
+	}
+	first, err := calc.TreeSpecAlloc(1)
+	if err != nil || !slices.Contains(first, 44871) {
+		t.Fatalf("spec 1 alloc %v %v", first, err)
+	}
+	second, _ := calc.TreeSpecAlloc(2)
+	past, _ := calc.TreeSpecAlloc(9)
+	if slices.Contains(second, 44871) || !slices.Equal(second, past) {
+		t.Fatalf("spec 2 alloc %v, past the list %v", second, past)
 	}
 }

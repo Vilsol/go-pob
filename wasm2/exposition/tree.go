@@ -3,6 +3,7 @@ package exposition
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"slices"
 	"strings"
 
@@ -29,6 +30,8 @@ type treeNodeJSON struct {
 	Connections       []tree2.Connection `json:"connections"`
 	// NodesInRadius is a radius socket's node ids in each jewel radius, by radius index - 1.
 	NodesInRadius [][]int `json:"nodesInRadius,omitempty"`
+	// UnlockConstraint is the nodes that must all be allocated before the view shows this one.
+	UnlockConstraint []int `json:"unlockConstraint,omitempty"`
 }
 
 type jewelRadiusJSON struct {
@@ -54,6 +57,8 @@ type treeJSON struct {
 	// JewelRadius is data.jewelRadius with PassiveTreeJewelDistanceMultiplier applied, as
 	// PassiveTreeView.lua:1321-1323 draws it; Col is "#rrggbb".
 	JewelRadius []jewelRadiusJSON `json:"jewelRadius"`
+	// Art is the art the view draws by name; absent when the tree's data could not be read for it.
+	Art json.RawMessage `json:"art,omitempty"`
 }
 
 // TreeClasses is the tree's class names in class id order (PassiveTree.lua:104 keys them by integerId).
@@ -102,6 +107,9 @@ func PassiveTreeJSON() (string, error) {
 			Ascendancy: n.AscendancyName, IsAttribute: n.IsAttribute, IsAscendancyStart: n.IsAscendancyStart, ContainJewel: n.ContainJewelSocket,
 			ClassesStart: n.ClassesStart, Connections: n.Connections,
 		}
+		if n.UnlockConstraint != nil {
+			node.UnlockConstraint = n.UnlockConstraint.Nodes
+		}
 		if n.Type == "Socket" && n.NodesInRadius != nil {
 			node.NodesInRadius = make([][]int, len(n.NodesInRadius))
 			for i, in := range n.NodesInRadius {
@@ -117,6 +125,11 @@ func PassiveTreeJSON() (string, error) {
 			groups[n.GroupID] = true
 			out.Groups = append(out.Groups, treeGroupJSON{ID: n.GroupID, X: n.Group.X, Y: n.Group.Y})
 		}
+	}
+	if art, err := treeArtJSON(); err == nil {
+		out.Art = art
+	} else {
+		slog.Warn("the passive tree's art is unavailable", slog.Any("error", err))
 	}
 	b, err := json.Marshal(out)
 	return string(b), err
@@ -144,8 +157,12 @@ type TreeState struct {
 	AttributeIndex      int
 	// JewelRadiusIndex lists the sockets whose jewel has a radius, as socket id, jewelRadiusIndex pairs.
 	JewelRadiusIndex []int
-	LevelAutoMode    bool
-	Progress         calculator2.PlayerProgress
+	// Jewels is the jewel in each socket that holds one, for the socket's jewel art.
+	Jewels []TreeJewel
+	// Notes is the spec's author note on each node that has one.
+	Notes         []TreeNote
+	LevelAutoMode bool
+	Progress      calculator2.PlayerProgress
 }
 
 func (c *Calculator) spec() (*tree2.PassiveSpec, error) {
@@ -196,8 +213,38 @@ func (c *Calculator) TreeState() (*TreeState, error) {
 				st.JewelRadiusIndex = append(st.JewelRadiusIndex, id, item.JewelRadiusIndex)
 			}
 		}
+		//pob2:block:src/Classes/PassiveTreeView.lua:961-969
+		if c.items != nil {
+			for _, id := range sockets {
+				if item := c.items.Items[spec.Jewels[id]]; item != nil {
+					st.Jewels = append(st.Jewels, TreeJewel{Socket: id, Title: item.Title, BaseName: item.BaseName, Unique: item.Rarity == "UNIQUE"})
+				}
+			}
+		}
+	}
+	//pob2:block:src/Classes/PassiveTreeView.lua:2086-2093
+	if notes := c.build.Tree.Specs[c.activeSpecIndex()-1].NodeNotes; notes != nil {
+		for _, n := range notes.Notes {
+			if text := c.TreeNodeNote(n.NodeID); text != "" {
+				st.Notes = append(st.Notes, TreeNote{ID: n.NodeID, Text: text})
+			}
+		}
 	}
 	return st, nil
+}
+
+// TreeJewel is a socketed jewel's names, which PassiveTreeView.lua:961-969 picks the socket's jewel art by.
+type TreeJewel struct {
+	Socket   int
+	Title    string
+	BaseName string
+	Unique   bool
+}
+
+// TreeNote is a node's author note, which the node tooltip shows (PassiveTreeView.lua:2086-2093).
+type TreeNote struct {
+	ID   int
+	Text string
 }
 
 // TreeHover is what the view highlights over a node: the path an allocation would take and the nodes that
@@ -266,7 +313,61 @@ func (c *Calculator) ClickNode(id int, right bool, hotkey int, confirmClassChang
 		result, err = spec.RightClickNode(node, hotkey)
 	} else {
 		result, err = spec.LeftClickNode(node, hotkey, confirmClassChange)
+		//pob2:block:src/Classes/PassiveTreeView.lua:503-510
+		if classID := ascendancyClass(spec, node); result == tree2.ClickConfirmClassChange && classID >= 0 && spec.IsClassConnected(classID) {
+			result, err = spec.LeftClickNode(node, hotkey, true)
+		}
 	}
+	if result == tree2.ClickChanged {
+		c.undo.AddUndoState(spec, false)
+		c.saveSpec(spec)
+	}
+	return int(result), err
+}
+
+// ascendancyClass is the class whose ascendancies hold node's, -1 when none does (PassiveTreeView.lua:478-488).
+func ascendancyClass(spec *tree2.PassiveSpec, node *tree2.SpecNode) int {
+	if node.AscendancyName == "" {
+		return -1
+	}
+	ids := make([]int, 0, len(spec.Tree.Classes))
+	for id := range spec.Tree.Classes {
+		ids = append(ids, id)
+	}
+	slices.Sort(ids)
+	for _, id := range ids {
+		for _, a := range spec.Tree.Classes[id].Classes {
+			if a.ID == node.AscendancyName {
+				return id
+			}
+		}
+	}
+	return -1
+}
+
+// ClickNodeConnectPath is the Class Change popup's Connect Path for a click on another class's ascendancy node: it
+// connects the tree to that class, then makes the click; it returns the tree2.ClickResult, Nothing when no path
+// connects.
+//
+//pob2:block:src/Classes/PassiveTreeView.lua:520-528
+func (c *Calculator) ClickNodeConnectPath(id int, hotkey int, allocMode int) (int, error) {
+	spec, err := c.spec()
+	if err != nil {
+		return 0, err
+	}
+	node, ok := spec.Nodes[id]
+	if !ok {
+		return 0, unknownNodeError(id)
+	}
+	classID := ascendancyClass(spec, node)
+	if classID < 0 {
+		return int(tree2.ClickNothing), nil
+	}
+	spec.AllocMode = allocMode
+	if ok, err := spec.ConnectToClass(classID); err != nil || !ok {
+		return int(tree2.ClickNothing), err
+	}
+	result, err := spec.LeftClickNode(node, hotkey, true)
 	if result == tree2.ClickChanged {
 		c.undo.AddUndoState(spec, false)
 		c.saveSpec(spec)

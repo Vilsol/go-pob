@@ -24,6 +24,8 @@ func Exports(r bind.Registry) {
 	r.Type(storage.DirEntry{}, bind.Plain())
 	r.Type(TreeState{}, bind.Plain())
 	r.Type(TreeNodeText{}, bind.Plain())
+	r.Type(TreeJewel{}, bind.Plain())
+	r.Type(TreeNote{}, bind.Plain())
 	r.Type(TreeHover{}, bind.Plain())
 	r.Type(SavedStat{}, bind.Plain())
 	r.Type(SavedFullDPS{}, bind.Plain())

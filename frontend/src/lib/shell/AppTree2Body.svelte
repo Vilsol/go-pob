@@ -9,7 +9,7 @@
   import type { TreeFixture, TreeNodeFx } from '$lib/design/fixtures';
   import type { CanvasApi, SpecOp } from '$lib/design/tree';
   import SkillTree2 from '$lib/components/skill-tree/SkillTree2.svelte';
-  import type { Tree2, Tree2Node } from '$lib/components/skill-tree/scene2';
+  import { nodeShown2, type Tree2, type Tree2Node } from '$lib/components/skill-tree/scene2';
   import { searchResults } from '$lib/components/skill-tree/tree2_search';
   import Button from '$lib/design/Button.svelte';
   import Dialog from '$lib/design/Dialog.svelte';
@@ -27,6 +27,24 @@
   const model: TreeModel | undefined = make();
 
   let treeData = $state.raw<Tree2 | undefined>();
+  let tree2 = $state<{ zoom: (how: 'in' | 'out' | 'fit') => void }>();
+  // TreeTab.lua:121-140, 444, 581-586 (PoB-PoE2): the compared tree, 0-based, -1 for none, and its allocated nodes
+  let compareSpec = $state(-1);
+  let compared = $state.raw<Set<number>>();
+  $effect(() => {
+    const index = compareSpec;
+    void view;
+    if (index < 0) {
+      compared = undefined;
+      return;
+    }
+    void poe2Worker()
+      .then((w) => w.TreeSpecAlloc(index + 1))
+      .then((ids) => {
+        if (compareSpec === index) compared = new Set(ids);
+      })
+      .catch(fail);
+  });
   void poe2Worker()
     .then((w) => w.TreeData())
     .then((d) => (treeData = d))
@@ -37,6 +55,13 @@
     (
       await poe2Run(
         (w) => w.TreeClick(id, right, hotkey, confirmClassChange, allocMode),
+        (r) => r.calc
+      )
+    )?.result;
+  const treeConnect = async (id: number, hotkey: number, allocMode: number) =>
+    (
+      await poe2Run(
+        (w) => w.TreeClickConnect(id, hotkey, allocMode),
         (r) => r.calc
       )
     )?.result;
@@ -82,11 +107,14 @@
         };
       })
   );
-  // PassiveTreeView.lua:858-882 (PoB-PoE2)
+  // PassiveTreeView.lua:858-882, 1533-1535 (PoB-PoE2): a node the tree hides is never a match
+  const allocSet = $derived(new Set(view?.tree?.alloc ?? []));
   const search = (q: string, list: TreeNodeFx[]) =>
     searchResults(
       q,
-      list.map((n) => ({ id: n.id, type: byId.get(n.id)?.type ?? '', name: n.name, stats: n.stats ?? [] }))
+      list
+        .filter((n) => nodeShown2({ alloc: allocSet, hovered: undefined }, byId.get(n.id)))
+        .map((n) => ({ id: n.id, type: byId.get(n.id)?.type ?? '', name: n.name, stats: n.stats ?? [] }))
     );
   // TreeTab.lua:188 (PoB-PoE2)
   const SEARCH_HELP2: [string, string][] = [
@@ -149,6 +177,11 @@
   };
   const ATTRIBUTES = ['Strength', 'Dexterity', 'Intelligence'];
   const nodeLabel = (n: Tree2Node | TreeNodeFx | undefined) => n?.name ?? '';
+  /* PassiveTreeView.lua:478-488, 513 (PoB-PoE2): the base class whose ascendancies hold the picked node's */
+  const confirmClassName = $derived.by(() => {
+    const asc = byId.get(confirmClass?.id ?? -1)?.ascendancy;
+    return treeData?.art?.classes?.find((c) => c.ascendancies?.some((a) => (a.id ?? a.name) === asc))?.name ?? asc ?? '';
+  });
 </script>
 
 {#if view}
@@ -169,6 +202,7 @@
         onascendancy={(a: string) => m.setAscendancy(a)}
         whole
         zoomControls={false}
+        onzoom={(how: 'in' | 'out' | 'fit') => tree2?.zoom(how)}
         edgeMarkers={false}
         hint="Click: allocate / deallocate · Alt+Wheel: weapon set · Drag: pan · Wheel: zoom"
         {search}
@@ -183,7 +217,9 @@
         onspechover={(i: number | null) => m.hoverSpec(i)}
         specTip={m.specTip}
         onpick={(n: TreeNodeFx) => void pick(n).catch(logError)}
-        onresettree={() => m.reset()}>
+        onresettree={() => m.reset()}
+        {compareSpec}
+        oncompare={(i: number) => (compareSpec = i)}>
         {#snippet points()}
           {#if progress}
             <!-- Build.lua:1087-1097 (PoB-PoE2) -->
@@ -202,6 +238,7 @@
           <div class="absolute inset-0 flex" role="presentation" onpointerleave={() => hover(api, undefined)} oncontextmenucapture={noteKey}>
             {#if treeData && view.tree}
               <SkillTree2
+                bind:this={tree2}
                 data={treeData}
                 spec={view.tree}
                 {busy}
@@ -211,9 +248,12 @@
                   hover(api, id);
                   return treeHover(id, allocMode);
                 }}
+                onunhover={() => hover(api, undefined)}
+                onconnect={treeConnect}
                 onundo={() => treeUndo(false)}
                 onredo={() => treeUndo(true)}
-                matches={api.matches} />
+                matches={api.matches}
+                {compared} />
             {:else}
               <EmptyState busy text="Loading the passive tree…" />
             {/if}
@@ -272,7 +312,10 @@
 
 <!-- PassiveTreeView.lua:511-531 (PoB-PoE2) -->
 <Dialog phone="centred" open={confirmClass !== undefined} onclose={() => (confirmClass = undefined)} title="Class Change" size="sm">
-  <p class="m-0 text-13">Changing class to {byId.get(confirmClass?.id ?? -1)?.ascendancy ?? ''} will reset your passive tree.</p>
+  <div class="flex flex-col gap-3 text-13">
+    <p class="m-0">Changing class to {confirmClassName} will reset your passive tree.</p>
+    <p class="m-0">This can be avoided by connecting one of the {confirmClassName} starting nodes to your tree.</p>
+  </div>
   {#snippet actions()}
     <DialogActions
       confirm="Continue"
@@ -282,6 +325,15 @@
         const n = confirmClass;
         confirmClass = undefined;
         if (n) void pick(n, true).catch(logError);
-      }} />
+      }}>
+      {#snippet extra()}<Button
+          size="md"
+          onclick={() => {
+            const n = confirmClass;
+            confirmClass = undefined;
+            if (n) void treeConnect(n.id, 0, 0).catch(logError);
+          }}>Connect Path</Button
+        >{/snippet}
+    </DialogActions>
   {/snippet}
 </Dialog>

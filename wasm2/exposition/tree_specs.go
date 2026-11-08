@@ -284,3 +284,27 @@ func (c *Calculator) MoveTreeSpec(from, to int) {
 	}
 	c.build.Tree.Specs = moved
 }
+
+// TreeSpecAlloc is the specID-th spec's allocated nodes, which the view draws as its compared spec; specID past the
+// list is the last spec.
+//
+//pob2:block:src/Classes/TreeTab.lua:444
+//pob2:block:src/Classes/TreeTab.lua:581-586
+func (c *Calculator) TreeSpecAlloc(specID int) ([]int, error) {
+	specID = min(specID, len(c.build.Tree.Specs))
+	if specID < 1 {
+		return nil, nil
+	}
+	spec, err := c.specAt(specID)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]int, 0, len(spec.AllocNodes))
+	for id, n := range spec.Nodes {
+		if n.Alloc {
+			out = append(out, id)
+		}
+	}
+	slices.Sort(out)
+	return out, nil
+}

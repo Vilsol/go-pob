@@ -189,6 +189,7 @@ export declare namespace exposition {
     ChangeTreeAscendancy(ascendClassID: number): Result<void>;
     ChangeTreeClass(classID: number, choice: number): Result<boolean>;
     ClickNode(id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number): Result<number>;
+    ClickNodeConnectPath(id: number, hotkey: number, allocMode: number): Result<number>;
     CloseDisplayItem(): Result<void>;
     ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;
     ConfigSets(): exposition.ConfigSetsView;
@@ -286,6 +287,7 @@ export declare namespace exposition {
     SkillSets(): exposition.SkillSetsView;
     SkillsUndo(redo: boolean): Result<boolean>;
     TreeNodeNote(nodeID: number): string;
+    TreeSpecAlloc(specID: number): Result<(Array<number> | undefined)>;
     TreeSpecRows(): Result<(Array<exposition.TreeSpecRow> | undefined)>;
     TreeSpecs(): exposition.TreeSpecsView;
     TreeState(): Result<(exposition.TreeState | undefined)>;
@@ -501,10 +503,20 @@ export declare namespace exposition {
     readonly Path?: Array<number>;
     readonly Depends?: Array<number>;
   }
+  interface TreeJewel {
+    readonly Socket: number;
+    readonly Title: string;
+    readonly BaseName: string;
+    readonly Unique: boolean;
+  }
   interface TreeNodeText {
     readonly ID: number;
     readonly Name: string;
     readonly Stats?: Array<string>;
+  }
+  interface TreeNote {
+    readonly ID: number;
+    readonly Text: string;
   }
   interface TreeSpecRow {
     readonly Title: string;
@@ -528,6 +540,8 @@ export declare namespace exposition {
     readonly AscUsed: number;
     readonly AttributeIndex: number;
     readonly JewelRadiusIndex?: Array<number>;
+    readonly Jewels?: Array<exposition.TreeJewel>;
+    readonly Notes?: Array<exposition.TreeNote>;
     readonly LevelAutoMode: boolean;
     readonly Progress: calculator2.PlayerProgress;
   }
