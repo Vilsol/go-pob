@@ -55,7 +55,9 @@ for (const renderer of ['webgl', 'canvas']) {
       for (let i = 0; i < zoom; i++) await page.mouse.wheel(0, -100);
       await page.waitForTimeout(200);
       const before = (await frames(page)).length;
-      // pointer events from inside the page, one per animation frame, so the input rate is not the bound
+      // pointer events from inside the page, one per animation frame, so the input rate is not the bound; the next tick is
+      // requested after the move's effects have run, so the draw it schedules runs before that tick, as a browser
+      // dispatches real input ahead of the frame's callbacks; requested first, every draw slipped a frame and halved the rate
       const [t0, t1] = await page.evaluate(
         ({ cx, cy }) =>
           new Promise<[number, number]>((done) => {
@@ -71,7 +73,7 @@ for (const renderer of ['webgl', 'canvas']) {
                 return;
               }
               canvas.dispatchEvent(ev('pointermove', cx + 200 * Math.sin(i / 10), cy + 150 * Math.cos(i / 10)));
-              requestAnimationFrame(tick);
+              queueMicrotask(() => requestAnimationFrame(tick));
             };
             requestAnimationFrame(tick);
           }),

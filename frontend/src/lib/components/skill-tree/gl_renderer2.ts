@@ -1,3 +1,4 @@
+import { hardwareWebGL2 } from './webgl';
 import { DISC_FLOATS, STROKE2_FLOATS, fillScene2, scaleOf, type Scene2, type Scene2State, type View2 } from './scene2';
 
 export interface Tree2Renderer {
@@ -339,8 +340,9 @@ export class CanvasTree2Renderer implements Tree2Renderer {
   }
 }
 
+// a software WebGL (SwiftShader, llvmpipe) pans slower than Canvas 2D, so it takes the canvas, as PoE1's tree does
 export const createTree2Renderer = (canvas: HTMLCanvasElement, scene: Scene2, afterDraw: (ms: number) => void, force?: 'webgl' | 'canvas'): Tree2Renderer => {
-  if (force !== 'canvas') {
+  if (force === 'webgl' || (force === undefined && hardwareWebGL2())) {
     const gl = canvas.getContext('webgl2', { alpha: false, antialias: false, premultipliedAlpha: true });
     if (gl) return new GlTree2Renderer(gl, scene, afterDraw);
   }
