@@ -9,11 +9,13 @@ import (
 )
 
 // MiscCalculator is calcs.getMiscCalculator over the last main calculation: its base pass and a calculation per
-// override. Full DPS is not part of either, as calcs.calcFullDPS is not ported.
+// override, each with the Full DPS of the groups included in it when the base pass found any.
 type MiscCalculator struct {
 	main *Environment
 	// Base is the base pass, in the "CALCULATOR" mode every override runs in.
 	Base *Environment
+	// usedFullDPS is set when the base pass's Full DPS has a skill.
+	usedFullDPS bool
 }
 
 // ItemOverride is the item half of initEnv's override.
@@ -24,21 +26,51 @@ type ItemOverride struct {
 	ToggleCharm *Item
 }
 
-//pob2:block:src/Modules/Calcs.lua:92-95
+// The base pass's Full DPS result cache (fullDPSCache) is not ported.
+//
+//pob2:block:src/Modules/Calcs.lua:92-105
 func NewMiscCalculator(main *Environment) *MiscCalculator {
 	m := &MiscCalculator{main: main}
-	m.Base = m.Calc(ItemOverride{})
+	m.Base = m.calc(calcOverride{}, false)
+	fullDPS := calcFullDPS(main, "CALCULATOR", calcOverride{})
+	m.usedFullDPS = len(fullDPS.Skills) > 0
+	if m.usedFullDPS {
+		setFullDPS(m.Base, fullDPS)
+	}
 	return m
 }
 
-// Calc is the calculator function for one override.
+// calc is the calculator function's full pass for one override; useFullDPS false is the caller passing false
+// outside the tree view.
 //
-//pob2:block:src/Modules/Calcs.lua:132-135
-func (m *MiscCalculator) Calc(o ItemOverride) *Environment {
-	env := newWeaponSetEnv(m.main, "CALCULATOR", calcOverride{RepSlotName: o.RepSlotName, RepItem: o.RepItem, ToggleFlask: o.ToggleFlask, ToggleCharm: o.ToggleCharm})
+//pob2:block:src/Modules/Calcs.lua:132-145
+func (m *MiscCalculator) calc(override calcOverride, useFullDPS bool) *Environment {
+	env := newWeaponSetEnv(m.main, "CALCULATOR", override)
 	initEnv(env)
 	perform(env)
+	if useFullDPS && m.usedFullDPS {
+		setFullDPS(env, calcFullDPS(m.main, "CALCULATOR", override))
+	}
 	return env
+}
+
+// Calc is the calculator function for one override.
+func (m *MiscCalculator) Calc(o ItemOverride) *Environment {
+	return m.calc(calcOverride{RepSlotName: o.RepSlotName, RepItem: o.RepItem, ToggleFlask: o.ToggleFlask, ToggleCharm: o.ToggleCharm}, true)
+}
+
+// CalcFullDPSOnly is the calculator function with fastCalcOptions.fullDPSOnly: the Full DPS roll-up alone when the
+// base pass found any, else the full pass without it. The accelerated pass is a full one here.
+//
+//pob2:block:src/Modules/Calcs.lua:108-130
+func (m *MiscCalculator) CalcFullDPSOnly(useFullDPS bool) *Environment {
+	if useFullDPS && m.usedFullDPS {
+		fullDPS := calcFullDPS(m.main, "CALCULATOR", calcOverride{})
+		env := &Environment{Player: &Actor{Output: map[string]float64{}}}
+		setFullDPS(env, fullDPS)
+		return env
+	}
+	return m.calc(calcOverride{}, false)
 }
 
 // NodeOverride is the passive half of initEnv's override: removeNodes keyed by node, and keyed by id for a granted
@@ -49,14 +81,9 @@ type NodeOverride struct {
 	RemoveNodeIDs map[int]bool
 }
 
-// CalcNodes is the calculator function for a passive override.
-//
-//pob2:block:src/Modules/Calcs.lua:132-135
+// CalcNodes is the calculator function for a passive override. The tree view always takes Full DPS.
 func (m *MiscCalculator) CalcNodes(o NodeOverride) *Environment {
-	env := newWeaponSetEnv(m.main, "CALCULATOR", calcOverride{AddNodes: o.AddNodes, RemoveNodes: o.RemoveNodes, RemoveNodeIDs: o.RemoveNodeIDs})
-	initEnv(env)
-	perform(env)
-	return env
+	return m.calc(calcOverride{AddNodes: o.AddNodes, RemoveNodes: o.RemoveNodes, RemoveNodeIDs: o.RemoveNodeIDs}, true)
 }
 
 // ItemCompare is one block of an item tooltip's stat differences: the calculation with the item in Slot (or toggled
@@ -171,11 +198,11 @@ func (tab *ItemsTab) ItemCompares(item *Item, m *MiscCalculator, additionalRingS
 		}
 		return 0
 	}
-	// a nil parameter is skipped; FullDPS is always nil here
+	// a nil parameter is skipped
 	sort.SliceStable(slots, func(i, j int) bool {
 		a, b := slots[i], slots[j]
 		params := [][2]float64{{emptyOf(a), emptyOf(b)}, {similar(a.selItem, a.isSameUnique), similar(b.selItem, b.isSameUnique)}}
-		for _, stat := range []string{"CombinedDPS", "TotalEHP"} {
+		for _, stat := range []string{"FullDPS", "CombinedDPS", "TotalEHP"} {
 			av, aok := a.env.Player.Output[stat]
 			bv, bok := b.env.Player.Output[stat]
 			if aok && bok {

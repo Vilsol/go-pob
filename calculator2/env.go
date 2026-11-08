@@ -327,6 +327,8 @@ type Actor struct {
 	// OutputMainHand and OutputOffHand are output.MainHand/OffHand, nil unless the main skill attacks.
 	OutputMainHand map[string]float64
 	OutputOffHand  map[string]float64
+	// SkillDPS is output.SkillDPS, the Full DPS rows; nil where it is.
+	SkillDPS []SkillDPS
 	// Breakdown is actor.breakdown, nil unless env.buildBreakdown.
 	Breakdown *Breakdown
 	// SpectreLifeList and CompanionLifeList are actor.spectreLifeList and actor.companionLifeList.

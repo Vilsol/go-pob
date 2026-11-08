@@ -94,7 +94,7 @@ func powerOutput(env *Environment) PowerOutput {
 	return out
 }
 
-// GetFromOutput is data.powerStatList.GetFromOutput; output.FullDPS is never set, as calcs.calcFullDPS is not ported.
+// GetFromOutput is data.powerStatList.GetFromOutput.
 //
 //pob2:block:src/Modules/Data.lua:190-216
 func (s *PowerStat) GetFromOutput(o PowerOutput) float64 {
@@ -107,6 +107,10 @@ func (s *PowerStat) GetFromOutput(o PowerOutput) float64 {
 
 func (s *PowerStat) entry(o PowerOutput) float64 {
 	if s.Stat == "FullDPS" {
+		if v, ok := o.Output["FullDPS"]; ok {
+			return v
+		}
+		// if the user doesn't have full dps, we default to adding the player and minion dps together
 		return o.Output["CombinedDPS"] + o.Minion["CombinedDPS"]
 	}
 	if minionStat, ok := strings.CutPrefix(s.Stat, "Minion"); ok && minionStat != "" {

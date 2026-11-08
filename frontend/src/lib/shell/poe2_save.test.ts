@@ -49,4 +49,35 @@ describe('the stat rows a PoE2 save writes', () => {
     expect(serialize).toHaveBeenLastCalledWith(savedStats2(view));
     expect(saveForeign).toHaveBeenLastCalledWith('/Spark', '<with stats/>');
   });
+
+  // oracle/poe2_full_dps.lua over the PoE2 fixture builds with every group included
+  const fullDPS = readFileSync(resolve(__dirname, '../../../../testdata/oracle/poe2_full_dps.jsonl'), 'utf8')
+    .split('\n')
+    .filter(Boolean)
+    .map(
+      (l) =>
+        JSON.parse(l) as {
+          build: string;
+          skills: { name: string; dps: number; count: number; trigger?: string; skillPart?: string; source?: string }[];
+          saved: { stat: string; value: string; skillPart: string; source: string }[];
+        }
+    )
+    .filter((r) => r.saved.length > 0);
+
+  it.each(fullDPS.map((r) => [r.build, r] as const))("write PoB-PoE2's FullDPSSkill rows for %s", (_, r) => {
+    const skillDPS = r.skills.map((s) => ({
+      Name: s.name,
+      DPS: s.dps,
+      Count: s.count,
+      Trigger: s.trigger ?? '',
+      SkillPart: s.skillPart ?? '',
+      Source: s.source ?? ''
+    }));
+    const rows = savedStats2({ output: {}, skillFlags: {}, skillDPS }).fullDPS;
+    // the build serializer formats the value; it is graded as a number here
+    expect(rows.map((d) => ({ stat: d.Stat, skillPart: d.SkillPart, source: d.Source }))).toEqual(
+      r.saved.map((d) => ({ stat: d.stat, skillPart: d.skillPart, source: d.source }))
+    );
+    rows.forEach((d, i) => expect(Math.abs(d.Value - Number(r.saved[i].value))).toBeLessThanOrEqual(Math.abs(d.Value) * 1e-12));
+  });
 });

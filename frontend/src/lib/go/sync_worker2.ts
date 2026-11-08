@@ -6,6 +6,7 @@ import { useEngine, watchTraps } from './wasm_engine';
 import type { WasmEngine } from './wasm_file';
 import { boot, config, exposition, initializeCrystalline, storage, type calculator2 } from '../types2';
 import type { Poe2View } from '../global';
+import type { SkillDPSEntry } from '../display/stat_list';
 import { defaultStateOf, relevanceQuery2, type ConfigValue2 } from '../display/configurations2';
 import { DESKTOP } from '$lib/pwa/desktop';
 import type { Tree2 } from '../components/skill-tree/scene2';
@@ -130,6 +131,8 @@ export type Poe2Calc = Poe2View & {
   skillFlags: Record<string, boolean>;
   skillData: Record<string, boolean>;
   minionSkillFlags?: Record<string, boolean>;
+  // Calcs.lua:525-531 (PoB-PoE2): output.SkillDPS, the Full DPS rows
+  skillDPS?: SkillDPSEntry[];
   socketGroups: Poe2SocketGroup[];
   mainSocketGroup: number;
   mainActiveSkill: number;
@@ -416,6 +419,7 @@ class PoB2Worker {
       skillFlags: { ...out.SkillFlags },
       skillData: { ...out.SkillData },
       minionSkillFlags: out.MinionSkillFlags ? { ...out.MinionSkillFlags } : undefined,
+      skillDPS: (out.SkillDPS ?? []).map((r) => ({ ...r })),
       socketGroups: (out.SocketGroups ?? []).map((g) => ({ label: g.Label, skills: [...(g.Skills ?? [])] })),
       mainSocketGroup: out.MainSocketGroup,
       mainActiveSkill: out.MainActiveSkill,

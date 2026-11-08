@@ -977,7 +977,7 @@ func sortDPS(env *Environment, dpsField string) float64 {
 // calcOutputWithThisGem is the calculation with gemData in the slot, the slot then put back as it was.
 //
 //pob2:src/Classes/GemSelectControl.lua:61-102
-func calcOutputWithThisGem(build *pob2.PathOfBuilding2, misc *MiscCalculator, socketGroup *SocketGroup, index int, gemData *poe2skills.Gem) *Environment {
+func calcOutputWithThisGem(build *pob2.PathOfBuilding2, misc *MiscCalculator, socketGroup *SocketGroup, index int, gemData *poe2skills.Gem, useFullDPS bool) *Environment {
 	gemList := socketGroup.GemList
 	var gemInstance *GemInstance
 	var oldGem GemInstance
@@ -1000,7 +1000,7 @@ func calcOutputWithThisGem(build *pob2.PathOfBuilding2, misc *MiscCalculator, so
 	gemInstance.Level, _ = processGemLevel(build, gemData)
 	gemInstance.GemData = gemData
 	gemInstance.DisplayEffect = nil
-	env := misc.Calc(ItemOverride{})
+	env := misc.CalcFullDPSOnly(useFullDPS)
 	if index <= len(gemList) {
 		gemInstance.GemData, gemInstance.Level, gemInstance.DisplayEffect = oldGem.GemData, oldGem.Level, oldGem.DisplayEffect
 	} else {
@@ -1027,11 +1027,12 @@ func GemSortDPS(build *pob2.PathOfBuilding2, env *Environment, misc *MiscCalcula
 		return 0, nil, err
 	}
 	baseDPS := sortDPS(misc.Base, dpsField)
+	useFullDPS := dpsField == "FullDPS"
 	dps := make([]float64, len(gemIDs))
 	for i, id := range gemIDs {
 		dps[i] = baseDPS
 		if gemData := data.gem(id); gemData != nil {
-			dps[i] = sortDPS(calcOutputWithThisGem(build, misc, socketGroup, index, gemData), dpsField)
+			dps[i] = sortDPS(calcOutputWithThisGem(build, misc, socketGroup, index, gemData, useFullDPS), dpsField)
 		}
 	}
 	return baseDPS, dps, nil

@@ -20,14 +20,29 @@ const EXTRA_SAVE_STATS = [
 ];
 
 // src/Modules/Build.lua:1196-1244 (PoB-PoE2); its condFunc test ends in `or true`, so it never drops a row.
-// The output table holds numbers only, so a childStat row and the SkillDPS table read as nil.
-export const savedStats2 = (calc: Pick<Poe2Calc, 'output' | 'skillFlags' | 'minion'>): SavedStats2 => {
+// The output table holds numbers only, so a childStat row reads as nil.
+export const savedStats2 = (calc: Pick<Poe2Calc, 'output' | 'skillFlags' | 'minion' | 'skillDPS'>): SavedStats2 => {
   const player: exposition.SavedStat[] = [];
+  const fullDPS: exposition.SavedFullDPS[] = [];
   const added = new Set<string>();
   for (const s of displayStats2) {
     if (s.flag && !calc.skillFlags[s.flag]) continue;
     const name = s.stat && s.stat + (s.childStat ?? '');
-    if (!name || added.has(name) || s.stat === 'SkillDPS' || s.childStat) continue;
+    if (!name || added.has(name) || s.childStat) continue;
+    // Build.lua:1201-1215 (PoB-PoE2)
+    if (s.stat === 'SkillDPS') {
+      if (!calc.skillDPS) continue;
+      for (const d of calc.skillDPS) {
+        fullDPS.push({
+          Stat: d.Count !== 1 ? `${String(Number(d.Count.toPrecision(6)))}x ${d.Name}` : d.Name,
+          Value: d.DPS * d.Count,
+          SkillPart: d.SkillPart ?? '',
+          Source: d.Source || d.Trigger || ''
+        });
+      }
+      added.add(name);
+      continue;
+    }
     const v = calc.output[s.stat!];
     if (v === undefined) continue;
     player.push({ Stat: name, Value: v });
@@ -44,7 +59,7 @@ export const savedStats2 = (calc: Pick<Poe2Calc, 'output' | 'skillFlags' | 'mini
       if (v !== undefined) minion.push({ Stat: s.stat!, Value: v });
     }
   }
-  return { player, fullDPS: [], minion };
+  return { player, fullDPS, minion };
 };
 
 // the PoE2 worker serializes; the PoE1 worker owns the build storage

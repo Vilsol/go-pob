@@ -124,6 +124,14 @@ export declare namespace calculator2 {
     readonly PathPower: number;
     readonly PathDist: number;
   }
+  interface SkillDPS {
+    readonly Name: string;
+    readonly DPS: number;
+    readonly Count: number;
+    readonly Trigger: string;
+    readonly SkillPart: string;
+    readonly Source: string;
+  }
   interface SkillSetView {
     readonly ID: number;
     readonly Title: string;
@@ -468,6 +476,7 @@ export declare namespace exposition {
     readonly MainSocketGroup: number;
     readonly MainActiveSkill: number;
     readonly ConfigInputs?: Record<string, Readonly<calculator2.ConfigValue>>;
+    readonly SkillDPS?: Array<calculator2.SkillDPS>;
   }
   interface ParsedMod {
     readonly Name: string;

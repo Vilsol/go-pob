@@ -63,7 +63,7 @@ const sidebar2 = (calc: Calc): Sidebar => {
   sections.push({
     header: calc.minion ? 'Player' : undefined,
     info: calc.skillFlags?.disable ? ['^7Skill disabled:'] : undefined,
-    groups: buildStatList2({ Output: calc.output, SkillFlags: calc.skillFlags }, displayStats2, lines)
+    groups: buildStatList2({ Output: calc.output, SkillFlags: calc.skillFlags, SkillDPS: calc.skillDPS }, displayStats2, lines)
   });
   const warnings: BuildWarning[] = [...new Set(lines)].map((text) => ({ kind: 'stat', text }));
   // Build.lua:1053-1083 (PoB-PoE2)

@@ -72,6 +72,8 @@ type Outputs struct {
 	MainSocketGroup int
 	MainActiveSkill int
 	ConfigInputs    map[string]calculator2.ConfigValue
+	// SkillDPS is output.SkillDPS, the Full DPS rows.
+	SkillDPS []calculator2.SkillDPS
 }
 
 func ParseBuild(xml string) (*Calculator, error) {
@@ -188,6 +190,8 @@ func (c *Calculator) Calculate() (*Outputs, error) {
 		c.undo = &tree2.UndoHandler{}
 		c.undo.ResetUndo(env.Spec)
 	}
+	// the sidebar sorts output.SkillDPS in place before Save writes it
+	calculator2.SortSkillDPS(env.Player.SkillDPS)
 	res := &Outputs{
 		Output:          env.Player.Output,
 		ClassName:       env.Spec.CurClassName,
@@ -198,6 +202,7 @@ func (c *Calculator) Calculate() (*Outputs, error) {
 		SocketGroups:    calculator2.SocketGroupViews(env),
 		MainSocketGroup: env.MainSocketGroup,
 		ConfigInputs:    calculator2.ConfigInputs(c.build),
+		SkillDPS:        env.Player.SkillDPS,
 	}
 	if i := env.MainSocketGroup; i >= 1 && i <= len(env.SocketGroupList) {
 		res.MainActiveSkill = env.SocketGroupList[i-1].MainActiveSkill

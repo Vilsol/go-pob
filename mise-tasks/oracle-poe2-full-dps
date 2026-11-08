@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+#MISE description="Record PoB-PoE2's Full DPS over every --every'th PoE2 corpus build with every socket group included (local only; writes <out>/oracle-fulldps and links testdata/oracle-poe2-0.5-fulldps)"
+#USAGE flag "--every <n>" env="EVERY" default="20" help="take every n'th corpus build"
+#USAGE flag "--out <dir>" env="OUT" default="~/go-pob-corpus/poe2-0.5" help="the PoE2 corpus root"
+#USAGE flag "--pob2-dir <dir>" env="POB2_DIR" help="the PoB-PoE2 checkout (default: beside the repository)"
+set -euo pipefail
+root="$(git rev-parse --show-toplevel)"
+main="$(realpath "$(git rev-parse --path-format=absolute --git-common-dir)/..")"
+pob2="${usage_pob2_dir:-${POB2_DIR:-$(realpath "$main/../PathOfBuilding-PoE2")}}"
+out="${usage_out:-${OUT:-~/go-pob-corpus/poe2-0.5}}"
+out="${out/#\~/$HOME}"
+mise run pob-pin --game poe2
+mkdir -p "$out/oracle-fulldps"
+work="$(mktemp -d)"
+trap 'tail -n 3 "$work"/part.*.log >&2; rm -rf "$work"' EXIT
+find "$out/corpus/" -maxdepth 1 -name '*.xml' | sort | awk -v n="${usage_every:-${EVERY:-20}}" '(NR - 1) % n == 0' | split -l 50 -a 3 -d - "$work/part."
+export LUA_PATH="$pob2/runtime/lua/?.lua;$pob2/runtime/lua/?/init.lua;$pob2/.luarocks/share/lua/5.1/?.lua;$pob2/.luarocks/share/lua/5.1/?/init.lua;;"
+export LUA_CPATH="$pob2/.luarocks/lib/lua/5.1/?.so;;"
+(cd "$root" && go build -o "$work/gopob" ./scripts/gopob)
+cd "$pob2/src"
+# one deterministic LuaJIT process per 50 builds, one at a time, each capped at 8G and writing <part>.jsonl
+printf '%s\n' "$work"/part.* | xargs -I{} sh -c 'exec systemd-run --user --scope -q -p MemoryMax=8G -p MemorySwapMax=0 "$0" nice "$1" "$2" "$3.jsonl" $(cat "$3") >"$3.log" 2>&1' "$work/gopob" "$main/.luajit-det/bin/luajit" "$root/oracle/poe2_full_dps.lua" {}
+cat "$work"/part.*.jsonl | gzip -9 >"$out/oracle-fulldps/full-dps-poe2-0.5.jsonl.gz"
+zcat "$out/oracle-fulldps/full-dps-poe2-0.5.jsonl.gz" | awk '/"error"/ { e++ } END { print NR " builds, " e + 0 " with an error" }'
+ln -sfn "$out/oracle-fulldps" "$root/testdata/oracle-poe2-0.5-fulldps"

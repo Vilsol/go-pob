@@ -2411,6 +2411,23 @@ func crystallineMarshalCalculator2PowerReportRow(v *calculator2.PowerReportRow) 
 	return out
 }
 
+func crystallineMarshalCalculator2SkillDPS(v *calculator2.SkillDPS) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Name", string(v.Name))
+	out.Set("DPS", float64(v.DPS))
+	out.Set("Count", float64(v.Count))
+	out.Set("Trigger", string(v.Trigger))
+	out.Set("SkillPart", string(v.SkillPart))
+	out.Set("Source", string(v.Source))
+
+	return out
+}
+
 func crystallineMarshalCalculator2SkillSetView(v *calculator2.SkillSetView) any {
 	if v == nil {
 		return nil
@@ -7446,6 +7463,37 @@ func crystallineMarshalExpositionOutputs(v *Outputs) any {
 			return out
 		}()
 	}))
+	out.Set("SkillDPS", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.SkillDPS; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendCalculator2SkillDPS(b, &items0[i0], ok)
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.SkillDPS
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, crystallineMarshalCalculator2SkillDPS(&items[i]))
+			}
+
+			return out
+		}()
+	}))
 
 	return out
 }
@@ -8676,6 +8724,27 @@ func crystallineAppendCalculator2PowerReportRow(b []byte, v *calculator2.PowerRe
 	b = crystallineAppendNumber(b, float64(v.PathPower), ok)
 	b = append(b, ",\"PathDist\":"...)
 	b = crystallineAppendNumber(b, float64(v.PathDist), ok)
+
+	return append(b, '}')
+}
+
+func crystallineAppendCalculator2SkillDPS(b []byte, v *calculator2.SkillDPS, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Name\":"...)
+	b = crystallineAppendString(b, string(v.Name))
+	b = append(b, ",\"DPS\":"...)
+	b = crystallineAppendNumber(b, float64(v.DPS), ok)
+	b = append(b, ",\"Count\":"...)
+	b = crystallineAppendNumber(b, float64(v.Count), ok)
+	b = append(b, ",\"Trigger\":"...)
+	b = crystallineAppendString(b, string(v.Trigger))
+	b = append(b, ",\"SkillPart\":"...)
+	b = crystallineAppendString(b, string(v.SkillPart))
+	b = append(b, ",\"Source\":"...)
+	b = crystallineAppendString(b, string(v.Source))
 
 	return append(b, '}')
 }
@@ -10119,6 +10188,21 @@ func crystallineAppendExpositionOutputs(b []byte, v *Outputs, ok *bool) []byte {
 		}
 
 		b = append(b, '}')
+	}
+	b = append(b, ",\"SkillDPS\":"...)
+	if items0 := v.SkillDPS; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendCalculator2SkillDPS(b, &items0[i0], ok)
+		}
+
+		b = append(b, ']')
 	}
 
 	return append(b, '}')

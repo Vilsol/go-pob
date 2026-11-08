@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#MISE description="Record PoB-PoE2's Full DPS, its sidebar rows and its saved FullDPSSkill rows over the PoE2 fixture builds with every socket group included"
+#USAGE flag "--pob2-dir <dir>" env="POB2_DIR" help="the PoB-PoE2 checkout (default: beside the repository)"
+set -euo pipefail
+root="$(git rev-parse --show-toplevel)"
+pob2="${usage_pob2_dir:-${POB2_DIR:-$(realpath "$(git rev-parse --path-format=absolute --git-common-dir)/../../PathOfBuilding-PoE2")}}"
+mise run pob-pin --game poe2
+mapfile -t builds < <(grep -l "<Skill " "$root"/calculator2/testdata/*.xml "$root"/wasm2/exposition/testdata/*.xml)
+go run "$root/scripts/gopob" nice mise x --cd "$pob2/src" -- luajit "$root/oracle/poe2_full_dps.lua" "$root/testdata/oracle/poe2_full_dps.jsonl" "${builds[@]}" >/dev/null

@@ -4,7 +4,7 @@
 import { colorCodes } from './colors';
 import { formatNumSep, luaFormat, SUFFIX_COLOR, VALUE_COLOR } from './format_stat';
 import type { Stat, StatOutput } from './stats';
-import type { StatLine } from './stat_list';
+import type { SkillDPSEntry, StatLine } from './stat_list';
 
 export interface Stat2 extends Omit<Stat, 'condFunc' | 'warnFunc'> {
   condFunc?: (v: number, o: StatOutput) => boolean;
@@ -905,9 +905,38 @@ export const formatStat2 = (statData: Stat2, statVal: number, overCapStatVal?: n
 export interface StatListInput2 {
   Output?: Record<string, number>;
   SkillFlags?: Record<string, boolean>;
+  /* Calcs.lua:525-531 (PoB-PoE2): output.SkillDPS; undefined where the output has none */
+  SkillDPS?: SkillDPSEntry[];
 }
 
-// src/Modules/Build.lua:2375-2481 (PoB-PoE2). SkillDPS is a table output the calculator does not hold.
+// %g of a skill count
+const countG = (v: number) => String(Number(v.toPrecision(6)));
+
+// src/Modules/Build.lua:2391-2423 (PoB-PoE2): the rows sorted in place by dps * count, the count when it is not 1,
+// the value as "1.f" (width 1, no decimals)
+const skillDPSLines2 = (skills: SkillDPSEntry[]): StatLine[] => {
+  const lines: StatLine[] = [];
+  const sorted = [...skills].sort((a, b) => b.DPS * b.Count - a.DPS * a.Count);
+  for (const skill of sorted) {
+    const formatted = formatStat2({ fmt: '.0f' }, skill.DPS * skill.Count);
+    lines.push({
+      label: (skill.Count !== 1 ? `${countG(skill.Count)}x ` : '') + skill.Name,
+      labelColor: colorCodes.CUSTOM,
+      labelNote: skill.Trigger ? ` (${skill.Trigger})` : undefined,
+      value: formatted.value,
+      valueColor: formatted.color
+    });
+    if (skill.SkillPart) {
+      lines.push({ label: 'Skill part', labelColor: SUFFIX_COLOR, value: skill.SkillPart, valueColor: SUFFIX_COLOR, detail: true });
+    }
+    if (skill.Source) {
+      lines.push({ label: 'Source', labelColor: colorCodes.WARNING, value: `from ${skill.Source}`, valueColor: colorCodes.WARNING, detail: true });
+    }
+  }
+  return lines;
+};
+
+// src/Modules/Build.lua:2375-2481 (PoB-PoE2)
 export const buildStatList2 = (input: StatListInput2, statList: Stat2[], warnings: string[] = []): StatLine[][] => {
   const output = (input.Output ?? {}) as StatOutput;
   const flags = input.SkillFlags ?? {};
@@ -935,7 +964,10 @@ export const buildStatList2 = (input: StatListInput2, statList: Stat2[], warning
       }
       continue;
     }
-    if (statData.stat === 'SkillDPS') continue;
+    if (statData.stat === 'SkillDPS') {
+      if (input.SkillDPS) group.push(...skillDPSLines2(input.SkillDPS));
+      continue;
+    }
     if (statData.childStat) continue;
     const statVal = output[statData.stat];
     if (statVal === undefined) continue;

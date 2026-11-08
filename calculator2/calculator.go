@@ -89,6 +89,9 @@ func BuildOutput(build *pob2.PathOfBuilding2, opts Options) (*Environment, error
 		initEnv(env)
 		perform(env)
 	}
+	// Build output across all skills added to FullDPS skills
+	//pob2:block:src/Modules/Calcs.lua:525-531
+	setFullDPS(env, calcFullDPS(env, "CALCULATOR", calcOverride{}))
 	buildOutputSpec(env)
 	return env, nil
 }
