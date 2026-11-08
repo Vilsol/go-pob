@@ -10,7 +10,6 @@
     buildScene2,
     clampView,
     nodeAt2,
-    nodeShown2,
     screenToTree,
     treeToScreen,
     zoomAbout,
@@ -22,6 +21,7 @@
     type View2
   } from './scene2';
   import { searchResults } from './tree2_search';
+  import { heatMixColour, heatSingleColour, type NodePowerTheme } from '$lib/skill_tree/heat';
 
   type TreeState = {
     alloc: number[];
@@ -42,10 +42,15 @@
     data: Tree2;
     spec: TreeState;
     busy?: boolean;
-    // the tree2.ClickResult of a click; allocMode is spec.allocMode, the weapon set the click allocates to
-    onclick: (id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number) => Promise<number | undefined>;
+    // the tree2.ClickResult of a click; allocMode is spec.allocMode, the weapon set the click allocates to; trace is
+    // the Shift-traced path while tracing
+    onclick: (id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number, trace?: number[]) => Promise<number | undefined>;
     onattribute: (id: number, attributeIndex: number, allocMode: number) => void;
-    onhover: (id: number, allocMode: number) => Promise<{ path: number[]; depends: number[] }>;
+    // trace is the Shift-traced path while tracing, when the path and dependents are not asked for
+    onhover: (id: number, allocMode: number, trace?: number[]) => Promise<{ path: number[]; depends: number[] }>;
+    // one hover while Shift is held (PassiveTreeView.lua:321-350): the trace path after it, and whether the node is
+    // highlighted
+    ontrace?: (trace: number[], id: number) => Promise<{ trace: number[]; hover: boolean }>;
     // the pointer left the hovered node
     onunhover?: () => void;
     // the Class Change popup's Connect Path (PassiveTreeView.lua:520-528); the tree2.ClickResult
@@ -59,6 +64,14 @@
     artBase?: string;
     // the compared spec's allocated nodes, drawn as PassiveTreeView.lua draws its compareSpec
     compared?: Set<number>;
+    // while the heat map shows, node.power (CalcsTab.lua:551-709) and calcsTab.powerMax; single for a stat's own power,
+    // else offence and defence; theme is main.nodePowerTheme
+    power?: {
+      nodes: Map<number, { single?: number; offence: number; defence: number }>;
+      max: number[];
+      single: boolean;
+      theme: NodePowerTheme;
+    };
   }
 
   let {
@@ -68,13 +81,15 @@
     onclick,
     onattribute,
     onhover,
+    ontrace,
     onunhover,
     onconnect,
     onundo,
     onredo,
     matches,
     artBase = 'https://data.pob.gg/data/0.5',
-    compared
+    compared,
+    power
   }: Props = $props();
 
   // a tree without sprites keeps its vector shapes
@@ -96,6 +111,8 @@
   let classChangeFor = $state<Tree2Node | undefined>();
   /* PassiveSpec.lua:52 */
   let allocMode = $state(0);
+  /* PassiveTreeView.lua:276-283: Shift traces a path; undefined while not tracing */
+  let trace = $state.raw<number[]>();
 
   type Probe = {
     frame?: (f: unknown) => void;
@@ -133,6 +150,15 @@
     return out;
   });
   const jewels = $derived(new Map((spec.jewels ?? []).map((j) => [j.socket, j])));
+  /* PassiveTreeView.lua:1003-1030 */
+  const heat = $derived.by(() => {
+    if (!power) return undefined;
+    const out = new Map<number, [number, number, number]>();
+    const [single, offence, , defence] = power.max;
+    for (const [id, p] of power.nodes)
+      out.set(id, power.single ? heatSingleColour(p.single ?? 0, single, power.theme) : heatMixColour(p.offence, p.defence, offence, defence, power.theme));
+    return out;
+  });
   $effect(() => {
     renderer?.setState({
       alloc,
@@ -148,7 +174,8 @@
       className: spec.className,
       icons,
       jewels,
-      compared
+      compared,
+      heat
     });
   });
   $effect(() => {
@@ -166,7 +193,8 @@
       overlays: scene.counts.strokes - scene.counts.connectorStrokes,
       sprites: scene.counts.under + scene.counts.over,
       lines: scene.counts.lines,
-      compared: compared?.size
+      compared: compared?.size,
+      heat: heat?.size
     });
 
   // a node's position on the canvas, in CSS pixels
@@ -186,7 +214,7 @@
     view = clampView(zoomAbout(view, how === 'in' ? 1 : -1, at.x, at.y));
   };
   /* PassiveTreeView.lua:1517-1526 */
-  const focus = (id: number) => {
+  export const focus = (id: number) => {
     const n = scene.byId.get(id);
     if (!n) return;
     const v = { ...view, zoomLevel: 20 };
@@ -235,6 +263,8 @@
   });
 
   let down: { x: number; y: number; zoomX: number; zoomY: number } | undefined;
+  // the node under the pointer, which a trace that cannot reach it leaves unhovered
+  let pointed: Tree2Node | undefined;
   let dragging = false;
   let hoverSeq = 0;
 
@@ -243,16 +273,38 @@
     return { x: e.clientX - r.left, y: e.clientY - r.top };
   };
 
+  /* PassiveTreeView.lua:321-355: while tracing, the trace is the path and a node the trace cannot reach is not hovered */
+  const traceHover = async (node: Tree2Node, seq: number) => {
+    const traced = trace ?? [];
+    // the host hears of the node at once, so a Shift+right-click note reaches it before the trace step answers
+    void onhover(node.id, allocMode, traced);
+    const t = await ontrace!(traced, node.id);
+    if (seq !== hoverSeq || !trace) return;
+    trace = t.trace;
+    hoverPath = new Set(t.trace);
+    if (!t.hover) {
+      hovered = undefined;
+      onunhover?.();
+      return;
+    }
+    void onhover(node.id, allocMode, t.trace);
+  };
+
   const setHover = (node: Tree2Node | undefined, refresh = false) => {
-    if (!refresh && node?.id === hovered?.id) return;
+    if (!refresh && node?.id === pointed?.id) return;
+    pointed = node;
     hovered = node;
-    hoverPath = new Set();
+    hoverPath = trace ? new Set(trace) : new Set();
     hoverDep = new Set();
     if (!node) {
       onunhover?.();
       return;
     }
     const seq = ++hoverSeq;
+    if (trace && ontrace) {
+      void traceHover(node, seq);
+      return;
+    }
     void onhover(node.id, allocMode).then((h) => {
       if (seq !== hoverSeq) return;
       hoverPath = new Set(h.path);
@@ -285,6 +337,10 @@
   const keydown = (e: KeyboardEvent) => {
     if (isTypingTarget(e.target)) return;
     hotkeys.add(e.key.toLowerCase());
+    if (e.key === 'Shift' && !trace && ontrace) {
+      trace = [];
+      setHover(pointed, true);
+    }
     if (!(e.ctrlKey || e.metaKey) || busy) return;
     const k = e.key.toLowerCase();
     if (k === 'z' && onundo) {
@@ -296,16 +352,35 @@
     }
   };
 
+  const stopTrace = () => {
+    if (!trace) return;
+    trace = undefined;
+    setHover(pointed, true);
+  };
+  const keyup = (e: KeyboardEvent) => {
+    hotkeys.delete(e.key.toLowerCase());
+    if (e.key === 'Shift') stopTrace();
+  };
+  const blur = () => {
+    hotkeys.clear();
+    stopTrace();
+  };
+
   /* PassiveTreeView.lua:378-391: "2"/S Strength, "3"/D Dexterity, "1"/I Intelligence */
   const hotkey = () => (hotkeys.has('2') || hotkeys.has('s') ? 1 : hotkeys.has('3') || hotkeys.has('d') ? 2 : hotkeys.has('1') || hotkeys.has('i') ? 3 : 0);
 
   const click = async (node: Tree2Node, right: boolean, confirm = false, connect = false) => {
-    const res = connect && onconnect ? await onconnect(node.id, hotkey(), allocMode) : await onclick(node.id, right, hotkey(), confirm, allocMode);
+    const traced = trace?.length ? trace : undefined;
+    const res =
+      connect && onconnect
+        ? await onconnect(node.id, hotkey(), allocMode)
+        : traced
+          ? await onclick(node.id, right, hotkey(), confirm, allocMode, traced)
+          : await onclick(node.id, right, hotkey(), confirm, allocMode);
     if (res === 2) attributeFor = node;
     else if (res === 3) classChangeFor = node;
-    hovered = undefined;
     const t = screenToTree(scene, view, mouse.x, mouse.y);
-    setHover(nodeAt2(scene, t.x, t.y));
+    setHover(nodeAt2(scene, t.x, t.y), true);
   };
 
   /* PassiveTreeView.lua:251-255: a Ctrl+click zooms in, a Ctrl+right-click out, and allocates nothing */
@@ -337,7 +412,7 @@
     const delta = e.deltaY || e.deltaX;
     if (e.altKey) {
       allocMode = Math.max(0, Math.min(2, allocMode + (delta < 0 ? 1 : -1)));
-      setHover(hovered, true);
+      setHover(pointed, true);
       return;
     }
     const p = local(e);
@@ -349,11 +424,9 @@
   const classChangeName = $derived(
     data.art?.classes?.find((c) => c.ascendancies?.some((a) => (a.id ?? a.name) === classChangeFor?.ascendancy))?.name ?? classChangeFor?.ascendancy
   );
-  const shownName = $derived(hovered ? (spec.text[hovered.id]?.name ?? hovered.name) : '');
-  const shownStats = $derived(hovered ? (spec.text[hovered.id]?.stats ?? hovered.stats ?? []) : []);
 </script>
 
-<svelte:window onkeydown={keydown} onkeyup={(e: KeyboardEvent) => hotkeys.delete(e.key.toLowerCase())} onblur={() => hotkeys.clear()} onpointerup={pointerUp} />
+<svelte:window onkeydown={keydown} onkeyup={keyup} onblur={blur} onpointerup={pointerUp} />
 
 <div class="relative h-full min-h-[320px] w-full overflow-hidden" bind:this={box}>
   <div role="img" aria-label="Passive skill tree" class="absolute inset-0">
@@ -389,29 +462,6 @@
       class="pointer-events-none absolute inset-x-0 bottom-0 h-5 px-0.5 text-14 text-text"
       style:background={allocMode === 1 ? 'rgb(221 0 34 / 0.4)' : 'rgb(51 255 119 / 0.4)'}>
       Allocating Weapon set {allocMode} Mode
-    </div>
-  {/if}
-
-  {#if hovered && !attributeFor && !classChangeFor && nodeShown2({ alloc, hovered: hovered.id }, hovered)}
-    <div
-      role="tooltip"
-      aria-label="Node tooltip"
-      class="pointer-events-none absolute z-dock max-w-[32rem] min-w-[16rem] rounded-md border border-line-strong bg-ground/90 text-13 text-text shadow-tip"
-      style="left: {mouse.x}px; top: {mouse.y}px; transform: translate({mouse.x > view.width / 2 ? 'calc(-100% - 12px)' : '12px'}, {mouse.y > view.height / 2
-        ? 'calc(-100% - 12px)'
-        : '12px'})">
-      <h2 class="bg-warn-bg px-3 py-2 text-center text-15 font-semibold">{shownName || 'N/A'}</h2>
-      {#if hovered.ascendancy}<p class="m-0 px-3 pt-2 text-text-2">{hovered.ascendancy}</p>{/if}
-      {#if shownStats.length}
-        <ul class="m-0 list-none space-y-1 px-3 py-2">
-          {#each shownStats as stat, i (i)}<li class="whitespace-pre-line">{stat}</li>{/each}
-        </ul>
-      {/if}
-      <!-- PassiveTreeView.lua:2085-2093 (PoB-PoE2) -->
-      <div class="border-t border-line px-3 py-2 text-12 text-text-2">
-        <p class="m-0">Shift + Right-Click to add a build note (PoE2 .build export)</p>
-        {#if spec.notes?.[hovered.id]}<p class="m-0 whitespace-pre-line text-text" aria-label="Node note">Note: {spec.notes[hovered.id]}</p>{/if}
-      </div>
     </div>
   {/if}
 

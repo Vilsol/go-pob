@@ -292,13 +292,13 @@ type unknownNodeError int
 func (e unknownNodeError) Error() string { return fmt.Sprintf("node %d is not on the tree", int(e)) }
 
 // ClickNode clicks a node (right for a right click; hotkey is the attribute index a held key picks, 0 for
-// none; allocMode is spec.allocMode) and, when the click changed the spec, adds an undo state and saves the
-// spec into the build. It returns the tree2.ClickResult.
+// none; allocMode is spec.allocMode; trace is the Shift-traced path, empty when not tracing) and, when the click
+// changed the spec, adds an undo state and saves the spec into the build. It returns the tree2.ClickResult.
 //
 //pob2:block:src/Classes/PassiveTreeView.lua:443
 //pob2:block:src/Classes/PassiveTreeView.lua:547
 //pob2:block:src/Classes/PassiveTreeView.lua:591
-func (c *Calculator) ClickNode(id int, right bool, hotkey int, confirmClassChange bool, allocMode int) (int, error) {
+func (c *Calculator) ClickNode(id int, right bool, hotkey int, confirmClassChange bool, allocMode int, trace []int) (int, error) {
 	spec, err := c.spec()
 	if err != nil {
 		return 0, err
@@ -307,16 +307,16 @@ func (c *Calculator) ClickNode(id int, right bool, hotkey int, confirmClassChang
 	if !ok {
 		return 0, unknownNodeError(id)
 	}
+	tracePath, err := c.specNodes(trace, len(trace) > 0)
+	if err != nil {
+		return 0, err
+	}
 	spec.AllocMode = allocMode
 	var result tree2.ClickResult
 	if right {
-		result, err = spec.RightClickNode(node, hotkey)
+		result, err = spec.RightClickNode(node, hotkey, tracePath)
 	} else {
-		result, err = spec.LeftClickNode(node, hotkey, confirmClassChange)
-		//pob2:block:src/Classes/PassiveTreeView.lua:503-510
-		if classID := ascendancyClass(spec, node); result == tree2.ClickConfirmClassChange && classID >= 0 && spec.IsClassConnected(classID) {
-			result, err = spec.LeftClickNode(node, hotkey, true)
-		}
+		result, err = spec.LeftClickNode(node, hotkey, confirmClassChange, tracePath)
 	}
 	if result == tree2.ClickChanged {
 		c.undo.AddUndoState(spec, false)
@@ -367,7 +367,7 @@ func (c *Calculator) ClickNodeConnectPath(id int, hotkey int, allocMode int) (in
 	if ok, err := spec.ConnectToClass(classID); err != nil || !ok {
 		return int(tree2.ClickNothing), err
 	}
-	result, err := spec.LeftClickNode(node, hotkey, true)
+	result, err := spec.LeftClickNode(node, hotkey, true, nil)
 	if result == tree2.ClickChanged {
 		c.undo.AddUndoState(spec, false)
 		c.saveSpec(spec)

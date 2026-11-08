@@ -527,10 +527,11 @@ class PoB2Worker {
     return { path: [...(h?.Path ?? [])], depends: [...(h?.Depends ?? [])] };
   }
 
-  /* PassiveTreeView.lua:425-594 (PoB-PoE2); hotkey is the attribute index a held S, D or I picks */
-  async TreeClick(id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number): Promise<Poe2Click> {
+  /* PassiveTreeView.lua:425-594 (PoB-PoE2); hotkey is the attribute index a held S, D or I picks; trace is the
+     Shift-traced path */
+  async TreeClick(id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number, trace?: number[]): Promise<Poe2Click> {
     if (!this.calc) throw new Error('no PoE2 build is open');
-    const result = this.calc.ClickNode(id, right, hotkey, confirmClassChange, allocMode).unwrap();
+    const result = this.calc.ClickNode(id, right, hotkey, confirmClassChange, allocMode, trace ?? []).unwrap();
     return result === ClickResult.Changed ? { result, calc: await this.view() } : { result };
   }
 

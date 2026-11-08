@@ -198,7 +198,7 @@ export declare namespace exposition {
     Calculate(): Promise<Result<(exposition.Outputs | undefined)>>;
     ChangeTreeAscendancy(ascendClassID: number): Result<void>;
     ChangeTreeClass(classID: number, choice: number): Result<boolean>;
-    ClickNode(id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number): Result<number>;
+    ClickNode(id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number, trace: Array<number> | undefined): Result<number>;
     ClickNodeConnectPath(id: number, hotkey: number, allocMode: number): Result<number>;
     CloseDisplayItem(): Result<void>;
     ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;

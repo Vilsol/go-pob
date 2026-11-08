@@ -110,6 +110,17 @@ describe('the PoE2 tree art (PassiveTreeView.lua:602-655, 930-1180)', () => {
     expect(all.find((s) => s.name === 'NotableAlloc')!.tint).toEqual([...COLOURS.weaponSet1.map((c) => +c.toFixed(4)), 1]);
   });
 
+  it('draws the heat map: an unallocated node in its power colour, frame included, in the allocated state; no effect art, no half gray (PassiveTreeView.lua:948, 1003-1030, 1074, 1108-1115)', () => {
+    fillScene2(scene, state({ alloc: new Set([1, 5]), heat: new Map([[4, [0.5, 0.25, 0]]]) }));
+    const all = [...sprites(scene, 'under'), ...sprites(scene, 'over')].map(describeSprite);
+    expect(all.find((s) => s.name === 'Effect4')).toBeUndefined();
+    expect(all.find((s) => s.name === 'Icon4')!.tint).toEqual([0.5, 0.25, 0, 1]);
+    expect(all.find((s) => s.name === 'NotableAlloc')!.tint).toEqual([0.5, 0.25, 0, 1]);
+    expect(all.find((s) => s.name === 'NotableUnalloc')).toBeUndefined();
+    // a node the power run has not reached is black, an allocated one white
+    expect(all.find((s) => s.name === 'JewelAlloc')!.tint).toEqual([0, 0, 0, 1]);
+  });
+
   it("draws a jewel socket's frame as its base, red when it depends on the hovered node", () => {
     fillScene2(scene, state({ alloc: new Set([1]), hovered: 2, hoverDep: new Set([8]) }));
     expect(

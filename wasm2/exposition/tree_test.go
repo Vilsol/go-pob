@@ -30,7 +30,7 @@ func openFixture(t *testing.T, name string) (*Calculator, *Outputs) {
 
 func click(t *testing.T, calc *Calculator, id int, hotkey int) tree2.ClickResult {
 	t.Helper()
-	res, err := calc.ClickNode(id, false, hotkey, false, 0)
+	res, err := calc.ClickNode(id, false, hotkey, false, 0, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -231,7 +231,7 @@ func TestWeaponSetAllocationUndoRedo(t *testing.T) {
 	}
 	alloc := func(id, allocMode int) {
 		t.Helper()
-		if res, err := calc.ClickNode(id, false, 0, false, allocMode); err != nil || tree2.ClickResult(res) != tree2.ClickChanged {
+		if res, err := calc.ClickNode(id, false, 0, false, allocMode, nil); err != nil || tree2.ClickResult(res) != tree2.ClickChanged {
 			t.Fatalf("click %d: %d %v", id, res, err)
 		}
 	}
@@ -425,4 +425,93 @@ func TestTreeStateCarriesNodeNotes(t *testing.T) {
 	if !slices.Equal(st.Notes, []TreeNote{{ID: 44871, Text: "take this first"}}) {
 		t.Fatalf("notes %+v", st.Notes)
 	}
+}
+
+// PassiveTreeView.lua:513-530 (PoB-PoE2): Continue on the Class Change popup changes the class and allocates the
+// clicked node, and the click ends there: a held attribute key does not set the spec's attribute (378-389, 543-545)
+func TestConfirmedClassChangeEndsTheClick(t *testing.T) {
+	calc, _ := openFixture(t, "sorceress_spark.xml")
+	if res := click(t, calc, 44871, 0); res != tree2.ClickChanged {
+		t.Fatalf("click 44871: %d", res)
+	}
+	spec, _ := calc.spec()
+	before := spec.AttributeIndex
+	hotkey := 1
+	if before == 1 {
+		hotkey = 2
+	}
+	res, err := calc.ClickNode(32534, false, hotkey, true, 0, nil)
+	if err != nil || tree2.ClickResult(res) != tree2.ClickChanged {
+		t.Fatalf("confirmed click: %d %v", res, err)
+	}
+	spec, _ = calc.spec()
+	if spec.CurClass.Name != "Warrior" || !spec.Nodes[32534].Alloc {
+		t.Fatalf("class %s, Titan start %v", spec.CurClass.Name, spec.Nodes[32534].Alloc)
+	}
+	if spec.AttributeIndex != before {
+		t.Fatalf("attribute index %d, want %d: the click went on past the popup", spec.AttributeIndex, before)
+	}
+}
+
+// PassiveTreeView.lua:546, 590 (PoB-PoE2): a click on the end of the Shift-traced path allocates the traced path, not
+// the node's shortest one; a click on any other node ignores the trace
+func TestClickAllocatesTheTracedPath(t *testing.T) {
+	calc, _ := openFixture(t, "sorceress_spark.xml")
+	spec, _ := calc.spec()
+	var trace []int
+	var target, detour int
+	for _, n := range sortedSpecNodes(spec) {
+		if n.Alloc || !n.HasPath || len(n.Path) < 2 || n.AscendancyName != "" || n.IsAttribute {
+			continue
+		}
+		for _, m := range n.Linked {
+			if m.Alloc || !m.HasPath || m.IsAttribute || m.AscendancyName != "" || slices.Contains(n.Path, m) || slices.Contains(m.Path, n) {
+				continue
+			}
+			for i := len(m.Path) - 1; i >= 0; i-- {
+				trace = append(trace, m.Path[i].ID)
+			}
+			trace = append(trace, n.ID)
+			target, detour = n.ID, m.ID
+			break
+		}
+		if target != 0 {
+			break
+		}
+	}
+	if target == 0 {
+		t.Fatal("no node with a detour on the fixture's tree")
+	}
+	if res, err := calc.ClickNode(detour, false, 0, false, 0, trace); err != nil || tree2.ClickResult(res) != tree2.ClickChanged {
+		t.Fatalf("click off the trace's end: %d %v", res, err)
+	}
+	spec, _ = calc.spec()
+	if spec.Nodes[target].Alloc {
+		t.Fatal("a click on another node allocated the trace")
+	}
+	if ok, err := calc.Undo(); err != nil || !ok {
+		t.Fatalf("undo %v %v", ok, err)
+	}
+	if res, err := calc.ClickNode(target, false, 0, false, 0, trace); err != nil || tree2.ClickResult(res) != tree2.ClickChanged {
+		t.Fatalf("click on the trace's end: %d %v", res, err)
+	}
+	spec, _ = calc.spec()
+	for _, id := range trace {
+		if !spec.Nodes[id].Alloc {
+			t.Fatalf("traced node %d is not allocated (trace %v)", id, trace)
+		}
+	}
+}
+
+func sortedSpecNodes(spec *tree2.PassiveSpec) []*tree2.SpecNode {
+	ids := make([]int, 0, len(spec.Nodes))
+	for id := range spec.Nodes {
+		ids = append(ids, id)
+	}
+	slices.Sort(ids)
+	out := make([]*tree2.SpecNode, len(ids))
+	for i, id := range ids {
+		out[i] = spec.Nodes[id]
+	}
+	return out
 }

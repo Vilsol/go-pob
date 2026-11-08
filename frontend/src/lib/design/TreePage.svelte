@@ -123,6 +123,8 @@
     oncompare?: (spec: number) => void;
     nodeTipExtra?: Snippet<[TreeNodeFx]>;
     nodeTipTail?: Snippet<[TreeNodeFx]>;
+    /* a game's own line over the stat differences, in place of the path and deallocation counts */
+    nodeAction?: (n: TreeNodeFx) => string;
     /* Main.lua:1011-1013 */
     edgeMarkers?: boolean;
     onhovered?: (id: number | null) => void;
@@ -158,6 +160,7 @@
     oncompare,
     nodeTipExtra,
     nodeTipTail,
+    nodeAction,
     edgeMarkers = true,
     onhovered,
     nodePower = false,
@@ -413,11 +416,13 @@
         : H.k === 'j' && tree.sockets.some((s) => s.id === H.id)
           ? [tree.sockets.find((s) => s.id === H.id)?.jewel ?? 'Empty socket']
           : (H.stats ?? []);
-    const action = a
-      ? `Deallocating${H.lose && H.a ? ` removes ${H.lose + 1} nodes (orange)` : ''}`
-      : path.length
-        ? `Allocating the path: ${H.pts ?? path.length} point${(H.pts ?? path.length) === 1 ? '' : 's'} (blue)`
-        : 'Not reachable from your tree';
+    const action = nodeAction
+      ? nodeAction(H)
+      : a
+        ? `Deallocating${H.lose && H.a ? ` removes ${H.lose + 1} nodes (orange)` : ''}`
+        : path.length
+          ? `Allocating the path: ${H.pts ?? path.length} point${(H.pts ?? path.length) === 1 ? '' : 's'} (blue)`
+          : 'Not reachable from your tree';
     const live = diff?.node === H.id ? diff : undefined;
     const blocks: { header: string; sections: StatCompareSection[]; readyAt?: number; calcMs?: number }[] = live
       ? live.blocks

@@ -13,7 +13,7 @@ const FIXTURE = resolve(import.meta.dirname, '../../wasm2/exposition/testdata/so
 const code = (path = FIXTURE) => deflateSync(readFileSync(path)).toString('base64').replaceAll('+', '-').replaceAll('/', '_');
 
 type Probe = {
-  frames: { hovered?: number; alloc: number; renderer: string; overlays: number }[];
+  frames: { hovered?: number; alloc: number; renderer: string; overlays: number; heat?: number }[];
   screenOf?: (id: number) => { x: number; y: number } | undefined;
 };
 
@@ -76,10 +76,24 @@ test('with the PoE2 flag on, clicking a tree node allocates it and recalculates 
   at = await screenOf(page, 44871);
   await page.mouse.move(at.x + 1, at.y + 1);
   await page.mouse.move(at.x, at.y);
-  const tip = page.getByRole('tooltip', { name: 'Node tooltip' });
+  const tip = view.getByRole('tooltip');
   await expect(tip).toContainText('Energy Shield');
   await expect(tip).toContainText('+10 to maximum Energy Shield');
   await expect.poll(async () => (await lastFrame(page))?.hovered).toBe(44871);
+  // PassiveTreeView.lua:1966-2025 (PoB-PoE2): the stat differences and the pathing line; Ctrl+D hides the differences
+  const diffs = tip.getByRole('group', { name: 'Stat differences' });
+  await expect(diffs).toContainText('Allocating this node will give you:');
+  await expect(diffs).toContainText('Energy Shield');
+  await expect(tip.getByLabel('Node tips')).toContainText('1 points to node');
+  await page.keyboard.press('Control+d');
+  await expect(diffs).toContainText('Tip: Press Ctrl+D to enable the display of stat differences.');
+  await page.keyboard.press('Control+d');
+  await expect(diffs).toContainText('Allocating this node will give you:');
+  // PassiveTreeView.lua:276-350, 2014-2016: with Shift held the node starts a trace
+  await page.keyboard.down('Shift');
+  await expect(tip.getByLabel('Node tips')).toContainText('1 nodes in trace path');
+  await page.keyboard.up('Shift');
+  await expect(tip.getByLabel('Node tips')).toContainText('1 points to node');
 
   await page.mouse.down();
   await page.mouse.up();
@@ -110,6 +124,15 @@ test('a socketed radius jewel draws its radius ring on the PoE2 tree', async ({ 
   await page.mouse.move(at.x, at.y);
   await expect.poll(async () => (await lastFrame(page))?.hovered).toBe(26725);
   await expect.poll(async () => (await lastFrame(page))?.overlays).toBe(5);
+  // PassiveTreeView.lua:565-572, 1704-1727 (PoB-PoE2): the socket's tooltip is its jewel's, and a right-click opens the
+  // Items page on its slot
+  const tip = view.getByRole('tooltip');
+  await expect(tip.getByLabel('Socketed jewel')).toContainText('Time-Lost Ruby');
+  await expect(tip.getByRole('group', { name: 'Stat differences' })).toHaveCount(0);
+  await expect(tip.getByLabel('Node tips')).toContainText('Tip: Right click this socket');
+  await page.mouse.click(at.x, at.y, { button: 'right' });
+  await expect(page).toHaveURL(/\/items\?socket=26725/);
+  await expect(page.locator('[data-socket-node="26725"] [role="combobox"]')).toBeFocused();
   expect(errors).toEqual([]);
 });
 
@@ -150,5 +173,31 @@ test('the PoE2 tree page manages trees and keeps a node note', async ({ page }) 
   await page.mouse.click(at.x, at.y, { button: 'right' });
   await page.keyboard.up('Shift');
   await expect(note.getByRole('textbox', { name: 'Node note' })).toHaveValue('take this first');
+  expect(errors).toEqual([]);
+});
+
+// TreeTab.lua:197-283, 932-1048 and PassiveTreeView.lua:1003-1030 (PoB-PoE2): the power report lists the nodes' power for
+// the chosen stat and depth, and the tree draws each node's power
+test('the PoE2 power report lists node power and the tree draws the heat map', async ({ page }) => {
+  const errors: string[] = [];
+  await openPoe2(page, errors);
+  const view = poe2Page(page);
+  await expect(view).toBeVisible({ timeout: 180_000 });
+  await poe2Nav(page, 'Tree').click();
+  await expect(view.getByRole('img', { name: 'Passive skill tree' })).toBeVisible({ timeout: 60_000 });
+  await view.getByRole('button', { name: /^Power/ }).click();
+  const report = view.getByRole('region', { name: 'Power report' });
+  await report.getByRole('combobox', { name: 'Power report depth' }).selectOption('5');
+  // Offence/Defence, the first stat, has no report of its own (PowerReportListControl.lua:47-51)
+  await expect(report.getByRole('combobox', { name: 'Power stat' })).toHaveValue('');
+  await report.getByRole('combobox', { name: 'Power stat' }).selectOption({ label: 'Energy Shield' });
+  await report.getByRole('button', { name: 'Start' }).click();
+  const rows = report.getByRole('table', { name: 'Node power' }).getByRole('row');
+  await expect.poll(async () => rows.count(), { timeout: 120_000 }).toBeGreaterThan(1);
+  await expect(rows.nth(1).getByRole('cell').nth(2)).toHaveText(/^\d/);
+  await expect.poll(async () => (await lastFrame(page))?.heat ?? 0).toBeGreaterThan(0);
+  // switching the heat map off stops drawing it
+  await page.keyboard.press('p');
+  await expect.poll(async () => (await lastFrame(page))?.heat).toBeUndefined();
   expect(errors).toEqual([]);
 });

@@ -427,6 +427,11 @@ export class GlTree2Renderer implements Tree2Renderer {
 
 const css = (r: number, g: number, b: number, a: number) => `rgba(${Math.round(r * 255)},${Math.round(g * 255)},${Math.round(b * 255)},${a})`;
 
+// the largest drawn-tree layer the Canvas 2D renderer keeps, in device pixels (about 32 MB)
+const LAYER_PIXELS = 8_000_000;
+// the most tinted sprite copies it keeps
+const TINTED_MAX = 8192;
+
 // the same scene through Canvas 2D, where WebGL2 is missing
 export class CanvasTree2Renderer implements Tree2Renderer {
   readonly kind = 'canvas';
@@ -438,6 +443,10 @@ export class CanvasTree2Renderer implements Tree2Renderer {
   private sheets: (HTMLImageElement | undefined)[] = [];
   private ready: boolean[] = [];
   private tinted = new Map<string, HTMLCanvasElement>();
+  // the drawn tree at one scale, which a pan only moves; dropped when the scene or the scale changes
+  private layer?: { canvas: HTMLCanvasElement; k: number; x: number; y: number };
+  private bounds?: [number, number, number, number];
+  private spare?: HTMLCanvasElement;
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -501,6 +510,8 @@ export class CanvasTree2Renderer implements Tree2Renderer {
     const key = `${sheet}:${sx},${sy},${sw},${sh}:${r},${g},${b}:${inner}`;
     let c = this.tinted.get(key);
     if (!c) {
+      // a heat map run tints every node anew each time its powers arrive
+      if (this.tinted.size >= TINTED_MAX) this.tinted.clear();
       c = document.createElement('canvas');
       [c.width, c.height] = [Math.max(1, sw), Math.max(1, sh)];
       const t = c.getContext('2d')!;
@@ -521,8 +532,7 @@ export class CanvasTree2Renderer implements Tree2Renderer {
     return [c, 0, 0];
   }
 
-  private strokes(from: number, to: number, s: number) {
-    const { ctx } = this;
+  private strokes(ctx: CanvasRenderingContext2D, from: number, to: number, s: number) {
     const st = this.scene.strokes;
     for (let i = from; i < to; i++) {
       const o = i * STROKE2_FLOATS;
@@ -539,8 +549,8 @@ export class CanvasTree2Renderer implements Tree2Renderer {
     }
   }
 
-  private discs(s: number) {
-    const { ctx, scene } = this;
+  private discs(ctx: CanvasRenderingContext2D, s: number) {
+    const { scene } = this;
     const d = scene.discs;
     for (let i = 0; i < scene.counts.discs; i++) {
       const o = i * DISC_FLOATS;
@@ -557,9 +567,8 @@ export class CanvasTree2Renderer implements Tree2Renderer {
   }
 
   // T is the tree-to-device scale k and offset (tx, ty); an image wholly off the canvas is skipped
-  private sprites(buf: Float32Array, count: number, k: number, tx: number, ty: number) {
-    const { ctx, canvas } = this;
-    const [W, H] = [canvas.width, canvas.height];
+  private sprites(ctx: CanvasRenderingContext2D, buf: Float32Array, count: number, k: number, tx: number, ty: number) {
+    const [W, H] = [ctx.canvas.width, ctx.canvas.height];
     for (let i = 0; i < count; i++) {
       const o = i * SPRITE2_FLOATS;
       const [a, b, c, d] = [k * buf[o + 2], k * buf[o + 3], k * buf[o + 4], k * buf[o + 5]];
@@ -600,6 +609,59 @@ export class CanvasTree2Renderer implements Tree2Renderer {
     ctx.setTransform(k, 0, 0, k, tx, ty);
   }
 
+  // the scene's extent in tree units: every quad's corners, every stroke and every disc
+  private extent(): [number, number, number, number] {
+    const { scene } = this;
+    let [x0, y0, x1, y1] = [Infinity, Infinity, -Infinity, -Infinity];
+    const add = (x: number, y: number, r = 0) => {
+      x0 = Math.min(x0, x - r);
+      y0 = Math.min(y0, y - r);
+      x1 = Math.max(x1, x + r);
+      y1 = Math.max(y1, y + r);
+    };
+    for (const layer of ['under', 'lines', 'over'] as const) {
+      const buf = scene[layer];
+      for (let i = 0; i < scene.counts[layer]; i++) {
+        const o = i * SPRITE2_FLOATS;
+        const [x, y, ux, uy, vx, vy] = [buf[o], buf[o + 1], buf[o + 2], buf[o + 3], buf[o + 4], buf[o + 5]];
+        add(x, y);
+        add(x + ux, y + uy);
+        add(x + vx, y + vy);
+        add(x + ux + vx, y + uy + vy);
+      }
+    }
+    const st = scene.strokes;
+    for (let i = 0; i < scene.counts.strokes; i++) {
+      const o = i * STROKE2_FLOATS;
+      const w = st[o + 6];
+      if (st[o + 5] < 0.5) {
+        add(st[o], st[o + 1], w);
+        add(st[o + 2], st[o + 3], w);
+      } else add(st[o], st[o + 1], st[o + 2] + w);
+    }
+    const d = scene.discs;
+    for (let i = 0; i < scene.counts.discs; i++) add(d[i * DISC_FLOATS], d[i * DISC_FLOATS + 1], d[i * DISC_FLOATS + 2]);
+    return [x0, y0, x1, y1];
+  }
+
+  // the scene's layers at scale k and offset (tx, ty), in device pixels
+  private paint(ctx: CanvasRenderingContext2D, s: number, k: number, tx: number, ty: number) {
+    const { scene } = this;
+    const { counts } = scene;
+    ctx.setTransform(k, 0, 0, k, tx, ty);
+    if (scene.art) {
+      this.sprites(ctx, scene.under, counts.under, k, tx, ty);
+      this.sprites(ctx, scene.lines, counts.lines, k, tx, ty);
+      this.strokes(ctx, 0, counts.connectorStrokes, s);
+      this.discs(ctx, s);
+      this.sprites(ctx, scene.over, counts.over, k, tx, ty);
+      this.strokes(ctx, counts.connectorStrokes, counts.strokes, s);
+    } else {
+      this.strokes(ctx, 0, counts.strokes, s);
+      this.discs(ctx, s);
+    }
+  }
+
   private draw() {
     this.frame = 0;
     if (!this.state) return;
@@ -611,24 +673,38 @@ export class CanvasTree2Renderer implements Tree2Renderer {
     if (this.dirty) {
       this.dirty = false;
       fillScene2(scene, this.state, this.sheetReady);
+      this.spare = this.layer?.canvas ?? this.spare;
+      this.layer = undefined;
+      this.bounds = undefined;
     }
     const s = scaleOf(scene, view);
     ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
     ctx.fillStyle = '#080c11';
     ctx.fillRect(0, 0, view.width, view.height);
     const [k, tx, ty] = [view.dpr * s, view.dpr * (view.zoomX + view.width / 2), view.dpr * (view.zoomY + view.height / 2)];
-    ctx.setTransform(k, 0, 0, k, tx, ty);
-    const { counts } = scene;
-    if (scene.art) {
-      this.sprites(scene.under, counts.under, k, tx, ty);
-      this.sprites(scene.lines, counts.lines, k, tx, ty);
-      this.strokes(0, counts.connectorStrokes, s);
-      this.discs(s);
-      this.sprites(scene.over, counts.over, k, tx, ty);
-      this.strokes(counts.connectorStrokes, counts.strokes, s);
+    this.bounds ??= this.extent();
+    const [x0, y0, x1, y1] = this.bounds;
+    const [lw, lh] = [Math.ceil((x1 - x0) * k) + 2, Math.ceil((y1 - y0) * k) + 2];
+    // a tree that fits a layer draws once per scene and scale, and a pan moves the layer
+    // a test turns the layer off to compare it with the scene drawn straight to the canvas
+    const layered = (globalThis as { __tree2Probe?: { layer?: boolean } }).__tree2Probe?.layer !== false;
+    if (layered && lw > 0 && lh > 0 && lw * lh <= LAYER_PIXELS) {
+      if (this.layer?.k !== k) {
+        const c = this.layer?.canvas ?? this.spare ?? document.createElement('canvas');
+        this.spare = undefined;
+        if (c.width !== lw || c.height !== lh) [c.width, c.height] = [lw, lh];
+        const lc = c.getContext('2d')!;
+        lc.setTransform(1, 0, 0, 1, 0, 0);
+        lc.clearRect(0, 0, lw, lh);
+        this.paint(lc, s, k, 1 - x0 * k, 1 - y0 * k);
+        this.layer = { canvas: c, k, x: x0 * k - 1, y: y0 * k - 1 };
+      }
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.drawImage(this.layer.canvas, Math.round(tx + this.layer.x), Math.round(ty + this.layer.y));
     } else {
-      this.strokes(0, counts.strokes, s);
-      this.discs(s);
+      this.spare = this.layer?.canvas ?? this.spare;
+      this.layer = undefined;
+      this.paint(ctx, s, k, tx, ty);
     }
     this.afterDraw(performance.now() - t0);
   }

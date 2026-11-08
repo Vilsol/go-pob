@@ -49,6 +49,10 @@ const mount = (results: number[]) => {
   const onhover = vi.fn((...[id]: [number, number]) => Promise.resolve({ path: [id, 3], depends: [] as number[] }));
   const onunhover = vi.fn();
   const onconnect = vi.fn(() => Promise.resolve(1));
+  // PassiveTreeView.lua:321-350: 4 starts a trace along its path, 5 extends it, anything else is out of reach
+  const ontrace = vi.fn((trace: number[], id: number) =>
+    Promise.resolve(id === 4 && !trace.length ? { trace: [3, 4], hover: true } : id === 5 ? { trace: [...trace, 5], hover: true } : { trace, hover: false })
+  );
   const view = render(SkillTree2, {
     data: tree,
     spec: {
@@ -63,6 +67,7 @@ const mount = (results: number[]) => {
     onhover,
     onunhover,
     onconnect,
+    ontrace,
     compared: new Set([1, 2])
   });
   const canvas = view.container.querySelector('canvas')!;
@@ -73,6 +78,7 @@ const mount = (results: number[]) => {
     onhover,
     onunhover,
     onconnect,
+    ontrace,
     component: view.component as unknown as { zoom: (how: 'in' | 'out' | 'fit') => void; project: (id: number) => { x: number; y: number } | undefined }
   };
 };
@@ -84,19 +90,38 @@ const press = async (canvas: HTMLCanvasElement, p: { x: number; y: number }) => 
 };
 
 describe('the PoE2 tree view', () => {
-  it('hovers a node: the tooltip shows the spec text, the hover path reaches the renderer', async () => {
+  it('hovers a node: the host hears of it, the hover path reaches the renderer', async () => {
     errors.length = 0;
     const { canvas, onhover } = mount([]);
     await vi.waitFor(() => expect(views.at(-1)?.width).toBe(W));
     await fireEvent.pointerMove(canvas, { clientX: at(4).x, clientY: at(4).y });
     expect(onhover).toHaveBeenCalledWith(4, 0);
-    const tip = await screen.findByRole('tooltip', { name: 'Node tooltip' });
-    expect(tip.textContent).toContain('Replaced Four');
-    expect(tip.textContent).toContain('20% increased Life');
+    // the hosting page draws the node's tooltip
+    expect(screen.queryByRole('tooltip')).toBeNull();
     await vi.waitFor(() => expect([...(states.at(-1)?.hoverPath ?? [])]).toEqual([4, 3]));
     expect(states.at(-1)?.hovered).toBe(4);
     expect([...states.at(-1)!.alloc]).toEqual([1, 2, 3]);
     expect(errors).toEqual([]);
+  });
+
+  it('traces a path while Shift is held, and a click hands the trace over (PassiveTreeView.lua:276-355, 546)', async () => {
+    const { canvas, onclick, onhover, onunhover, ontrace } = mount([1]);
+    await vi.waitFor(() => expect(views.at(-1)?.width).toBe(W));
+    await fireEvent.pointerMove(canvas, { clientX: at(4).x, clientY: at(4).y });
+    await fireEvent.keyDown(window, { key: 'Shift' });
+    expect(ontrace).toHaveBeenLastCalledWith([], 4);
+    await vi.waitFor(() => expect([...(states.at(-1)?.hoverPath ?? [])]).toEqual([3, 4]));
+    expect(onhover).toHaveBeenLastCalledWith(4, 0, [3, 4]);
+    await fireEvent.pointerMove(canvas, { clientX: at(2).x, clientY: at(2).y });
+    await vi.waitFor(() => expect(onunhover).toHaveBeenCalled());
+    expect(states.at(-1)?.hovered).toBeUndefined();
+    expect([...(states.at(-1)?.hoverPath ?? [])]).toEqual([3, 4]);
+    await press(canvas, at(5));
+    await vi.waitFor(() => expect(onclick).toHaveBeenCalled());
+    expect(onclick.mock.calls[0]).toEqual([5, false, 0, false, 0, [3, 4, 5]]);
+    await fireEvent.keyUp(window, { key: 'Shift' });
+    await vi.waitFor(() => expect(onhover).toHaveBeenLastCalledWith(5, 0));
+    expect([...(states.at(-1)?.hoverPath ?? [])]).toEqual([5, 3]);
   });
 
   it('clicks a node, and asks for the attribute when the click says so', async () => {
@@ -183,12 +208,10 @@ describe('the PoE2 tree view', () => {
     expect(onclick.mock.calls).toEqual([[5, false, 0, false, 0]]);
   });
 
-  it("reports leaving a node for the empty canvas, shows the node's note, and hands the compared spec to the renderer", async () => {
+  it('reports leaving a node for the empty canvas, and hands the compared spec to the renderer', async () => {
     const { canvas, onunhover } = mount([]);
     await vi.waitFor(() => expect(views.at(-1)?.width).toBe(W));
     await fireEvent.pointerMove(canvas, { clientX: at(4).x, clientY: at(4).y });
-    // PassiveTreeView.lua:2086-2093
-    expect((await screen.findByRole('tooltip', { name: 'Node tooltip' })).textContent).toContain('Note: take it early');
     expect([...(states.at(-1)?.compared ?? [])]).toEqual([1, 2]);
     await fireEvent.pointerMove(canvas, { clientX: 5, clientY: 5 });
     expect(onunhover).toHaveBeenCalledTimes(1);

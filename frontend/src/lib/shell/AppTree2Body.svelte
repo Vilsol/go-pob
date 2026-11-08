@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { poe2Build, poe2Edited, type Poe2View } from '$lib/global.js';
+  import { nodePowerTheme, poe2Build, poe2Edited, type Poe2View } from '$lib/global.js';
   import { get } from 'svelte/store';
   import Textarea from '$lib/design/Textarea.svelte';
   import type { Poe2Calc } from '$lib/go/sync_worker2';
@@ -16,6 +16,12 @@
   import DialogActions from '$lib/design/DialogActions.svelte';
   import EmptyState from '$lib/design/EmptyState.svelte';
   import { logError } from '$lib/utils';
+  import PobText from '$lib/design/PobText.svelte';
+  import type { Poe2TreeCalc } from '$lib/go/engine_poe2_tree_calc.svelte';
+  import PowerReport from '$lib/design/PowerReport.svelte';
+  import { showPowerRows, type PowerFilter, type PowerSort, type ShownPowerRow } from '$lib/design/tree';
+  import { displayStats2 } from '$lib/display/stats2';
+  import { formatNumSep, luaFormat } from '$lib/display/format_stat';
 
   // the PoE2 worker hands back a Poe2Calc; a view without its fields renders the stats it has
   const view = $derived($poe2Build as (Partial<Poe2Calc> & Poe2View) | undefined);
@@ -25,9 +31,15 @@
   let { make }: { make: () => TreeModel } = $props();
   // made while the page initialises, as it follows the build for as long as the page lives
   const model: TreeModel | undefined = make();
+  // stat differences, pathing lines, Shift tracing, socket jewels and node power
+  const calc = (model as { calc?: Poe2TreeCalc } | undefined)?.calc;
 
   let treeData = $state.raw<Tree2 | undefined>();
-  let tree2 = $state<{ zoom: (how: 'in' | 'out' | 'fit') => void }>();
+  let tree2 = $state<{
+    zoom: (how: 'in' | 'out' | 'fit') => void;
+    project: (id: number) => { x: number; y: number } | undefined;
+    focus: (id: number) => void;
+  }>();
   // TreeTab.lua:121-140, 444, 581-586 (PoB-PoE2): the compared tree, 0-based, -1 for none, and its allocated nodes
   let compareSpec = $state(-1);
   let compared = $state.raw<Set<number>>();
@@ -50,14 +62,29 @@
     .then((d) => (treeData = d))
     .catch(fail);
 
+  const byId = $derived(new Map((treeData?.nodes ?? []).map((n) => [n.id, n])));
+  const allocSet = $derived(new Set(view?.tree?.alloc ?? []));
+  // PassiveTreeView.lua:565, 1704 (PoB-PoE2)
+  const isAllocSocket = (id: number) => {
+    const n = byId.get(id);
+    return allocSet.has(id) && (n?.type === 'Socket' || !!n?.containJewelSocket);
+  };
+
   // PassiveTreeView.lua:425-594, TreeTab.lua:355-364, 851-876 (PoB-PoE2)
-  const treeClick = async (id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number) =>
-    (
+  const treeClick = async (id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number, trace?: number[]) => {
+    // PassiveTreeView.lua:565-572 (PoB-PoE2): right-clicking an allocated socket opens the Items page on its slot
+    if (right && calc && isAllocSocket(id)) {
+      calc.openSocket(id);
+      return undefined;
+    }
+    return (
       await poe2Run(
-        (w) => w.TreeClick(id, right, hotkey, confirmClassChange, allocMode),
+        (w) => w.TreeClick(id, right, hotkey, confirmClassChange, allocMode, trace),
         (r) => r.calc
       )
     )?.result;
+  };
+  const treeTrace = async (trace: number[], id: number) => (await poe2Worker()).TreeTraceNode(trace, id);
   const treeConnect = async (id: number, hotkey: number, allocMode: number) =>
     (
       await poe2Run(
@@ -89,7 +116,6 @@
 
   // the passive tree's nodes as the shared page lists and searches them, with the spec's switched text
   const KIND: Record<string, TreeNodeFx['k']> = { Notable: 'n', Keystone: 'k', Socket: 'j', Mastery: 'm', ClassStart: 'c', AscendClassStart: 'c' };
-  const byId = $derived(new Map((treeData?.nodes ?? []).map((n) => [n.id, n])));
   const alloc = $derived(Object.fromEntries((view?.tree?.alloc ?? []).map((id) => [id, true])) as Record<number, boolean>);
   const nodes = $derived(
     (treeData?.nodes ?? [])
@@ -108,7 +134,6 @@
       })
   );
   // PassiveTreeView.lua:858-882, 1533-1535 (PoB-PoE2): a node the tree hides is never a match
-  const allocSet = $derived(new Set(view?.tree?.alloc ?? []));
   const search = (q: string, list: TreeNodeFx[]) =>
     searchResults(
       q,
@@ -150,11 +175,58 @@
   // the canvas reports the node under the pointer, so the page's keys (Ctrl+C, F1) act on it
   let hoveredFx: TreeNodeFx | undefined;
   const fxById = $derived(new Map(nodes.map((n) => [n.id, n])));
-  const hover = (api: CanvasApi, id: number | undefined) => {
+  // PassiveTreeView.lua:1967-2053 (PoB-PoE2): the tooltip's stat differences and pathing lines; trace while tracing
+  const hover = (api: CanvasApi, id: number | undefined, trace?: number[]) => {
     if (hoveredFx) api.leave(hoveredFx);
-    hoveredFx = id === undefined ? undefined : fxById.get(id);
+    hoveredFx = id === undefined || !nodeShown2({ alloc: allocSet, hovered: id }, byId.get(id)) ? undefined : fxById.get(id);
     if (hoveredFx) api.enter(hoveredFx);
+    calc?.hoverNode(hoveredFx?.id ?? null, trace);
   };
+  const diff = $derived(calc?.diff && !isAllocSocket(calc.diff.node) ? calc.diff : undefined);
+  const tipInfo = $derived(calc?.tip);
+
+  // TreeTab.lua:197-283, 932-1048, PowerReportListControl.lua (PoB-PoE2): the heat map's controls and the power report
+  let powerOpen = $state(false);
+  let powerFilter = $state<PowerFilter>('unallocated');
+  let powerSort = $state<PowerSort>('power');
+  let powerMasteries = $state(true);
+  let depthChoice = $state(0);
+  let powerCustom = $state('0');
+  $effect(() => {
+    const depth = depthChoice === -1 ? Number.parseInt(powerCustom, 10) || 0 : depthChoice;
+    calc?.setPowerDepth(depth);
+  });
+  $effect(() => {
+    if (powerOpen) void calc?.readPowerStats().catch(fail);
+  });
+  const setPower = (on: boolean) => {
+    if (on)
+      void calc
+        ?.readPowerStats()
+        .then(() => calc.setPowerOn(true))
+        .catch(fail);
+    else calc?.setPowerOn(false);
+    // TreeTab.lua:202-204
+    if (!on) powerOpen = false;
+  };
+  const powerLabel = $derived(calc?.powerStats.find((st) => st.Stat === calc.powerStat)?.Label ?? '');
+  const shownPower = $derived(
+    calc?.powerRows
+      ? showPowerRows(
+          calc.powerRows,
+          displayStats2.find((d) => d.stat === calc.powerStat),
+          powerFilter,
+          powerMasteries,
+          (f, v) => formatNumSep(luaFormat(f, v)),
+          powerSort
+        )
+      : undefined
+  );
+  const power = $derived(
+    calc?.powerOn
+      ? { nodes: calc.power?.nodes ?? new Map(), max: calc.power?.max ?? [0, 0, 0, 0, 0], single: calc.powerStat !== '', theme: $nodePowerTheme }
+      : undefined
+  );
   // PassiveTreeView.lua:556-564, Main.lua:1767-1823 (PoB-PoE2), without the BuildPlanner markup buttons
   let note = $state<{ node: TreeNodeFx; text: string }>();
   const noteKey = (e: MouseEvent) => {
@@ -219,7 +291,75 @@
         onpick={(n: TreeNodeFx) => void pick(n).catch(logError)}
         onresettree={() => m.reset()}
         {compareSpec}
-        oncompare={(i: number) => (compareSpec = i)}>
+        oncompare={(i: number) => (compareSpec = i)}
+        project={(id: number) => tree2?.project(id)}
+        {diff}
+        nodeAction={() => ''}
+        nodePower={calc?.powerOn ?? false}
+        onnodepower={(on: boolean) => {
+          setPower(on);
+          if (on) powerOpen = true;
+        }}
+        nodePowerBar={false}
+        onpowerreport={() => (powerOpen = !powerOpen)}
+        detailsOpen={powerOpen}>
+        {#snippet details()}
+          {#if powerOpen && calc}
+            {@const c = calc}
+            <PowerReport
+              stats={c.powerStats}
+              bind:stat={() => c.powerStat, (v: string) => c.setPowerStat(v)}
+              bind:depth={depthChoice}
+              bind:custom={powerCustom}
+              bind:filter={powerFilter}
+              bind:masteries={powerMasteries}
+              bind:sort={powerSort}
+              statLabel={powerLabel}
+              heat={c.powerOn}
+              started={c.powerOn}
+              rows={shownPower}
+              progress={c.powerProgress && c.powerProgress.total ? c.powerProgress.done / c.powerProgress.total : 0}
+              onheat={setPower}
+              onstart={() => setPower(true)}
+              onstop={() => setPower(false)}
+              onclose={() => (powerOpen = false)}
+              onhover={() => {}}
+              onpick={(r: ShownPowerRow) => tree2?.focus(r.ID)} />
+          {/if}
+        {/snippet}
+        {#snippet nodeTipExtra(n: TreeNodeFx)}
+          {@const t = tipInfo?.node === n.id ? tipInfo : undefined}
+          {#if byId.get(n.id)?.ascendancy}<p class="m-0 text-text-2">{byId.get(n.id)?.ascendancy}</p>{/if}
+          {#if t?.jewel}
+            <!-- PassiveTreeView.lua:1704-1715 (PoB-PoE2) -->
+            <div class="flex flex-col gap-0.5 border-t border-line pt-2" aria-label="Socketed jewel">
+              {#each t.jewel.item.name as line, i (i)}<span class="font-semibold"><PobText text={line} /></span>{/each}
+              {#each t.jewel.item.lines as group, g (g)}
+                <div class={['flex flex-col gap-0.5', g > 0 && 'border-t border-line pt-1']}>
+                  {#each group as line, i (i)}<span class="whitespace-pre-line"><PobText text={line} /></span>{/each}
+                </div>
+              {/each}
+            </div>
+            {#if t.distanceToStart > 0}<p class="m-0">Distance to start: {t.distanceToStart}</p>{/if}
+          {/if}
+        {/snippet}
+        {#snippet nodeTipTail(n: TreeNodeFx)}
+          {@const t = tipInfo?.node === n.id ? tipInfo : undefined}
+          <div class="flex flex-col gap-0.5 border-t border-line pt-2 text-12" aria-label="Node tips">
+            {#if isAllocSocket(n.id)}
+              <!-- PassiveTreeView.lua:1719-1726 (PoB-PoE2) -->
+              {#if t?.jewel?.enabled}<p class="m-0 text-text-2">
+                  Tip: Right click this socket to go to the items page and choose the jewel for this socket.
+                </p>{/if}
+            {:else}
+              <!-- PassiveTreeView.lua:2011-2057 (PoB-PoE2), without the gold costs -->
+              {#each t?.pathLines ?? [] as line, i (i)}<p class={['m-0', line.startsWith('Tip:') ? 'text-text-2' : 'text-text']}>{line}</p>{/each}
+              <!-- PassiveTreeView.lua:2085-2093 (PoB-PoE2) -->
+              <p class="m-0 text-text-2">Shift + Right-Click to add a build note (PoE2 .build export)</p>
+              {#if view?.tree?.notes?.[n.id]}<p class="m-0 whitespace-pre-line text-text" aria-label="Node note">Note: {view.tree.notes[n.id]}</p>{/if}
+            {/if}
+          </div>
+        {/snippet}
         {#snippet points()}
           {#if progress}
             <!-- Build.lua:1087-1097 (PoB-PoE2) -->
@@ -244,16 +384,18 @@
                 {busy}
                 onclick={treeClick}
                 onattribute={treeAttribute}
-                onhover={(id: number, allocMode: number) => {
-                  hover(api, id);
+                onhover={(id: number, allocMode: number, trace?: number[]) => {
+                  hover(api, id, trace);
                   return treeHover(id, allocMode);
                 }}
+                ontrace={treeTrace}
                 onunhover={() => hover(api, undefined)}
                 onconnect={treeConnect}
                 onundo={() => treeUndo(false)}
                 onredo={() => treeUndo(true)}
                 matches={api.matches}
-                {compared} />
+                {compared}
+                {power} />
             {:else}
               <EmptyState busy text="Loading the passive tree…" />
             {/if}

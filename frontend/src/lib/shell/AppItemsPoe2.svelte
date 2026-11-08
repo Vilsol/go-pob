@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
+  import { tick, untrack } from 'svelte';
+  import { page as appPage } from '$app/state';
   import ItemsPage from '$lib/design/ItemsPage.svelte';
   import ItemDB from '$lib/design/ItemDB.svelte';
   import { defaultItemDBFilter, type ItemDBFilterInput, type ItemDBKind, type ItemDBLists, type ItemDBRowPlain } from '$lib/design/item_db';
@@ -439,6 +440,20 @@
     );
   });
   let pageView = $state<'equipped' | 'stash' | 'shared' | 'browse'>('equipped');
+
+  // PassiveTreeView.lua:565-572 (PoB-PoE2): the tree's right-click on an allocated socket drops its slot's list open
+  let socketAsked = false;
+  $effect(() => {
+    const node = appPage.url.searchParams.get('socket');
+    if (!page || !node || socketAsked) return;
+    socketAsked = true;
+    pageView = 'equipped';
+    void tick().then(() => {
+      const select = document.querySelector<HTMLElement>(`[data-socket-node="${CSS.escape(node)}"] [role="combobox"]`);
+      select?.focus();
+      if (select?.getAttribute('aria-expanded') === 'false') select.click();
+    });
+  });
 </script>
 
 {#if page}

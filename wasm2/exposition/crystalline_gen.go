@@ -3395,8 +3395,8 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 
 					return crystallineOk(bool(r0))
 				case 13:
-					if len(args) != 5 {
-						return crystallineFail("ClickNode: expected 5 arguments, got " + strconv.Itoa(len(args)))
+					if len(args) != 6 {
+						return crystallineFail("ClickNode: expected 6 arguments, got " + strconv.Itoa(len(args)))
 					}
 
 					a0, err := crystallineToInt(args[0])
@@ -3424,7 +3424,12 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 						return crystallineFail(err.Error())
 					}
 
-					r0, r1 := v.ClickNode(a0, a1, a2, a3, a4)
+					a5, err := crystallineToSliceOfInt(args[5])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0, r1 := v.ClickNode(a0, a1, a2, a3, a4, a5)
 
 					if r1 != nil {
 						return crystallineErr(r1)

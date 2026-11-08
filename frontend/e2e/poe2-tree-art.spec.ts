@@ -192,3 +192,50 @@ test('the PoE2 tree zooms with PageUp and PageDown and draws a compared tree', a
   expect((await lastFrame(page))!.compared).toBe((await lastFrame(page))!.alloc);
   expect(errors).toEqual([]);
 });
+
+// the Canvas 2D renderer draws a tree that fits once into a layer and pans by moving it; the layer matches the tree drawn
+// straight to the canvas
+test('the PoE2 Canvas 2D tree draws the same through its layer as straight to the canvas', async ({ page }) => {
+  await open(page, 'canvas', []);
+  const shot = async () => (await page.getByRole('img', { name: 'Passive skill tree' }).screenshot()).toString('base64');
+  const redraw = async () => {
+    for (const key of ['PageUp', 'PageDown']) {
+      const n = await page.evaluate(() => (globalThis as unknown as Win).__tree2Probe.frames.length);
+      await page.keyboard.press(key);
+      await expect.poll(async () => page.evaluate(() => (globalThis as unknown as Win).__tree2Probe.frames.length)).toBeGreaterThan(n);
+    }
+    await page.waitForTimeout(300);
+  };
+  await page.mouse.move(5, 5);
+  await redraw();
+  const layered = await shot();
+  await page.evaluate(() => ((globalThis as unknown as { __tree2Probe: { layer?: boolean } }).__tree2Probe.layer = false));
+  await redraw();
+  const direct = await shot();
+  const diff = await page.evaluate(
+    async ({ a, b }) => {
+      const pixels = async (b64: string) => {
+        const img = new Image();
+        img.src = `data:image/png;base64,${b64}`;
+        await img.decode();
+        const c = document.createElement('canvas');
+        [c.width, c.height] = [img.naturalWidth, img.naturalHeight];
+        const ctx = c.getContext('2d')!;
+        ctx.drawImage(img, 0, 0);
+        return ctx.getImageData(0, 0, c.width, c.height).data;
+      };
+      const [x, y] = await Promise.all([pixels(a), pixels(b)]);
+      let sum = 0;
+      let lit = 0;
+      for (let i = 0; i < x.length; i += 4) {
+        for (let k = 0; k < 3; k++) sum += Math.abs(x[i + k] - y[i + k]);
+        if (y[i] + y[i + 1] + y[i + 2] > 60) lit++;
+      }
+      return { mean: sum / ((x.length / 4) * 3), lit: lit / (x.length / 4) };
+    },
+    { a: layered, b: direct }
+  );
+  // the tree covers the canvas, and the two differ by little more than the layer's rounding to whole pixels
+  expect(diff.lit).toBeGreaterThan(0.05);
+  expect(diff.mean).toBeLessThan(3);
+});

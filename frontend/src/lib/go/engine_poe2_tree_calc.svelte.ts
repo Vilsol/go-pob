@@ -1,5 +1,6 @@
 import { untrack } from 'svelte';
 import { goto } from '$app/navigation';
+import { base } from '$app/paths';
 import { poe2Build } from '$lib/global';
 import type { StatCompareSection } from '$lib/skill_tree/stat_compare';
 import { poe2Error, poe2Worker } from './engine_poe2.svelte';
@@ -113,9 +114,15 @@ export class Poe2TreeCalc {
     return item ? { item, slot: slot.name, enabled: slot.choices.length > 0 } : undefined;
   }
 
-  // PassiveTreeView.lua:565-572: right-clicking an allocated socket opens the Items page on its slot
+  // PassiveTreeView.lua:565-572: right-clicking an allocated socket opens the Items page on its slot, when the slot
+  // lists a jewel to choose (ItemSlotControl.lua:32-34)
   openSocket(id: number) {
-    void goto(`/items?socket=${id}`);
+    void poe2Worker()
+      .then((w) => w.ItemsPage())
+      .then((page) => {
+        if (page.slots.find((s) => s.nodeId === id)?.choices.length) return goto(`${base}/items?socket=${id}`);
+      })
+      .catch(fail);
   }
 
   // TreeTab.lua:198-205

@@ -65,11 +65,12 @@ func (s *PassiveSpec) processAttributeHotkeys(node *SpecNode, hotkey int, switch
 	}
 }
 
-// LeftClickNode is a left click on a node, without trace mode. The cross-class "Connect Path" choice
-// (ConnectToClass) is not ported; with points spent off the target class, only its reset is offered.
+// LeftClickNode is a left click on a node; tracePath is the Shift-traced path, nil when not tracing. With points
+// spent off the target class and the tree not connected to it, it returns ClickConfirmClassChange, and
+// confirmClassChange is the popup's Continue.
 //
 //pob2:block:src/Classes/PassiveTreeView.lua:425-551
-func (s *PassiveSpec) LeftClickNode(node *SpecNode, hotkey int, confirmClassChange bool) (ClickResult, error) {
+func (s *PassiveSpec) LeftClickNode(node *SpecNode, hotkey int, confirmClassChange bool, tracePath []*SpecNode) (ClickResult, error) {
 	hotkeyPressed := hotkey >= 1 && hotkey <= 3
 	if node.Alloc && !s.shouldBlockGlobalNodeDeallocation(node) {
 		if node.IsAttribute {
@@ -117,7 +118,8 @@ func (s *PassiveSpec) LeftClickNode(node *SpecNode, hotkey int, confirmClassChan
 				}
 				if targetBaseClassID >= 0 {
 					used, _, _, _, _, _ := s.CountAllocNodes()
-					if used != 0 && !confirmClassChange {
+					connected := used == 0 || s.IsClassConnected(targetBaseClassID)
+					if !connected && !confirmClassChange {
 						return ClickConfirmClassChange, nil
 					}
 					s.SelectClass(targetBaseClassID)
@@ -126,6 +128,10 @@ func (s *PassiveSpec) LeftClickNode(node *SpecNode, hotkey int, confirmClassChan
 						if err := s.AllocNode(targetNode, nil); err != nil {
 							return ClickChanged, err
 						}
+					}
+					// the popup's callback ends the click
+					if !connected {
+						return ClickChanged, nil
 					}
 					result = ClickChanged
 				}
@@ -139,9 +145,19 @@ func (s *PassiveSpec) LeftClickNode(node *SpecNode, hotkey int, confirmClassChan
 		if hotkeyPressed {
 			s.processAttributeHotkeys(node, hotkey, node.IsAttribute)
 		}
-		return ClickChanged, s.AllocNode(node, nil)
+		return ClickChanged, s.AllocNode(node, tracedPath(node, tracePath))
 	}
 	return result, nil
+}
+
+// tracedPath is the trace when it ends at node, the path a click on node allocates, else nil.
+//
+//pob2:block:src/Classes/PassiveTreeView.lua:546
+func tracedPath(node *SpecNode, tracePath []*SpecNode) []*SpecNode {
+	if len(tracePath) > 0 && tracePath[len(tracePath)-1] == node {
+		return tracePath
+	}
+	return nil
 }
 
 // AllocateAttributeNode is the attribute popup's Allocate button; its Cancel only deallocates the
@@ -154,10 +170,11 @@ func (s *PassiveSpec) AllocateAttributeNode(node *SpecNode, attributeIndex int) 
 	return s.AllocNode(node, nil)
 }
 
-// RightClickNode is a right click on a node, less the note popup and the jump to a socket's item slot.
+// RightClickNode is a right click on a node, less the note popup and the jump to a socket's item slot; tracePath
+// is the Shift-traced path, nil when not tracing.
 //
 //pob2:block:src/Classes/PassiveTreeView.lua:553-594
-func (s *PassiveSpec) RightClickNode(node *SpecNode, hotkey int) (ClickResult, error) {
+func (s *PassiveSpec) RightClickNode(node *SpecNode, hotkey int, tracePath []*SpecNode) (ClickResult, error) {
 	if node.Alloc && (node.Type == "Socket" || node.ContainJewelSocket) {
 		return ClickNothing, nil
 	}
@@ -178,5 +195,5 @@ func (s *PassiveSpec) RightClickNode(node *SpecNode, hotkey int) (ClickResult, e
 		}
 		s.SwitchAttributeNode(node.ID, attributeIndex)
 	}
-	return ClickChanged, s.AllocNode(node, nil)
+	return ClickChanged, s.AllocNode(node, tracedPath(node, tracePath))
 }

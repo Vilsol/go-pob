@@ -67,6 +67,8 @@ export type Scene2State = {
   jewels?: Map<number, { title: string; baseName: string; unique: boolean }>;
   // the compared spec's allocated nodes (PassiveTreeView.lua:722-734, 932, 1057-1067)
   compared?: Set<number>;
+  // while the heat map shows, each node's power colour (PassiveTreeView.lua:1003-1030); a node without one is black
+  heat?: Map<number, [number, number, number]>;
 };
 
 type NodeArt2 = { icon?: ArtSprite; effect?: ArtSprite; effectR?: number; overlay?: { alloc?: ArtSprite; path?: ArtSprite; unalloc?: ArtSprite } };
@@ -602,10 +604,12 @@ const fillArt2 = (scene: Scene2, s: Scene2State, w: Writer, inRadiusColour: Map<
     const alloc = s.alloc.has(n.id);
     const comparedAlloc = s.compared?.has(n.id);
     const isAlloc = alloc || !!comparedAlloc;
-    const state = isAlloc || n.id === s.hovered ? 'alloc' : onPath(n.id) ? 'path' : 'unalloc';
-    /* PassiveTreeView.lua:1057-1070 */
+    /* PassiveTreeView.lua:948 */
+    const state = s.heat || isAlloc || n.id === s.hovered ? 'alloc' : onPath(n.id) ? 'path' : 'unalloc';
+    /* PassiveTreeView.lua:1003-1070 */
     let colour: Tint = WHITE;
-    if (s.compared) colour = comparedAlloc && !alloc ? BRIGHT_GREEN : !comparedAlloc && alloc ? BRIGHT_RED : WHITE;
+    if (s.heat && !isAlloc && n.type !== 'AscendClassStart') colour = opaque(s.heat.get(n.id) ?? [0, 0, 0]);
+    else if (s.compared) colour = comparedAlloc && !alloc ? BRIGHT_GREEN : !comparedAlloc && alloc ? BRIGHT_RED : WHITE;
     let base: ArtSprite | undefined;
     let overlay: ArtSprite | undefined;
     let overlayR = size.overlay;
@@ -619,7 +623,7 @@ const fillArt2 = (scene: Scene2, s: Scene2State, w: Writer, inRadiusColour: Map<
       overlayR = size.overlay;
     } else {
       /* PassiveTreeView.lua:1074-1088 */
-      if (na.effect) {
+      if (na.effect && !s.heat) {
         const r = na.effectR ?? na.effect.width;
         const rh = na.effectR ?? na.effect.height;
         asset('under', na.effect, n.x, n.y, r, rh, isAlloc || onPath(n.id) ? WHITE : [1, 1, 1, 0.15]);
@@ -633,22 +637,23 @@ const fillArt2 = (scene: Scene2, s: Scene2State, w: Writer, inRadiusColour: Map<
     if (base) {
       let tint: Tint = colour;
       if (n.type === 'Socket') tint = s.hoverDep.has(n.id) ? [1, 0, 0, 1] : colour;
-      else if (!alloc) tint = HALF_GRAY;
+      else if (!alloc && !s.heat) tint = HALF_GRAY;
       any = asset('over', base, n.x, n.y, size.base, size.base, tint) || any;
       // PassiveTreeView.lua:1113-1115 sets white back after an unallocated node's half gray
-      if (n.type !== 'Socket' && !alloc) colour = WHITE;
+      if (n.type !== 'Socket' && !alloc && !s.heat) colour = WHITE;
     }
     /* PassiveTreeView.lua:1119-1180 */
     if (overlay) {
       const mode = nodeWillAllocateWithAllocMode(s, n) ? (s.specAllocMode ?? 0) : (s.allocMode.get(n.id) ?? 0);
       let tint: Tint = colour;
-      if (!s.compared && mode > 0 && !nodeWillChangeAllocMode(s, n.id)) tint = opaque(mode === 1 ? COLOURS.weaponSet1 : COLOURS.weaponSet2);
+      /* PassiveTreeView.lua:937 */
+      if (!s.heat && !s.compared && mode > 0 && !nodeWillChangeAllocMode(s, n.id)) tint = opaque(mode === 1 ? COLOURS.weaponSet1 : COLOURS.weaponSet2);
       if (n.type !== 'ClassStart' && n.type !== 'AscendClassStart' && s.hovered !== undefined && s.hovered !== n.id) {
         if (s.hoverDep.has(n.id) && s.hovered === UNSEEN_PATH && !s.alloc.has(UNSEEN_PATH)) tint = BRIGHT_GREEN;
         else if (s.hoverDep.has(n.id)) tint = [1, 0, 0, 1];
         else if (inRadiusColour.has(n.id)) tint = opaque(inRadiusColour.get(n.id)!);
       }
-      if (!alloc && n.type === 'AscendClassStart') tint = HALF_GRAY;
+      if (!alloc && !s.heat && n.type === 'AscendClassStart') tint = HALF_GRAY;
       any = asset('over', overlay, n.x, n.y, overlayR, overlayR, tint) || any;
     }
     if (any) drawn.add(n.id);
@@ -749,8 +754,9 @@ export const fillScene2 = (scene: Scene2, s: Scene2State, ready: (sheet: number)
       if (s.hoverDep.has(n.id)) ring = COLOURS.depends;
       else ring = inRadiusColour.get(n.id) ?? ring;
     }
-    const base = fillOf(n);
-    const k = shown ? 1 : s.hoverPath.has(n.id) ? 0.7 : 0.4;
+    const heat = s.heat && !alloc && n.type !== 'AscendClassStart' ? (s.heat.get(n.id) ?? [0, 0, 0]) : undefined;
+    const base = heat ?? fillOf(n);
+    const k = shown || heat ? 1 : s.hoverPath.has(n.id) ? 0.7 : 0.4;
     const alpha = n.ascendancy && n.ascendancy !== s.ascendClassBaseName && !alloc ? 0.55 : 1;
     if (n.type === 'ClassStart') {
       scene.discs.set([n.x, n.y, p.r, p.r * 0.12, 0, 0, 0, ...(alloc ? COLOURS.classStart : COLOURS.ringUnalloc), 1], o);
