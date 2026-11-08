@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import { deflateSync } from 'node:zlib';
 
 import { DATA_HOST, cachedAsset } from './support/data_cache';
-import { routeTreeAssets } from './support/tree_assets';
+import { routeTreeAssets, isTreeAsset } from './support/tree_assets';
 import { poe2Page, poe2Stat } from './support/poe2';
 
 test.use({ serviceWorkers: 'block' });
@@ -66,7 +66,8 @@ test('with the PoE2 flag on a PoE2 build opens in the second worker with PoB-PoE
 test('a second session opens a PoE2 build from the storage cache, with no game data fetched', async ({ page }) => {
   const first = await start(page, true);
   await expect(poe2Stat(page, 'Life')).toHaveText(POB2.Life, { timeout: 180_000 });
-  const poe2Data = (urls: string[]) => urls.filter((u) => u.startsWith(DATA_HOST) && POE2_DATA.test(u));
+  // tree art is browser-cached images, never the game data storage cache, for either game
+  const poe2Data = (urls: string[]) => urls.filter((u) => u.startsWith(DATA_HOST) && POE2_DATA.test(u) && !isTreeAsset(u));
   expect(poe2Data(first.requests), 'the first session fetched no PoE2 data, so the second proves nothing').not.toEqual([]);
 
   first.requests.length = 0;
