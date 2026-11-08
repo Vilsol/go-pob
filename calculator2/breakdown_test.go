@@ -13,3 +13,12 @@ func TestSFormatMatchesLuaJIT(t *testing.T) {
 		t.Errorf("sFormat = %q, want %q", got, want)
 	}
 }
+
+// LuaJIT's %d on the oracle's x86 truncates with cvttsd2si; Go's int64(NaN) is 0 on arm64 and wasm.
+func TestSFormatIntegerOfNonFiniteMatchesLuaJIT(t *testing.T) {
+	got := sFormat("%d|%d|%d|%d", math.NaN(), math.Inf(1), math.Inf(-1), 1e19)
+	want := "-9223372036854775808|-9223372036854775808|-9223372036854775808|-9223372036854775808"
+	if got != want {
+		t.Errorf("sFormat = %q, want %q", got, want)
+	}
+}

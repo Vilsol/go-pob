@@ -61,7 +61,7 @@ func sFormat(format string, args ...any) string {
 		}
 		switch verb {
 		case 'd', 'i':
-			out.WriteString(fmt.Sprintf(spec+"d", int64(v)))
+			out.WriteString(fmt.Sprintf(spec+"d", truncX86(v)))
 		case 'f', 'F', 'e', 'E':
 			p := prec
 			if p < 0 {
@@ -93,6 +93,15 @@ func sFormat(format string, args ...any) string {
 		}
 	}
 	return out.String()
+}
+
+// truncX86 is the oracle's x86 cvttsd2si: NaN and anything outside int64 give math.MinInt64, where Go's int64(v)
+// gives 0 on arm64 and wasm.
+func truncX86(v float64) int64 {
+	if math.IsNaN(v) || v >= math.MaxInt64 || v < math.MinInt64 {
+		return math.MinInt64
+	}
+	return int64(v)
 }
 
 // cNonFinite is how C's printf spells a non-finite number.
