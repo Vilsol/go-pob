@@ -27,9 +27,11 @@
     // spec:Undo and spec:Redo
     onundo?: () => void;
     onredo?: () => void;
+    // the hosting page's search matches; without them the tree has its own search box
+    matches?: Set<number>;
   }
 
-  let { data, spec, busy = false, onclick, onattribute, onhover, onundo, onredo }: Props = $props();
+  let { data, spec, busy = false, onclick, onattribute, onhover, onundo, onredo, matches }: Props = $props();
 
   const scene = $derived(buildScene2(data));
   let canvas = $state<HTMLCanvasElement>();
@@ -54,10 +56,11 @@
   const SEARCH_TIP = 'Uses Lua pattern matching for complex searches.\nTo search for multiple terms: (increased.fire.damage|increased.area.of.effect|etc)';
   /* PassiveTreeView.lua:859-882: the spec's nodes, with their switched or conquered text */
   const search = $derived(
-    searchResults(
-      searchStr,
-      scene.nodes.map(({ node: n }) => ({ id: n.id, type: n.type, name: spec.text[n.id]?.name ?? n.name, stats: spec.text[n.id]?.stats ?? n.stats }))
-    )
+    matches ??
+      searchResults(
+        searchStr,
+        scene.nodes.map(({ node: n }) => ({ id: n.id, type: n.type, name: spec.text[n.id]?.name ?? n.name, stats: spec.text[n.id]?.stats ?? n.stats }))
+      )
   );
   /* PassiveTreeView.lua:1186 */
   const searchR = $derived(140 / zoomOf(view) ** 0.2);
@@ -235,10 +238,12 @@
       oncontextmenu={contextMenu}></canvas>
   </div>
 
-  <!-- TreeTab.lua:183-188 (PoB-PoE2) -->
-  <div class="absolute top-2 left-2 z-sticky w-72 max-w-[calc(100%-1rem)]">
-    <SearchField label="Search passive nodes" placeholder="Search" title={SEARCH_TIP} bind:value={searchStr} />
-  </div>
+  {#if !matches}
+    <!-- TreeTab.lua:183-188 (PoB-PoE2) -->
+    <div class="absolute top-2 left-2 z-sticky w-72 max-w-[calc(100%-1rem)]">
+      <SearchField label="Search passive nodes" placeholder="Search" title={SEARCH_TIP} bind:value={searchStr} />
+    </div>
+  {/if}
 
   {#if allocMode > 0}
     <!-- PassiveTreeView.lua:2156-2176 -->

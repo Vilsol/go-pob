@@ -212,7 +212,8 @@
                   return treeHover(id, allocMode);
                 }}
                 onundo={() => treeUndo(false)}
-                onredo={() => treeUndo(true)} />
+                onredo={() => treeUndo(true)}
+                matches={api.matches} />
             {:else}
               <EmptyState busy text="Loading the passive tree…" />
             {/if}
