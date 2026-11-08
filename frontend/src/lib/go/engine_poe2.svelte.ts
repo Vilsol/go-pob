@@ -9,7 +9,7 @@ import type { calculator, exposition } from '$lib/types';
 import type { calculator2 } from '$lib/types2';
 import type { MainSkillField } from '$lib/shell/main_skill';
 import type { BuildEngine, CalcsTabView, MainGroupView } from './engine';
-import type { Poe2Calc, Poe2CalcsPage, Poe2SocketGroup, Worker2Type } from './sync_worker2';
+import type { Poe2Calc, Poe2CalcsPage, Poe2Restore, Poe2SocketGroup, Worker2Type } from './sync_worker2';
 
 // the PoE2 worker hands back a Poe2Calc; a view without its fields shows what it has
 type Calc = Partial<Poe2Calc> & Poe2View;
@@ -200,6 +200,10 @@ const readNotes2 = () => {
     }));
 };
 
+// the whole-build history: a step that moves it shows the build it restored, as an edit does
+const moveHistory = (op: (w: Remote<Worker2Type>) => Promise<Poe2Restore>) =>
+  get(poe2Build) ? poe2Run(op, (r) => r.calc).then((r) => r?.history ?? poe2Worker().then((w) => w.History())) : undefined;
+
 export const poe2Engine: BuildEngine = {
   game: 'poe2',
   build: poe2Session,
@@ -230,6 +234,12 @@ export const poe2Engine: BuildEngine = {
   },
   busy: poe2Busy,
   error: poe2Error,
+  undo: {
+    history: () => (get(poe2Build) ? poe2Worker().then((w) => w.History()) : undefined),
+    undo: () => moveHistory((w) => w.Undo()),
+    redo: () => moveHistory((w) => w.Redo()),
+    undoTo: (i) => moveHistory((w) => w.UndoTo(i))
+  },
   // ConfigTab.lua (PoB-PoE2): no option comparisons, custom modifier comparisons or mod browser yet
   config: {
     table: () => import('$lib/design/config_table2').then((m) => m.poe2ConfigTable),

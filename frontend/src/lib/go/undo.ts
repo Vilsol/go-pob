@@ -268,6 +268,7 @@ export const STEP_LABELS: Record<string, StepLabel> = {
   SetGemSkillMinionItemSet: { action: 'Changed the minion', page: 'Sidebar', kind: 'gem' },
   SetGemSkillMinionSkill: { action: 'Changed the minion skill', page: 'Sidebar', kind: 'gem' },
   SetWeaponSet: { action: 'Switched the weapon set', page: 'Items', kind: 'set' },
+  SetCharacterRune: { action: 'Changed a character rune', page: 'Items', kind: 'item' },
   NewItemSet: { action: 'Added an item set', page: 'Items', kind: 'set' },
   CopyItemSet: { action: 'Copied an item set', page: 'Items', kind: 'set' },
   RenameItemSet: { action: 'Renamed an item set', page: 'Items', kind: 'set' },
@@ -320,7 +321,7 @@ export const stepLabel = (source: string): StepLabel => STEP_LABELS[source] ?? {
 
 export const UNRECORDED = 'Unrecorded';
 
-const NOTES_SECTIONS = /<Notes>[\s\S]*?<\/Notes>|<Notes\/>|<RichNotes[\s\S]*?<\/RichNotes>|<RichNotes[^>]*\/>/g;
+const NOTES_SECTIONS = /\s*(?:<Notes>[\s\S]*?<\/Notes>|<Notes\/>|<RichNotes[\s\S]*?<\/RichNotes>|<RichNotes[^>]*\/>)/g;
 
 export const unrecordedLabel = (before: string, after: string): StepLabel => {
   const rest = (xml: string) => xml.replace(NOTES_SECTIONS, '');

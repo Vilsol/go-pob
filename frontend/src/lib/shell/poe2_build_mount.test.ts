@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { describe, expect, it, beforeAll, afterEach, vi } from 'vitest';
+import { describe, expect, it, beforeAll, afterEach, onTestFinished, vi } from 'vitest';
 import { render, fireEvent, cleanup, within } from '@testing-library/svelte';
 import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -334,6 +334,16 @@ describe('the PoE2 config and main skill writes', () => {
   }, 120_000);
 });
 
+// TreeTab.lua:355-364, SkillsTab.lua:594-599 (PoB-PoE2): the tabs' own undo binds the keys only when no whole-build
+// history does
+const withoutHistory = () => {
+  const history = poe2Engine.undo;
+  poe2Engine.undo = undefined;
+  onTestFinished(() => {
+    poe2Engine.undo = history;
+  });
+};
+
 // the values are PoB-PoE2's: AllocNode on node 44871 under spec.allocMode 1, then Undo and Redo, with
 // PassiveSpec:Save and the calculated Energy Shield after each
 describe('the PoE2 tree undo and redo', () => {
@@ -346,6 +356,7 @@ describe('the PoE2 tree undo and redo', () => {
   });
 
   it('Ctrl+Z and Ctrl+Y on the tree page restore the allocation and recalculate', async () => {
+    withoutHistory();
     poe2Build.set(await worker2Instance.Open(await fixture('sorceress_spark.xml')));
     // the keys reach the page through the tree view; the whole PoE2 tree is slow to mount under jsdom
     const { tinyTree } = await import('$lib/components/skill-tree/tree2_fixture');
@@ -897,6 +908,7 @@ describe('the PoE2 Skills and Items pages', () => {
 
   // calculator2/testdata/skills_undo_pob.jsonl: PoB-PoE2's groups after the same edits, undos and redos
   it("Ctrl+Z and Ctrl+Y on the Skills page undo and redo edits as PoB-PoE2's Skills tab does", async () => {
+    withoutHistory();
     const rows = (await readFile(resolve(process.cwd(), '../calculator2/testdata/skills_undo_pob.jsonl'), 'utf8'))
       .trim()
       .split('\n')

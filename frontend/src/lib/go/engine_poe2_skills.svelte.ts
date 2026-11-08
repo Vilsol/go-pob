@@ -5,7 +5,7 @@ import type { GemOptions, SkillSetOp } from '$lib/design/skills';
 import type { GemAttr, SkillGemFixture, SocketGroupFixture } from '$lib/design/fixtures';
 import { populateGems2, TERM_ALIASES2 } from '$lib/design/gem_search';
 import type { SkillsPageModel } from './engine';
-import { poe2Error, poe2Run, poe2Worker } from './engine_poe2.svelte';
+import { poe2Engine, poe2Error, poe2Run, poe2Worker } from './engine_poe2.svelte';
 import type { Poe2Gem, Poe2SkillGroup, Poe2SkillSets, Poe2SkillsEdit } from './sync_worker2';
 
 // SkillsTab.lua:13-42 (PoB-PoE2)
@@ -380,9 +380,9 @@ export const poe2SkillsPage = (): SkillsPageModel => {
         if (v && v.socketGroups.length > n) selected = n;
       });
     },
-    // SkillsTab.lua:594-599 (PoB-PoE2)
-    onundo: () => void send((w) => w.SkillsUndo(false)),
-    onredo: () => void send((w) => w.SkillsUndo(true)),
+    // SkillsTab.lua:594-599 (PoB-PoE2): the tab's own Ctrl+Z / Ctrl+Y, bound only when no whole-build history owns them
+    onundo: poe2Engine.undo ? undefined : () => void send((w) => w.SkillsUndo(false)),
+    onredo: poe2Engine.undo ? undefined : () => void send((w) => w.SkillsUndo(true)),
     // SkillListControl.lua:194-198 (PoB-PoE2)
     onmain: (i: number) => void send((w) => w.SetMainSocketGroup(i + 1), keep),
     // SkillListControl.lua:139-173 (PoB-PoE2)

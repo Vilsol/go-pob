@@ -4,7 +4,7 @@
   import Textarea from '$lib/design/Textarea.svelte';
   import type { Poe2Calc } from '$lib/go/sync_worker2';
   import type { TreeModel } from '$lib/go/engine';
-  import { poe2Busy, poe2Error, poe2Run, poe2Worker } from '$lib/go/engine_poe2.svelte';
+  import { poe2Busy, poe2Engine, poe2Error, poe2Run, poe2Worker } from '$lib/go/engine_poe2.svelte';
   import TreePage from '$lib/design/TreePage.svelte';
   import type { TreeFixture, TreeNodeFx } from '$lib/design/fixtures';
   import type { CanvasApi, SpecOp } from '$lib/design/tree';
@@ -94,7 +94,8 @@
     )?.result;
   const treeAttribute = (id: number, index: number, allocMode: number) => poe2Run((w) => w.TreeAllocateAttribute(id, index, allocMode));
   const treeHover = async (id: number, allocMode: number) => (await poe2Worker()).TreeHover(id, allocMode);
-  const treeUndo = (redo: boolean) => poe2Run((w) => w.TreeUndo(redo));
+  // TreeTab.lua:355-364 (PoB-PoE2): the tab's own Ctrl+Z / Ctrl+Y, bound only when no whole-build history owns them
+  const treeUndo = poe2Engine.undo ? undefined : (redo: boolean) => poe2Run((w) => w.TreeUndo(redo));
   const progress = $derived(view?.tree?.progress);
   // Build.lua:1046-1051, 1098-1101 (PoB-PoE2)
   const labSuggest = (level: number) =>
@@ -390,8 +391,8 @@
                 ontrace={treeTrace}
                 onunhover={() => hover(api, undefined)}
                 onconnect={treeConnect}
-                onundo={() => treeUndo(false)}
-                onredo={() => treeUndo(true)}
+                onundo={treeUndo && (() => treeUndo(false))}
+                onredo={treeUndo && (() => treeUndo(true))}
                 matches={api.matches}
                 {compared}
                 {power} />

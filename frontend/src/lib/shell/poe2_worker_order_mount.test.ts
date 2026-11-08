@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { describe, expect, it, beforeAll, afterEach, vi } from 'vitest';
+import { describe, expect, it, beforeAll, afterEach, onTestFinished, vi } from 'vitest';
 import { render, fireEvent, cleanup, within } from '@testing-library/svelte';
 import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -222,6 +222,13 @@ describe('the PoE2 Skills page', () => {
   }, 120_000);
 
   it('a gem edit made while an undo is on its way is not sent to the gem the undo puts in its place', async () => {
+    // SkillsTab.lua:594-599 (PoB-PoE2): the tab's own undo, which binds Ctrl+Z only when no whole-build history does
+    const { poe2Engine } = await import('$lib/go/engine_poe2.svelte');
+    const history = poe2Engine.undo;
+    poe2Engine.undo = undefined;
+    onTestFinished(() => {
+      poe2Engine.undo = history;
+    });
     poe2Build.set(await worker2.Open(await skillsEdit()));
     await worker2.EditSkills({ op: 'newGroup' });
     const gems = await worker2.GemList();

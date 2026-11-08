@@ -24,6 +24,9 @@ import { addStatCompares2 } from '../display/stat_compare2';
 import type { StatCompareSection } from '../skill_tree/stat_compare';
 import type { ConfigSetEdit } from './engine';
 import type { SpecOp } from '../design/tree';
+import { DIFF_LABELS, UNRECORDED, UndoHistory, stepLabel, unrecordedLabel, type LabelOf, type Snapshot, type UndoView } from './undo';
+import { activeSpecNodes, configChangeLabel, itemTextName, skillsChangeLabel, treeChangeLabel, type StepDelta, type TreeNodeInfo } from './step_labels';
+import { options2 } from '../display/configurations2';
 
 // only the data cache bucket; on the web it is its own IndexedDB database, since zenfs allocates inode ids per
 // instance and two instances writing the PoE1 worker's database overwrite each other's files
@@ -330,10 +333,44 @@ const fromValue = (v: ConfigValue2 | undefined): calculator2.ConfigValue => ({
   IsBoolean: typeof v === 'boolean'
 });
 
+const SPEC_SOURCES: Record<SpecOp['op'], string> = {
+  new: 'NewTreeSpec',
+  copy: 'CopyTreeSpec',
+  rename: 'RenameTreeSpec',
+  move: 'MoveTreeSpec',
+  delete: 'DeleteTreeSpec'
+};
+
+// the PoE1 history's step for each Skills page edit; a gem edit is a currentGemGroup step
+const SKILLS_SOURCES: Partial<Record<Poe2SkillsEdit['op'], string>> = {
+  newGroup: 'socketGroups',
+  deleteGroup: 'socketGroups',
+  deleteAll: 'socketGroups',
+  moveGroup: 'MoveSocketGroup',
+  label: 'socketGroupLabel',
+  paste: 'PasteSocketGroup',
+  activeSet: 'SetActiveSkillSet',
+  newSet: 'NewSkillSet',
+  copySet: 'CopySkillSet',
+  renameSet: 'RenameSkillSet',
+  deleteSet: 'DeleteSkillSet'
+};
+
+// a step of the whole-build history, and the build it shows when it moved
+export type Poe2Restore = { history: UndoView; calc?: Poe2Calc };
+
+// PassiveTree.lua node types (PoB-PoE2) ranked as nodeRank ranks PoE1's, for a step's name
+const NODE_RANK2: Record<string, number> = { Keystone: 5, Notable: 3, Mastery: 2, Socket: 1 };
+
 class PoB2Worker {
   private booted?: Promise<unknown>;
   private calc?: exposition.Calculator;
   private treeData?: Promise<Tree2>;
+  private treeNames?: Map<number, TreeNodeInfo>;
+  // the whole-build history PoE1's top bar shows; PoB-PoE2 keeps only the tree and skills tabs' own
+  private history = new UndoHistory();
+  // the calculation each kept state showed, for a step's stat changes
+  private shown = new Map<string, Poe2Calc>();
 
   boot(wasm: ArrayBuffer, engine: WasmEngine = 'go') {
     this.booted ??= useEngine(engine).then(async () => {
@@ -422,19 +459,120 @@ class PoB2Worker {
     if (!calc) throw new Error('the PoE2 build did not parse');
     this.calc?.release();
     this.calc = calc;
+    let view: Poe2Calc;
     try {
-      return await this.view();
+      view = await this.view();
     } catch (err) {
       this.calc = undefined;
+      this.history.clear();
       calc.release();
       throw err;
     }
+    this.shown.clear();
+    const saved = this.saved();
+    if (saved) {
+      this.history.reset(saved.snap);
+      this.remember(saved.xml, view);
+    } else this.history.clear();
+    return view;
+  }
+
+  private saved(): { xml: string; snap: Snapshot } | undefined {
+    const xml = this.calc?.Serialize().unwrap();
+    return xml ? { xml, snap: this.history.table.encode(xml) } : undefined;
+  }
+
+  private remember(xml: string, view: Poe2Calc) {
+    this.shown.delete(xml);
+    this.shown.set(xml, view);
+    for (const old of this.shown.keys()) {
+      if (this.shown.size <= this.history.max + 2) break;
+      this.shown.delete(old);
+    }
+  }
+
+  // an edit's recalculation, then its step in the history, named as PoE1's history names the same edit
+  private async changed(source: string, action?: string | ((view: Poe2Calc) => string)): Promise<Poe2Calc> {
+    const view = await this.view();
+    const saved = this.saved();
+    if (saved && this.history.open) {
+      const text = typeof action === 'function' ? action(view) : action;
+      this.history.record(source, (before) => this.describe(source, text, before, saved.xml, view), saved.snap, Date.now());
+      this.remember(saved.xml, view);
+    }
+    return view;
+  }
+
+  private describe(source: string, action: string | undefined, before: Snapshot, after: string, view: Poe2Calc): LabelOf {
+    const was = this.history.table.decode(before);
+    const diff = DIFF_LABELS[source];
+    const text =
+      action ??
+      (diff === 'tree'
+        ? treeChangeLabel(activeSpecNodes(was), activeSpecNodes(after), (id) => this.treeNames?.get(id))
+        : diff === 'skills'
+          ? skillsChangeLabel(was, after)
+          : undefined);
+    const label = stepLabel(source);
+    return { ...label, action: text ?? label.action, delta: this.delta(this.shown.get(was), view) };
+  }
+
+  private delta(before: Poe2Calc | undefined, after: Poe2Calc): StepDelta[] | undefined {
+    if (!before) return undefined;
+    return addStatCompares2(
+      after.skillFlags,
+      after.minionSkillFlags ?? {},
+      !!after.minion,
+      { output: before.output, minion: before.minion },
+      { output: after.output, minion: after.minion }
+    ).flatMap((s) => s.lines.map(({ label, value, better }) => ({ label, value, better, section: s.actor ?? 'Player' })));
+  }
+
+  // a change no recalculation recorded (the notes, a node's note) becomes a step of its own before the history moves
+  private recordUnrecorded(): boolean {
+    const before = this.history.current();
+    const now = this.saved();
+    if (!before || !now) return false;
+    return this.history.record(UNRECORDED, unrecordedLabel(this.history.table.decode(before), now.xml), now.snap, Date.now(), false);
+  }
+
+  private async restore(step: () => Snapshot | undefined): Promise<Poe2Restore> {
+    const snap = step();
+    if (!snap) return { history: this.history.view() };
+    const calc = exposition.ParseBuild(this.history.table.decode(snap)).unwrap();
+    if (!calc) throw new Error('undo: failed parsing a recorded state');
+    this.calc?.release();
+    this.calc = calc;
+    return { history: this.history.view(), calc: await this.view() };
+  }
+
+  History(): UndoView {
+    return this.history.view();
+  }
+
+  async Undo(): Promise<Poe2Restore> {
+    if (!this.calc || !this.history.open) return { history: this.history.view() };
+    this.recordUnrecorded();
+    return this.restore(() => this.history.undo());
+  }
+
+  async Redo(): Promise<Poe2Restore> {
+    if (!this.calc || !this.history.open || this.recordUnrecorded()) return { history: this.history.view() };
+    return this.restore(() => this.history.redo());
+  }
+
+  async UndoTo(i: number): Promise<Poe2Restore> {
+    if (!this.calc || !this.history.open || this.recordUnrecorded()) return { history: this.history.view() };
+    return this.restore(() => this.history.goTo(i));
   }
 
   /* ConfigTab.lua:308-331, 1009-1021 (PoB-PoE2) */
   async SetConfigOption(name: string, value: ConfigValue2 | undefined): Promise<Poe2Calc> {
-    this.calc?.SetConfigInput(name, fromValue(value), value === undefined || value === defaultStateOf(name, value));
-    return this.view();
+    const remove = value === undefined || value === defaultStateOf(name, value);
+    this.calc?.SetConfigInput(name, fromValue(value), remove);
+    const opt = options2[name] as (typeof options2)[string] | undefined;
+    const v = opt && { label: opt.label, type: opt.type, list: opt.list?.map((o) => ({ label: o.label, value: o.val })) };
+    return this.changed(remove ? 'SetConfigOption: remove' : 'SetConfigOption: change', configChangeLabel(name, value ?? '', remove, v));
   }
 
   /* ConfigTab.lua:152-178, ConfigSetListControl.lua:93-99 (PoB-PoE2) */
@@ -450,7 +588,7 @@ class PoB2Worker {
 
   async SetCustomModifierBlocks(blocks: { Title?: string; Enabled?: string; Text: string }[]): Promise<Poe2Calc> {
     this.calc?.SetCustomModifierBlocks(blocks.map((b) => ({ Title: b.Title ?? 'Default', Enabled: b.Enabled !== 'false', Text: b.Text })));
-    return this.view();
+    return this.changed('SetCustomModifierBlocks', `Edited custom modifiers (${blocks.length} block${blocks.length === 1 ? '' : 's'})`);
   }
 
   ParseModLines(
@@ -466,7 +604,7 @@ class PoB2Worker {
   /* ConfigTab.lua:167-170 (PoB-PoE2) */
   async SelectConfigSet(id: number): Promise<Poe2Calc> {
     this.calc?.SetActiveConfigSet(id);
-    return this.view();
+    return this.changed('SetActiveConfigSet', `Switched config set → ${this.ConfigSets().sets.find((s) => s.id === id)?.title || 'Default'}`);
   }
 
   /* ConfigSetService.lua:17-46, ListControl.lua:441-449 (PoB-PoE2) */
@@ -478,37 +616,41 @@ class PoB2Worker {
     else if (e.op === 'move') calc.MoveConfigSet(e.from, e.to);
     else if (e.op === 'copy') calc.CopyConfigSet(e.id, e.title);
     else calc.RenameConfigSet(e.id, e.title);
-    return this.view();
+    return this.changed(`EditConfigSets: ${e.op}`);
   }
 
   /* Build.lua:364-368 (PoB-PoE2) */
   async SetMainSocketGroup(index: number): Promise<Poe2Calc> {
     this.calc?.SetMainSocketGroup(index);
-    return this.view();
+    return this.changed('SetMainSocketGroup', (v) => `Set the main skill to ${v.socketGroups[index - 1]?.label || `socket group ${index}`}`);
   }
 
   /* Build.lua:376-381 (PoB-PoE2) */
   async SetMainActiveSkill(index: number): Promise<Poe2Calc> {
     this.calc?.SetMainActiveSkill(index);
-    return this.view();
+    return this.changed('SetMainActiveSkill');
   }
 
   /* Build.lua:209-216 (PoB-PoE2): the level box, which turns the automatic level off */
   async SetLevel(level: number): Promise<Poe2Calc> {
     this.calc?.SetLevel(level);
-    return this.view();
+    return this.changed('SetLevel', `Set the character level to ${level}`);
   }
 
   /* Build.lua:202-208 (PoB-PoE2) */
   async SetLevelAutoMode(auto: boolean): Promise<Poe2Calc> {
     this.calc?.SetCharacterLevelAutoMode(auto);
-    return this.view();
+    return this.changed('SetCharacterLevelAutoMode', auto ? 'Switched the character level to automatic' : 'Switched the character level to manual');
   }
 
   TreeData(): Promise<Tree2> {
     this.treeData ??= (async () => {
       await this.booted;
-      return JSON.parse((await exposition.PassiveTreeJSON()).unwrap()) as Tree2;
+      const tree = JSON.parse((await exposition.PassiveTreeJSON()).unwrap()) as Tree2;
+      this.treeNames = new Map(
+        tree.nodes.filter((n) => n.name).map((n) => [n.id, { name: n.name, rank: (n.ascendancy && n.type === 'Notable' ? 1 : 0) + (NODE_RANK2[n.type] ?? 0) }])
+      );
+      return tree;
     })().catch((err: unknown) => {
       this.treeData = undefined;
       throw err;
@@ -532,7 +674,7 @@ class PoB2Worker {
   async TreeClick(id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number, trace?: number[]): Promise<Poe2Click> {
     if (!this.calc) throw new Error('no PoE2 build is open');
     const result = this.calc.ClickNode(id, right, hotkey, confirmClassChange, allocMode, trace ?? []).unwrap();
-    return result === ClickResult.Changed ? { result, calc: await this.view() } : { result };
+    return result === ClickResult.Changed ? { result, calc: await this.changed('AllocateNode') } : { result };
   }
 
   /* PassiveTreeView.lua:520-528 (PoB-PoE2): the Class Change popup's Connect Path for a click on another class's
@@ -540,32 +682,37 @@ class PoB2Worker {
   async TreeClickConnect(id: number, hotkey: number, allocMode: number): Promise<Poe2Click> {
     if (!this.calc) throw new Error('no PoE2 build is open');
     const result = this.calc.ClickNodeConnectPath(id, hotkey, allocMode).unwrap();
-    return result === ClickResult.Changed ? { result, calc: await this.view() } : { result };
+    return result === ClickResult.Changed ? { result, calc: await this.changed('AllocateNode') } : { result };
   }
 
   /* TreeTab.lua:851-876 (PoB-PoE2) */
   async TreeAllocateAttribute(id: number, attributeIndex: number, allocMode: number): Promise<Poe2Calc> {
     this.calc?.AllocateAttributeNode(id, attributeIndex, allocMode).unwrap();
-    return this.view();
+    return this.changed('AllocateNode');
   }
 
   /* TreeTab.lua:145-161 (PoB-PoE2) */
   async TreeReset(): Promise<Poe2Calc> {
     this.calc?.ResetTree().unwrap();
-    return this.view();
+    return this.changed('ResetTreeNodes', `Reset passive tree ${this.activeSpecTitle()}`);
   }
 
   /* TreeTab.lua:355-364 (PoB-PoE2): Ctrl+Z / Ctrl+Y; no calc when there was nothing to undo or redo */
   async TreeUndo(redo: boolean): Promise<Poe2Calc | undefined> {
     if (!this.calc) throw new Error('no PoE2 build is open');
     const changed = (redo ? this.calc.Redo() : this.calc.Undo()).unwrap();
-    return changed ? this.view() : undefined;
+    return changed ? this.changed('AllocateNode') : undefined;
   }
 
   /* TreeTab.lua:485-491 (PoB-PoE2) */
   TreeSpecs(): { labels: string[]; active: number } {
     const v = this.calc?.TreeSpecs();
     return { labels: [...(v?.Labels ?? [])], active: v?.Active ?? 1 };
+  }
+
+  private activeSpecTitle() {
+    const v = this.TreeSpecs();
+    return v.labels[v.active - 1] || 'Default';
   }
 
   /* TreeTab.lua:444, 581-586 (PoB-PoE2): the compared spec's allocated nodes, specID 1-based */
@@ -588,7 +735,7 @@ class PoB2Worker {
   /* TreeTab.lua:55-62, 365-376 (PoB-PoE2); index is 1-based */
   async SetActiveTreeSpec(index: number): Promise<Poe2Calc> {
     this.calc?.SetActiveTreeSpec(index);
-    return this.view();
+    return this.changed('SetActiveTreeSpec', `Switched passive tree → ${this.activeSpecTitle()}`);
   }
 
   /* PassiveSpecListControl.lua:16-122, ListControl.lua:440-448 (PoB-PoE2); the op's indices are 0-based */
@@ -600,7 +747,7 @@ class PoB2Worker {
     else if (op.op === 'rename') calc.RenameTreeSpec(op.index + 1, op.title);
     else if (op.op === 'move') calc.MoveTreeSpec(op.from + 1, op.to + 1);
     else calc.DeleteTreeSpec(op.index + 1);
-    return this.view();
+    return this.changed(SPEC_SOURCES[op.op]);
   }
 
   /* PassiveSpec.lua:161-171 (PoB-PoE2) */
@@ -623,19 +770,19 @@ class PoB2Worker {
   async ChangeTreeClass(classId: number, choice: number): Promise<{ ask: boolean; calc?: Poe2Calc }> {
     if (!this.calc) throw new Error('no PoE2 build is open');
     const ask = this.calc.ChangeTreeClass(classId, choice).unwrap() ?? false;
-    return ask ? { ask } : { ask, calc: await this.view() };
+    return ask ? { ask } : { ask, calc: await this.changed('ChangeTreeClass', (v) => `Changed class to ${v.className}`) };
   }
 
   /* Build.lua:273-278 (PoB-PoE2) */
   async ChangeTreeAscendancy(ascendClassId: number): Promise<Poe2Calc> {
     this.calc?.ChangeTreeAscendancy(ascendClassId).unwrap();
-    return this.view();
+    return this.changed('ChangeTreeAscendancy', (v) => `Changed ascendancy to ${v.ascendClassName}`);
   }
 
   /* SkillsTab.lua:594-599 (PoB-PoE2): Ctrl+Z / Ctrl+Y on the Skills tab; no calc when there was nothing to undo or redo */
   async SkillsUndo(redo: boolean): Promise<Poe2Calc | undefined> {
     if (!this.calc) throw new Error('no PoE2 build is open');
-    return this.calc.SkillsUndo(redo).unwrap() ? this.view() : undefined;
+    return this.calc.SkillsUndo(redo).unwrap() ? this.changed('socketGroups') : undefined;
   }
 
   private calcsQuery?: exposition.CalcsModQuery;
@@ -822,7 +969,7 @@ class PoB2Worker {
         break;
     }
     c.AddSkillsUndoState();
-    return this.view();
+    return this.changed(SKILLS_SOURCES[e.op] ?? 'currentGemGroup');
   }
 
   private gemList?: Promise<Poe2Gem[]>;
@@ -898,6 +1045,7 @@ class PoB2Worker {
   async EditItems(e: Poe2ItemsEdit): Promise<Poe2Calc> {
     const c = this.calc;
     if (!c) throw new Error('no PoE2 build is open');
+    const [source, action] = this.itemsStep(e);
     switch (e.op) {
       case 'add':
         c.AddDisplayItem(e.slot ?? '').unwrap();
@@ -936,7 +1084,42 @@ class PoB2Worker {
         c.MoveItemSet(e.from, e.to).unwrap();
         break;
     }
-    return this.view();
+    return this.changed(source, action);
+  }
+
+  private itemName(id: number) {
+    const text = id ? this.calc?.ItemText(id).unwrap() : undefined;
+    return text ? itemTextName(text) : 'an item';
+  }
+
+  // the step an items edit makes, named before the edit changes what it names
+  private itemsStep(e: Poe2ItemsEdit): [string, string?] {
+    switch (e.op) {
+      case 'add':
+        return ['SaveItem'];
+      case 'delete':
+        return ['DeleteItem', `Deleted ${this.itemName(e.id)}`];
+      case 'equip':
+        return ['EquipItemID', e.id ? `Equipped ${this.itemName(e.id)} in ${e.slot}` : `Emptied ${e.slot}`];
+      case 'active':
+        return ['SetFlaskActive', `${e.state ? 'Activated' : 'Deactivated'} ${e.slot}`];
+      case 'swap':
+        return ['SetWeaponSet', `Switched to weapon set ${e.second ? 2 : 1}`];
+      case 'characterRune':
+        return ['SetCharacterRune'];
+      case 'set':
+        return ['SetActiveItemSet'];
+      case 'newSet':
+        return ['NewItemSet'];
+      case 'copySet':
+        return ['CopyItemSet'];
+      case 'renameSet':
+        return ['RenameItemSet'];
+      case 'deleteSet':
+        return ['DeleteItemSet'];
+      case 'moveSet':
+        return ['MoveItemSet'];
+    }
   }
 
   /* ItemsTab.lua (PoB-PoE2): an edit of the editor's item; the build is unchanged, so there is no recalculation */
@@ -1050,7 +1233,7 @@ class PoB2Worker {
   async AddDBItem(kind: Poe2ItemDBKind, name: string, equip: boolean, second: boolean): Promise<Poe2Calc> {
     if (!this.calc) throw new Error('no PoE2 build is open');
     this.calc.AddDBItem(kind, name, equip, second).unwrap();
-    return this.view();
+    return this.changed('AddDBItem', equip ? `Equipped ${name}` : `Added ${name}`);
   }
 
   /* ItemsTab.lua:4382-4538, Build.lua:2585-2640 (PoB-PoE2): an item tooltip's stat differences, one block per slot it

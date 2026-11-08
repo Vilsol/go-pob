@@ -219,19 +219,31 @@ class PoBWorker {
 
   private tickSeq = 0;
   private ticksInFlight = 0;
+  private ticksSettled?: Promise<void>;
+  private settleTicks?: () => void;
+
+  // a calculation can wait on a data read part way through; a Go call answered synchronously meanwhile that reaches
+  // the same load stops the Go runtime, so calls from the page start once no calculation is in flight
+  get ticking() {
+    return this.ticksInFlight > 0;
+  }
+
+  async afterTicks() {
+    while (this.ticksInFlight > 0) await this.ticksSettled;
+  }
 
   async Tick(source: string, restored?: string) {
     const meta: TickMeta = { seq: 0, pending: 0, source, startedAt: epochNow(), calcMs: 0, dumpMs: 0, sentAt: 0 };
     const undoTicket = this.undoTicket(source);
     const started = ++this.ticksStarted;
     this.dropMiscCalculator();
-    this.ticksInFlight++;
+    if (this.ticksInFlight++ === 0) this.ticksSettled = new Promise((resolve) => (this.settleTicks = resolve));
     let payload: Outputs | undefined;
     const cached = restored !== undefined && !this.calcDetail ? this.tickCache.get(restored) : undefined;
     try {
       payload = cached?.warnings ? this.fromCache(cached) : await this.computeOutputs(source, meta);
     } finally {
-      this.ticksInFlight--;
+      if (--this.ticksInFlight === 0) this.settleTicks?.();
       meta.seq = ++this.tickSeq;
       if (payload) {
         this.warningsEnvSeq = meta.seq;
@@ -4340,7 +4352,32 @@ class PoBWorker {
 
 export const workerInstance = new PoBWorker();
 
+// answered while a calculation runs: the reads and cancels a long run is polled with, and the history read that
+// itself waits for the calculations
+const UNQUEUED = new Set<string | symbol>([
+  'boot',
+  'loadData',
+  'afterTicks',
+  'GetUndoHistoryWhenRecorded',
+  'PowerReportProgress',
+  'PowerReportLive',
+  'PowerPoolStats',
+  'CancelPowerReport',
+  'TimelessSearchProgress',
+  'CancelTimelessSearch'
+]);
+
+const queued = (target: PoBWorker): PoBWorker =>
+  new Proxy(target, {
+    get: (t, prop) => {
+      const v = Reflect.get(t, prop) as unknown;
+      if (typeof v !== 'function' || UNQUEUED.has(prop)) return v;
+      const call = (...args: unknown[]) => (v as (...a: unknown[]) => unknown).apply(t, args);
+      return (...args: unknown[]) => (t.ticking ? t.afterTicks().then(() => call(...args)) : call(...args));
+    }
+  });
+
 addEventListener('message', noteCall);
-expose(workerInstance);
+expose(queued(workerInstance));
 
 export type WorkerType = PoBWorker;
