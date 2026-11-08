@@ -10,8 +10,8 @@ github.com/MarvinJWendt/testza v0.5.2 h1:53KDo64C1z/h/d/stCYCPY69bt/OSwjq5KpFNwi
 github.com/MarvinJWendt/testza v0.5.2/go.mod h1:xu53QFE5sCdjtMCKk8YMQ2MnymimEctc4n3EjyIYvEY=
 github.com/Vilsol/crystalline v0.2.0 h1:rXp1JknSp2cjHt6e/5Lg14csoeu8HPDZu8yPcU2T/I0=
 github.com/Vilsol/crystalline v0.2.0/go.mod h1:N4iEr3/0Tn4m3iGfI0qC3YuW+em7afe0k9iBzgZLdIM=
-github.com/Vilsol/go-pob-data v0.5.13 h1:cfIedwXlCqJ4R3607kv2owe10+kGAq2VD2oXBewZl3c=
-github.com/Vilsol/go-pob-data v0.5.13/go.mod h1:gO6WGq+WW786byDH1B9SQHRFM7SXoB3uMhC0SG3vzAE=
+github.com/Vilsol/go-pob-data v0.5.14 h1:7Z4ijQtHqMD6y5P+0YjR3CQVbTvW2y0HeoEml6JiBvY=
+github.com/Vilsol/go-pob-data v0.5.14/go.mod h1:gO6WGq+WW786byDH1B9SQHRFM7SXoB3uMhC0SG3vzAE=
 github.com/Vilsol/slox v0.0.1 h1:X5iskI+WLDxW5FNxYV9izEEWliFzRUNxcItHWetwnOk=
 github.com/Vilsol/slox v0.0.1/go.mod h1:1mhhQdJHAzUVobE9RE0k7vxaSn17C0b4WSMPjHCizJo=
 github.com/Vilsol/timeless-jewels v0.55.0 h1:BR0ljCV8alA6E24fkquF99q3ggT4BkowpGyGckmlCrs=
