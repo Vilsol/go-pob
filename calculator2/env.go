@@ -111,6 +111,11 @@ type calcOverride struct {
 	RepItem               *Item
 	ToggleFlask           *Item
 	ToggleCharm           *Item
+	// AddNodes and RemoveNodes are addNodes and removeNodes keyed by node; RemoveNodeIDs is removeNodes keyed by node
+	// id, as a granted passive is.
+	AddNodes      map[*tree2.SpecNode]bool
+	RemoveNodes   map[*tree2.SpecNode]bool
+	RemoveNodeIDs map[int]bool
 }
 
 // SocketGroup is one build.skillsTab.socketGroupList entry.

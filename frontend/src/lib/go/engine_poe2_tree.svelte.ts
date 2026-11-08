@@ -4,6 +4,7 @@ import type { SpecOp } from '$lib/design/tree';
 import type { TreeModel } from './engine';
 import { poe2Error, poe2Run, poe2Worker } from './engine_poe2.svelte';
 import type { Poe2Calc, Poe2TreeClass, Poe2TreeSpecRow } from './sync_worker2';
+import { Poe2TreeCalc } from './engine_poe2_tree_calc.svelte';
 
 const fail = (err: unknown) => poe2Error.set(err instanceof Error ? err.message : String(err));
 
@@ -21,6 +22,8 @@ class Poe2Tree implements TreeModel {
   specDetails = $state<string[]>([]);
   specTip = $state<TreeModel['specTip']>();
   classConfirm = $state<string>();
+  // stat differences, pathing lines, Shift tracing, socket jewels and node power
+  readonly calc = new Poe2TreeCalc();
 
   private classList: Poe2TreeClass[] = [];
   private rows: Promise<Poe2TreeSpecRow[]> | undefined;

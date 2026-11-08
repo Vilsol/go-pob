@@ -282,6 +282,24 @@ export type Poe2CompareTarget =
   | { kind: 'craft'; rarity: number; title: string; base: string };
 export type Poe2CompareBlock = { header: string; slot?: string; sections: StatCompareSection[]; calcMs: number };
 
+export type Poe2NodeCompare = { blocks: { header: string; sections: StatCompareSection[]; calcMs: number }[]; noChange: string };
+export type Poe2NodeTip = { pathLines: string[]; distanceToStart: number; granted: boolean };
+export type Poe2PowerProgress = { done: number; tasks: number; total: number; finished: boolean };
+/* node.power (CalcsTab.lua:551-709, PoB-PoE2); single and path are unset where PoB leaves them nil */
+export type Poe2NodePower = {
+  nodes: Map<number, { distance: number; single?: number; path?: number; offence: number; defence: number }>;
+  /* calcsTab.powerMax: singleStat, offence, offencePerPoint, defence, defencePerPoint */
+  max: number[];
+};
+export type Poe2PowerRow = { ID: number; Name: string; Type: string; Allocated: boolean; Power: number; PathPower: number; PathDist: number };
+
+const powerProgress = (p: exposition.PowerProgress | undefined): Poe2PowerProgress => ({
+  done: p?.Done ?? 0,
+  tasks: p?.Tasks ?? 0,
+  total: p?.Total ?? 0,
+  finished: p?.Finished ?? true
+});
+
 /* ItemsTab.lua:2232-2246, 2368-2518 (PoB-PoE2): the editor's affix drop-downs; list[0] is "None", sel is 0-based */
 export type Poe2AffixControl = {
   type: string;
@@ -1131,6 +1149,90 @@ class PoB2Worker {
   DisplayItemAffixRoll(control: number, slider: number): string[] {
     if (!this.calc) throw new Error('no PoE2 build is open');
     return [...(this.calc.DisplayItemAffixRoll(control + 1, slider).unwrap() ?? [])];
+  }
+
+  /* PassiveTreeView.lua:1967-2008, Build.lua:2585-2640 (PoB-PoE2): a node tooltip's stat differences against the
+     calculator's base pass; trace is the Shift-traced path while tracing */
+  // async: a compare can be the first calculation to need a minion table, which loads over fetch
+  async TreeNodeCompare(id: number, trace?: number[]): Promise<Poe2NodeCompare> {
+    const c = this.calc;
+    if (!c) throw new Error('no PoE2 build is open');
+    const start = performance.now();
+    const v = (await c.NodeCompare(id, trace ?? [], trace !== undefined)).unwrap();
+    if (!v) throw new Error('no node compare');
+    const calcMs = performance.now() - start;
+    const outputs = (o: exposition.CompareOutputs) => ({ output: { ...(o.Output ?? {}) }, minion: o.Minion ? { ...o.Minion } : undefined });
+    const base = outputs(v.Base);
+    return {
+      blocks: (v.Blocks ?? []).map((b) => ({
+        header: b.Header,
+        sections: addStatCompares2(
+          { ...(v.SkillFlags ?? {}) },
+          { ...(v.MinionSkillFlags ?? {}) },
+          v.Minion,
+          base,
+          outputs(b.Compare),
+          b.PathLength || undefined
+        ),
+        calcMs
+      })),
+      noChange: v.NoChange
+    };
+  }
+
+  /* PassiveTreeView.lua:1712-1714, 2011-2053 (PoB-PoE2): a node tooltip's pathing lines and a socket's distance */
+  TreeNodeTip(id: number, trace?: number[]): Poe2NodeTip {
+    const v = this.calc?.NodeTip(id, trace ?? [], trace !== undefined).unwrap();
+    return { pathLines: [...(v?.PathLines ?? [])], distanceToStart: v?.DistanceToStart ?? 0, granted: v?.Granted ?? false };
+  }
+
+  /* PassiveTreeView.lua:321-350 (PoB-PoE2): one hover while Shift is held; an empty trace starts one */
+  TreeTraceNode(trace: number[], id: number): { trace: number[]; hover: boolean } {
+    const v = this.calc?.TraceNode(trace, id).unwrap();
+    return { trace: [...(v?.Trace ?? trace)], hover: v?.Hover ?? false };
+  }
+
+  /* TreeTab.lua:260-265 (PoB-PoE2): the heat map's stats; stat "" is Offence/Defence */
+  async TreePowerStats(): Promise<{ Stat: string; Label: string }[]> {
+    await this.booted;
+    return (exposition.PowerStats() ?? []).map((s) => ({ Stat: s.Stat, Label: s.Label }));
+  }
+
+  /* TreeTab.lua:924-930 (PoB-PoE2): starts the power builder over the last calculation, maxDepth 0 for All */
+  async TreePowerStart(stat: string, maxDepth: number): Promise<Poe2PowerProgress> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    return powerProgress((await this.calc.StartNodePower(stat, maxDepth)).unwrap());
+  }
+
+  /* CalcsTab.lua:617-709 (PoB-PoE2): runs the power builder for about budgetMs, a node at a time, so the worker
+     answers other requests between steps; the node powers come with the progress when asked or when it finishes. A
+     recalculation stops it (the call then throws). */
+  async TreePowerStep(budgetMs: number, withPower: boolean): Promise<{ progress: Poe2PowerProgress; power?: Poe2NodePower }> {
+    const c = this.calc;
+    if (!c) throw new Error('no PoE2 build is open');
+    const start = performance.now();
+    let p: exposition.PowerProgress | undefined;
+    do p = (await c.StepNodePower(1)).unwrap();
+    while (p && !p.Finished && performance.now() - start < budgetMs);
+    const progress = powerProgress(p);
+    if (!withPower && !progress.finished) return { progress };
+    const v = c.NodePower().unwrap();
+    const power: Poe2NodePower = { nodes: new Map(), max: [...(v?.Max ?? [0, 0, 0, 0, 0])] };
+    (v?.IDs ?? []).forEach((id, i) =>
+      power.nodes.set(id, {
+        distance: v!.Distance![i],
+        single: v!.HasSingle![i] ? v!.Single![i] : undefined,
+        path: v!.HasPath![i] ? v!.Path![i] : undefined,
+        offence: v!.Offence![i],
+        defence: v!.Defence![i]
+      })
+    );
+    return { progress, power };
+  }
+
+  /* TreeTab.lua:932-1048 (PoB-PoE2): the power report's rows, before the stat's display scale and format */
+  TreePowerReport(): Poe2PowerRow[] {
+    return (this.calc?.NodePowerReport().unwrap() ?? []).map((r) => ({ ...r }));
   }
 }
 

@@ -16,7 +16,8 @@ import (
 
 //crystalline:exports
 func Exports(r bind.Registry) {
-	r.Type(Calculator{}, bind.AsPromise("Calculate", "GemSortDPS", "DisplayItemCompare", "BuildItemCompare", "DBItemCompare", "CraftItemCompare"))
+	r.Type(Calculator{}, bind.AsPromise("Calculate", "GemSortDPS", "DisplayItemCompare", "BuildItemCompare", "DBItemCompare", "CraftItemCompare",
+		"NodeCompare", "StartNodePower", "StepNodePower"))
 	r.Type(Outputs{}, bind.Plain())
 	r.Type(calculator2.SocketGroupView{}, bind.Plain())
 	r.Type(calculator2.ConfigValue{}, bind.Plain())
@@ -73,6 +74,14 @@ func Exports(r bind.Registry) {
 	r.Type(TreeSpecsView{}, bind.Plain())
 	r.Type(TreeSpecRow{}, bind.Plain())
 	r.Type(TreeClassRow{}, bind.Plain())
+	r.Type(NodeCompareBlockView{}, bind.Plain())
+	r.Type(NodeCompareView{}, bind.Plain())
+	r.Type(NodeTipView{}, bind.Plain())
+	r.Type(TraceView{}, bind.Plain())
+	r.Type(PowerStatView{}, bind.Plain())
+	r.Type(PowerProgress{}, bind.Plain())
+	r.Type(NodePowerView{}, bind.Plain())
+	r.Type(calculator2.PowerReportRow{}, bind.Plain())
 
 	r.Func(ParseBuild)
 	r.Func(ParseModLines)
@@ -87,6 +96,7 @@ func Exports(r bind.Registry) {
 	r.Func(ItemDBLists, bind.AsPromise())
 	r.Func(ItemDBTooltip, bind.AsPromise())
 	r.Func(ItemDBRaw, bind.AsPromise())
+	r.Func(PowerStats)
 
 	r.Func(config.InitLogging)
 	r.Func(storage.InitializeStorage)

@@ -344,6 +344,8 @@ wasm2/exposition/items_craft.go     GO-NATIVE  crystalline binding surface for t
 wasm2/exposition/item_db.go         GO-NATIVE  crystalline binding surface for the PoE2 unique database list (ItemDBControl.lua's filters, tooltip, copy and Ctrl+click)
 wasm2/exposition/items_affix.go     GO-NATIVE  crystalline binding surface for the PoE2 item editor's affix drop-downs, roll sliders, modifier ranges and quality (ItemsTab.lua)
 wasm2/exposition/item_compare.go    GO-NATIVE  crystalline binding surface for the PoE2 item tooltips' stat differences (ItemsTab.lua's AddItemTooltip over the misc calculator)
+wasm2/exposition/node_compare.go     GO-NATIVE  crystalline binding surface for the PoE2 node tooltip (PassiveTreeView.lua's AddNodeTooltip stat differences, pathing lines and Shift path tracing)
+wasm2/exposition/node_power.go       GO-NATIVE  crystalline binding surface for the PoE2 node power heat map and power report (CalcsTab.lua's PowerBuilder, TreeTab.lua's power controls), run in steps
 wasm2/exposition/main.go            GO-NATIVE  crystalline binding surface for the PoE2 frontend
 wasm2/exposition/notes.go           GO-NATIVE  crystalline binding surface for the PoE2 Notes page (NotesTab.lua's text, and the rich document kept beside it)
 wasm2/exposition/pages.go           GO-NATIVE  crystalline binding surface for the PoE2 Skills and Items pages (SkillListControl and AddItemTooltip's title and mod lines)
@@ -600,6 +602,8 @@ calculator2/item_craft.go           PORT       src/Modules/Data.lua,src/Classes/
 calculator2/items_affix_edit.go     PORT       src/Classes/ItemsTab.lua,src/Classes/SliderControl.lua
 calculator2/item_db.go              PORT       src/Modules/ItemTools.lua,src/Modules/Main.lua,src/Classes/ItemDBControl.lua,src/Modules/Common.lua
 calculator2/item_compare.go         PORT       src/Modules/Calcs.lua,src/Classes/ItemsTab.lua
+calculator2/node_compare.go         PORT       src/Classes/PassiveTreeView.lua
+calculator2/power.go                PORT       src/Modules/Data.lua,src/Classes/CalcsTab.lua,src/Classes/TreeTab.lua,src/Classes/PassiveTree.lua
 calculator2/config_sets.go          PORT       src/Classes/ConfigTab.lua,src/Classes/ConfigSetListControl.lua,src/Classes/ListControl.lua
 calculator2/player_progress.go      PORT       src/Modules/Build.lua
 calculator2/calc_setup_skills_data.go PORT     src/Modules/Data.lua

@@ -115,6 +115,15 @@ export declare namespace calculator2 {
     readonly AscMax: number;
     readonly Warnings?: Array<string>;
   }
+  interface PowerReportRow {
+    readonly ID: number;
+    readonly Name: string;
+    readonly Type: string;
+    readonly Allocated: boolean;
+    readonly Power: number;
+    readonly PathPower: number;
+    readonly PathDist: number;
+  }
   interface SkillSetView {
     readonly ID: number;
     readonly Title: string;
@@ -233,6 +242,10 @@ export declare namespace exposition {
     NewSkillSet(title: string): Result<number>;
     NewSocketGroup(): Result<number>;
     NewTreeSpec(title: string): Result<void>;
+    NodeCompare(id: number, trace: Array<number> | undefined, tracing: boolean): Promise<Result<(exposition.NodeCompareView | undefined)>>;
+    NodePower(): Result<(exposition.NodePowerView | undefined)>;
+    NodePowerReport(): Result<(Array<calculator2.PowerReportRow> | undefined)>;
+    NodeTip(id: number, trace: Array<number> | undefined, tracing: boolean): Result<(exposition.NodeTipView | undefined)>;
     Notes(): string;
     OpenDBItem(kind: string, name: string): Result<void>;
     PasteItem(raw: string): Result<void>;
@@ -286,6 +299,9 @@ export declare namespace exposition {
     SkillGroups(): Result<(Array<exposition.SkillGroupView> | undefined)>;
     SkillSets(): exposition.SkillSetsView;
     SkillsUndo(redo: boolean): Result<boolean>;
+    StartNodePower(stat: string, maxDepth: number): Promise<Result<(exposition.PowerProgress | undefined)>>;
+    StepNodePower(n: number): Promise<Result<(exposition.PowerProgress | undefined)>>;
+    TraceNode(trace: Array<number> | undefined, id: number): Result<(exposition.TraceView | undefined)>;
     TreeNodeNote(nodeID: number): string;
     TreeSpecAlloc(specID: number): Result<(Array<number> | undefined)>;
     TreeSpecRows(): Result<(Array<exposition.TreeSpecRow> | undefined)>;
@@ -409,6 +425,35 @@ export declare namespace exposition {
     readonly ModLineParsed: "parsed";
     readonly ModLineUnsupported: "unsupported";
   };
+  interface NodeCompareBlockView {
+    readonly Header: string;
+    readonly PathLength: number;
+    readonly Compare: exposition.CompareOutputs;
+  }
+  interface NodeCompareView {
+    readonly Base: exposition.CompareOutputs;
+    readonly SkillFlags?: Record<string, boolean>;
+    readonly MinionSkillFlags?: Record<string, boolean>;
+    readonly Minion: boolean;
+    readonly Blocks?: Array<exposition.NodeCompareBlockView>;
+    readonly NoChange: string;
+  }
+  interface NodePowerView {
+    readonly IDs?: Array<number>;
+    readonly Distance?: Array<number>;
+    readonly Single?: Array<number>;
+    readonly Path?: Array<number>;
+    readonly Offence?: Array<number>;
+    readonly Defence?: Array<number>;
+    readonly HasSingle?: Array<boolean>;
+    readonly HasPath?: Array<boolean>;
+    readonly Max?: Array<number>;
+  }
+  interface NodeTipView {
+    readonly PathLines?: Array<string>;
+    readonly DistanceToStart: number;
+    readonly Granted: boolean;
+  }
   interface Outputs {
     readonly Output?: Record<string, number>;
     readonly Minion?: Record<string, number>;
@@ -428,6 +473,16 @@ export declare namespace exposition {
     readonly Type: string;
     readonly Value: string;
     readonly Tags?: Array<string>;
+  }
+  interface PowerProgress {
+    readonly Done: number;
+    readonly Tasks: number;
+    readonly Total: number;
+    readonly Finished: boolean;
+  }
+  interface PowerStatView {
+    readonly Stat: string;
+    readonly Label: string;
   }
   interface RangeLineView {
     readonly Label: string;
@@ -494,6 +549,10 @@ export declare namespace exposition {
     readonly Sets?: Array<calculator2.SkillSetView>;
     readonly Active: number;
   }
+  interface TraceView {
+    readonly Trace?: Array<number>;
+    readonly Hover: boolean;
+  }
   interface TreeClassRow {
     readonly Label: string;
     readonly ClassID: number;
@@ -554,6 +613,7 @@ export declare namespace exposition {
   function ParseBuild(xml: string): Result<(exposition.Calculator | undefined)>;
   function ParseModLines(lines: Array<string> | undefined): (Array<exposition.ModLine> | undefined);
   function PassiveTreeJSON(): Promise<Result<string>>;
+  function PowerStats(): (Array<exposition.PowerStatView> | undefined);
   function Preload(): Promise<Result<void>>;
   function TreeClassList(): Promise<Result<(Array<exposition.TreeClassRow> | undefined)>>;
   function TreeClasses(): Promise<Result<(Array<string> | undefined)>>;

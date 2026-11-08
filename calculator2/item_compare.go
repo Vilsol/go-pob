@@ -4,6 +4,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/Vilsol/go-pob/data/tree2"
 )
 
 // MiscCalculator is calcs.getMiscCalculator over the last main calculation: its base pass and a calculation per
@@ -34,6 +36,24 @@ func NewMiscCalculator(main *Environment) *MiscCalculator {
 //pob2:block:src/Modules/Calcs.lua:132-135
 func (m *MiscCalculator) Calc(o ItemOverride) *Environment {
 	env := newWeaponSetEnv(m.main, "CALCULATOR", calcOverride{RepSlotName: o.RepSlotName, RepItem: o.RepItem, ToggleFlask: o.ToggleFlask, ToggleCharm: o.ToggleCharm})
+	initEnv(env)
+	perform(env)
+	return env
+}
+
+// NodeOverride is the passive half of initEnv's override: removeNodes keyed by node, and keyed by id for a granted
+// passive.
+type NodeOverride struct {
+	AddNodes      map[*tree2.SpecNode]bool
+	RemoveNodes   map[*tree2.SpecNode]bool
+	RemoveNodeIDs map[int]bool
+}
+
+// CalcNodes is the calculator function for a passive override.
+//
+//pob2:block:src/Modules/Calcs.lua:132-135
+func (m *MiscCalculator) CalcNodes(o NodeOverride) *Environment {
+	env := newWeaponSetEnv(m.main, "CALCULATOR", calcOverride{AddNodes: o.AddNodes, RemoveNodes: o.RemoveNodes, RemoveNodeIDs: o.RemoveNodeIDs})
 	initEnv(env)
 	perform(env)
 	return env

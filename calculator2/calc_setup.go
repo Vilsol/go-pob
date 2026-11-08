@@ -509,6 +509,65 @@ func countAllocated(spec *tree2.PassiveSpec) allocatedCounts {
 	return c
 }
 
+// overrideAllocNodes is env.allocNodes: the spec's allocated nodes with the override's addNodes and without its
+// removeNodes, with the allocated notable and mastery counts following them.
+//
+//pob2:block:src/Modules/CalcSetup.lua:1081-1139
+func overrideAllocNodes(env *Environment, counts *allocatedCounts) map[int]*tree2.SpecNode {
+	o := env.override
+	var nodes map[int]*tree2.SpecNode
+	if o.AddNodes != nil || o.RemoveNodes != nil {
+		nodes = map[int]*tree2.SpecNode{}
+		for node := range o.AddNodes {
+			nodes[node.ID] = node
+			switch node.Type {
+			case "Mastery":
+				counts.mastery++
+				prevCount, ok := counts.masteryTypes[node.Name]
+				counts.masteryTypes[node.Name] = prevCount + 1
+				if !ok || prevCount == 0 {
+					counts.masteryType++
+				}
+			case "Notable":
+				counts.notable++
+				if node.ApplyToArmour {
+					counts.smithBodyArmour++
+				}
+			}
+		}
+		for _, node := range env.Spec.AllocNodes {
+			if !o.RemoveNodes[node] {
+				nodes[node.ID] = node
+				continue
+			}
+			switch node.Type {
+			case "Mastery":
+				counts.mastery--
+				counts.masteryTypes[node.Name]--
+				if counts.masteryTypes[node.Name] == 0 {
+					counts.masteryType--
+				}
+			case "Notable":
+				counts.notable--
+				if node.ApplyToArmour {
+					counts.smithBodyArmour--
+				}
+			}
+		}
+	} else {
+		nodes = make(map[int]*tree2.SpecNode, len(env.Spec.AllocNodes))
+		for id, node := range env.Spec.AllocNodes {
+			nodes[id] = node
+		}
+	}
+	for id, node := range nodes {
+		if node.IsGrantedPassive && node.IsFreeAllocate {
+			delete(nodes, id)
+		}
+	}
+	return nodes
+}
+
 // initEnv is calcs.initEnv for a build's player and enemy databases, tree, config and skills.
 //
 //pob2:src/Modules/CalcSetup.lua:842-2604
@@ -646,14 +705,7 @@ func initEnv(env *Environment) {
 	env.WeaponSetEnvs = nil
 	env.WeaponSetValidationSkillList = nil
 
-	//pob2:block:src/Modules/CalcSetup.lua:1131-1139
-	env.AllocNodes = make(map[int]*tree2.SpecNode, len(env.Spec.AllocNodes))
-	for id, node := range env.Spec.AllocNodes {
-		if node.IsGrantedPassive && node.IsFreeAllocate {
-			continue
-		}
-		env.AllocNodes[id] = node
-	}
+	env.AllocNodes = overrideAllocNodes(env, &counts)
 
 	nodesModsList := buildModListForNodeList(env, env.AllocNodes, true)
 	canUseBonded := nodesModsList.Flag(nil, "CanUseBonded")
@@ -697,7 +749,7 @@ func initEnv(env *Environment) {
 			continue
 		}
 		for _, node := range env.Spec.ResolveGrantedPassiveNodes(gp) {
-			if node != nil {
+			if node != nil && !env.override.RemoveNodeIDs[node.ID] {
 				env.AllocNodes[node.ID] = node
 				env.GrantedPassives[node.ID] = true
 			}
