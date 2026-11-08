@@ -16,6 +16,7 @@ import type { Site } from '$lib/design/share';
 import type { UndoView } from './undo';
 import type { ComponentProps } from 'svelte';
 import type SkillsPage from '$lib/design/SkillsPage.svelte';
+import type { SpecOp } from '$lib/design/tree';
 import { poe1Engine } from './engine_poe1';
 import { poe2Engine } from './engine_poe2.svelte';
 
@@ -69,6 +70,37 @@ export type ConfigEngine = {
 // SkillsTab.lua, SkillListControl.lua: what the Skills page shows and edits, made while the page initialises, as it
 // follows the build for as long as the page lives; a part a game has none of is absent, and the page hides it
 export type SkillsPageModel = ComponentProps<typeof SkillsPage> & { ready: boolean };
+
+// TreeTab.lua, PassiveSpecListControl.lua, Build.lua:246-299: what the shared tree page shows and edits besides the
+// drawing, made while the page initialises, as it follows the build for as long as the page lives; the drawing, and
+// what only one game's tree has, stay with that game's page
+export type TreeModel = {
+  readonly version: string;
+  readonly classes: string[];
+  // the current class's, "None" first
+  readonly ascendancies: string[];
+  readonly className: string;
+  readonly ascendancy: string;
+  readonly level: number | undefined;
+  readonly levelAuto: boolean;
+  // TreeTab:GetSpecList, the active one 0-based, and each row's "(class, N points)" once the list is read
+  readonly specs: string[];
+  readonly active: number;
+  readonly specDetails: string[];
+  readonly specTip: { index: number; title: string; lines: string[]; footer: string; pending: boolean; blocks: [] } | undefined;
+  // the class the Class Change popup asks about
+  readonly classConfirm: string | undefined;
+  setClass(className: string): void;
+  answerClass(choice: 'continue' | 'connect' | 'cancel'): void;
+  setAscendancy(ascendancy: string): void;
+  setLevel(level: number): void;
+  setLevelAuto(auto: boolean): void;
+  setSpec(index: number): void;
+  editSpecs(op: SpecOp): void;
+  readSpecRows(): void;
+  hoverSpec(index: number | null): void;
+  reset(): void;
+};
 
 // CalcsTab.lua:40-119 over the latest calculation
 export type CalcsTabView = {
@@ -153,6 +185,8 @@ export type BuildEngine = {
   calcs: CalcsEngine;
   // the Skills page's model maker, loaded with the page
   skills(): Promise<() => SkillsPageModel>;
+  // the tree page's model maker, for a game whose tree page reads its build through the engine
+  tree?(): Promise<() => TreeModel>;
 };
 
 export const engines: Record<Game, BuildEngine> = { poe1: poe1Engine, poe2: poe2Engine };

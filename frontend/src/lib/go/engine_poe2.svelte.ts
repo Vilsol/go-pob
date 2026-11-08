@@ -278,6 +278,8 @@ export const poe2Engine: BuildEngine = {
   },
   // SkillsTab.lua (PoB-PoE2)
   skills: () => import('./engine_poe2_skills.svelte').then((m) => m.poe2SkillsPage),
+  // TreeTab.lua, Build.lua:246-299 (PoB-PoE2)
+  tree: () => import('./engine_poe2_tree.svelte').then((m) => m.poe2TreeModel),
   calcs: {
     tab: calcsTab2,
     setMainSkill: setMainSkill2,

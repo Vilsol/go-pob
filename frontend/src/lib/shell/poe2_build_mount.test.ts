@@ -84,7 +84,7 @@ vi.mock('$lib/components/skill-tree/gl_renderer2', () => ({
 }));
 
 const { poe2Build } = await import('$lib/global');
-const Poe2Page = (await import('./Poe2Page.svelte')).default;
+const AppTree2 = (await import('./AppTree2.svelte')).default;
 const AppConfig = (await import('./AppConfig.svelte')).default;
 const AppCalcs = (await import('./AppCalcs.svelte')).default;
 const AppSkills = (await import('./AppSkills.svelte')).default;
@@ -350,7 +350,7 @@ describe('the PoE2 tree undo and redo', () => {
     // the keys reach the page through the tree view; the whole PoE2 tree is slow to mount under jsdom
     const { tinyTree } = await import('$lib/components/skill-tree/tree2_fixture');
     const treeData = vi.spyOn(worker2Instance, 'TreeData').mockResolvedValue(tinyTree());
-    const page = render(Poe2Page, { route: 'tree' });
+    const page = render(AppTree2);
     await vi.waitFor(() => page.getByRole('img', { name: 'Passive skill tree' }), { timeout: 60_000 });
     treeData.mockRestore();
     poe2Build.set((await worker2Instance.TreeClick(44871, false, 0, false, 1)).calc);
@@ -385,7 +385,7 @@ describe('the PoE2 character level', () => {
     poe2Build.set(await worker2Instance.Open(await fixture('sorceress_spark.xml')));
     const { tinyTree } = await import('$lib/components/skill-tree/tree2_fixture');
     const treeData = vi.spyOn(worker2Instance, 'TreeData').mockResolvedValue(tinyTree());
-    const page = render(Poe2Page, { route: 'tree' });
+    const page = render(AppTree2);
     await vi.waitFor(() => page.getByRole('img', { name: 'Passive skill tree' }), { timeout: 60_000 });
     treeData.mockRestore();
     const points = page.getByRole('status', { name: 'Points used' });
@@ -417,7 +417,7 @@ describe('the PoE2 character level', () => {
     poe2Build.set(await worker2Instance.Open(await fixture('sorceress_spark.xml')));
     const { tinyTree } = await import('$lib/components/skill-tree/tree2_fixture');
     const treeData = vi.spyOn(worker2Instance, 'TreeData').mockResolvedValue(tinyTree());
-    const page = render(Poe2Page, { route: 'tree' });
+    const page = render(AppTree2);
     await vi.waitFor(() => page.getByRole('img', { name: 'Passive skill tree' }), { timeout: 60_000 });
     treeData.mockRestore();
     poe2Build.set((await worker2Instance.TreeClick(44871, false, 0, false, 0)).calc);
@@ -431,6 +431,62 @@ describe('the PoE2 character level', () => {
     await vi.waitFor(() => expect((get(poe2Build) as Poe2Calc | undefined)?.tree.alloc).toEqual([54447]));
     expect(issued).toEqual(['TreeReset()']);
     expect(worker2Instance.Serialize()).toMatch(/nodes="54447"/);
+  }, 120_000);
+});
+
+// the trees and nodes are PoB-PoE2's tree list and class dropdown driven under luajit:
+// wasm2/exposition/testdata/tree_specs_oracle.lua over tree_specs.xml
+describe('the PoE2 tree list and class dropdown', () => {
+  beforeAll(() => {
+    globalThis.ResizeObserver ??= class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
+  });
+
+  it('Manage trees adds a tree, the tree set switches to it, and Connect Path keeps the tree on a class change', async () => {
+    poe2Build.set(await worker2Instance.Open(await fixture('tree_specs.xml')));
+    const { tinyTree } = await import('$lib/components/skill-tree/tree2_fixture');
+    const treeData = vi.spyOn(worker2Instance, 'TreeData').mockResolvedValue(tinyTree());
+    const page = render(AppTree2);
+    await vi.waitFor(() => expect((page.getByRole('combobox', { name: 'Class' }) as HTMLSelectElement).value).toBe('Warrior'), { timeout: 60_000 });
+    treeData.mockRestore();
+    issued.length = 0;
+
+    await fireEvent.keyDown(window, { key: 'm', ctrlKey: true });
+    const manager = page.getByRole('dialog', { name: 'Manage passive trees' });
+    await fireEvent.click(within(manager).getByRole('button', { name: 'New' }));
+    await fireEvent.input(within(manager).getByRole('textbox', { name: 'Name for this passive tree' }), { target: { value: 'Second' } });
+    await fireEvent.click(within(manager).getByRole('button', { name: 'Save' }));
+    await vi.waitFor(() => expect((get(poe2Build) as Poe2Calc | undefined)?.treeSpecs?.labels).toEqual(['Radius', 'Weapon sets', 'Second']));
+    const second = /<Spec [^>]*title="Second"[^>]*>/.exec(worker2Instance.Serialize())?.[0] ?? '';
+    expect(second).toContain('classId="6"');
+    expect(second).toContain('nodes="47175"');
+    await fireEvent.click(within(manager).getByRole('button', { name: 'Done' }));
+
+    await fireEvent.keyDown(window, { key: 'ArrowDown' });
+    await vi.waitFor(() => expect((get(poe2Build) as Poe2Calc | undefined)?.treeSpecs?.active).toBe(2));
+    expect(get(poe2Build)?.className).toBe('Sorceress');
+    await fireEvent.keyDown(window, { key: 'ArrowUp' });
+    await vi.waitFor(() => expect(get(poe2Build)?.className).toBe('Warrior'));
+
+    await fireEvent.change(page.getByRole('combobox', { name: 'Class' }), { target: { value: 'Sorceress' } });
+    const ask = await page.findByRole('dialog', { name: 'Class Change' });
+    expect(ask.textContent).toContain('This can be avoided by connecting one of the Sorceress starting nodes to your tree.');
+    await fireEvent.click(within(ask).getByRole('button', { name: 'Connect Path' }));
+    await vi.waitFor(() => expect(get(poe2Build)?.className).toBe('Sorceress'));
+    expect(/<Spec [^>]*title="Radius"[^>]*>/.exec(worker2Instance.Serialize())?.[0]).toContain(
+      'nodes="1207,3041,3936,4739,5710,6744,6839,10156,13397,16725,17468,18407,22419,22558,22616,22928,26725,27373,32194,33556,38323,39581,46325,47555,49357,51052,53405,53697,53921,54447,54811,55473,55933,57703,58838,59795"'
+    );
+    expect(get(poe2Build)?.output.Life).toBe(1812);
+    expect(issued.filter((c) => !c.startsWith('TreeSpecRows('))).toEqual([
+      'EditTreeSpecs({"op":"new","title":"Second"})',
+      'SetActiveTreeSpec(2)',
+      'SetActiveTreeSpec(1)',
+      'ChangeTreeClass(7,0)',
+      'ChangeTreeClass(7,2)'
+    ]);
   }, 120_000);
 });
 

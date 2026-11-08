@@ -5,11 +5,9 @@ import type { Game } from '$lib/go/engine';
 type Body = 'route' | (() => Promise<{ default: Component<{ route: string }> }>);
 export type GamePage = { label: string } & Partial<Record<Game, Body>>;
 
-const poe2Page = () => import('./Poe2Page.svelte');
-
 // every page route, in the top bar's order, and the body each game shows on it
 export const GAME_PAGES: Record<string, GamePage> = {
-  tree: { label: 'Tree', poe1: 'route', poe2: poe2Page },
+  tree: { label: 'Tree', poe1: 'route', poe2: 'route' },
   skills: { label: 'Skills', poe1: 'route', poe2: 'route' },
   items: { label: 'Items', poe1: 'route', poe2: 'route' },
   calcs: { label: 'Calcs', poe1: 'route', poe2: 'route' },

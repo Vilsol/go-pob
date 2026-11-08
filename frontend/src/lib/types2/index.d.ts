@@ -186,6 +186,8 @@ export declare namespace exposition {
     CalcsMods(query: exposition.CalcsModQuery): Result<(Record<string, number> | undefined)>;
     CalcsOutputs(): Result<(exposition.CalcsOutputs | undefined)>;
     Calculate(): Promise<Result<(exposition.Outputs | undefined)>>;
+    ChangeTreeAscendancy(ascendClassID: number): Result<void>;
+    ChangeTreeClass(classID: number, choice: number): Result<boolean>;
     ClickNode(id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number): Result<number>;
     CloseDisplayItem(): Result<void>;
     ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;
@@ -194,6 +196,7 @@ export declare namespace exposition {
     CopyItemSet(id: number, title: string): Result<void>;
     CopySkillSet(id: number, title: string): Result<number>;
     CopySocketGroup(index: number): Result<string>;
+    CopyTreeSpec(specID: number, title: string): Result<void>;
     CraftDisplayItem(rarity: number, title: string, base: string): Result<void>;
     CraftItemCompare(rarity: number, title: string, base: string): Promise<Result<(exposition.ItemCompareView | undefined)>>;
     CustomModifierBlocks(): (Array<exposition.CustomBlock> | undefined);
@@ -204,6 +207,7 @@ export declare namespace exposition {
     DeleteItemSet(id: number): Result<void>;
     DeleteSkillSet(id: number): Result<void>;
     DeleteSocketGroup(index: number): Result<void>;
+    DeleteTreeSpec(specID: number): void;
     DisplayItemAffixRoll(control: number, val: number): Result<(Array<string> | undefined)>;
     DisplayItemAffixes(): Result<(Array<exposition.AffixControlView> | undefined)>;
     DisplayItemCompare(): Promise<Result<(exposition.ItemCompareView | undefined)>>;
@@ -222,10 +226,12 @@ export declare namespace exposition {
     MoveConfigSet(from: number, to: number): void;
     MoveItemSet(from: number, to: number): Result<void>;
     MoveSocketGroup(from: number, to: number): Result<void>;
+    MoveTreeSpec(from: number, to: number): void;
     NewConfigSet(title: string): number;
     NewItemSet(title: string): Result<void>;
     NewSkillSet(title: string): Result<number>;
     NewSocketGroup(): Result<number>;
+    NewTreeSpec(title: string): Result<void>;
     Notes(): string;
     OpenDBItem(kind: string, name: string): Result<void>;
     PasteItem(raw: string): Result<void>;
@@ -235,6 +241,7 @@ export declare namespace exposition {
     RenameConfigSet(id: number, title: string): void;
     RenameItemSet(id: number, title: string): Result<void>;
     RenameSkillSet(id: number, title: string): Result<void>;
+    RenameTreeSpec(specID: number, title: string): void;
     ResetTree(): Result<void>;
     RichNotesDoc(): string;
     RichNotesStatus(): string;
@@ -244,6 +251,7 @@ export declare namespace exposition {
     SetActiveConfigSet(id: number): void;
     SetActiveItemSet(id: number): Result<void>;
     SetActiveSkillSet(id: number): Result<void>;
+    SetActiveTreeSpec(specID: number): void;
     SetCharacterLevelAutoMode(auto: boolean): void;
     SetCharacterRune(slot: string, runeName: string): Result<void>;
     SetConfigInput(name: string, value: calculator2.ConfigValue, isDefault: boolean): void;
@@ -271,11 +279,15 @@ export declare namespace exposition {
     SetSocketGroupIncludeInFullDPS(index: number, state: boolean): Result<void>;
     SetSocketGroupLabel(index: number, label: string): Result<void>;
     SetSocketGroupWeaponSet(index: number, set: number, state: boolean): Result<void>;
+    SetTreeNodeNote(nodeID: number, text: string): void;
     SetUseSecondWeaponSet(second: boolean): Result<void>;
     SidebarBreakdownKey(stat: string, childStat: string, breakdown: string, hasBreakdown: boolean, modNames: boolean): Result<exposition.SidebarBreakdownRef>;
     SkillGroups(): Result<(Array<exposition.SkillGroupView> | undefined)>;
     SkillSets(): exposition.SkillSetsView;
     SkillsUndo(redo: boolean): Result<boolean>;
+    TreeNodeNote(nodeID: number): string;
+    TreeSpecRows(): Result<(Array<exposition.TreeSpecRow> | undefined)>;
+    TreeSpecs(): exposition.TreeSpecsView;
     TreeState(): Result<(exposition.TreeState | undefined)>;
     Undo(): Result<boolean>;
     /** Releases the Go resources behind this wrapper. */
@@ -480,6 +492,11 @@ export declare namespace exposition {
     readonly Sets?: Array<calculator2.SkillSetView>;
     readonly Active: number;
   }
+  interface TreeClassRow {
+    readonly Label: string;
+    readonly ClassID: number;
+    readonly Ascendancies?: Array<string>;
+  }
   interface TreeHover {
     readonly Path?: Array<number>;
     readonly Depends?: Array<number>;
@@ -488,6 +505,18 @@ export declare namespace exposition {
     readonly ID: number;
     readonly Name: string;
     readonly Stats?: Array<string>;
+  }
+  interface TreeSpecRow {
+    readonly Title: string;
+    readonly ClassName: string;
+    readonly AscendClassName: string;
+    readonly Used: number;
+    readonly Sockets: number;
+    readonly Version: string;
+  }
+  interface TreeSpecsView {
+    readonly Labels?: Array<string>;
+    readonly Active: number;
   }
   interface TreeState {
     readonly Alloc?: Array<number>;
@@ -512,6 +541,7 @@ export declare namespace exposition {
   function ParseModLines(lines: Array<string> | undefined): (Array<exposition.ModLine> | undefined);
   function PassiveTreeJSON(): Promise<Result<string>>;
   function Preload(): Promise<Result<void>>;
+  function TreeClassList(): Promise<Result<(Array<exposition.TreeClassRow> | undefined)>>;
   function TreeClasses(): Promise<Result<(Array<string> | undefined)>>;
   const TreeVersion: string;
 }

@@ -112,3 +112,43 @@ test('a socketed radius jewel draws its radius ring on the PoE2 tree', async ({ 
   await expect.poll(async () => (await lastFrame(page))?.overlays).toBe(5);
   expect(errors).toEqual([]);
 });
+
+// TreeTab.lua:365-380, PassiveSpecListControl.lua:39-46 and PassiveTreeView.lua:556-564 (PoB-PoE2): the shared tree
+// page's tree list and the Shift+right-click node note on a PoE2 build
+test('the PoE2 tree page manages trees and keeps a node note', async ({ page }) => {
+  const errors: string[] = [];
+  await openPoe2(page, errors);
+  const view = poe2Page(page);
+  await expect(view).toBeVisible({ timeout: 180_000 });
+  await poe2Nav(page, 'Tree').click();
+  await expect(view.getByRole('img', { name: 'Passive skill tree' })).toBeVisible({ timeout: 60_000 });
+  await expect(view.getByRole('combobox', { name: 'Class' })).toHaveValue('Sorceress');
+
+  await page.keyboard.press('Control+m');
+  const manager = page.getByRole('dialog', { name: 'Manage passive trees' });
+  await manager.getByRole('button', { name: 'New' }).click();
+  await manager.getByRole('textbox', { name: 'Name for this passive tree' }).fill('Second');
+  await manager.getByRole('button', { name: 'Save' }).click();
+  await expect(manager.getByRole('listbox')).toContainText('Second');
+  await manager.getByRole('button', { name: 'Done' }).click();
+
+  let at = await screenOf(page, 44871);
+  await page.mouse.move(at.x, at.y);
+  for (let i = 0; i < 14; i++) await page.mouse.wheel(0, -100);
+  at = await screenOf(page, 44871);
+  await page.mouse.move(at.x + 1, at.y + 1);
+  await page.mouse.move(at.x, at.y);
+  await expect.poll(async () => (await lastFrame(page))?.hovered).toBe(44871);
+  await page.keyboard.down('Shift');
+  await page.mouse.click(at.x, at.y, { button: 'right' });
+  await page.keyboard.up('Shift');
+  const note = page.getByRole('dialog', { name: 'Note: Energy Shield' });
+  await note.getByRole('textbox', { name: 'Node note' }).fill('take this first');
+  await note.getByRole('button', { name: 'Save' }).click();
+  await expect(note).toBeHidden();
+  await page.keyboard.down('Shift');
+  await page.mouse.click(at.x, at.y, { button: 'right' });
+  await page.keyboard.up('Shift');
+  await expect(note.getByRole('textbox', { name: 'Node note' })).toHaveValue('take this first');
+  expect(errors).toEqual([]);
+});

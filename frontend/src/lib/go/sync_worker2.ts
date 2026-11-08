@@ -23,6 +23,7 @@ import type { ItemDBFilterInput, ItemDBKind, ItemDBLists, ItemDBRowPlain } from 
 import { addStatCompares2 } from '../display/stat_compare2';
 import type { StatCompareSection } from '../skill_tree/stat_compare';
 import type { ConfigSetEdit } from './engine';
+import type { SpecOp } from '../design/tree';
 
 // only the data cache bucket; on the web it is its own IndexedDB database, since zenfs allocates inode ids per
 // instance and two instances writing the PoE1 worker's database overwrite each other's files
@@ -132,7 +133,15 @@ export type Poe2Calc = Poe2View & {
   configSets?: { sets: { id: number; title: string }[]; active: number };
   // ConfigTab.lua:24-98 (PoB-PoE2)
   customBlocks?: { Title: string; Enabled: string; Text: string }[];
+  // TreeTab.lua:485-491 (PoB-PoE2): the tree list's labels and the active spec, 1-based
+  treeSpecs?: { labels: string[]; active: number };
 };
+
+/* PassiveSpecListControl.lua:77-85, TreeTab.lua:67-78 (PoB-PoE2) */
+export type Poe2TreeSpecRow = { title: string; className: string; ascendClassName: string; used: number; sockets: number; version: string };
+
+/* Build.lua:1519-1540 (PoB-PoE2): a class dropdown entry and its ascendancies, by ascendClassId */
+export type Poe2TreeClass = { label: string; classId: number; ascendancies: string[] };
 
 export type Poe2Click = { result: number; calc?: Poe2Calc };
 
@@ -352,6 +361,7 @@ class PoB2Worker {
       mainActiveSkill: out.MainActiveSkill,
       configInputs: inputs,
       configSets: this.ConfigSets(),
+      treeSpecs: this.TreeSpecs(),
       customBlocks: this.CustomModifierBlocks(),
       relevance: Object.fromEntries(Object.entries(rel).map(([k, v]) => [k, [...((v as string[] | undefined) ?? [])]])) as calculator2.ConfigRelevance,
       tree: {
@@ -516,6 +526,71 @@ class PoB2Worker {
     if (!this.calc) throw new Error('no PoE2 build is open');
     const changed = (redo ? this.calc.Redo() : this.calc.Undo()).unwrap();
     return changed ? this.view() : undefined;
+  }
+
+  /* TreeTab.lua:485-491 (PoB-PoE2) */
+  TreeSpecs(): { labels: string[]; active: number } {
+    const v = this.calc?.TreeSpecs();
+    return { labels: [...(v?.Labels ?? [])], active: v?.Active ?? 1 };
+  }
+
+  /* PassiveSpecListControl.lua:77-85, TreeTab.lua:67-78 (PoB-PoE2) */
+  TreeSpecRows(): Poe2TreeSpecRow[] {
+    return (this.calc?.TreeSpecRows().unwrap() ?? []).map((r) => ({
+      title: r.Title,
+      className: r.ClassName,
+      ascendClassName: r.AscendClassName,
+      used: r.Used,
+      sockets: r.Sockets,
+      version: r.Version
+    }));
+  }
+
+  /* TreeTab.lua:55-62, 365-376 (PoB-PoE2); index is 1-based */
+  async SetActiveTreeSpec(index: number): Promise<Poe2Calc> {
+    this.calc?.SetActiveTreeSpec(index);
+    return this.view();
+  }
+
+  /* PassiveSpecListControl.lua:16-122, ListControl.lua:440-448 (PoB-PoE2); the op's indices are 0-based */
+  async EditTreeSpecs(op: SpecOp): Promise<Poe2Calc> {
+    const calc = this.calc;
+    if (!calc) throw new Error('no PoE2 build is open');
+    if (op.op === 'new') calc.NewTreeSpec(op.title).unwrap();
+    else if (op.op === 'copy') calc.CopyTreeSpec(op.index + 1, op.title).unwrap();
+    else if (op.op === 'rename') calc.RenameTreeSpec(op.index + 1, op.title);
+    else if (op.op === 'move') calc.MoveTreeSpec(op.from + 1, op.to + 1);
+    else calc.DeleteTreeSpec(op.index + 1);
+    return this.view();
+  }
+
+  /* PassiveSpec.lua:161-171 (PoB-PoE2) */
+  TreeNodeNote(nodeId: number): string {
+    return this.calc?.TreeNodeNote(nodeId) ?? '';
+  }
+
+  /* PassiveTreeView.lua:556-564, Main.lua:1818-1823 (PoB-PoE2): an empty note removes it; the note changes no stat */
+  SetTreeNodeNote(nodeId: number, text: string) {
+    this.calc?.SetTreeNodeNote(nodeId, text);
+  }
+
+  /* Build.lua:1519-1540 (PoB-PoE2) */
+  async TreeClassList(): Promise<Poe2TreeClass[]> {
+    await this.booted;
+    return ((await exposition.TreeClassList()).unwrap() ?? []).map((c) => ({ label: c.Label, classId: c.ClassID, ascendancies: [...(c.Ascendancies ?? [])] }));
+  }
+
+  /* Build.lua:246-272 (PoB-PoE2); choice 0 asks first, 1 is Continue, 2 is Connect Path */
+  async ChangeTreeClass(classId: number, choice: number): Promise<{ ask: boolean; calc?: Poe2Calc }> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    const ask = this.calc.ChangeTreeClass(classId, choice).unwrap() ?? false;
+    return ask ? { ask } : { ask, calc: await this.view() };
+  }
+
+  /* Build.lua:273-278 (PoB-PoE2) */
+  async ChangeTreeAscendancy(ascendClassId: number): Promise<Poe2Calc> {
+    this.calc?.ChangeTreeAscendancy(ascendClassId).unwrap();
+    return this.view();
   }
 
   /* SkillsTab.lua:594-599 (PoB-PoE2): Ctrl+Z / Ctrl+Y on the Skills tab; no calc when there was nothing to undo or redo */

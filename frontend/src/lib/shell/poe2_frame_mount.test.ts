@@ -50,12 +50,36 @@ const calc = (over: Record<string, unknown> = {}) => ({
   mainSocketGroup: 1,
   mainActiveSkill: 1,
   configInputs: {},
-  tree: { alloc: [], allocMode: {}, text: {}, className: 'Sorceress', ascendClassBaseName: '', used: 12, ascUsed: 2, jewelRadiusIndex: {} },
+  tree: {
+    alloc: [],
+    allocMode: {},
+    text: {},
+    className: 'Sorceress',
+    ascendClassBaseName: '',
+    used: 12,
+    ascUsed: 2,
+    jewelRadiusIndex: {},
+    progress: {
+      level: 13,
+      act: 'Act 1',
+      extra: 0,
+      normalPassives: 12,
+      usedMax: 24,
+      weaponSet1Used: 0,
+      weaponSet2Used: 0,
+      weaponSetMax: 0,
+      ascUsed: 2,
+      ascMax: 0,
+      warnings: []
+    }
+  },
+  treeSpecs: { labels: ['Default'], active: 1 },
   ...over
 });
 const w2 = vi.hoisted(() => ({
   SetMainActiveSkill: vi.fn(),
-  TreeData: vi.fn(() => new Promise(() => {}))
+  TreeData: vi.fn(() => new Promise(() => {})),
+  TreeClassList: vi.fn(() => Promise.resolve([{ label: 'Sorceress', classId: 7, ascendancies: ['None', 'Stormweaver'] }]))
 }));
 vi.mock('$lib/go/worker2', () => ({ poe2Worker: () => Promise.resolve(w2) }));
 
@@ -65,7 +89,7 @@ const { poe2Engine, poe2Error } = await import('$lib/go/engine_poe2.svelte');
 const { opening } = await import('./build_name.svelte');
 const AppTopBar = (await import('./AppTopBar.svelte')).default;
 const AppSidebar = (await import('./AppSidebar.svelte')).default;
-const Poe2Page = (await import('./Poe2Page.svelte')).default;
+const AppTree2 = (await import('./AppTree2.svelte')).default;
 
 afterEach(() => {
   poe2Build.set(undefined);
@@ -149,11 +173,19 @@ describe('a PoE2 build in the app frame', () => {
   });
 
   it('the tree body shows the level, class and points, and an edit error reaches the page', async () => {
+    globalThis.ResizeObserver ??= class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
     poe2Build.set(calc());
-    const page = render(Poe2Page, { route: 'tree' });
-    expect(page.getByText('Sorceress')).toBeTruthy();
+    const page = render(AppTree2);
+    await vi.waitFor(() => expect((page.getByRole('combobox', { name: 'Class' }) as HTMLSelectElement).value).toBe('Sorceress'));
+    expect([...(page.getByRole('combobox', { name: 'Ascendancy' }) as HTMLSelectElement).options].map((o) => o.text)).toEqual(['None', 'Stormweaver']);
     expect((page.getByRole('spinbutton', { name: 'Character level' }) as HTMLInputElement).value).toBe('40');
-    expect(page.getByLabelText('Passive points used').textContent).toBe('Points: 12 / Ascendancy: 2');
+    expect(page.getByRole('status', { name: 'Points used' }).textContent?.replace(/\s+/g, ' ').trim()).toBe(
+      'Points 12 / 24 · Weapon set 1 0 / 0 · Weapon set 2 0 / 0 · Ascendancy 2 / 0'
+    );
     w2.SetMainActiveSkill.mockRejectedValueOnce(new Error('no PoE2 build is open'));
     poe2Engine.setMainSkill('MainActiveSkill', 2);
     expect((await page.findByRole('alert')).textContent).toBe('no PoE2 build is open');

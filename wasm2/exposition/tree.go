@@ -348,7 +348,11 @@ func (c *Calculator) saveSpec(spec *tree2.PassiveSpec) {
 	if idx < 1 || idx > len(specs) {
 		idx = 1
 	}
-	s := &specs[idx-1]
+	writeSpec(&specs[idx-1], spec)
+}
+
+// writeSpec writes the spec's class, nodes, weapon sets and attribute overrides into s.
+func writeSpec(s *pob2.Spec, spec *tree2.PassiveSpec) {
 	save := spec.Save()
 	s.ClassID, s.AscendClassID, s.ClassInternalID = &save.ClassID, &save.AscendClassID, &save.ClassInternalID
 	s.AscendancyInternalID, s.Nodes, s.MasteryEffects = &save.AscendancyInternalID, &save.Nodes, &save.MasteryEffects

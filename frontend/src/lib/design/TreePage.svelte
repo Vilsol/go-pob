@@ -128,6 +128,13 @@
     onhovered?: (id: number | null) => void;
     /* PassiveTreeView.lua:207 */
     showDiff?: boolean;
+    /* a game's own points display in place of the level, points and ascendancy counts */
+    points?: Snippet;
+    /* a game's own node search, and the syntax its help lists */
+    search?: (q: string, nodes: TreeNodeFx[]) => Set<number>;
+    searchHelp?: { rows: [string, string][]; note?: string };
+    /* false where the canvas zooms itself and takes no zoom from the page */
+    zoomControls?: boolean;
   };
   let {
     tree,
@@ -192,7 +199,11 @@
     details,
     detailsOpen = false,
     showDiff = $bindable(true),
-    manage = $bindable(false)
+    manage = $bindable(false),
+    points,
+    search,
+    zoomControls = true,
+    searchHelp = { rows: SEARCH_HELP, note: 'The search is saved with the build and comes back when you reopen it.' }
   }: Props = $props();
 
   // TreeTab.lua:629-647
@@ -339,7 +350,10 @@
 
   const words = $derived(searchWords(q.trim()));
   const KIND_FILTER: Record<string, string[]> = { All: ['s', 'n', 'k', 'm', 'j'], Notables: ['n'], Keystones: ['k'], Masteries: ['m'] };
-  const matchList = $derived(q.trim().length >= 2 ? tree.nodes.filter((n) => KIND_FILTER[filter].includes(n.k) && nodeMatches(n, words)) : []);
+  const searched = $derived(search && q.trim().length >= 2 ? search(q, tree.nodes) : undefined);
+  const matchList = $derived(
+    q.trim().length >= 2 ? tree.nodes.filter((n) => KIND_FILTER[filter].includes(n.k) && (searched ? searched.has(n.id) : nodeMatches(n, words))) : []
+  );
   const matches = $derived(new Set(matchList.map((n) => n.id)));
   const big = (n: TreeNodeFx) => n.k === 'n' || n.k === 'k' || n.k === 'm';
   const listed = $derived([...matchList.filter(big), ...matchList.filter((n) => !big(n))].slice(0, 12));
@@ -549,6 +563,12 @@
     mastery = null;
   };
   const allocCount = $derived(tree.nodes.filter((n) => alloc[n.id]).length);
+  const resetTitle = $derived(onremovetattoos ? 'Reset Tree/Tattoos' : 'Reset Tree');
+  const resetWarning = $derived(
+    onremovetattoos
+      ? 'Warning: resetting your passive tree or removing all tattoos cannot be undone.'
+      : 'Warning: resetting your passive tree cannot be undone.'
+  );
 </script>
 
 {#snippet tipExtra()}{#if H}{@render nodeTipExtra?.(H)}{/if}{/snippet}
@@ -611,7 +631,9 @@
     {/if}
   {/if}
   <div class="grow"></div>
-  {#if progress}
+  {#if points}
+    {@render points()}
+  {:else if progress}
     <output class="text-13 whitespace-nowrap text-text-2" aria-label="Points used" title={progressTooltip(progress)} data-points
       >{#if !onlevel}Level <span class="font-mono text-text">{progress.level}</span> ·&nbsp;{/if}Points
       <span class="font-mono text-text">{progress.used} / {progress.usedMax}</span>
@@ -665,11 +687,13 @@
         <span aria-hidden="true">{ARROW[m.side]}</span>{m.count}
       </div>
     {/each}
-    <div class="absolute top-2.5 right-2.5 z-map flex flex-col gap-1" data-zoom>
-      <Button icon class="size-7.5 bg-surface-1 text-16 font-normal" aria-label="Zoom in" onclick={() => onzoom?.('in')}>+</Button>
-      <Button icon class="size-7.5 bg-surface-1 text-16 font-normal" aria-label="Zoom out" onclick={() => onzoom?.('out')}>−</Button>
-      <Button icon class="size-7.5 bg-surface-1 text-11 font-normal" aria-label="Fit tree" onclick={() => onzoom?.('fit')}>fit</Button>
-    </div>
+    {#if zoomControls}
+      <div class="absolute top-2.5 right-2.5 z-map flex flex-col gap-1" data-zoom>
+        <Button icon class="size-7.5 bg-surface-1 text-16 font-normal" aria-label="Zoom in" onclick={() => onzoom?.('in')}>+</Button>
+        <Button icon class="size-7.5 bg-surface-1 text-16 font-normal" aria-label="Zoom out" onclick={() => onzoom?.('out')}>−</Button>
+        <Button icon class="size-7.5 bg-surface-1 text-11 font-normal" aria-label="Fit tree" onclick={() => onzoom?.('fit')}>fit</Button>
+      </div>
+    {/if}
     <div class="map-note pointer-events-none top-2.5 left-2.5 z-map">
       <output aria-label="Tree version"
         >Tree {tree.version.replace('_', '.')}{recordedVersion && recordedVersion !== tree.version
@@ -869,10 +893,10 @@
       id="{uid}-help"
       class={['tooltip tooltip-info top-auto bottom-10.5 left-0 z-dock w-100 flex-col gap-1.5', helpHover || helpFocus ? 'flex' : 'hidden']}>
       <span class="font-semibold">Search syntax</span>
-      {#each SEARCH_HELP as [k, v] (k)}<span class="grid grid-cols-[130px_minmax(0,1fr)] gap-2"
+      {#each searchHelp.rows as [k, v] (k)}<span class="grid grid-cols-[130px_minmax(0,1fr)] gap-2"
           ><code class="font-mono text-accent">{k}</code><span class="text-text-2">{v}</span></span
         >{/each}
-      <span class="note-sm border-t border-line pt-1.5">The search is saved with the build and comes back when you reopen it.</span>
+      {#if searchHelp.note}<span class="note-sm border-t border-line pt-1.5">{searchHelp.note}</span>{/if}
     </div>
   </div>
   <span class="note whitespace-nowrap max-wide:hidden">{matchList.length} matches</span>
@@ -888,7 +912,7 @@
   {/if}
   <div class="grow"></div>
   {#if onresettree}
-    <Button size="md" class="px-3 whitespace-nowrap" onclick={() => (resetting = true)}>Reset Tree/Tattoos</Button>
+    <Button size="md" class="px-3 whitespace-nowrap" onclick={() => (resetting = true)}>{resetTitle}</Button>
   {/if}
   {#if onnodepower && nodePowerBar}
     <label class="field field-inline gap-1 text-12 whitespace-nowrap" title="An estimate of each unallocated passive's power for the chosen stat"
@@ -1126,13 +1150,14 @@
   {/snippet}
 </Dialog>
 
-<Dialog phone="centred" bind:open={resetting} title="Reset Tree/Tattoos" size="md">
+<!-- TreeTab.lua:145-161 (PoB-PoE2) has no tattoos -->
+<Dialog phone="centred" bind:open={resetting} title={resetTitle} size="md">
   <div class="flex flex-col gap-3 text-13">
-    <p class="m-0">Warning: resetting your passive tree or removing all tattoos cannot be undone.</p>
+    <p class="m-0">{resetWarning}</p>
   </div>
   {#snippet actions()}
     <DialogActions
-      confirm="Reset Tree"
+      confirm={onremovetattoos ? 'Reset Tree' : 'Reset'}
       tone="danger"
       oncancel={() => (resetting = false)}
       onconfirm={() => {

@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding2>
+	<Build ascendClassName="None" characterLevelAutoMode="false" className="Warrior" level="80" mainSocketGroup="1" targetVersion="0_1" viewMode="TREE">
+	</Build>
+	<Config activeConfigSet="1">
+		<ConfigSet id="1" title="Default">
+			<Input boolean="false" name="questAct 1FreythornKing In The Mists"/>
+			<Input boolean="false" name="questAct 4Eye of HinekoraSilent Hall"/>
+		</ConfigSet>
+	</Config>
+	<Items activeItemSet="1" useSecondWeaponSet="false">
+		<Item id="1">
+			Rarity: RARE
+Storm Shell
+Vaal Cuirass
+Armour: 900
+Item Level: 80
+Quality: 20
+Sockets: S S
+Rune: Greater Iron Rune
+Rune: Iron Rune
+LevelReq: 60
+Implicits: 3
+{enchant}{rune}34% increased Armour, Evasion and Energy Shield
+{enchant}{rune}Bonded: +40 to maximum Life
+{enchant}{rune}Bonded: +40 to maximum Mana
++120 to Armour
+85% increased Armour
++90 to maximum Life
++35% to Fire Resistance
+{crafted}+20 to Strength
+			<ModRange id="1" range="0.5"/>
+			<ModRange id="2" range="0.5"/>
+		</Item>
+		<Item id="2">
+			Rarity: MAGIC
+Reinforced Vaal Tower Shield of the Lynx
+Item Level: 70
+Quality: 12
+LevelReq: 65
+Implicits: 1
+Grants Skill: Raise Shield
+45% increased Armour
++18 to Dexterity
++8% to Block chance
+		</Item>
+		<Item id="3">
+			Rarity: RARE
+Gloom Grasp
+Utility Wraps
+Item Level: 75
+Quality: 5
+Sockets: S
+LevelReq: 65
+Implicits: 0
+{enchant}{rune}+12% to Lightning Resistance
++40 to Evasion Rating
++20 to maximum Energy Shield
+40% increased Evasion and Energy Shield
++(60-80) to maximum Life
+		</Item>
+		<Item id="4">
+			Rarity: RARE
+Doom Knuckle
+Bandit Mace
+Item Level: 70
+Quality: 20
+Sockets: S S
+Rune: Greater Iron Rune
+Rune: None
+LevelReq: 50
+Implicits: 0
+{enchant}{rune}18% increased Physical Damage
+120% increased Physical Damage
+Adds 10 to 20 Physical Damage
+Adds 5 to 50 Lightning Damage
+12% increased Attack Speed
++1.5% to Critical Hit Chance
++150 to Accuracy Rating
+		</Item>
+		<Item id="5">
+			Rarity: RARE
+Vortex Loop
+Two-Stone Ring
+Item Level: 60
+LevelReq: 40
+Implicits: 1
++14% to Cold and Lightning Resistances
++60 to maximum Life
++25 to Intelligence
+10% increased Mana Regeneration Rate
+		</Item>
+		<Item id="6">
+			Rarity: MAGIC
+Ultimate Life Flask of the Rainbow
+Item Level: 65
+Quality: 20
+LevelReq: 60
+Implicits: 0
+30% increased Amount Recovered
+		</Item>
+		<Item id="7">
+			Rarity: NORMAL
+Antidote Charm
+Item Level: 40
+Quality: 10
+LevelReq: 30
+Implicits: 0
+		</Item>
+		<Item id="8">
+			Rarity: RARE
+Sol Spark
+Time-Lost Ruby
+Item Level: 80
+LevelReq: 0
+Radius: Large
+Implicits: 0
+Notable Passive Skills in Radius also grant 6% increased maximum Life
+Small Passive Skills in Radius also grant +7 to Strength
+Small Passive Skills in Radius also grant 4% increased Armour
+20% increased Effect of Notable Passive Skills in Radius
+		</Item>
+		<Item id="9">
+			Rarity: RARE
+Mind Song
+Twisted Wand
+Item Level: 70
+Quality: 10
+Sockets: S
+Rune: Greater Iron Rune
+LevelReq: 60
+Implicits: 1
+{enchant}{rune}30% increased Spell Damage
+{enchant}{rune}Bonded: Break Armour on Critical Hit with Spells equal to 12% of Physical Damage dealt
+Grants Skill: Level 15 Coiling Bolts
+80% increased Spell Damage
++2 to Level of all Lightning Spell Skills
+		</Item>
+		<Item id="10">
+			Rarity: RARE
+Hollow Stride
+Vaal Greaves
+Item Level: 81
+Quality: 0
+Sockets: S
+LevelReq: 75
+Implicits: 0
+{enchant}{rune}+12% to Lightning Resistance
+25% increased Movement Speed
++90 to Armour
+		</Item>
+		<Item id="11">
+			Rarity: NORMAL
+Aromatic Sceptre
+Item Level: 60
+Quality: 10
+LevelReq: 50
+Implicits: 0
+		</Item>
+		<Item id="12">
+			Rarity: MAGIC
+Amber Amulet of the Brute
+Item Level: 50
+LevelReq: 30
+Implicits: 1
++12 to Strength
++15 to Strength
+Allocates 1 Sinister Jewel socket
+		</Item>
+		<Item id="13">
+			Rarity: MAGIC
+Double Belt
+Item Level: 50
+LevelReq: 30
+Implicits: 2
+Has 2 Charm Slot
+25% increased Charm Charges gained
++40 to maximum Life
+		</Item>
+		<Item id="14">
+			Rarity: RARE
+Grim Coil
+Gold Ring
+Item Level: 70
+Corrupted
+LevelReq: 40
+Implicits: 1
+8% increased Rarity of Items found
++30 to maximum Mana
++20 to Dexterity
+		</Item>
+		<Item id="15">
+			Rarity: MAGIC
+Emerald
+Item Level: 80
+LevelReq: 0
+Implicits: 0
++16 to Dexterity
+		</Item>
+		<Item id="16">
+			Rarity: MAGIC
+Sapphire
+Item Level: 80
+LevelReq: 0
+Implicits: 0
++9 to Intelligence
+		</Item>
+		<ItemSet id="1" title="Default" useSecondWeaponSet="false">
+			<Slot itemId="4" name="Weapon 1"/>
+			<Slot itemId="11" name="Weapon 2"/>
+			<Slot itemId="9" name="Weapon 1 Swap"/>
+			<Slot itemId="2" name="Weapon 2 Swap"/>
+			<Slot itemId="1" name="Body Armour"/>
+			<Slot itemId="3" name="Gloves"/>
+			<Slot itemId="10" name="Boots"/>
+			<Slot itemId="5" name="Ring 1"/>
+			<Slot itemId="14" name="Ring 2"/>
+			<Slot itemId="5" name="Ring 3"/>
+			<Slot itemId="12" name="Amulet"/>
+			<Slot itemId="13" name="Belt"/>
+			<Slot active="true" itemId="6" name="Flask 1"/>
+			<Slot active="true" itemId="7" name="Charm 1"/>
+		</ItemSet>
+	</Items>
+	<Skills activeSkillSet="1" defaultGemLevel="normalMaximum" defaultGemQuality="0">
+		<SkillSet id="1">
+			<Skill enabled="false" includeInFullDPS="nil" label="" mainActiveSkill="1" mainActiveSkillCalcs="1" set1="true" set2="false">
+			</Skill>
+		</SkillSet>
+	</Skills>
+	<Tree activeSpec="1">
+		<Spec ascendClassId="0" classId="6" title="Radius" masteryEffects="" nodes="47175,3936,38646,13397,46325,1913,23570,1207,33556,39581,4665,36709,41031,38323,55473,6839,61534,63393,54232,5710,22928,27373,16725,54811,57703,26725,58838,53921" secondaryAscendClassId="nil" treeVersion="0_5">
+			<Overrides>
+				<AttributeOverride dexNodes="1207" intNodes="41031" strNodes="13397,23570,22928,27373,16725,54811,57703"/>
+			</Overrides>
+			<Sockets>
+				<Socket itemId="8" nodeId="26725"/>
+				<Socket itemId="15" nodeId="2491"/>
+				<Socket itemId="16" nodeId="62152"/>
+			</Sockets>
+		</Spec>
+		<Spec ascendClassId="0" classId="7" masteryEffects="" nodes="4739,18845,44871,54447" secondaryAscendClassId="nil" title="Weapon sets" treeVersion="0_5">
+			<WeaponSet1 nodes="44871"/>
+			<WeaponSet2 nodes="4739,18845"/>
+		</Spec>
+	</Tree>
+</PathOfBuilding2>

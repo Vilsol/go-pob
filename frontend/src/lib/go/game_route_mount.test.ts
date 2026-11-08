@@ -27,7 +27,14 @@ vi.mock('$lib/go/worker', async () => {
 
 const VIEW = { className: 'Sorceress', ascendClassName: 'None', level: 40, output: { Life: 683, Mana: 231, EnergyShield: 0, TotalDPS: 24.914285714286 } };
 const open = vi.fn((xml: string) => Promise.resolve(xml ? VIEW : VIEW));
-const poe2Worker = vi.fn(() => Promise.resolve({ Open: open }));
+// the tree page also reads the class list and the tree; the tree never arrives here
+const poe2Worker = vi.fn(() =>
+  Promise.resolve({
+    Open: open,
+    TreeClassList: () => Promise.resolve([{ label: 'Sorceress', classId: 7, ascendancies: ['None'] }]),
+    TreeData: () => new Promise(() => {})
+  })
+);
 vi.mock('$lib/go/worker2', () => ({ poe2Worker }));
 
 const { bootWorker, loadCorpusBuild } = await import('../../../harness/component/go_runtime');
@@ -89,6 +96,7 @@ describe('a PoE2 build code in the import dialog', () => {
     await importAsNew(poe2Xml);
     await vi.waitFor(() => expect(get(poe2Build)).toEqual(VIEW));
     expect(poe2Worker).toHaveBeenCalledTimes(1);
+    poe2Worker.mockClear();
     expect(open).toHaveBeenCalledWith(poe2Xml);
     expect(workerInstance.currentBuild).toBeUndefined();
     expect(get(currentBuild)).toBeUndefined();
@@ -96,8 +104,13 @@ describe('a PoE2 build code in the import dialog', () => {
 
     // the frame shows it: the tree route's PoE2 body and the sidebar's PoE2 stats
     const Tree = (await import('../../routes/tree/+page.svelte')).default;
+    globalThis.ResizeObserver ??= class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
     const tree = within(render(Tree).container);
-    expect(await tree.findByText('Sorceress')).toBeTruthy();
+    await vi.waitFor(() => expect((tree.getByRole('combobox', { name: 'Class' }) as HTMLSelectElement).value).toBe('Sorceress'), { timeout: 10_000 });
     expect((tree.getByRole('spinbutton', { name: 'Character level' }) as HTMLInputElement).value).toBe('40');
     const Sidebar = (await import('$lib/shell/AppSidebar.svelte')).default;
     const stats = within(render(Sidebar).getByRole('region', { name: 'Build stats' }));

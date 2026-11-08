@@ -55,6 +55,7 @@ export const initializeCrystalline = () => {
     ParseModLines: wrap('exposition.ParseModLines', globalThis['go']['go-pob2']['exposition']['ParseModLines']),
     PassiveTreeJSON: wrap('exposition.PassiveTreeJSON', globalThis['go']['go-pob2']['exposition']['PassiveTreeJSON']),
     Preload: wrap('exposition.Preload', globalThis['go']['go-pob2']['exposition']['Preload']),
+    TreeClassList: wrap('exposition.TreeClassList', globalThis['go']['go-pob2']['exposition']['TreeClassList']),
     TreeClasses: wrap('exposition.TreeClasses', globalThis['go']['go-pob2']['exposition']['TreeClasses']),
     TreeVersion: globalThis['go']['go-pob2']['exposition']['TreeVersion']
   };

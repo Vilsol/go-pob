@@ -504,6 +504,83 @@ func (s *PassiveSpec) SelectAscendClass(ascendClassID int) {
 //pob2:src/Classes/PassiveSpec.lua:746-750
 func (s *PassiveSpec) SelectSecondaryAscendClass(int) {}
 
+//pob2:src/Classes/PassiveSpec.lua:786-807
+func (s *PassiveSpec) IsClassConnected(classID int) bool {
+	for _, other := range s.Nodes[s.Tree.Classes[classID].StartNodeID].Linked {
+		if other.Alloc {
+			other.Visited = true
+			var visited []*SpecNode
+			found := s.FindStartFromNode(other, &visited, true, other.AllocMode, nil)
+			for _, n := range visited {
+				n.Visited = false
+			}
+			other.Visited = false
+			if found {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// ConnectToClass finds and allocates the shortest path to connect to a target class's starting node.
+//
+//pob2:src/Classes/PassiveSpec.lua:810-881
+func (s *PassiveSpec) ConnectToClass(classID int) (bool, error) {
+	classData := s.Tree.Classes[classID]
+	if classData == nil {
+		return false, nil
+	}
+	targetStartNode := s.Nodes[classData.StartNodeID]
+	if targetStartNode == nil {
+		return false, nil
+	}
+	isMainTreeNode := func(node *SpecNode) bool {
+		return node != nil && !node.IsProxy && node.AscendancyName == "" && node.Type != "ClassStart" && node.Type != "AscendClassStart"
+	}
+	visited := map[*SpecNode]bool{targetStartNode: true}
+	prev := map[*SpecNode]*SpecNode{}
+	queue := []*SpecNode{targetStartNode}
+	var foundNode *SpecNode
+	for head := 0; head < len(queue) && foundNode == nil; head++ {
+		node := queue[head]
+		if node != targetStartNode && node.Alloc && node.ConnectedToStart && node.Type != "ClassStart" && node.Type != "AscendClassStart" {
+			foundNode = node
+			break
+		}
+		for _, linked := range node.Linked {
+			if isMainTreeNode(linked) && !visited[linked] {
+				visited[linked] = true
+				prev[linked] = node
+				queue = append(queue, linked)
+			}
+		}
+	}
+	if foundNode == nil {
+		return false, nil
+	}
+	var pathBack []*SpecNode
+	for current := foundNode; current != nil; current = prev[current] {
+		pathBack = append(pathBack, current)
+		if current == targetStartNode {
+			break
+		}
+	}
+	if pathBack[len(pathBack)-1] != targetStartNode {
+		return false, nil
+	}
+	altPath := []*SpecNode{pathBack[0]}
+	for idx := 1; idx < len(pathBack)-1; idx++ {
+		altPath = append(altPath, pathBack[idx])
+		if node := pathBack[idx]; !node.Alloc {
+			if err := s.AllocNode(node, altPath); err != nil {
+				return true, err
+			}
+		}
+	}
+	return true, nil
+}
+
 //pob2:src/Classes/PassiveSpec.lua:884-892
 func (s *PassiveSpec) ResetNodes() {
 	for id, node := range s.Nodes {
