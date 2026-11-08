@@ -196,6 +196,24 @@ test('the PoE2 power report lists node power and the tree draws the heat map', a
   await expect.poll(async () => rows.count(), { timeout: 120_000 }).toBeGreaterThan(1);
   await expect(rows.nth(1).getByRole('cell').nth(2)).toHaveText(/^\d/);
   await expect.poll(async () => (await lastFrame(page))?.heat ?? 0).toBeGreaterThan(0);
+  // PowerReportListControl.lua (PoB-PoE2) has no Show Masteries box
+  await expect(report.getByRole('checkbox', { name: 'Show Masteries' })).toHaveCount(0);
+  // a picked row centres its node; hovering the row rings it on the tree, as on the PoE1 tree
+  const first = report.locator('[data-power-node]').first();
+  const id = await first.getAttribute('data-power-node');
+  await first.click();
+  await first.hover();
+  const ring = page.locator(`[data-power-hover="${id}"]`);
+  await expect(ring).toBeVisible();
+  const box = (await view.getByRole('img', { name: 'Passive skill tree' }).boundingBox())!;
+  await expect
+    .poll(async () => {
+      const r = (await ring.boundingBox())!;
+      return Math.max(Math.abs(r.x + r.width / 2 - (box.x + box.width / 2)), Math.abs(r.y + r.height / 2 - (box.y + box.height / 2)));
+    })
+    .toBeLessThan(2);
+  await page.mouse.move(box.x + 5, box.y + box.height - 5);
+  await expect(page.locator('[data-power-hover]')).toHaveCount(0);
   // switching the heat map off stops drawing it
   await page.keyboard.press('p');
   await expect.poll(async () => (await lastFrame(page))?.heat).toBeUndefined();

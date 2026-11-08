@@ -22,8 +22,8 @@ afterEach(() => {
 const WASM2 = resolve(process.cwd(), 'static/go-pob2.wasm');
 
 const { worker2 } = await import('$lib/go/sync_worker2');
-// a worker call named here answers that many ms late, as a busy worker would
-const delays: Record<string, number> = {};
+// a worker call named here answers that many ms late, as a busy worker would; a list gives each call its own delay
+const delays: Record<string, number | number[]> = {};
 const poe2Worker = vi.fn(() =>
   Promise.resolve(
     new Proxy(worker2, {
@@ -32,7 +32,8 @@ const poe2Worker = vi.fn(() =>
         if (typeof v !== 'function') return v;
         return (...args: unknown[]) => {
           const r = (v as (...a: unknown[]) => unknown).apply(target, args);
-          const ms = delays[String(prop)];
+          const d = delays[String(prop)];
+          const ms = Array.isArray(d) ? d.shift() : d;
           return ms ? new Promise((done) => setTimeout(() => done(r), ms)) : r;
         };
       }
@@ -164,5 +165,87 @@ describe('the PoE2 Skills page', () => {
     } finally {
       delete delays.SkillGroups;
     }
+  }, 120_000);
+
+  it('a gem edited before the page has a removal back edits the gem the page shows', async () => {
+    poe2Build.set(await worker2.Open(await skillsEdit()));
+    await worker2.EditSkills({ op: 'newGroup' });
+    const gems = await worker2.GemList();
+    const id = (name: string) => gems.find((g) => g.name === name)!.id;
+    await worker2.EditSkills({ op: 'addGem', group: 2, id: id('Fireball') });
+    poe2Build.set(await worker2.EditSkills({ op: 'addGem', group: 2, id: id('Elemental Focus') }));
+    const page = render(AppSkills);
+    await vi.waitFor(() => expect(groupButtons(page.container).length).toBe(2));
+    await fireEvent.click(groupButtons(page.container)[1]);
+    await vi.waitFor(() => page.getByRole('checkbox', { name: 'Elemental Focus enabled' }));
+
+    const { poe2Error } = await import('$lib/go/engine_poe2.svelte');
+    delays.SkillGroups = 2000;
+    try {
+      await fireEvent.click(page.getByRole('button', { name: 'Remove Fireball' }));
+      await fireEvent.click(page.getByRole('checkbox', { name: 'Elemental Focus enabled' }));
+      await vi.waitFor(async () => expect((await worker2.SkillGroups())[1].gems.map((m) => [m.name, m.enabled])).toEqual([['Elemental Focus', false]]), {
+        timeout: 10_000
+      });
+    } finally {
+      delete delays.SkillGroups;
+    }
+    expect(get(poe2Error)).toBeUndefined();
+  }, 120_000);
+
+  it('a group list asked for before a removal does not bring the removed gem back', async () => {
+    poe2Build.set(await worker2.Open(await skillsEdit()));
+    await worker2.EditSkills({ op: 'newGroup' });
+    const gems = await worker2.GemList();
+    const id = (name: string) => gems.find((g) => g.name === name)!.id;
+    await worker2.EditSkills({ op: 'addGem', group: 2, id: id('Fireball') });
+    poe2Build.set(await worker2.EditSkills({ op: 'addGem', group: 2, id: id('Elemental Focus') }));
+    const page = render(AppSkills);
+    await vi.waitFor(() => expect(groupButtons(page.container).length).toBe(2));
+    await fireEvent.click(groupButtons(page.container)[1]);
+    await vi.waitFor(() => page.getByRole('checkbox', { name: 'Elemental Focus enabled' }));
+
+    // the list asked for after the first edit answers while the removal's calculation is still on its way
+    delays.SkillGroups = 300;
+    delays.EditSkills = [0, 2000];
+    try {
+      const before = get(poe2Build);
+      await fireEvent.click(page.getByRole('checkbox', { name: 'Elemental Focus enabled' }));
+      await vi.waitFor(() => expect(get(poe2Build)).not.toBe(before));
+      await fireEvent.click(page.getByRole('button', { name: 'Remove Fireball' }));
+      await new Promise((done) => setTimeout(done, 1000));
+      expect(page.queryByRole('button', { name: 'Remove Fireball' })).toBeNull();
+    } finally {
+      delete delays.SkillGroups;
+      delete delays.EditSkills;
+    }
+  }, 120_000);
+
+  it('a gem edit made while an undo is on its way is not sent to the gem the undo puts in its place', async () => {
+    poe2Build.set(await worker2.Open(await skillsEdit()));
+    await worker2.EditSkills({ op: 'newGroup' });
+    const gems = await worker2.GemList();
+    const id = (name: string) => gems.find((g) => g.name === name)!.id;
+    await worker2.EditSkills({ op: 'addGem', group: 2, id: id('Fireball') });
+    poe2Build.set(await worker2.EditSkills({ op: 'addGem', group: 2, id: id('Elemental Focus') }));
+    const page = render(AppSkills);
+    await vi.waitFor(() => expect(groupButtons(page.container).length).toBe(2));
+    await fireEvent.click(groupButtons(page.container)[1]);
+    await fireEvent.click(await vi.waitFor(() => page.getByRole('button', { name: 'Remove Fireball' })));
+    const gemsOf = async () => (await worker2.SkillGroups())[1].gems.map((m) => [m.name, m.enabled]);
+    await vi.waitFor(async () => expect(await gemsOf()).toEqual([['Elemental Focus', true]]));
+
+    delays.SkillsUndo = 1500;
+    try {
+      await fireEvent.keyDown(window, { key: 'z', ctrlKey: true });
+      await fireEvent.click(page.getByRole('checkbox', { name: 'Elemental Focus enabled' }));
+      await vi.waitFor(() => page.getByRole('button', { name: 'Remove Fireball' }), { timeout: 10_000 });
+    } finally {
+      delete delays.SkillsUndo;
+    }
+    expect(await gemsOf()).toEqual([
+      ['Fireball', true],
+      ['Elemental Focus', true]
+    ]);
   }, 120_000);
 });

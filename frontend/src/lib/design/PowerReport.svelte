@@ -15,7 +15,8 @@
     depth: number;
     custom: string;
     filter: PowerFilter;
-    masteries: boolean;
+    /** PoB-PoE2's report has no Show Masteries box; leave it unset there */
+    masteries?: boolean;
     sort: PowerSort;
     /** the stat's label, the power column's header */
     statLabel: string;
@@ -73,7 +74,9 @@
       ><option value="unallocated">Show Unallocated</option><option value="clusters">Show Unallocated & Clusters</option><option value="allocated"
         >Show Allocated</option
       ></Select>
-    <label class="field field-inline gap-1 text-11"><Checkbox bind:checked={masteries} onchange={() => (sort = 'power')} /><span>Show Masteries</span></label>
+    {#if masteries !== undefined}
+      <label class="field field-inline gap-1 text-11"><Checkbox bind:checked={masteries} onchange={() => (sort = 'power')} /><span>Show Masteries</span></label>
+    {/if}
   </div>
   {#if depth === -1}
     <Input

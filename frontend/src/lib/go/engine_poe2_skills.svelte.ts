@@ -64,15 +64,19 @@ export const poe2SkillsPage = (): SkillsPageModel => {
   let sortOn = $state(true);
   let sortStat = $state('Combined DPS');
 
-  // what the page shows, fetched again for every calculation; the last shows meanwhile
-  $effect(() => {
-    const at = build.current;
-    if (!at) return;
+  // what the page shows, fetched again for every calculation; the last shows meanwhile. Edits name groups and gems by
+  // where the page shows them and run in order, so the page applies a removal or a move to what it shows at once,
+  // drops a list asked for before its last edit, and sends no such edit while one it cannot apply (a set, an undo) runs
+  let edits = 0;
+  let blind = false;
+  const load = (at: unknown) => {
+    const seq = edits;
     void poe2Worker()
       .then(async (w) => {
         const [g, o, s] = await Promise.all([w.SkillGroups(), w.GemOptions(), w.SkillSets()]);
-        if (build.current !== at) return;
+        if (build.current !== at || edits !== seq) return;
         groups = g;
+        blind = false;
         skillSets = s;
         sortOn = o.SortGemsByDPS;
         sortStat = sortLabel2(o.SortGemsByDPSField);
@@ -86,6 +90,10 @@ export const poe2SkillsPage = (): SkillsPageModel => {
         selected = Math.min(selected, Math.max(0, g.length - 1));
       })
       .catch(fail);
+  };
+  $effect(() => {
+    const at = build.current;
+    if (at) load(at);
   });
   onMount(() => {
     void poe2Worker()
@@ -94,7 +102,18 @@ export const poe2SkillsPage = (): SkillsPageModel => {
       .catch(fail);
   });
 
-  const edit = (e: Poe2SkillsEdit) => poe2Run((w) => w.EditSkills(e));
+  const send = <T>(op: Parameters<typeof poe2Run<T>>[0], shown?: (g: Poe2SkillGroup[]) => Poe2SkillGroup[]) => {
+    edits++;
+    if (shown === undefined) blind = true;
+    else if (groups) groups = shown(groups);
+    return poe2Run(op).then((v) => {
+      if (v === undefined) load(build.current);
+      return v;
+    });
+  };
+  const keep = (g: Poe2SkillGroup[]) => g;
+  const edit = (e: Poe2SkillsEdit, shown = keep) => (blind && ('group' in e || 'from' in e) ? Promise.resolve(undefined) : send((w) => w.EditSkills(e), shown));
+  const setEdit = (e: Poe2SkillsEdit) => send((w) => w.EditSkills(e));
 
   const activeSet = $derived(Math.max(0, skillSets?.sets.findIndex((s) => s.id === skillSets?.active) ?? 0));
   const activeGroups = $derived(
@@ -127,13 +146,13 @@ export const poe2SkillsPage = (): SkillsPageModel => {
     const id = skillSets?.sets[i]?.id;
     if (id === undefined || id === skillSets?.active) return;
     selected = 0;
-    void edit({ op: 'activeSet', set: id });
+    void setEdit({ op: 'activeSet', set: id });
   };
   // SkillSetListControl.lua:48-132, SkillsSetService.lua:17-46 (PoB-PoE2)
   const onsets = (op: SkillSetOp) => {
     if (op.op === 'new') {
       selected = 0;
-      void edit({ op: 'newSet', title: op.title });
+      void setEdit({ op: 'newSet', title: op.title });
       return;
     }
     const id = skillSets?.sets[op.index]?.id;
@@ -141,7 +160,7 @@ export const poe2SkillsPage = (): SkillsPageModel => {
     if (op.op === 'rename') void edit({ op: 'renameSet', set: id, title: op.title });
     else {
       selected = 0;
-      void edit(op.op === 'copy' ? { op: 'copySet', set: id, title: op.title } : { op: 'deleteSet', set: id });
+      void setEdit(op.op === 'copy' ? { op: 'copySet', set: id, title: op.title } : { op: 'deleteSet', set: id });
     }
   };
 
@@ -320,7 +339,11 @@ export const poe2SkillsPage = (): SkillsPageModel => {
     onreordergroups: (from: number, to: number) => {
       if (from === to) return;
       selected = selected === from ? to : selected > from && selected <= to ? selected - 1 : selected < from && selected >= to ? selected + 1 : selected;
-      void edit({ op: 'moveGroup', from: from + 1, to: to + 1 });
+      void edit({ op: 'moveGroup', from: from + 1, to: to + 1 }, (g) => {
+        const moved = [...g];
+        moved.splice(to, 0, ...moved.splice(from, 1));
+        return moved;
+      });
     },
     onselect: (i: number) => (selected = i),
     ongroup,
@@ -333,7 +356,8 @@ export const poe2SkillsPage = (): SkillsPageModel => {
       void edit({ op: 'addGem', group: i + 1, id: def.id });
     },
     // SkillsTab.lua:773-792 (PoB-PoE2)
-    onremovegem: (i: number, gem: number) => void edit({ op: 'removeGem', group: i + 1, gem: gem + 1 }),
+    onremovegem: (i: number, gem: number) =>
+      void edit({ op: 'removeGem', group: i + 1, gem: gem + 1 }, (g) => g.map((x, k) => (k === i ? { ...x, gems: x.gems.filter((_, j) => j !== gem) } : x))),
     // SkillListControl.lua:58-71 (PoB-PoE2)
     onnewgroup: () => {
       const n = groups?.length ?? 0;
@@ -357,19 +381,19 @@ export const poe2SkillsPage = (): SkillsPageModel => {
       });
     },
     // SkillsTab.lua:594-599 (PoB-PoE2)
-    onundo: () => void poe2Run((w) => w.SkillsUndo(false)),
-    onredo: () => void poe2Run((w) => w.SkillsUndo(true)),
+    onundo: () => void send((w) => w.SkillsUndo(false)),
+    onredo: () => void send((w) => w.SkillsUndo(true)),
     // SkillListControl.lua:194-198 (PoB-PoE2)
-    onmain: (i: number) => void poe2Run((w) => w.SetMainSocketGroup(i + 1)),
+    onmain: (i: number) => void send((w) => w.SetMainSocketGroup(i + 1), keep),
     // SkillListControl.lua:139-173 (PoB-PoE2)
     ondeletegroup: (i: number) => {
       selected = 0;
-      void edit({ op: 'deleteGroup', group: i + 1 });
+      void edit({ op: 'deleteGroup', group: i + 1 }, (g) => g.filter((_, k) => k !== i));
     },
     // SkillListControl.lua:45-54 (PoB-PoE2)
     ondeleteall: () => {
       selected = 0;
-      void edit({ op: 'deleteAll' });
+      void edit({ op: 'deleteAll' }, () => []);
     },
     get options() {
       return options;

@@ -189,7 +189,7 @@
   let powerOpen = $state(false);
   let powerFilter = $state<PowerFilter>('unallocated');
   let powerSort = $state<PowerSort>('power');
-  let powerMasteries = $state(true);
+  let powerHover = $state<number>();
   let depthChoice = $state(0);
   let powerCustom = $state('0');
   $effect(() => {
@@ -216,7 +216,7 @@
           calc.powerRows,
           displayStats2.find((d) => d.stat === calc.powerStat),
           powerFilter,
-          powerMasteries,
+          true,
           (f, v) => formatNumSep(luaFormat(f, v)),
           powerSort
         )
@@ -312,7 +312,6 @@
               bind:depth={depthChoice}
               bind:custom={powerCustom}
               bind:filter={powerFilter}
-              bind:masteries={powerMasteries}
               bind:sort={powerSort}
               statLabel={powerLabel}
               heat={c.powerOn}
@@ -323,7 +322,7 @@
               onstart={() => setPower(true)}
               onstop={() => setPower(false)}
               onclose={() => (powerOpen = false)}
-              onhover={() => {}}
+              onhover={(id: number | undefined) => (powerHover = id)}
               onpick={(r: ShownPowerRow) => tree2?.focus(r.ID)} />
           {/if}
         {/snippet}
@@ -396,6 +395,17 @@
                 matches={api.matches}
                 {compared}
                 {power} />
+              {#if powerOpen && powerHover !== undefined}
+                {@const p = tree2?.project(powerHover)}
+                {#if p}
+                  <div
+                    class="pointer-events-none absolute size-7 -translate-x-1/2 -translate-y-1/2 rounded-full border-3 border-accent shadow-[0_0_12px_var(--color-accent)]"
+                    data-power-hover={powerHover}
+                    style:left="{p.x}px"
+                    style:top="{p.y}px">
+                  </div>
+                {/if}
+              {/if}
             {:else}
               <EmptyState busy text="Loading the passive tree…" />
             {/if}
