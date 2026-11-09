@@ -1083,7 +1083,17 @@ func buildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	stageName := strings.Join(strings.Fields(activeGrantedEffect.Name), "")
 	if skillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, "Multiplier:"+stageName+"MaxStages") > 0 {
 		skillFlags["multiStage"] = true
-		activeSkill.ActiveStageCount = math.Max(1, 1+skillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, "Multiplier:"+stageName+"MinimumStage"))
+		stageCount := 1.0
+		if src := activeEffect.SrcInstance; src != nil {
+			saved := src.SkillStageCount
+			if env.Mode == "CALCS" {
+				saved = src.SkillStageCountCalcs
+			}
+			if saved != nil {
+				stageCount = float64(*saved)
+			}
+		}
+		activeSkill.ActiveStageCount = math.Max(stageCount, 1+skillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, "Multiplier:"+stageName+"MinimumStage"))
 		limit := skillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, "Multiplier:"+stageName+"MaxStages")
 		if limit > 0 && activeSkill.ActiveStageCount > 0 {
 			skillModList.AddMod(newMod("Multiplier:"+stageName+"Stage", mod.TypeBase, math.Min(limit, activeSkill.ActiveStageCount), "Base"))

@@ -317,9 +317,6 @@ func TestCalcsInputsMatchPoB(t *testing.T) {
 			if main := calc.env.Player.MainSkill.ActiveEffect.GrantedEffect.Name; main == oracle.MainSkill && f.buffMode == "" && f.statSet == 0 && f.stageCount == 0 {
 				t.Errorf("the sidebar's main skill %s is the Calcs tab's; the fixture tests no selection", main)
 			}
-			if f.stageCount != 0 {
-				t.Skip("known divergence: CalcActiveSkill.lua:892's saved skillStageCountCalcs is not read by the calculation yet")
-			}
 			checkCalcsNumbers(t, f.name, oracle, got.Output)
 			query := CalcsModQuery{Entries: map[string]CalcsModEntry{}}
 			for k, e := range oracle.Entries {

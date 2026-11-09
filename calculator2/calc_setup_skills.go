@@ -139,6 +139,9 @@ func loadGemInstance(env *Environment, child *pob2.Gem) *GemInstance {
 			gemInstance.StatSetCalcs[s.GrantedEffect] = s.Index.V
 		}
 	}
+	//pob2:block:src/Classes/SkillsTab.lua:353-356
+	gemInstance.SkillStageCount, gemInstance.SkillStageCountCalcs = child.SkillStageCount, child.SkillStageCountCalcs
+	gemInstance.SkillMineCount, gemInstance.SkillMineCountCalcs = child.SkillMineCount, child.SkillMineCountCalcs
 	//pob2:block:src/Classes/SkillsTab.lua:357-360
 	if child.SkillMinion != nil {
 		gemInstance.SkillMinion = *child.SkillMinion
