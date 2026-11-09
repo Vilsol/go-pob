@@ -191,18 +191,18 @@ func (h *offenceHit) offenceAilments() {
 					if !hasOverride {
 						ailmentHitMin, ailmentHitMax = output[damageType+"StoredHitMin"], output[damageType+"StoredHitMax"]
 					}
-					hitMin += ailmentHitMin * more
-					hitMax += ailmentHitMax * more
+					hitMin += float64(ailmentHitMin * more)
+					hitMax += float64(ailmentHitMax * more)
 					output[ailment+damageType+"Min"] = ailmentHitMin * more
 					output[ailment+damageType+"Max"] = ailmentHitMax * more
 					if canCrit {
 						override, hasOverride = overrideFloat(skillModList.Override(cfg, ailment+damageType+"CritDamage"))
 						if hasOverride {
-							critMin += override * more
-							critMax += override * more
+							critMin += float64(override * more)
+							critMax += float64(override * more)
 						} else {
-							critMin += output[damageType+"StoredCritMin"] * more
-							critMax += output[damageType+"StoredCritMax"] * more
+							critMin += float64(output[damageType+"StoredCritMin"] * more)
+							critMax += float64(output[damageType+"StoredCritMax"] * more)
 						}
 					}
 				}
@@ -225,9 +225,9 @@ func (h *offenceHit) offenceAilments() {
 						ailmentHitMin, ailmentHitMax, ailmentAverage = output[damageType+"StoredHitMin"], output[damageType+"StoredHitMax"], output[damageType+"HitAverage"]
 					}
 					effMulti := outputDefault(output, damageType+"EffMult", 1)
-					hitMin += ailmentHitMin * more * effMulti
-					hitMax += ailmentHitMax * more * effMulti
-					hitAvg += ailmentAverage * more
+					hitMin += float64(ailmentHitMin * more * effMulti)
+					hitMax += float64(ailmentHitMax * more * effMulti)
+					hitAvg += float64(ailmentAverage * more)
 					output[ailment+damageType+"Min"] = ailmentHitMin * more
 					output[ailment+damageType+"Max"] = ailmentAverage * more
 					if canCrit {
@@ -236,14 +236,14 @@ func (h *offenceHit) offenceAilments() {
 						if !hasOverride {
 							critMinOf, critMaxOf, critAvgOf = output[damageType+"StoredCritMin"], output[damageType+"StoredCritMax"], output[damageType+"CritAverage"]
 						}
-						critMin += critMinOf * more * effMulti
-						critMax += critMaxOf * more * effMulti
-						critAvg += critAvgOf * more
+						critMin += float64(critMinOf * more * effMulti)
+						critMax += float64(critMaxOf * more * effMulti)
+						critAvg += float64(critAvgOf * more)
 					}
 				}
 			}
 			if canCrit {
-				poseDamageAvg = hitAvg*(1-critChance/100) + critAvg*critChance/100
+				poseDamageAvg = float64(hitAvg*(1-critChance/100)) + critAvg*critChance/100
 			} else {
 				poseDamageAvg = hitAvg
 			}
@@ -254,7 +254,7 @@ func (h *offenceHit) offenceAilments() {
 		calcAilmentDamage := func(ailment string, sourceCritChance, sourceHitDmg, sourceCritDmg float64) float64 {
 			chanceOnHit, chanceOnCrit := output[ailment+"ChanceOnHit"], output[ailment+"ChanceOnCrit"]
 			// Use sourceCritChance to factor in chance a critical ailment is present
-			chanceFromHit := chanceOnHit * (1 - sourceCritChance/100)
+			chanceFromHit := float64(chanceOnHit * (1 - sourceCritChance/100))
 			chanceFromCrit := chanceOnCrit * sourceCritChance / 100
 			chance := chanceFromHit + chanceFromCrit
 			output[ailment+"Chance"] = chance
@@ -299,7 +299,7 @@ func (h *offenceHit) offenceAilments() {
 			activeSkill.AilmentCfg[cfgKey] = dotCfg
 			checkWeapon1HFlags(dotCfg)
 
-			globalOutput[ailment+"ChancePerHit"] = output[ailment+"ChanceOnHit"]*(1-output["CritChance"]/100) + output[ailment+"ChanceOnCrit"]*output["CritChance"]/100
+			globalOutput[ailment+"ChancePerHit"] = float64(output[ailment+"ChanceOnHit"]*(1-output["CritChance"]/100)) + output[ailment+"ChanceOnCrit"]*output["CritChance"]/100
 
 			// We will be using a weighted average calculation
 			maxStacks := 1.0
@@ -308,7 +308,7 @@ func (h *offenceHit) offenceAilments() {
 				if o, ok := overrideFloat(skillModList.Override(cfg, ailment+"Stacks")); ok {
 					maxStacks = o
 				} else {
-					maxStacks = (maxStacks + skillModList.Sum(mod.TypeBase, cfg, ailment+"Stacks")) * skillModList.More(cfg, ailment+"Stacks")
+					maxStacks = float64((maxStacks + skillModList.Sum(mod.TypeBase, cfg, ailment+"Stacks")) * skillModList.More(cfg, ailment+"Stacks"))
 				}
 			}
 			globalOutput[ailment+"StacksMax"] = maxStacks
@@ -337,10 +337,10 @@ func (h *offenceHit) offenceAilments() {
 			globalOutput[ailment+"Duration"] = durationBase * durationMod / rateMod * debuffDurationMult
 
 			// The chance any given hit applies ailment
-			ailmentChance := output[ailment+"ChanceOnHit"]/100*(1-output["CritChance"]/100) + output[ailment+"ChanceOnCrit"]/100*output["CritChance"]/100
+			ailmentChance := float64(output[ailment+"ChanceOnHit"]/100*(1-output["CritChance"]/100)) + output[ailment+"ChanceOnCrit"]/100*output["CritChance"]/100
 
 			// The average number of ailment that will be active on the enemy at once
-			ailmentStacks := output["HitChance"] / 100 * ailmentChance * output["DpsMultiplier"]
+			ailmentStacks := float64(output["HitChance"] / 100 * ailmentChance * output["DpsMultiplier"])
 			configStacks := enemyDB.Sum(mod.TypeBase, nil, "Multiplier:"+ailment+"Stacks")
 			if !truthy(skillData["triggeredOnDeath"]) {
 				hitSpeed := outputDefault(globalOutput, "HitSpeed", globalOutput["Speed"])
@@ -348,7 +348,7 @@ func (h *offenceHit) offenceAilments() {
 					ailmentStacks = ailmentStacks * globalOutput[ailment+"Duration"] / math.Max(cooldown, outputDefault(output, "HitTime", output["Time"]))
 				} else if hitSpeed > 0 {
 					// assume skills with no cast, attack, or cooldown time are single cast
-					ailmentStacks = ailmentStacks * globalOutput[ailment+"Duration"] * hitSpeed
+					ailmentStacks = float64(ailmentStacks * globalOutput[ailment+"Duration"] * hitSpeed)
 				}
 
 				activeTotems, ok := overrideFloat(env.ModDB.Override(nil, "TotemsSummoned"))
@@ -570,10 +570,10 @@ func (h *offenceHit) offenceAilments() {
 			base := skillModList.Sum(mod.TypeBase, cfg, "Enemy"+ailment+"Chance", "AilmentChance") + enemyDB.Sum(mod.TypeBase, nil, "Self"+ailment+"Chance")
 			inc := skillModList.Sum(mod.TypeIncrease, cfg, "Enemy"+ailment+"Chance", "AilmentChance") + enemyDB.Sum(mod.TypeIncrease, nil, "Self"+ailment+"Chance")
 			more := skillModList.More(cfg, "Enemy"+ailment+"Chance", "AilmentChance") * enemyDB.More(nil, "Self"+ailment+"Chance")
-			hitElementalAilmentChance := hitAvg / enemyThreshold * gameConstant(ailment+"ChanceMultiplier")
-			hitElementalAilmentChance = (hitElementalAilmentChance + base) * (1 + inc/100) * more
-			critElementalAilmentChance := critAvg / enemyThreshold * gameConstant(ailment+"ChanceMultiplier")
-			critElementalAilmentChance = (critElementalAilmentChance + base) * (1 + inc/100) * more
+			hitElementalAilmentChance := float64(hitAvg / enemyThreshold * gameConstant(ailment+"ChanceMultiplier"))
+			hitElementalAilmentChance = float64((hitElementalAilmentChance + base) * (1 + inc/100) * more)
+			critElementalAilmentChance := float64(critAvg / enemyThreshold * gameConstant(ailment+"ChanceMultiplier"))
+			critElementalAilmentChance = float64((critElementalAilmentChance + base) * (1 + inc/100) * more)
 
 			if skillFlags["hit"] && !skillModList.Flag(cfg, "Cannot"+ailment) {
 				output[ailment+"ChanceOnHit"] = math.Min(100, hitElementalAilmentChance)
@@ -662,7 +662,7 @@ func (h *offenceHit) offenceAilments() {
 		}
 
 		// Calculate knockback chance/distance
-		output["KnockbackChance"] = math.Min(100, output["KnockbackChanceOnHit"]*(1-output["CritChance"]/100)+output["KnockbackChanceOnCrit"]*output["CritChance"]/100+enemyDB.Sum(mod.TypeBase, nil, "SelfKnockbackChance"))
+		output["KnockbackChance"] = math.Min(100, float64(output["KnockbackChanceOnHit"]*(1-output["CritChance"]/100))+output["KnockbackChanceOnCrit"]*output["CritChance"]/100+enemyDB.Sum(mod.TypeBase, nil, "SelfKnockbackChance"))
 		if output["KnockbackChance"] > 0 {
 			output["KnockbackDistance"] = round(4 * calcLibMod(skillModList, cfg, "EnemyKnockbackDistance"))
 		}
@@ -704,7 +704,7 @@ func (h *offenceHit) offenceAilments() {
 		if canDeal["Physical"] && output["ImpaleChance"]+output["ImpaleChanceOnCrit"] > 0 {
 			skillFlags["impale"] = true
 			critChance := output["CritChance"] / 100
-			impaleChance := math.Min(output["ImpaleChance"]/100, 1)*(1-critChance) + math.Min(output["ImpaleChanceOnCrit"]/100, 1)*critChance
+			impaleChance := float64(math.Min(output["ImpaleChance"]/100, 1)*(1-critChance)) + float64(math.Min(output["ImpaleChanceOnCrit"]/100, 1)*critChance)
 			maxStacks := skillModList.Sum(mod.TypeBase, cfg, "ImpaleStacksMax") * (1 + skillModList.Sum(mod.TypeBase, cfg, "ImpaleAdditionalDurationChance")/100)
 			configStacks := enemyDB.Sum(mod.TypeBase, cfg, "Multiplier:ImpaleStacks")
 			impaleStacks := math.Min(maxStacks, configStacks)
@@ -726,7 +726,7 @@ func (h *offenceHit) offenceAilments() {
 			impaleTakenCfg := flagsCfg(ModFlagHit)
 			impaleTaken := (1 + enemyDB.Sum(mod.TypeIncrease, impaleTakenCfg, "DamageTaken", "PhysicalDamageTaken", "ReflectedDamageTaken")/100) *
 				enemyDB.More(impaleTakenCfg, "DamageTaken", "PhysicalDamageTaken", "ReflectedDamageTaken")
-			impaleDMGModifier := impaleHitDamageMod * (1 - impaleResist/100) * impaleChance * impaleTaken
+			impaleDMGModifier := float64(impaleHitDamageMod * (1 - impaleResist/100) * impaleChance * impaleTaken)
 
 			globalOutput["ImpaleStacksMax"] = maxStacks
 			globalOutput["ImpaleStacks"] = impaleStacks
@@ -914,7 +914,7 @@ func (h *offenceHit) offenceDots() {
 			if activeSkill.SkillTypes["Aura"] && !activeSkill.SkillTypes["RemoteMined"] {
 				aura = calcLibMod(skillModList, dotTypeCfg, "AuraEffect") * calcLibMod(skillModList, skillCfg, "Magnitude")
 			}
-			total := baseVal * (1 + inc/100) * more * (1 + mult/100) * aura * effMult
+			total := float64(baseVal * (1 + inc/100) * more * (1 + mult/100) * aura * effMult)
 			if !hasExisting || existing == 0 {
 				output[damageType+"Dot"] = total
 				output["TotalDotInstance"] = math.Min(output["TotalDotInstance"]+total, dotDpsCap)
@@ -1031,7 +1031,7 @@ func (h *offenceHit) offenceLinkCosts(hasCosts map[string]bool) {
 
 			hasCosts[usedResource+"PerSecond"] = true
 			actor.setOutputFlag(usedResource+"PerSecondHasCost", true)
-			output[usedResource+"PerSecondCost"] += output[resource+"Cost"] * useSpeed
+			output[usedResource+"PerSecondCost"] += float64(output[resource+"Cost"] * useSpeed)
 		}
 	}
 }
@@ -1095,8 +1095,8 @@ func (h *offenceHit) offenceCombinedDPS() {
 	if skillFlags["impale"] {
 		if skillFlags["attack"] && truthy(skillData["combinesHitsWhenDualWielding"]) && skillFlags["bothWeaponAttack"] {
 			// separately combine
-			mainHandImpaleDPS := state.mainHand["impaleStoredHitAvg"] * (outputDefault(state.mainHand, "ImpaleModifier", 1) - 1) * state.mainHand["HitChance"] / 100 * output["DpsMultiplier"]
-			offHandImpaleDPS := state.offHand["impaleStoredHitAvg"] * (outputDefault(state.offHand, "ImpaleModifier", 1) - 1) * state.offHand["HitChance"] / 100 * output["DpsMultiplier"]
+			mainHandImpaleDPS := float64(state.mainHand["impaleStoredHitAvg"] * (outputDefault(state.mainHand, "ImpaleModifier", 1) - 1) * state.mainHand["HitChance"] / 100 * output["DpsMultiplier"])
+			offHandImpaleDPS := float64(state.offHand["impaleStoredHitAvg"] * (outputDefault(state.offHand, "ImpaleModifier", 1) - 1) * state.offHand["HitChance"] / 100 * output["DpsMultiplier"])
 			output["ImpaleDPS"] = mainHandImpaleDPS + offHandImpaleDPS
 		} else {
 			output["ImpaleDPS"] = output["PhysicalStoredCombinedAvg"] * (outputDefault(output, "ImpaleModifier", 1) - 1) * output["HitChance"] / 100 * output["DpsMultiplier"]

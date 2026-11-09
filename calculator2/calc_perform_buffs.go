@@ -80,7 +80,7 @@ func determineCursePriority(curseName string, activeSkill *ActiveSkill) float64 
 		}
 	}
 	basePriority := cursePriority[curseName]
-	socketPriority := socket * cursePriority["SocketPriorityBase"]
+	socketPriority := float64(socket * cursePriority["SocketPriorityBase"])
 	slotPriority := cursePriority[strings.ReplaceAll(slot, " Swap", "")]
 	sourcePriority := 0.0
 	if activeSkill != nil && activeSkill.SkillTypes["Aura"] {

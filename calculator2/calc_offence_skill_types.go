@@ -47,7 +47,7 @@ func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSk
 			output["ChainMax"] = (sum(names...) + sum("ChainChance")/100) * skillModList.More(skillCfg, names...)
 			output["TerrainChain"] = math.Min(sum("TerrainChainChance"), 100)
 			if skillModList.Flag(skillCfg, "AdditionalProjectilesAddChainsInstead") {
-				output["ChainMax"] += (projectileBase() - 1) * skillModList.More(skillCfg, "ProjectileCount")
+				output["ChainMax"] += float64((projectileBase() - 1) * skillModList.More(skillCfg, "ProjectileCount"))
 			}
 			output["ChainMaxString"] = output["ChainMax"]
 			output["Chain"] = math.Min(output["ChainMax"], sum("ChainCount"))
@@ -78,7 +78,7 @@ func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSk
 		} else {
 			output["SplitCount"] = sum("SplitCount") + enemyDB.Sum(mod.TypeBase, skillCfg, "SelfSplitCount")
 			if skillModList.Flag(skillCfg, "AdditionalProjectilesAddSplitsInstead") {
-				output["SplitCount"] += (projectileBase() - 1) * skillModList.More(skillCfg, "ProjectileCount")
+				output["SplitCount"] += float64((projectileBase() - 1) * skillModList.More(skillCfg, "ProjectileCount"))
 			}
 			if skillModList.Flag(skillCfg, "AdditionalChainsAddSplitsInstead") {
 				output["SplitCount"] += sum("ChainCountMax")
@@ -126,9 +126,9 @@ func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSk
 				cfg = activeSkill.Weapon2Cfg
 			}
 			if r, ok := weaponData(env, actor, i)["range"]; ok {
-				return r + skillModList.Sum(mod.TypeBase, cfg, "MeleeWeaponRange") + 10*skillModList.Sum(mod.TypeBase, cfg, "MeleeWeaponRangeMetre")
+				return r + skillModList.Sum(mod.TypeBase, cfg, "MeleeWeaponRange") + float64(10*skillModList.Sum(mod.TypeBase, cfg, "MeleeWeaponRangeMetre"))
 			}
-			return 6 + sum("UnarmedRange") + 10*sum("UnarmedRangeMetre")
+			return 6 + sum("UnarmedRange") + float64(10*sum("UnarmedRangeMetre"))
 		}
 		if skillFlags["weapon1Attack"] {
 			actor.WeaponRange1 = meleeRange(1)
@@ -327,7 +327,7 @@ func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSk
 		}
 		if output["MineThrowCount"] >= 1 {
 			// Throwing Mines takes 10% more time for each *additional* Mine thrown
-			output["MineLayingSpeed"] /= 1 + (output["MineThrowCount"]-1)*0.1
+			output["MineLayingSpeed"] /= 1 + float64((output["MineThrowCount"]-1)*0.1)
 		}
 
 		output["MineLayingSpeed"] = math.Min(output["MineLayingSpeed"], tick)
@@ -576,10 +576,10 @@ func offenceCosts(env *Environment, actor *Actor, activeSkill *ActiveSkill, outp
 		}
 		val.baseCost += baseCost
 		val.baseCostNoMult += baseCostNoMult
-		finalBaseCostRaw := val.baseCost*mult + val.baseCostNoMult + divineBlessingCorrection
+		finalBaseCostRaw := float64(val.baseCost*mult) + val.baseCostNoMult + divineBlessingCorrection
 		val.finalBaseCost = math.Floor(finalBaseCostRaw)
 		if val.hasRaw {
-			val.baseCostRaw = val.baseCost*mult + val.baseCostNoMult + divineBlessingCorrection
+			val.baseCostRaw = float64(val.baseCost*mult) + val.baseCostNoMult + divineBlessingCorrection
 		}
 		switch {
 		case val.typ == "Life":
@@ -602,7 +602,7 @@ func offenceCosts(env *Environment, actor *Actor, activeSkill *ActiveSkill, outp
 				manaCost.baseCostNoMult = 0
 			} else if additionalLifeCost > 0 || hybridLifeCost > 0 {
 				val.baseCost = manaCost.baseCost
-				val.finalBaseCost = round(finalBaseCostRaw + round(manaCost.finalBaseCost*hybridLifeCost) + math.Floor(val.baseCost*mult)*additionalLifeCost)
+				val.finalBaseCost = round(finalBaseCostRaw + round(manaCost.finalBaseCost*hybridLifeCost) + float64(math.Floor(val.baseCost*mult)*additionalLifeCost))
 				if val.upfront && hybridLifeCost > 0 {
 					// Positive flat Mana cost is converted and rounded separately from the base cost.
 					val.totalCost += round(math.Max(0, sum(manaType+"Cost")) * hybridLifeCost)

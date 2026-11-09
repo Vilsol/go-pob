@@ -454,7 +454,7 @@ func (i *Item) BuildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod
 		i.WeaponData[slotNum] = weaponData
 		weaponData["AttackSpeedInc"] = calcLocal(&modList, "Speed", mod.TypeIncrease, mod.MFlagAttack) + math.Floor(quality/8*calcLocal(&modList, "AlternateQualityLocalAttackSpeedPer8Quality", mod.TypeIncrease, 0))
 		weaponData["AttackRate"] = round(w.AttackRateBase*(1+weaponData["AttackSpeedInc"]/100), 2)
-		weaponData["rangeBonus"] = calcLocal(&modList, "WeaponRange", mod.TypeBase, 0) + 10*calcLocal(&modList, "WeaponRangeMetre", mod.TypeBase, 0) + math.Floor(quality/10*calcLocal(&modList, "AlternateQualityLocalWeaponRangePer10Quality", mod.TypeBase, 0))
+		weaponData["rangeBonus"] = calcLocal(&modList, "WeaponRange", mod.TypeBase, 0) + float64(10*calcLocal(&modList, "WeaponRangeMetre", mod.TypeBase, 0)) + math.Floor(quality/10*calcLocal(&modList, "AlternateQualityLocalWeaponRangePer10Quality", mod.TypeBase, 0))
 		weaponData["range"] = w.Range + weaponData["rangeBonus"]
 		if w.ReloadTimeBase != 0 {
 			weaponData["ReloadSpeedInc"] = calcLocal(&modList, "ReloadSpeed", mod.TypeIncrease, mod.MFlagAttack) + weaponData["AttackSpeedInc"]
@@ -484,7 +484,7 @@ func (i *Item) BuildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod
 			if lo > 0 && hi > 0 {
 				weaponData[dmgType+"Min"] = lo
 				weaponData[dmgType+"Max"] = hi
-				dps := (lo + hi) / 2 * weaponData["AttackRate"]
+				dps := float64((lo + hi) / 2 * weaponData["AttackRate"])
 				weaponData[dmgType+"DPS"] = dps
 				if dmgType != "Physical" && dmgType != "Chaos" {
 					weaponData["ElementalDPS"] += dps
@@ -876,11 +876,11 @@ func (i *Item) BuildModList() {
 		strConversion := calcLocal(&baseList, "AttributeRequirementsConvertedToStrength", mod.TypeBase, 0) / 100
 		dexConversion := calcLocal(&baseList, "AttributeRequirementsConvertedToDexterity", mod.TypeBase, 0) / 100
 		intConversion := calcLocal(&baseList, "AttributeRequirementsConvertedToIntelligence", mod.TypeBase, 0) / 100
-		r.IntBase = floatp(intConversion*(r.Str+r.Dex) + (r.Int + calcLocal(&baseList, "IntRequirement", mod.TypeBase, 0)) - r.Int*(strConversion+dexConversion))
+		r.IntBase = floatp(float64(intConversion*(r.Str+r.Dex)) + (r.Int + calcLocal(&baseList, "IntRequirement", mod.TypeBase, 0)) - float64(r.Int*(strConversion+dexConversion)))
 		r.IntMod = floatp(math.Floor(*r.IntBase * (1 + calcLocal(&baseList, "IntRequirement", mod.TypeIncrease, 0)/100)))
-		r.DexBase = floatp(dexConversion*(r.Str+r.Int) + (r.Dex + calcLocal(&baseList, "DexRequirement", mod.TypeBase, 0)) - r.Dex*(strConversion+intConversion))
+		r.DexBase = floatp(float64(dexConversion*(r.Str+r.Int)) + (r.Dex + calcLocal(&baseList, "DexRequirement", mod.TypeBase, 0)) - float64(r.Dex*(strConversion+intConversion)))
 		r.DexMod = floatp(math.Floor(*r.DexBase * (1 + calcLocal(&baseList, "DexRequirement", mod.TypeIncrease, 0)/100)))
-		r.StrBase = floatp(strConversion*(r.Int+r.Dex) + (r.Str + calcLocal(&baseList, "StrRequirement", mod.TypeBase, 0)) - r.Str*(dexConversion+intConversion))
+		r.StrBase = floatp(float64(strConversion*(r.Int+r.Dex)) + (r.Str + calcLocal(&baseList, "StrRequirement", mod.TypeBase, 0)) - float64(r.Str*(dexConversion+intConversion)))
 		r.StrMod = floatp(math.Floor(*r.StrBase * (1 + calcLocal(&baseList, "StrRequirement", mod.TypeIncrease, 0)/100)))
 	default:
 		r.StrMod = floatp(math.Floor((r.Str + calcLocal(&baseList, "StrRequirement", mod.TypeBase, 0)) * (1 + calcLocal(&baseList, "StrRequirement", mod.TypeIncrease, 0)/100)))

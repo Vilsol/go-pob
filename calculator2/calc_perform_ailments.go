@@ -73,7 +73,7 @@ func applyNonDamagingAilments(env *Environment) {
 				}
 				if m.Name() == ailment+"Base" || m.Name() == ailment+"Minimum" {
 					// Both of PoB's branches here (the main skill's hit or the generic modifiers) read the skill's modifiers.
-					effect = effect * calcLibMod(mainSkill.SkillModList, mainSkill.SkillCfg, "Enemy"+ailment+"Magnitude", "AilmentMagnitude") * calcLibMod(enemyDB, nil, "Self"+ailment+"Magnitude", "AilmentMagnitude")
+					effect = float64(effect * calcLibMod(mainSkill.SkillModList, mainSkill.SkillCfg, "Enemy"+ailment+"Magnitude", "AilmentMagnitude") * calcLibMod(enemyDB, nil, "Self"+ailment+"Magnitude", "AilmentMagnitude"))
 					c := m.Clone().SetName(ailment + "Override")
 					c.SetValue(mod.NewModValueFloat(effect))
 					modDB.AddMod(c)

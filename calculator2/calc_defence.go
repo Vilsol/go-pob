@@ -47,7 +47,7 @@ func doActorLifeManaSpirit(actor *Actor, skipBreakdown bool) {
 		if override != nil {
 			output[res] = override.Float()
 		} else {
-			output[res] = math.Max(round((base*(1-conv/100)+extra)*(1+inc/100)*more+total), 1)
+			output[res] = math.Max(round(float64((float64(base*(1-conv/100))+extra)*(1+inc/100)*more)+total), 1)
 		}
 		if breakdown != nil {
 			if inc != 0 || more != 1 || conv != 0 || extra != 0 || total != 0 {
@@ -65,7 +65,7 @@ func doActorLifeManaSpirit(actor *Actor, skipBreakdown bool) {
 					breakdown.insert(res, sFormat("+ %g ^8(converted to)", extra))
 				}
 				if conv != 0 || extra != 0 {
-					breakdown.insert(res, sFormat("= %g", round(base*(1-conv/100)+extra)))
+					breakdown.insert(res, sFormat("= %g", round(float64(base*(1-conv/100))+extra)))
 				}
 				if inc != 0 {
 					breakdown.insert(res, sFormat("x %.2f ^8(increased/reduced)", 1+inc/100))
@@ -108,7 +108,7 @@ func monsterHitChance(evasion, accuracy float64) float64 {
 	if accuracy < 0 {
 		return 5
 	}
-	rawChance := (1 - (0.95*evasion)/(evasion+4*accuracy)) * 100
+	rawChance := (1 - (0.95*evasion)/(evasion+float64(4*accuracy))) * 100
 	return math.Max(math.Min(round(rawChance), 100), 5)
 }
 
@@ -117,7 +117,7 @@ func deflectChance(deflection, accuracy float64) float64 {
 	if deflection < 1 {
 		return 0
 	}
-	chanceToNotDeflect := accuracy/(accuracy+deflection*0.12)*150 - 50
+	chanceToNotDeflect := float64(accuracy/(accuracy+float64(deflection*0.12))*150) - 50
 	return math.Max(math.Min(100-round(chanceToNotDeflect), miscConstant("DeflectionChanceCap")), 0)
 }
 
@@ -146,7 +146,7 @@ func doActorDarkness(actor *Actor) {
 func floor(val float64, dec ...int) float64 {
 	if len(dec) > 0 {
 		mult := math.Pow(10, float64(dec[0]))
-		return math.Floor(val*mult+0.0001) / mult
+		return math.Floor(float64(val*mult)+0.0001) / mult
 	}
 	return math.Floor(val)
 }
@@ -242,7 +242,7 @@ func doActorLifeManaSpiritReservation(actor *Actor) {
 				instances := float64(len(srcInstance.SupportEffect.IsSupporting))
 				for name, values := range pool {
 					v, _ := activeSkill.SkillData["blasphemyReservationFlat"+name].(float64)
-					values.baseFlat = values.baseFlat + v*instances
+					values.baseFlat = values.baseFlat + float64(v*instances)
 				}
 			}
 			if skillModList.Flag(skillCfg, "BloodMagicReserved") {
@@ -257,9 +257,9 @@ func doActorLifeManaSpiritReservation(actor *Actor) {
 			}
 			spiritToLifeReservation := skillModList.Sum(mod.TypeBase, skillCfg, "LifeReservePercentPerSpirit")
 			if spiritToLifeReservation > 0 {
-				pool["Life"].basePercent = pool["Life"].basePercent + pool["Spirit"].baseFlat*spiritToLifeReservation
+				pool["Life"].basePercent = pool["Life"].basePercent + float64(pool["Spirit"].baseFlat*spiritToLifeReservation)
 				pool["Spirit"].baseFlat = 0
-				pool["Life"].basePercent = pool["Life"].basePercent + pool["Spirit"].basePercent*spiritToLifeReservation
+				pool["Life"].basePercent = pool["Life"].basePercent + float64(pool["Spirit"].basePercent*spiritToLifeReservation)
 				pool["Spirit"].basePercent = 0
 			}
 			for _, name := range []string{"Mana", "Life", "Spirit"} {
@@ -753,7 +753,7 @@ func defenceBlock(env *Environment, actor *Actor) {
 		output["BlockChance"] = math.Min(totalBlockChance, output["BlockChanceMax"])
 		output["BlockChanceOverCap"] = math.Max(0, totalBlockChance-output["BlockChanceMax"])
 	}
-	output["ProjectileBlockChance"] = math.Min(output["BlockChance"]+modDB.Sum(mod.TypeBase, nil, "ProjectileBlockChance")*calcLibMod(modDB, nil, "BlockChance"), output["BlockChanceMax"])
+	output["ProjectileBlockChance"] = math.Min(output["BlockChance"]+float64(modDB.Sum(mod.TypeBase, nil, "ProjectileBlockChance")*calcLibMod(modDB, nil, "BlockChance")), output["BlockChanceMax"])
 	if modDB.Flag(nil, "SpellBlockChanceMaxIsBlockChanceMax") {
 		output["SpellBlockChanceMax"] = output["BlockChanceMax"]
 	} else if o := modDB.Override(nil, "BlockChanceMax"); o != nil {
@@ -775,7 +775,7 @@ func defenceBlock(env *Environment, actor *Actor) {
 		totalSpellBlockChance := round(modDB.Sum(mod.TypeBase, nil, "SpellBlockChance") * (1 + inc/100) * more)
 		output["SpellBlockChance"] = math.Min(totalSpellBlockChance, output["SpellBlockChanceMax"])
 		output["SpellBlockChanceOverCap"] = math.Max(0, totalSpellBlockChance-output["SpellBlockChanceMax"])
-		spellProjectileBlockChance := math.Min(output["SpellBlockChance"]+modDB.Sum(mod.TypeBase, nil, "ProjectileSpellBlockChance")*calcLibMod(modDB, nil, "SpellBlockChance"), output["SpellBlockChanceMax"])
+		spellProjectileBlockChance := math.Min(output["SpellBlockChance"]+float64(modDB.Sum(mod.TypeBase, nil, "ProjectileSpellBlockChance")*calcLibMod(modDB, nil, "SpellBlockChance")), output["SpellBlockChanceMax"])
 		output["SpellProjectileBlockChance"] = math.Max(math.Max(spellProjectileBlockChance, output["ProjectileBlockChance"]), 0)
 	}
 	//pob2:block:src/Modules/CalcDefence.lua:1061-1071
@@ -1053,13 +1053,13 @@ func primaryDefences(env *Environment, actor *Actor) {
 				if res.modsInc != nil {
 					inc += modDB.Sum(mod.TypeIncrease, slotCfg, res.modsInc...) / 100
 				}
-				output[res.name] += res.basePerSlot[slot] * inc * more
+				output[res.name] += float64(res.basePerSlot[slot] * inc * more)
 			}
 			inc, more := calcLibMods(modDB, nil, res.mods...)
 			if res.modsInc != nil {
 				inc += modDB.Sum(mod.TypeIncrease, nil, res.modsInc...) / 100
 			}
-			output[res.name] += res.globalBase*inc*more + res.totalBase
+			output[res.name] += float64(res.globalBase*inc*more) + res.totalBase
 		} else {
 			modDB.AddMod(newMod("Extra"+res.name, mod.TypeBase, res.globalBase, "Conversion"))
 			modDB.AddMod(newMod(res.name+"Total", mod.TypeBase, res.totalBase, "Conversion"))
@@ -1119,7 +1119,7 @@ func primaryDefences(env *Environment, actor *Actor) {
 	enemyAccuracy := round(calcLibVal(enemyDB, "Accuracy", nil))
 	if modDB.Flag(nil, "EnemyAccuracyDistancePenalty") {
 		enemyDistance := math.Max(math.Min(modDB.Sum(mod.TypeBase, nil, "Multiplier:enemyDistance"), 120), 20)
-		accuracyPenalty := 1 - ((enemyDistance-20)/100)*(1-0.1)
+		accuracyPenalty := 1 - float64(((enemyDistance-20)/100)*(1-0.1))
 		enemyAccuracy = math.Floor(enemyAccuracy * accuracyPenalty)
 	}
 
@@ -1142,9 +1142,9 @@ func primaryDefences(env *Environment, actor *Actor) {
 			evadeMax = v
 		}
 		evade := func(evasion float64, names ...string) float64 {
-			return math.Max(0, math.Min(evadeMax, (100-(monsterHitChance(evasion, enemyAccuracy)-evadeChance)*hitChance)*calcLibMod(modDB, nil, names...)))
+			return math.Max(0, math.Min(evadeMax, (100-float64((monsterHitChance(evasion, enemyAccuracy)-evadeChance)*hitChance))*calcLibMod(modDB, nil, names...)))
 		}
-		output["EvadeChance"] = 100 - (monsterHitChance(output["Evasion"], enemyAccuracy)-evadeChance)*hitChance
+		output["EvadeChance"] = 100 - float64((monsterHitChance(output["Evasion"], enemyAccuracy)-evadeChance)*hitChance)
 		output["MeleeEvadeChance"] = evade(output["MeleeEvasion"], "EvadeChance", "MeleeEvadeChance")
 		output["ProjectileEvadeChance"] = evade(output["ProjectileEvasion"], "EvadeChance", "ProjectileEvadeChance")
 		output["SpellEvadeChance"] = evade(output["SpellEvasion"], "EvadeChance", "SpellEvadeChance")
@@ -1178,11 +1178,11 @@ func primaryDefences(env *Environment, actor *Actor) {
 	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:1565-1571
-	output["DeflectionRating"] = modDB.Sum(mod.TypeBase, nil, "DeflectionRating") + (output["Evasion"]*modDB.Sum(mod.TypeBase, nil, "EvasionGainAsDeflection")/100+output["Armour"]*modDB.Sum(mod.TypeBase, nil, "ArmourGainAsDeflection")/100)*calcLibMod(modDB, nil, "DeflectionRating")
+	output["DeflectionRating"] = modDB.Sum(mod.TypeBase, nil, "DeflectionRating") + float64((output["Evasion"]*modDB.Sum(mod.TypeBase, nil, "EvasionGainAsDeflection")/100+output["Armour"]*modDB.Sum(mod.TypeBase, nil, "ArmourGainAsDeflection")/100)*calcLibMod(modDB, nil, "DeflectionRating"))
 	output["DeflectChance"] = deflectChance(output["DeflectionRating"], enemyAccuracy)
 	if modDB.Flag(nil, "DeflectIsLucky") {
 		notDeflect := 1 - output["DeflectChance"]/100
-		output["DeflectChance"] = (1 - notDeflect*notDeflect) * 100
+		output["DeflectChance"] = (1 - float64(notDeflect*notDeflect)) * 100
 	}
 	output["DeflectEffect"] = math.Min(math.Max(miscConstant("DeflectEffect")+modDB.Sum(mod.TypeBase, nil, "DeflectEffect"), 0), 100)
 	//pob2:block:src/Modules/CalcDefence.lua:1572-1578
@@ -1433,10 +1433,10 @@ func defenceRecovery(actor *Actor) {
 		baseDegen := modDB.Sum(mod.TypeBase, nil, resource+"Degen") + pool*modDB.Sum(mod.TypeBase, nil, resource+"DegenPercent")/100
 		degenRate := 0.0
 		if baseDegen > 0 {
-			degenRate = baseDegen * calcLibMod(modDB, nil, resource+"Degen")
+			degenRate = float64(baseDegen * calcLibMod(modDB, nil, resource+"Degen"))
 		}
 		output[resource+"Degen"] = degenRate
-		recoveryRate := modDB.Sum(mod.TypeBase, nil, resource+"Recovery") * recoveryRateMod
+		recoveryRate := float64(modDB.Sum(mod.TypeBase, nil, resource+"Recovery") * recoveryRateMod)
 		output[resource+"Recovery"] = recoveryRate
 		overflowRecovery := modDB.Sum(mod.TypeBase, nil, "Overflow"+resource+"Recovery")
 		regenPart := regenRate

@@ -195,7 +195,7 @@ func updateAffixControl(item *Item, affixType, outputTable string, outputIndex i
 func sliderDivVal(val float64, divCount int) (int, float64) {
 	if divCount > 1 {
 		divIndex := max(int(math.Ceil(val*float64(divCount))), 1)
-		return divIndex, val*float64(divCount) - float64(divIndex) + 1
+		return divIndex, float64(val*float64(divCount)) - float64(divIndex) + 1
 	}
 	return 1, val
 }

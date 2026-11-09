@@ -466,7 +466,7 @@ func addMagebloodLegacies(env *Environment) {
 		}
 	}
 	effectPerDupe := modDB.Sum(mod.TypeIncrease, nil, "MagesLegacyEffect")
-	globalEffect := 1 + totalDuplicates*(effectPerDupe/100)
+	globalEffect := 1 + float64(totalDuplicates*(effectPerDupe/100))
 	for name := range legacyCountByName {
 		for _, entry := range legacies[name] {
 			modDB.AddMod(newMod(entry.stat, entry.modType, math.Floor(globalEffect*entry.value), "Mageblood"))
@@ -627,7 +627,7 @@ func doActorMisc(env *Environment, actor *Actor) {
 				inc += modDB.Sum(mod.TypeIncrease, nil, "NightbladeSupportedElusiveEffect")
 			}
 			inc += maxSkillInc
-			elusiveEffectMod := (1 + inc/100) * modDB.More(nil, "ElusiveEffect", "BuffEffectOnSelf") * 100
+			elusiveEffectMod := float64((1 + inc/100) * modDB.More(nil, "ElusiveEffect", "BuffEffectOnSelf") * 100)
 			minThreshold := 0.0
 			if o := modDB.Override(nil, "ElusiveEffectMinThreshold"); o != nil {
 				minThreshold = o.Float()

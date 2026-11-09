@@ -4388,7 +4388,7 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{
 			MOD("ExtraSkill", "LIST", mod.ExtraSkill{SkillID: "BloodbarrierPlayer", Level: 1, NoSupports: true, SkillName: "Bloodbarrier"}),
 			MOD("ExtraSkillStat", "LIST", mod.ExtraSkillStat{Key: "unique_blood_barrier_applies_x_stacks_of_corrupted_blood_on_block", Value: float64(1)}).Tag(mod.SkillId("BloodbarrierPlayer")),
-			MOD("ExtraSkillStat", "LIST", mod.ExtraSkillStat{Key: "base_skill_effect_duration", Value: math.Floor(utils.Float(captures[0])*1000 + 0.001)}).Tag(mod.SkillId("BloodbarrierPlayer")),
+			MOD("ExtraSkillStat", "LIST", mod.ExtraSkillStat{Key: "base_skill_effect_duration", Value: math.Floor(float64(utils.Float(captures[0])*1000) + 0.001)}).Tag(mod.SkillId("BloodbarrierPlayer")),
 			MOD("ExtraSkillStat", "LIST", mod.ExtraSkillStat{Key: "base_physical_damage_%_of_maximum_life_to_deal_per_minute", Value: utils.Float(captures[1])}).Tag(mod.SkillId("BloodbarrierPlayer")),
 		}, ""
 	},

@@ -17,7 +17,7 @@ import (
 
 const fmaModule = "github.com/Vilsol/go-pob/"
 
-var fmaPackages = []string{"calculator", "moddb", "mod", "data", "pob", "builds", "utils"}
+var fmaPackages = []string{"calculator", "moddb", "mod", "data", "pob", "builds", "utils", "calculator2", "pob2", "wasm2"}
 
 type fmaTarget struct {
 	name     string
@@ -47,6 +47,15 @@ var fmaAllow = map[string]string{
 	"calculator/calc_offence.go" + "\t" + "igniteRollAverage = float64((igniteStacks - (maxStacks-1)/2) / (igniteStacks + 1) * 100)":                                                                                            fmaPow2,
 	"calculator/calc_offence.go" + "\t" + "modValue = (float64((100+raw*(repeats-2)/2)*(repeats-1))+":                                                                                                                           fmaPow2,
 	"calculator/calc_perform.go" + "\t" + "avoid += modDB.Sum(mod.TypeBase, nil, \"SpellSuppressionChance\") / 2":                                                                                                               fmaPow2,
+	"calculator2/calc_defence_ehp.go" + "\t" + "enemyDamage += (enemyDB.Sum(mod.TypeBase, enemyCfg, damageType+\"Min\") + enemyDB.Sum(mod.TypeBase, enemyCfg, damageType+\"Max\")) / 2":                                         fmaPow2,
+	"calculator2/calc_defence_ehp.go" + "\t" + "takenFlat += modDB.Sum(mod.TypeBase, nil, \"DamageTakenFromAttacks\", damageType+\"DamageTakenFromAttacks\")/2 + modDB.Sum(mod.TypeBase, nil, damageType+\"DamageTakenFromProjectileAttacks\")/4 + modDB.Sum(mod.TypeBase, nil, \"DamageTakenFromSpells\", damageType+\"DamageTakenFromSpells\")/2 + modDB.Sum(mod.TypeBase, nil, \"DamageTakenFromSpellProjectiles\", damageType+\"DamageTakenFromSpellProjectiles\")/4": fmaPow2,
+	"calculator2/calc_defence_ehp.go" + "\t" + "spellSuppressMult = 1 - output[\"SpellSuppressionEffect\"]/100/2":                                                                                                   fmaPow2,
+	"calculator2/calc_defence_ehp.go" + "\t" + "ExtraAvoidChance += output[\"AvoidProjectilesChance\"] / 2":                                                                                                         fmaPow2,
+	"calculator2/calc_offence_ailments.go" + "\t" + "ailmentRollAverage = (ailmentStacks - (maxStacks-1)/2) / (ailmentStacks + 1) * 100":                                                                            fmaPow2,
+	"calculator2/calc_offence_ailments.go" + "\t" + "hitAvg := hitMin + (hitMax-hitMin)/2":                                                                                                                          fmaPow2,
+	"calculator2/calc_offence_ailments.go" + "\t" + "critAvg := critMin + (critMax-critMin)/2":                                                                                                                      fmaPow2,
+	"calculator2/calc_offence_hit_damage.go" + "\t" + "damageTypeHitAvgNotLucky := damageTypeHitMin/2 + damageTypeHitMax/2":                                                                                         fmaPow2,
+	"calculator2/calc_offence_setup.go" + "\t" + "modValue = (float64((100+v*(repeats-2)/2)*(repeats-1))+float64((100+float64(v*(repeats-1)))*damageFinalMoreValueTotal))/(repeats+damageMoreValueTotal/100) - 100": fmaPow2,
 }
 
 const (

@@ -76,7 +76,7 @@ func mergeFullDPSPass(fullDPS *FullDPS, sources map[string]string, actors []full
 		out := actor.out
 		if out["TotalDPS"] > 0 {
 			fullDPS.Skills = append(fullDPS.Skills, SkillDPS{Name: actor.name, DPS: out["TotalDPS"], Count: actor.count, Trigger: actor.trigger, SkillPart: actor.skillPart})
-			fullDPS.CombinedDPS += out["TotalDPS"] * actor.count
+			fullDPS.CombinedDPS += float64(out["TotalDPS"] * actor.count)
 		}
 		for _, stat := range mergeStatsSpec {
 			value, ok := out[stat.key]
@@ -95,7 +95,7 @@ func mergeFullDPSPass(fullDPS *FullDPS, sources map[string]string, actors []full
 					if stat.scaled {
 						scale = actor.count
 					}
-					fullDPS.totals[stat.target] += value * scale
+					fullDPS.totals[stat.target] += float64(value * scale)
 				}
 			case "cull":
 				if value > 1 && value > fullDPS.totals[stat.target] {
@@ -104,7 +104,7 @@ func mergeFullDPSPass(fullDPS *FullDPS, sources map[string]string, actors []full
 			}
 		}
 		if out["TotalDot"] > 0 && actor.dotScale != 0 {
-			fullDPS.totals["dotDPS"] += out["TotalDot"] * actor.dotScale
+			fullDPS.totals["dotDPS"] += float64(out["TotalDot"] * actor.dotScale)
 		}
 	}
 }
@@ -293,7 +293,7 @@ func calcFullDPS(main *Environment, mode string, override calcOverride) *FullDPS
 	fullDPS.TotalDotDPS = math.Min(fullDPS.TotalDotDPS, miscConstant("DotDpsCap"))
 	fullDPS.CombinedDPS += fullDPS.TotalDotDPS
 	if t["cullingMulti"] > 0 {
-		cullingDPS := fullDPS.CombinedDPS * (t["cullingMulti"] - 1)
+		cullingDPS := float64(fullDPS.CombinedDPS * (t["cullingMulti"] - 1))
 		fullDPS.Skills = append(fullDPS.Skills, SkillDPS{Name: "Full Culling DPS", DPS: cullingDPS, Count: 1})
 		fullDPS.CombinedDPS += cullingDPS
 	}

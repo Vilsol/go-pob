@@ -17,9 +17,9 @@ func armourReductionF(armour, raw float64) float64 {
 		return 0
 	} else if armour < 0 {
 		armour = -armour
-		return -(armour / (armour + raw*miscConstant("ArmourRatio")) * 100)
+		return -(armour / (armour + float64(raw*miscConstant("ArmourRatio"))) * 100)
 	}
-	return armour / (armour + raw*miscConstant("ArmourRatio")) * 100
+	return armour / (armour + float64(raw*miscConstant("ArmourRatio"))) * 100
 }
 
 //pob2:src/Modules/CalcDefence.lua:68-70
@@ -74,7 +74,7 @@ func takenHitFromDamage(rawDamage float64, damageType string, actor *ehpActor) (
 		if convertPercent > 0 || takenFlat != 0 {
 			convertedDamage := rawDamage * convertPercent / 100
 			vaalArctic := math.Min(-modDB.Sum(mod.TypeMore, nil, "VaalArcticArmourMitigation")/100, 1)
-			reducedDamage := round(math.Max(convertedDamage*damageMitigationMultiplierForType(output, modDB, damageType, convertedDamage, damageConvertedType)+takenFlat, 0)*output[damageConvertedType+"AfterReductionTakenHitMulti"]) * (1 - vaalArctic)
+			reducedDamage := float64(round(math.Max(float64(convertedDamage*damageMitigationMultiplierForType(output, modDB, damageType, convertedDamage, damageConvertedType))+takenFlat, 0)*output[damageConvertedType+"AfterReductionTakenHitMulti"]) * (1 - vaalArctic))
 			receivedDamageSum += reducedDamage
 			if reducedDamage > 0 || convertPercent > 0 {
 				damages[damageConvertedType] = reducedDamage
@@ -86,7 +86,7 @@ func takenHitFromDamage(rawDamage float64, damageType string, actor *ehpActor) (
 
 //pob2:src/Modules/CalcDefence.lua:462-466
 func calcLifeHitPoolWithLossPrevention(life, maxLife, lifeLossPrevented, lifeLossBelowHalfPrevented float64) float64 {
-	halfLife := maxLife * 0.5
+	halfLife := float64(maxLife * 0.5)
 	aboveLow := math.Max(life-halfLife, 0)
 	return aboveLow/(1-lifeLossPrevented/100) + math.Min(life, halfLife)/(1-lifeLossBelowHalfPrevented/100)/(1-lifeLossPrevented/100)
 }
@@ -267,7 +267,7 @@ func reducePoolsByDamage(poolTbl *ehpPools, damageTable map[string]float64, acto
 		}
 		if energyShield > 0 && modDB.Flag(nil, "EternalLife") {
 			tempDamage := math.Min(damageRemainder, energyShield/(1-esBypass)/esDamageTypeMultiplier)
-			energyShield -= tempDamage * (1 - esBypass) * esDamageTypeMultiplier
+			energyShield -= float64(tempDamage * (1 - esBypass) * esDamageTypeMultiplier)
 			esPoolRemaining = math.Min(esPoolRemaining, energyShield)
 			damageRemainder -= tempDamage
 			if lost != nil {
@@ -281,11 +281,11 @@ func reducePoolsByDamage(poolTbl *ehpPools, damageTable map[string]float64, acto
 		} else if energyShield > 0 && esBypass < 1 {
 			MoMEBPool := energyShield
 			if esBypass > 0 {
-				MoMEBPool = math.Min((MoMPool+lifeHitPool)/esBypass*esDamageTypeMultiplier-(MoMPool+lifeHitPool), energyShield)
+				MoMEBPool = math.Min(float64((MoMPool+lifeHitPool)/esBypass*esDamageTypeMultiplier)-(MoMPool+lifeHitPool), energyShield)
 			}
 			tempDamage := math.Min(damageRemainder*(1-esBypass), MoMEBPool/esDamageTypeMultiplier)
-			esPoolRemaining = math.Min(esPoolRemaining, MoMEBPool-tempDamage*esDamageTypeMultiplier)
-			energyShield -= tempDamage * esDamageTypeMultiplier
+			esPoolRemaining = math.Min(esPoolRemaining, MoMEBPool-float64(tempDamage*esDamageTypeMultiplier))
+			energyShield -= float64(tempDamage * esDamageTypeMultiplier)
 			damageRemainder -= tempDamage
 			if lost != nil {
 				delete(lost[damageType], "energyShield")
@@ -305,7 +305,7 @@ func reducePoolsByDamage(poolTbl *ehpPools, damageTable map[string]float64, acto
 			MoMPoolRemaining = 0
 		}
 		if output["preventedLifeLossTotal"] > 0 {
-			halfLife := output["Life"] * 0.5
+			halfLife := float64(output["Life"] * 0.5)
 			lifeOverHalfLife := math.Max(life-halfLife, 0)
 			preventPercent := output["preventedLifeLoss"] / 100
 			poolAboveLow := lifeOverHalfLife / (1 - preventPercent)
@@ -317,8 +317,8 @@ func reducePoolsByDamage(poolTbl *ehpPools, damageTable map[string]float64, acto
 			}
 			if output["preventedLifeLossBelowHalf"] != 0 {
 				damageToSplit := math.Min(damageRemainder, poolAboveLow)
-				lostLife := damageToSplit * (1 - preventPercent)
-				preventedLoss := damageToSplit * preventPercent
+				lostLife := float64(damageToSplit * (1 - preventPercent))
+				preventedLoss := float64(damageToSplit * preventPercent)
 				damageRemainder -= damageToSplit
 				lifeLossLostOverTime += preventedLoss
 				life -= lostLife
@@ -327,10 +327,10 @@ func reducePoolsByDamage(poolTbl *ehpPools, damageTable map[string]float64, acto
 					lost[damageType]["life"] = lostLife
 				}
 				if life <= halfLife {
-					unspecificallyLowLifePreventedDamage := damageRemainder * preventPercent
+					unspecificallyLowLifePreventedDamage := float64(damageRemainder * preventPercent)
 					lifeLossLostOverTime += unspecificallyLowLifePreventedDamage
 					damageRemainder -= unspecificallyLowLifePreventedDamage
-					specificallyLowLifePreventedDamage := damageRemainder * preventBelowHalfPercent
+					specificallyLowLifePreventedDamage := float64(damageRemainder * preventBelowHalfPercent)
 					lifeBelowHalfLossLostOverTime += specificallyLowLifePreventedDamage
 					damageRemainder -= specificallyLowLifePreventedDamage
 					lifeLossPrevented += unspecificallyLowLifePreventedDamage + specificallyLowLifePreventedDamage
@@ -472,7 +472,7 @@ func numberOfHitsToDie(output map[string]float64, actor *ehpActor, DamageIn *ehp
 		damageTotal = 0
 		VaalArcticArmourMultiplier := 1.0
 		if VaalArcticArmourHitsLeft > 0 {
-			VaalArcticArmourMultiplier = 1 - output["VaalArcticArmourMitigation"]*math.Min(VaalArcticArmourHitsLeft/iterationMultiplier, 1)
+			VaalArcticArmourMultiplier = 1 - float64(output["VaalArcticArmourMitigation"]*math.Min(VaalArcticArmourHitsLeft/iterationMultiplier, 1))
 		}
 		VaalArcticArmourHitsLeft -= iterationMultiplier
 		for _, damageType := range dmgTypeList {
@@ -483,11 +483,11 @@ func numberOfHitsToDie(output map[string]float64, actor *ehpActor, DamageIn *ehp
 			damageTotal += damage
 		}
 		if DamageIn.gainWhenHit && (iterationMultiplier > 1 || DamageIn.cycles > 1) {
-			gainMult := iterationMultiplier * DamageIn.cycles
-			poolTable.life = math.Min(poolTable.life+DamageIn.lifeWhenHit*(gainMult-1), gainMult*output["LifeRecoverable"])
-			poolTable.mana = math.Min(poolTable.mana+DamageIn.manaWhenHit*(gainMult-1), gainMult*output["ManaUnreserved"])
-			poolTable.energyShield = math.Min(poolTable.energyShield+DamageIn.energyShieldWhenHit*(gainMult-1), gainMult*output["EnergyShieldRecoveryCap"])
-			poolTable.ward = math.Min(poolTable.ward+DamageIn.wardWhenHit*(gainMult-1), gainMult*output["Ward"])
+			gainMult := float64(iterationMultiplier * DamageIn.cycles)
+			poolTable.life = math.Min(poolTable.life+float64(DamageIn.lifeWhenHit*(gainMult-1)), gainMult*output["LifeRecoverable"])
+			poolTable.mana = math.Min(poolTable.mana+float64(DamageIn.manaWhenHit*(gainMult-1)), gainMult*output["ManaUnreserved"])
+			poolTable.energyShield = math.Min(poolTable.energyShield+float64(DamageIn.energyShieldWhenHit*(gainMult-1)), gainMult*output["EnergyShieldRecoveryCap"])
+			poolTable.ward = math.Min(poolTable.ward+float64(DamageIn.wardWhenHit*(gainMult-1)), gainMult*output["Ward"])
 		}
 		poolTable = reducePoolsByDamage(poolTable, Damage, actor)
 
@@ -520,7 +520,7 @@ func numberOfHitsToDie(output map[string]float64, actor *ehpActor, DamageIn *ehp
 			}
 			inner.cycles = DamageIn.cycles * speedUp
 			inner.iterations = DamageIn.iterations
-			iterationMultiplier = math.Max((numberOfHitsToDie(output, actor, inner)-1)*speedUp-1, 1)
+			iterationMultiplier = math.Max(float64((numberOfHitsToDie(output, actor, inner)-1)*speedUp)-1, 1)
 			if math.IsInf(iterationMultiplier, 1) {
 				return posInf
 			}
@@ -544,7 +544,7 @@ func numberOfHitsToDie(output map[string]float64, actor *ehpActor, DamageIn *ehp
 	}
 	damageTotal = 0
 	for _, damageType := range dmgTypeList {
-		damageTotal += DamageIn.damage[damageType] * numHits
+		damageTotal += float64(DamageIn.damage[damageType] * numHits)
 	}
 	if poolTable.life >= 0 && damageTotal >= maxDamage {
 		return posInf
@@ -590,11 +590,11 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 		if specificTypeAvoidance {
 			avoidProjectiles = 0
 		}
-		output["MeleeNotHitChance"] = 100 - (1-output["MeleeEvadeChance"]/100)*(1-output["EffectiveAttackDodgeChance"]/100)*(1-output["AvoidAllDamageFromHitsChance"]/100)*100
-		output["ProjectileNotHitChance"] = 100 - (1-output["ProjectileEvadeChance"]/100)*(1-output["EffectiveAttackDodgeChance"]/100)*(1-output["AvoidAllDamageFromHitsChance"]/100)*(1-avoidProjectiles/100)*100
-		output["SpellNotHitChance"] = 100 - (1-output["SpellEvadeChance"]/100)*(1-output["EffectiveSpellDodgeChance"]/100)*(1-output["AvoidAllDamageFromHitsChance"]/100)*100
-		output["SpellProjectileNotHitChance"] = 100 - (1-output["SpellProjectileEvadeChance"]/100)*(1-output["EffectiveSpellDodgeChance"]/100)*(1-output["AvoidAllDamageFromHitsChance"]/100)*(1-avoidProjectiles/100)*100
-		output["UntypedNotHitChance"] = 100 - (1-output["AvoidAllDamageFromHitsChance"]/100)*100
+		output["MeleeNotHitChance"] = 100 - float64((1-output["MeleeEvadeChance"]/100)*(1-output["EffectiveAttackDodgeChance"]/100)*(1-output["AvoidAllDamageFromHitsChance"]/100)*100)
+		output["ProjectileNotHitChance"] = 100 - float64((1-output["ProjectileEvadeChance"]/100)*(1-output["EffectiveAttackDodgeChance"]/100)*(1-output["AvoidAllDamageFromHitsChance"]/100)*(1-avoidProjectiles/100)*100)
+		output["SpellNotHitChance"] = 100 - float64((1-output["SpellEvadeChance"]/100)*(1-output["EffectiveSpellDodgeChance"]/100)*(1-output["AvoidAllDamageFromHitsChance"]/100)*100)
+		output["SpellProjectileNotHitChance"] = 100 - float64((1-output["SpellProjectileEvadeChance"]/100)*(1-output["EffectiveSpellDodgeChance"]/100)*(1-output["AvoidAllDamageFromHitsChance"]/100)*(1-avoidProjectiles/100)*100)
+		output["UntypedNotHitChance"] = 100 - float64((1-output["AvoidAllDamageFromHitsChance"]/100)*100)
 		output["AverageNotHitChance"] = (output["MeleeNotHitChance"] + output["ProjectileNotHitChance"] + output["SpellNotHitChance"] + output["SpellProjectileNotHitChance"]) / 4
 		output["AverageEvadeChance"] = (output["MeleeEvadeChance"] + output["ProjectileEvadeChance"] + output["SpellNotHitChance"] + output["SpellProjectileNotHitChance"]) / 4
 		output["ConfiguredNotHitChance"] = output[damageCategoryConfig+"NotHitChance"]
@@ -645,7 +645,7 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 		}
 		output["EnemyCritChance"] = enemyCritChance
 		enemyCritDamage := math.Max((configNumberOr(env, placeholder, "enemyCritDamage", 0)+enemyDB.Sum(mod.TypeBase, nil, "CritMultiplier"))*(1+enemyDB.Sum(mod.TypeIncrease, &moddb.ListCfg{Flags: utils.Ptr(mod.MFlagHit)}, "CritMultiplier")/100), 0)
-		output["EnemyCritEffect"] = 1 + enemyCritChance/100*(enemyCritDamage/100)*(1-output["CritExtraDamageReduction"]/100)
+		output["EnemyCritEffect"] = 1 + float64(enemyCritChance/100*(enemyCritDamage/100)*(1-output["CritExtraDamageReduction"]/100))
 		enemyCfg := &moddb.ListCfg{KeywordFlags: utils.Ptr(^mod.KeywordFlagMatchAll)}
 		enemyDamageConversion := map[string]map[string]float64{}
 		for _, damageType := range dmgTypeList {
@@ -721,7 +721,7 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 				names = append(names, elementalName(damageType, "ElementalDamage")...)
 				names = append(names, elementalName(damageTypeFrom, "ElementalDamage")...)
 				enemyDamageMult := calcLibMod(enemyDB, nil, names...)
-				output[damageType+"EnemyDamage"] += enemyDamage * enemyDamageMult * output["EnemyCritEffect"]
+				output[damageType+"EnemyDamage"] += float64(enemyDamage * enemyDamageMult * output["EnemyCritEffect"])
 				conversionExtra += float64(enemyDamage * enemyDamageMult * output["EnemyCritEffect"])
 			}
 			output["totalEnemyDamage"] += output[damageType+"EnemyDamage"]
@@ -985,7 +985,7 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 		}
 		totalReduct := math.Min(output[damageType+"DamageReductionMax"], armourReduct+reduction)
 		reductMult := 1 - math.Max(math.Min(output[damageType+"DamageReductionMax"], totalReduct-enemyOverwhelm), 0)/100
-		output[damageType+"DamageReduction"] = 100 - reductMult*100
+		output[damageType+"DamageReduction"] = 100 - float64(reductMult*100)
 		if impaleDamage > 0 {
 			impaleDamage = impaleDamage * resMult * (1 - math.Max(math.Min(output[damageType+"DamageReductionMax"], math.Min(output[damageType+"DamageReductionMax"], impaleArmourReduct+reduction)-enemyOverwhelm), 0)/100)
 			impaleDamage = impaleDamage * enemyImpaleChance / 100 * 5 * output[damageType+"TakenReflect"]
@@ -1022,7 +1022,7 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 				lines = append(lines, sFormat("Enemy Overwhelm %s Damage: %d%%", damageType, enemyOverwhelm))
 			}
 			if countTrue(armourReduct != 0, reduction != 0, enemyOverwhelm != 0) >= 2 {
-				lines = append(lines, sFormat("Total %s Damage Reduction: %d%%", damageType, 100-reductMult*100))
+				lines = append(lines, sFormat("Total %s Damage Reduction: %d%%", damageType, 100-float64(reductMult*100)))
 			}
 			breakdown.set(damageType+"DamageReduction", lines...)
 		}
@@ -1054,7 +1054,7 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 		output[damageType+"BaseTakenHitMult"] = baseMult * afterReductionMulti
 		takenMultReflect := output[damageType+"TakenReflect"]
 		finalReflect := baseMult * takenMultReflect
-		output[damageType+"TakenHit"] = math.Max(damage*baseMult+takenFlat, 0)*afterReductionMulti + impaleDamage
+		output[damageType+"TakenHit"] = float64(math.Max(float64(damage*baseMult)+takenFlat, 0)*afterReductionMulti) + impaleDamage
 		if damage > 0 {
 			output[damageType+"TakenHitMult"] = output[damageType+"TakenHit"] / damage
 		} else {
@@ -1239,9 +1239,9 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			}
 		}
 		output["InterruptStunAvoidChance"] = math.Min(modDB.Sum(mod.TypeBase, nil, "AvoidInterruptStun"), 100)
-		effectiveEnemyDamage := output["totalTakenHit"] + output["PhysicalTakenHit"]*0.25
+		effectiveEnemyDamage := output["totalTakenHit"] + float64(output["PhysicalTakenHit"]*0.25)
 		if damageCategoryConfig != "Average" {
-			effectiveEnemyDamage = effectiveEnemyDamage * miscConstant("PhysicalStunMult") * (1 + miscConstant("MeleeStunMult")*3) / 4
+			effectiveEnemyDamage = effectiveEnemyDamage * miscConstant("PhysicalStunMult") * (1 + float64(miscConstant("MeleeStunMult")*3)) / 4
 		} else if damageCategoryConfig != "Melee" {
 			effectiveEnemyDamage *= miscConstant("PhysicalStunMult")
 		}
@@ -1297,7 +1297,7 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 		output["preventedLifeLossBelowHalf"] = (1 - output["preventedLifeLoss"]/100) * initialLifeLossBelowHalfPrevented
 		if !conditionLowLife {
 			portionLife := math.Min(output["Life"]*0.5/recoverable, 1)
-			output["preventedLifeLossTotal"] = output["preventedLifeLoss"] + output["preventedLifeLossBelowHalf"]*portionLife
+			output["preventedLifeLossTotal"] = output["preventedLifeLoss"] + float64(output["preventedLifeLossBelowHalf"]*portionLife)
 		} else {
 			output["preventedLifeLossTotal"] = output["preventedLifeLoss"] + output["preventedLifeLossBelowHalf"]
 		}
@@ -1388,8 +1388,8 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 				sourceHitPool = sourcePool
 			}
 		}
-		poolProtected := sourcePool / (output["sharedMindOverMatter"] / 100) * (1 - output["sharedMindOverMatter"]/100)
-		hitPoolProtected := sourceHitPool / (output["sharedMindOverMatter"] / 100) * (1 - output["sharedMindOverMatter"]/100)
+		poolProtected := float64(sourcePool / (output["sharedMindOverMatter"] / 100) * (1 - output["sharedMindOverMatter"]/100))
+		hitPoolProtected := float64(sourceHitPool / (output["sharedMindOverMatter"] / 100) * (1 - output["sharedMindOverMatter"]/100))
 		if output["sharedMindOverMatter"] >= 100 {
 			output["sharedManaEffectiveLife"] = output["LifeRecoverable"] + sourcePool
 			output["sharedMoMHitPool"] = output["LifeHitPool"] + sourceHitPool
@@ -1412,7 +1412,7 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			sourceHitPool := sourcePool
 			if modDB.Flag(nil, "EnergyShieldProtectsMana") && output[damageType+"EnergyShieldBypass"] < 100 {
 				if output[damageType+"EnergyShieldBypass"] > 0 {
-					manaProtected := output["EnergyShieldRecoveryCap"] / (1 - output[damageType+"EnergyShieldBypass"]/100) * (output[damageType+"EnergyShieldBypass"] / 100)
+					manaProtected := float64(output["EnergyShieldRecoveryCap"] / (1 - output[damageType+"EnergyShieldBypass"]/100) * (output[damageType+"EnergyShieldBypass"] / 100))
 					sourcePool = math.Max(sourcePool-manaProtected, -output["LifeRecoverable"]) + math.Min(sourcePool+output["LifeRecoverable"], manaProtected)/(output[damageType+"EnergyShieldBypass"]/100)
 					sourceHitPool = math.Max(sourceHitPool-manaProtected, -output["LifeHitPool"]) + math.Min(sourceHitPool+output["LifeHitPool"], manaProtected)/(output[damageType+"EnergyShieldBypass"]/100)
 				} else {
@@ -1420,8 +1420,8 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 					sourceHitPool = sourcePool
 				}
 			}
-			poolProtected := sourcePool / (MindOverMatter / 100) * (1 - MindOverMatter/100)
-			hitPoolProtected := sourceHitPool / (MindOverMatter / 100) * (1 - MindOverMatter/100)
+			poolProtected := float64(sourcePool / (MindOverMatter / 100) * (1 - MindOverMatter/100))
+			hitPoolProtected := float64(sourceHitPool / (MindOverMatter / 100) * (1 - MindOverMatter/100))
 			if MindOverMatter >= 100 {
 				output[damageType+"ManaEffectiveLife"] = output["LifeRecoverable"] + sourcePool
 				output[damageType+"MoMHitPool"] = output["LifeHitPool"] + sourceHitPool
@@ -1654,9 +1654,9 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 				DamageIn.energyShieldWhenHit = output["EnergyShieldOnBlock"] * BlockChance
 				DamageIn.wardWhenHit = output["WardOnBlock"] * BlockChance
 				if damageCategoryConfig == "Spell" || damageCategoryConfig == "SpellProjectile" {
-					DamageIn.energyShieldWhenHit += output["EnergyShieldOnSpellBlock"] * BlockChance
+					DamageIn.energyShieldWhenHit += float64(output["EnergyShieldOnSpellBlock"] * BlockChance)
 				} else if damageCategoryConfig == "Average" {
-					DamageIn.energyShieldWhenHit += output["EnergyShieldOnSpellBlock"] / 2 * BlockChance
+					DamageIn.energyShieldWhenHit += float64(output["EnergyShieldOnSpellBlock"] / 2 * BlockChance)
 				}
 			}
 			if damageCategoryConfig == "Spell" || damageCategoryConfig == "SpellProjectile" || damageCategoryConfig == "Average" {
@@ -1666,16 +1666,16 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 				if damageCategoryConfig == "Average" {
 					suppressChance /= 2
 				}
-				DamageIn.energyShieldWhenHit += output["EnergyShieldOnSuppress"] * suppressChance
-				DamageIn.lifeWhenHit += output["LifeOnSuppress"] * suppressChance
+				DamageIn.energyShieldWhenHit += float64(output["EnergyShieldOnSuppress"] * suppressChance)
+				DamageIn.lifeWhenHit += float64(output["LifeOnSuppress"] * suppressChance)
 				suppressionEffect = 1 - suppressChance*output["SpellSuppressionEffect"]/100
 			} else {
 				suppressMult := 1.0
 				if damageCategoryConfig == "Average" {
 					suppressMult = 0.5
 				}
-				DamageIn.energyShieldWhenHit += output["EnergyShieldOnSuppress"] * suppressMult
-				DamageIn.lifeWhenHit += output["LifeOnSuppress"] * suppressMult
+				DamageIn.energyShieldWhenHit += float64(output["EnergyShieldOnSuppress"] * suppressMult)
+				DamageIn.lifeWhenHit += float64(output["LifeOnSuppress"] * suppressMult)
 			}
 			effectiveDeflectMulti := 1.0
 			if output["DeflectChance"] < 100 {
@@ -1854,11 +1854,11 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			}
 			output["Total"+recoupType+"RecoupRecovery"] = output[recoupType+"Recoup"] / 100 * totalDamage
 			if output["Elemental"+recoupType+"Recoup"] > 0 && totalElementalDamage > 0 {
-				output["Total"+recoupType+"RecoupRecovery"] += output["Elemental"+recoupType+"Recoup"] / 100 * totalElementalDamage
+				output["Total"+recoupType+"RecoupRecovery"] += float64(output["Elemental"+recoupType+"Recoup"] / 100 * totalElementalDamage)
 			}
 			for _, damageType := range dmgTypeList {
 				if output[damageType+recoupType+"Recoup"] > 0 && output[damageType+"RecoupableDamageTaken"] > 0 {
-					output["Total"+recoupType+"RecoupRecovery"] += output[damageType+recoupType+"Recoup"] / 100 * output[damageType+"RecoupableDamageTaken"]
+					output["Total"+recoupType+"RecoupRecovery"] += float64(output[damageType+recoupType+"Recoup"] / 100 * output[damageType+"RecoupableDamageTaken"])
 				}
 			}
 			output["Total"+recoupType+"PseudoRecoup"] = output["PhysicalDamageMitigated"+recoupType+"PseudoRecoup"] / 100 * totalPhysicalDamageMitigated
@@ -1892,8 +1892,8 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 	if output["preventedLifeLossTotal"] > 0 && hasLifeLossLost && hasLifeBelowHalfLossLost {
 		LifeLossBelowHalfLost := modDB.Sum(mod.TypeBase, nil, "LifeLossBelowHalfLost") / 100
 		LifeLossLost := modDB.Sum(mod.TypeBase, nil, "LifeLossLost") / 100
-		output["LifeLossLostMax"] = (output["LifeLossLostOverTime"]*LifeLossLost + output["LifeBelowHalfLossLostOverTime"]*LifeLossBelowHalfLost) / 4
-		output["LifeLossLostAvg"] = (output["LifeLossLostOverTime"]*LifeLossLost + output["LifeBelowHalfLossLostOverTime"]*LifeLossBelowHalfLost) / (output["EHPSurvivalTime"] + 4)
+		output["LifeLossLostMax"] = (float64(output["LifeLossLostOverTime"]*LifeLossLost) + float64(output["LifeBelowHalfLossLostOverTime"]*LifeLossBelowHalfLost)) / 4
+		output["LifeLossLostAvg"] = (float64(output["LifeLossLostOverTime"]*LifeLossLost) + float64(output["LifeBelowHalfLossLostOverTime"]*LifeLossBelowHalfLost)) / (output["EHPSurvivalTime"] + 4)
 	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:3567-3585
@@ -1919,15 +1919,15 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 
 		percentageNonElemental := (output["PhysicalTakenHit"] + output["ChaosTakenHit"]) / output["totalTakenHit"]
 		percentageElemental := 1 - percentageNonElemental
-		portionNonElemental := math.Pow(output["totalTakenHit"]/PvpTvalue/PvpNonElemental2, PvpNonElemental1) * PvpTvalue * PvpNonElemental2 * percentageNonElemental
-		portionElemental := math.Pow(output["totalTakenHit"]/PvpTvalue/PvpElemental2, PvpElemental1) * PvpTvalue * PvpElemental2 * percentageElemental
+		portionNonElemental := float64(math.Pow(output["totalTakenHit"]/PvpTvalue/PvpNonElemental2, PvpNonElemental1) * PvpTvalue * PvpNonElemental2 * percentageNonElemental)
+		portionElemental := float64(math.Pow(output["totalTakenHit"]/PvpTvalue/PvpElemental2, PvpElemental1) * PvpTvalue * PvpElemental2 * percentageElemental)
 		output["PvPTotalTakenHit"] = (portionNonElemental + portionElemental) * PvpMultiplier
 	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:3636-3860
 	{
 		protect := func(damageType string, pool, mitigation float64) {
-			poolProtected := pool / (mitigation / 100) * (1 - mitigation/100)
+			poolProtected := float64(pool / (mitigation / 100) * (1 - mitigation/100))
 			output[damageType+"TotalHitPool"] = math.Max(output[damageType+"TotalHitPool"]-poolProtected, 0) + math.Min(output[damageType+"TotalHitPool"], poolProtected)/(1-mitigation/100)
 		}
 		for _, damageType := range dmgTypeList {
@@ -2018,13 +2018,13 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 						oneMinusFlatPlusOverwhelm := 1 - flatDR + enemyOverwhelmPercent/100
 						HP_tTM_tF_DCM_tRM := (totalHitPool/totalTakenMulti - takenFlat) / (damageConvertedMulti * totalResistMult)
 
-						a := miscConstant("ArmourRatio") * damageConvertedMulti * oneMinusFlatPlusOverwhelm
-						b := effectiveAppliedArmour*oneMinusFlatPlusOverwhelm - effectiveAppliedArmour - HP_tTM_tF_DCM_tRM*miscConstant("ArmourRatio")*damageConvertedMulti
+						a := float64(miscConstant("ArmourRatio") * damageConvertedMulti * oneMinusFlatPlusOverwhelm)
+						b := float64(effectiveAppliedArmour*oneMinusFlatPlusOverwhelm) - effectiveAppliedArmour - float64(HP_tTM_tF_DCM_tRM*miscConstant("ArmourRatio")*damageConvertedMulti)
 						c := -HP_tTM_tF_DCM_tRM * effectiveAppliedArmour
 
 						RAW := posInf
 						if a != 0 {
-							RAW = (math.Sqrt(math.Max(b*b-4*a*c, 0)) - b) / (2 * a)
+							RAW = (math.Sqrt(math.Max(float64(b*b)-float64(4*a*c), 0)) - b) / (2 * a)
 						}
 
 						noDRMaxHit := totalHitPool / damageConvertedMulti / totalResistMult / totalTakenMulti * (1 - takenFlat*totalTakenMulti/totalHitPool)
@@ -2186,7 +2186,7 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 				for _, damageConvertedType := range dmgTypeList {
 					convertPercent := actor.damageOverTimeShiftTable[damageType][damageConvertedType]
 					if convertPercent > 0 {
-						total := baseVal * (convertPercent / 100) * output[damageConvertedType+"TakenDotMult"]
+						total := float64(baseVal * (convertPercent / 100) * output[damageConvertedType+"TakenDotMult"])
 						output[damageConvertedType+"BuildDegen"] += total
 						output["TotalBuildDegen"] += total
 					}
@@ -2216,7 +2216,7 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			output["NetEnergyShieldRegen"] -= totalEnergyShieldDegen
 			output["TotalNetRegen"] = output["NetLifeRegen"] + output["NetManaRegen"] + output["NetEnergyShieldRegen"] + output["NetWardRegen"]
 		}
-		enemyCritAilmentEffect := 1 + output["EnemyCritChance"]/100*0.5*(1-output["CritExtraDamageReduction"]/100)
+		enemyCritAilmentEffect := 1 + float64(output["EnemyCritChance"]/100*0.5*(1-output["CritExtraDamageReduction"]/100))
 		enemyCritThreshold := 10.1
 		enemyBleedChance := 0.0
 		enemyIgniteChance := 0.0
@@ -2226,7 +2226,7 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			if !modDB.Flag(nil, "CritsOnYouDontAlwaysApplyElementalAilments") && (output["EnemyCritChance"] > enemyCritThreshold || enemyIgniteChance > 0) {
 				enemyCritAilmentChance = output["EnemyCritChance"]
 			}
-			enemyIgniteChance = (enemyCritAilmentChance + (1-enemyCritAilmentChance/100)*enemyIgniteChance) * (1 - output["IgniteAvoidChance"]/100)
+			enemyIgniteChance = (enemyCritAilmentChance + float64((1-enemyCritAilmentChance/100)*enemyIgniteChance)) * (1 - output["IgniteAvoidChance"]/100)
 		}
 		enemyPoisonChance := 0.0
 		if output["SelfPoisonEffect"] != 0 && output["PoisonAvoidChance"] < 100 && output["SelfPoisonDuration"] != 0 && damageCategoryConfig != "DamageOverTime" {
@@ -2238,7 +2238,7 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 				for _, damageConvertedType := range dmgTypeList {
 					convertPercent := actor.damageOverTimeShiftTable[damageType][damageConvertedType]
 					if convertPercent > 0 {
-						total := baseVal * (convertPercent / 100) * output[damageConvertedType+"TakenDotMult"]
+						total := float64(baseVal * (convertPercent / 100) * output[damageConvertedType+"TakenDotMult"])
 						output[damageConvertedType+"EnemyDegen"] += total
 						output["TotalDegen"] += total
 					}

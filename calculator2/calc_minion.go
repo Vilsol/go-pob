@@ -277,7 +277,7 @@ func initMinionModDB(env *Environment, activeSkill *ActiveSkill) {
 		if o := modDB.Override(nil, "DexAccBonusOverride"); o != nil {
 			dexAcc = o.Float()
 		}
-		minion.ModDB.AddMod(newMod("Accuracy", mod.TypeBase, calcLibVal(modDB, "Accuracy", nil)+calcLibVal(modDB, "Dex", nil)*dexAcc, "Player"))
+		minion.ModDB.AddMod(newMod("Accuracy", mod.TypeBase, calcLibVal(modDB, "Accuracy", nil)+float64(calcLibVal(modDB, "Dex", nil)*dexAcc), "Player"))
 	} else {
 		// Minions no longer need Accuracy as of patch 0.3.0
 		minion.ModDB.AddMod(mod.NewFlag("CannotBeEvaded", true).Source("Minion Attacks always hit"))

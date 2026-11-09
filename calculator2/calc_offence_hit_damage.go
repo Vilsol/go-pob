@@ -34,7 +34,7 @@ func (h *offenceHit) calcAncestralBoost(skillName string, moreDmg float64, uptim
 		globalOutput[skillNameVar+"UptimeRatio"] = math.Min((1/globalOutput["Speed"])/globalOutput[skillNameVar+"Cooldown"], 1) * 100
 	}
 	globalOutput["Avg"+skillNameVar+"Damage"] = globalOutput[skillNameVar+"DamageMultiplier"]
-	globalOutput["Avg"+skillNameVar+"DamageEffect"] = 1 + globalOutput["Avg"+skillNameVar+"Damage"]*(globalOutput[skillNameVar+"UptimeRatio"]/100)
+	globalOutput["Avg"+skillNameVar+"DamageEffect"] = 1 + float64(globalOutput["Avg"+skillNameVar+"Damage"]*(globalOutput[skillNameVar+"UptimeRatio"]/100))
 	globalOutput["Max"+skillNameVar+"DamageEffect"] = 1 + globalOutput[skillNameVar+"DamageMultiplier"]
 	if h.activeSkill.SkillModList.Flag(nil, "Condition:WarcryMaxHit") {
 		globalOutput[skillNameVar+"DamageEffect"] = globalOutput["Max"+skillNameVar+"DamageEffect"]
@@ -63,7 +63,7 @@ func (h *offenceHit) calcCombinedAncestralBoost(skillName string, moreDmg float6
 	globalOutput[skillNameVar+"UptimeRatio"] = uptimeOverride
 	globalOutput[skillNameVar+"UptimeRatio"] = math.Min(globalOutput[skillNameVar+"UptimeRatio"]+globalOutput[additionalSkillNameVar+"UptimeRatio"], 100)
 	globalOutput["Avg"+skillNameVar+"Damage"] = globalOutput[skillNameVar+"DamageMultiplier"]
-	globalOutput["Avg"+skillNameVar+"DamageEffect"] = 1 + globalOutput["Avg"+skillNameVar+"Damage"]*(globalOutput[skillNameVar+"UptimeRatio"]/100)
+	globalOutput["Avg"+skillNameVar+"DamageEffect"] = 1 + float64(globalOutput["Avg"+skillNameVar+"Damage"]*(globalOutput[skillNameVar+"UptimeRatio"]/100))
 	globalOutput["Max"+skillNameVar+"DamageEffect"] = 1 + globalOutput[skillNameVar+"DamageMultiplier"]
 	if h.activeSkill.SkillModList.Flag(nil, "Condition:WarcryMaxHit") {
 		globalOutput[skillNameVar+"DamageEffect"] = globalOutput["Max"+skillNameVar+"DamageEffect"]
@@ -544,9 +544,9 @@ func (h *offenceHit) offenceCrit(pass *offencePass) {
 				nonCritChance := 1 - critChance
 
 				critBonusMultiplier := 1*critChance + // 100% crit damage, crit% of the time
-					0.7*nonCritChance*critChance + // 70% if we roll non-crit then a crit
-					0.4*math.Pow(nonCritChance, 2)*critChance + // 40% if we roll two non-crit then a crit
-					0.1*math.Pow(nonCritChance, 3)*critChance // 10% if we roll three non-crits then a crit
+					float64(0.7*nonCritChance*critChance) + // 70% if we roll non-crit then a crit
+					float64(0.4*math.Pow(nonCritChance, 2)*critChance) + // 40% if we roll two non-crit then a crit
+					float64(0.1*math.Pow(nonCritChance, 3)*critChance) // 10% if we roll three non-crits then a crit
 				if skillModList.Flag(cfg, "BifurcateCrit") {
 					// The terminating stage can crit twice, so scale its one-or-more-crit bonus
 					// by the expected number of crits on that stage.
@@ -631,7 +631,7 @@ func (h *offenceHit) offenceCrit(pass *offencePass) {
 				}
 				output["CritBifurcates"] = 1 + conditionalBifurcateChance
 				damageBonus := extraDamage
-				bifurcatedBonus := conditionalBifurcateChance * extraDamage
+				bifurcatedBonus := float64(conditionalBifurcateChance * extraDamage)
 				extraDamage = damageBonus + bifurcatedBonus
 				skillModList.NewMod("CritMultiplier", mod.TypeMore, floorDec(conditionalBifurcateChance*100, 2), "Bifurcated Crit Damage Bonus")
 			}
@@ -644,7 +644,7 @@ func (h *offenceHit) offenceCrit(pass *offencePass) {
 			output["CritMultiplier"] = 1 + math.Max(0, extraDamage)
 		}
 		critChancePercentage := output["CritChance"] / 100
-		output["CritEffect"] = 1 - critChancePercentage + critChancePercentage*output["CritMultiplier"]
+		output["CritEffect"] = 1 - critChancePercentage + float64(critChancePercentage*output["CritMultiplier"])
 		output["BonusCritDotMultiplier"] = (skillModList.Sum(mod.TypeBase, cfg, "CritMultiplier") - 50) * skillModList.Sum(mod.TypeBase, cfg, "CritMultiplierAppliesToDegen") / 10000
 	}
 }
@@ -778,8 +778,8 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 		addedMin := skillModList.Sum(mod.TypeBase, cfg, damageTypeMin) + enemyDB.Sum(mod.TypeBase, cfg, "Self"+damageTypeMin)
 		addedMax := skillModList.Sum(mod.TypeBase, cfg, damageTypeMax) + enemyDB.Sum(mod.TypeBase, cfg, "Self"+damageTypeMax)
 		addedMult := calcLibMod(skillModList, cfg, "Added"+damageType+"Damage", "AddedDamage")
-		baseMin := (source.num(damageTypeMin) + source.num(damageType+"BonusMin") + (addedMin * addedMult)) * baseMultiplier
-		baseMax := (source.num(damageTypeMax) + source.num(damageType+"BonusMax") + (addedMax * addedMult)) * baseMultiplier
+		baseMin := (source.num(damageTypeMin) + source.num(damageType+"BonusMin") + float64(addedMin*addedMult)) * baseMultiplier
+		baseMax := (source.num(damageTypeMax) + source.num(damageType+"BonusMax") + float64(addedMax*addedMult)) * baseMultiplier
 		output[damageTypeMin+"Base"] = baseMin
 		output[damageTypeMax+"Base"] = baseMax
 	}
@@ -791,8 +791,8 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 		gainedMin, gainedMax := calcGainedDamage(state, output, damageType)
 		baseMin := output[damageType+"MinBase"]
 		baseMax := output[damageType+"MaxBase"]
-		output[damageType+"SummedMinBase"] = baseMin*convMult + convertedMin + gainedMin
-		output[damageType+"SummedMaxBase"] = baseMax*convMult + convertedMax + gainedMax
+		output[damageType+"SummedMinBase"] = float64(baseMin*convMult) + convertedMin + gainedMin
+		output[damageType+"SummedMaxBase"] = float64(baseMax*convMult) + convertedMax + gainedMax
 		output[damageType+"StoredCombinedAvg"] = 0
 	}
 
@@ -843,17 +843,17 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 					damageTypeLuckyChance = math.Min(skillModList.Sum(mod.TypeBase, skillCfg, damageType+"LuckyHitsChance", "LuckyHitsChance"), 100) / 100
 				}
 				damageTypeHitAvgNotLucky := damageTypeHitMin/2 + damageTypeHitMax/2
-				damageTypeHitAvgLucky := damageTypeHitMin/3 + 2*damageTypeHitMax/3
-				damageTypeHitAvg = damageTypeHitAvgNotLucky*(1-damageTypeLuckyChance) + damageTypeHitAvgLucky*damageTypeLuckyChance
+				damageTypeHitAvgLucky := damageTypeHitMin/3 + 2*float64(damageTypeHitMax)/3
+				damageTypeHitAvg = float64(damageTypeHitAvgNotLucky*(1-damageTypeLuckyChance)) + float64(damageTypeHitAvgLucky*damageTypeLuckyChance)
 
 				// Store pre-resist/armour/penetration hit damage for ailment calculations
 				if critPass == 1 {
-					output[damageType+"StoredCombinedAvg"] += damageTypeHitAvg * (output["CritChance"] / 100)
+					output[damageType+"StoredCombinedAvg"] += float64(damageTypeHitAvg * (output["CritChance"] / 100))
 					output[damageType+"StoredCritAvg"] = damageTypeHitAvg
 					output[damageType+"StoredCritMin"] = damageTypeHitMin
 					output[damageType+"StoredCritMax"] = damageTypeHitMax
 				} else {
-					output[damageType+"StoredCombinedAvg"] += damageTypeHitAvg * (1 - output["CritChance"]/100)
+					output[damageType+"StoredCombinedAvg"] += float64(damageTypeHitAvg * (1 - output["CritChance"]/100))
 					output[damageType+"StoredHitAvg"] = damageTypeHitAvg
 					output[damageType+"StoredHitMin"] = damageTypeHitMin
 					output[damageType+"StoredHitMax"] = damageTypeHitMax
@@ -922,9 +922,9 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 		if critPass == 1 {
 			portion = output["CritChance"] / 100
 		}
-		output["LifeLeech"] += lifeLeechTotal * portion
-		output["EnergyShieldLeech"] += energyShieldLeechTotal * portion
-		output["ManaLeech"] += manaLeechTotal * portion
+		output["LifeLeech"] += float64(lifeLeechTotal * portion)
+		output["EnergyShieldLeech"] += float64(energyShieldLeechTotal * portion)
+		output["ManaLeech"] += float64(manaLeechTotal * portion)
 	}
 	output["TotalMin"] = totalHitMin
 	output["TotalMax"] = totalHitMax
@@ -1031,7 +1031,7 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 
 	// Calculate average damage and final DPS
 	//pob2:block:src/Modules/CalcOffence.lua:4564-4576
-	output["AverageHit"] = totalHitAvg*(1-output["CritChance"]/100) + totalCritAvg*output["CritChance"]/100
+	output["AverageHit"] = float64(totalHitAvg*(1-output["CritChance"]/100)) + totalCritAvg*output["CritChance"]/100
 	if skillFlags["monsterExplode"] {
 		output["AverageHitToMonsterLifePercentage"] = output["AverageHit"] / h.monsterLife * 100
 		if truthy(skillData["hitChanceIsExplodeChance"]) {
@@ -1048,7 +1048,7 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 	if skillModList.Flag(nil, "HasSeals") && skillModList.Flag(nil, "DamageSeal") && !skillModList.Flag(nil, "NoRepeatBonuses") {
 		repeatPenalty = calcLibMod(skillModList, skillCfg, "SealRepeatPenalty")
 	}
-	globalOutput["AverageBurstDamage"] = output["AverageDamage"] + output["AverageDamage"]*(globalOutput["AverageBurstHits"]-1)*repeatPenalty
+	globalOutput["AverageBurstDamage"] = output["AverageDamage"] + float64(output["AverageDamage"]*(globalOutput["AverageBurstHits"]-1)*repeatPenalty)
 	h.actor.setOutputFlag("ShowBurst", globalOutput["AverageBurstHits"] > 1)
 	output["TotalDPS"] = output["AverageDamage"] * hitSpeed * output["DpsMultiplier"] * quantityMultiplier
 	//pob2:block:src/Modules/CalcOffence.lua:4577-4598
@@ -1148,7 +1148,7 @@ func (h *offenceHit) hitEffMult(cfg *moddb.ListCfg, damageType string, damageTyp
 		if skillModList.Flag(cfg, "IgnoreEnemyPhysicalDamageReduction") || chanceToIgnoreEnemyPhysicalDamageReduction >= 100 {
 			resist = 0
 		} else {
-			resist = math.Min(math.Max(-miscConstant("NegArmourDmgBonusCap"), enemyDB.Sum(mod.TypeBase, nil, "PhysicalDamageReduction")+skillModList.Sum(mod.TypeBase, cfg, "EnemyPhysicalDamageReduction")+armourReduction*(1-chanceIgnoreEnemyArmour)), miscConstant("EnemyPhysicalDamageReductionCap"))
+			resist = math.Min(math.Max(-miscConstant("NegArmourDmgBonusCap"), enemyDB.Sum(mod.TypeBase, nil, "PhysicalDamageReduction")+skillModList.Sum(mod.TypeBase, cfg, "EnemyPhysicalDamageReduction")+float64(armourReduction*(1-chanceIgnoreEnemyArmour))), miscConstant("EnemyPhysicalDamageReductionCap"))
 			if resist > 0 {
 				resist *= 1 - (skillModList.Sum(mod.TypeBase, nil, "PartialIgnoreEnemyPhysicalDamageReduction")/100 + chanceToIgnoreEnemyPhysicalDamageReduction/100)
 			}
@@ -1216,7 +1216,7 @@ func (h *offenceHit) hitEffMult(cfg *moddb.ListCfg, damageType string, damageTyp
 	if cannotElePenIgnore || useRes {
 		var effectiveResist float64
 		if isElemental[damageType] && invertChance > 0 {
-			effectiveResist = normalHitResist*(1-invertChance) + invertedHitResist*invertChance
+			effectiveResist = float64(normalHitResist*(1-invertChance)) + float64(invertedHitResist*invertChance)
 		} else {
 			effectiveResist = normalHitResist
 		}
@@ -1286,8 +1286,8 @@ func (h *offenceHit) offencePvp(pass *offencePass, totalHitMin, totalHitMax, hit
 
 	percentageNonElemental := (output["PhysicalHitAverage"] + output["ChaosHitAverage"]) / (totalHitMin + totalHitMax) * 2
 	percentageElemental := 1 - percentageNonElemental
-	portionNonElemental := math.Pow(output["AverageHit"]/pvpTvalue/pvpNonElemental2, pvpNonElemental1) * pvpTvalue * pvpNonElemental2 * percentageNonElemental
-	portionElemental := math.Pow(output["AverageHit"]/pvpTvalue/pvpElemental2, pvpElemental1) * pvpTvalue * pvpElemental2 * percentageElemental
+	portionNonElemental := float64(math.Pow(output["AverageHit"]/pvpTvalue/pvpNonElemental2, pvpNonElemental1) * pvpTvalue * pvpNonElemental2 * percentageNonElemental)
+	portionElemental := float64(math.Pow(output["AverageHit"]/pvpTvalue/pvpElemental2, pvpElemental1) * pvpTvalue * pvpElemental2 * percentageElemental)
 	output["PvpAverageHit"] = (portionNonElemental + portionElemental) * pvpMultiplier
 	output["PvpAverageDamage"] = output["PvpAverageHit"] * output["HitChance"] / 100
 	output["PvpTotalDPS"] = output["PvpAverageDamage"] * hitSpeed * output["DpsMultiplier"]
@@ -1461,12 +1461,12 @@ func (h *offenceHit) offenceLeechRates() {
 		output["LifeLeechPerHit"] = 0
 		output["LifeLeechInstances"] = 0
 	}
-	output["LifeLeechRate"] = output["LifeLeechInstantRate"] + math.Min(output["LifeLeechRate"], output["MaxLifeLeechRate"])*output["LifeRecoveryRateMod"]
-	output["LifeLeechPerHit"] = output["LifeLeechInstant"] + math.Min(output["LifeLeechPerHit"], output["MaxLifeLeechRate"])*output["LifeLeechDuration"]*output["LifeRecoveryRateMod"]
-	output["EnergyShieldLeechRate"] = output["EnergyShieldLeechInstantRate"] + math.Min(output["EnergyShieldLeechRate"], output["MaxEnergyShieldLeechRate"])*output["EnergyShieldRecoveryRateMod"]
-	output["EnergyShieldLeechPerHit"] = output["EnergyShieldLeechInstant"] + math.Min(output["EnergyShieldLeechPerHit"], output["MaxEnergyShieldLeechRate"])*output["EnergyShieldLeechDuration"]*output["EnergyShieldRecoveryRateMod"]
-	output["ManaLeechRate"] = output["ManaLeechInstantRate"] + math.Min(output["ManaLeechRate"], output["MaxManaLeechRate"])*output["ManaRecoveryRateMod"]
-	output["ManaLeechPerHit"] = output["ManaLeechInstant"] + math.Min(output["ManaLeechPerHit"], output["MaxManaLeechRate"])*output["ManaLeechDuration"]*output["ManaRecoveryRateMod"]
+	output["LifeLeechRate"] = output["LifeLeechInstantRate"] + float64(math.Min(output["LifeLeechRate"], output["MaxLifeLeechRate"])*output["LifeRecoveryRateMod"])
+	output["LifeLeechPerHit"] = output["LifeLeechInstant"] + float64(math.Min(output["LifeLeechPerHit"], output["MaxLifeLeechRate"])*output["LifeLeechDuration"]*output["LifeRecoveryRateMod"])
+	output["EnergyShieldLeechRate"] = output["EnergyShieldLeechInstantRate"] + float64(math.Min(output["EnergyShieldLeechRate"], output["MaxEnergyShieldLeechRate"])*output["EnergyShieldRecoveryRateMod"])
+	output["EnergyShieldLeechPerHit"] = output["EnergyShieldLeechInstant"] + float64(math.Min(output["EnergyShieldLeechPerHit"], output["MaxEnergyShieldLeechRate"])*output["EnergyShieldLeechDuration"]*output["EnergyShieldRecoveryRateMod"])
+	output["ManaLeechRate"] = output["ManaLeechInstantRate"] + float64(math.Min(output["ManaLeechRate"], output["MaxManaLeechRate"])*output["ManaRecoveryRateMod"])
+	output["ManaLeechPerHit"] = output["ManaLeechInstant"] + float64(math.Min(output["ManaLeechPerHit"], output["MaxManaLeechRate"])*output["ManaLeechDuration"]*output["ManaRecoveryRateMod"])
 	skillFlags["leechLife"] = output["LifeLeechRate"] > 0
 	skillFlags["leechES"] = output["EnergyShieldLeechRate"] > 0
 	skillFlags["leechMana"] = output["ManaLeechRate"] > 0

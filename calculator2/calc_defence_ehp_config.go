@@ -130,9 +130,9 @@ func presetBossSkillPlaceholders(env *Environment, placeholder map[string]float6
 	enemyLevel := configEnemyLevel(env)
 	for damageType, damageMult := range bossData.DamageMultipliers {
 		if isUber && bossData.UberDamageMultiplier.Set {
-			placeholder["enemy"+damageType+"Damage"] = round(monsterDamage(enemyLevel) * (damageMult[0] + rollRangeMult*damageMult[1]) * bossData.UberDamageMultiplier.Value)
+			placeholder["enemy"+damageType+"Damage"] = round(monsterDamage(enemyLevel) * (damageMult[0] + float64(rollRangeMult*damageMult[1])) * bossData.UberDamageMultiplier.Value)
 		} else {
-			placeholder["enemy"+damageType+"Damage"] = round(monsterDamage(enemyLevel) * (damageMult[0] + rollRangeMult*damageMult[1]))
+			placeholder["enemy"+damageType+"Damage"] = round(monsterDamage(enemyLevel) * (damageMult[0] + float64(rollRangeMult*damageMult[1])))
 		}
 	}
 

@@ -20,7 +20,7 @@ var (
 //pob2:src/Modules/CalcTools.lua:16-19
 func calcLibMod(modStore moddb.ModStoreFuncs, cfg *moddb.ListCfg, names ...string) float64 {
 	inc, more := calcLibMods(modStore, cfg, names...)
-	return inc * more
+	return float64(inc * more)
 }
 
 //pob2:src/Modules/CalcTools.lua:26-47
@@ -278,7 +278,7 @@ func getGemStatRequirement(level, multi float64, isSupport bool) float64 {
 	if multi == 0 || isSupport {
 		return 0
 	}
-	req := round((5+(level-3)*1.7)*math.Pow(multi/100, 0.9)) + 4
+	req := round((5+float64((level-3)*1.7))*math.Pow(multi/100, 0.9)) + 4
 	if req < 8 {
 		return 0
 	}
@@ -350,7 +350,7 @@ func buildSkillInstanceStats(skillInstance *GemEffect, grantedEffect *poe2skills
 					damageIncrementalEffectiveness = statSet.DamageIncrementalEffectiveness
 				}
 				availableEffectiveness = gameConstant("SkillDamageBaseEffectiveness") * baseEffectiveness *
-					(1 + incrementalEffectiveness*(actorLevel-1)) *
+					(1 + float64(incrementalEffectiveness*(actorLevel-1))) *
 					math.Pow(1+damageIncrementalEffectiveness, actorLevel-1)
 				haveEffectiveness = true
 			}

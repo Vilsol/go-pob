@@ -36,8 +36,8 @@ func calcRadius(baseRadius, areaMod, radiusMod float64) float64 {
 //pob2:src/Modules/CalcOffence.lua:254-259
 func calcMoltenStrikeTertiaryRadius(baseRadius, deadzoneRadius, areaMod, speedMod float64) float64 {
 	// For now, we assume that PoE only rounds at the end.
-	maxDistIgnoringSpeed := math.Sqrt(baseRadius*baseRadius*areaMod - deadzoneRadius*deadzoneRadius*(areaMod-1))
-	return math.Floor((maxDistIgnoringSpeed-deadzoneRadius)*speedMod + deadzoneRadius)
+	maxDistIgnoringSpeed := math.Sqrt(float64(baseRadius*baseRadius*areaMod) - float64(deadzoneRadius*deadzoneRadius*(areaMod-1)))
+	return math.Floor(float64((maxDistIgnoringSpeed-deadzoneRadius)*speedMod) + deadzoneRadius)
 }
 
 // calcCrossbowReloadTime returns false where Lua returns nil.
@@ -192,7 +192,7 @@ func sdNum(skillData map[string]any, key string) (float64, bool) {
 //pob2:src/Modules/Common.lua:734-741
 func floorDec(val float64, dec int) float64 {
 	mult := math.Pow(10, float64(dec))
-	return math.Floor(val*mult+0.0001) / mult
+	return math.Floor(float64(val*mult)+0.0001) / mult
 }
 
 // maxOr is modList:Max(cfg, ...) or fallback: Max is nil when no MAX mod applies.
@@ -662,7 +662,7 @@ func calcAreaOfEffect(actor *Actor, skillModList *moddb.ModList, skillCfg *moddb
 				// Calculate the modified radius for each base radius
 				sumOfRandomRadii := 0.0
 				for adjustedBaseRadius, occurrenceCount := range baseRadiiOccurrences {
-					sumOfRandomRadii += calcRadius(adjustedBaseRadius, output["AreaOfEffectModTertiary"], radiusMod) * occurrenceCount
+					sumOfRandomRadii += float64(calcRadius(adjustedBaseRadius, output["AreaOfEffectModTertiary"], radiusMod) * occurrenceCount)
 				}
 				output["AreaOfEffectRadiusTertiary"] = sumOfRandomRadii / marginWidth
 			} else {

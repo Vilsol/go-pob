@@ -305,7 +305,7 @@ func offenceRepeats(env *Environment, activeSkill *ActiveSkill, skillFlags map[s
 				// sum from 0 to num Repeats the damage each one does, multiplied by the other repeat multipliers,
 				// divide the total by the average other repeat multipliers and divide by number of repeats
 				// eg greater echo with 20Q div echo is (100 + 130 + 160 + 190*1.6)/1.15/4 - 100 = 50.87% more damage
-				modValue = ((100+v*(repeats-2)/2)*(repeats-1)+(100+v*(repeats-1))*damageFinalMoreValueTotal)/(repeats+damageMoreValueTotal/100) - 100
+				modValue = (float64((100+v*(repeats-2)/2)*(repeats-1))+float64((100+float64(v*(repeats-1)))*damageFinalMoreValueTotal))/(repeats+damageMoreValueTotal/100) - 100
 			} else {
 				modValue /= 2
 			}
@@ -337,7 +337,7 @@ func offenceRepeats(env *Environment, activeSkill *ActiveSkill, skillFlags map[s
 	}
 	if skillModList.Flag(nil, "FinalRepeatSumsDamage") {
 		for _, value := range skillModList.Tabulate(mod.TypeFlag, skillCfg, "FinalRepeatSumsDamage") {
-			add("Damage", mod.TypeMore, (100*repeats+damageFinalMoreValueTotal)/(1+damageFinalMoreValueTotal/100)-100, value.Mod)
+			add("Damage", mod.TypeMore, (float64(100*repeats)+damageFinalMoreValueTotal)/(1+damageFinalMoreValueTotal/100)-100, value.Mod)
 		}
 	}
 	if skillFlags["trap"] || skillFlags["mine"] {

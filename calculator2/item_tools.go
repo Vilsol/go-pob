@@ -70,7 +70,7 @@ func gsubFunc(re *regexp.Regexp, s string, n int, repl func(groups []string) str
 func round(val float64, dec ...int) float64 {
 	if len(dec) > 0 {
 		p := math.Pow(10, float64(dec[0]))
-		return math.Floor(val*p+0.5) / p
+		return math.Floor(float64(val*p)+0.5) / p
 	}
 	return math.Floor(val + 0.5)
 }
@@ -82,14 +82,14 @@ func roundSymmetric(val float64, dec ...int) float64 {
 		factor = math.Pow(10, float64(dec[0]))
 	}
 	if val >= 0 {
-		return math.Floor(val*factor+0.5) / factor
+		return math.Floor(float64(val*factor)+0.5) / factor
 	}
-	return math.Ceil(val*factor-0.5) / factor
+	return math.Ceil(float64(val*factor)-0.5) / factor
 }
 
 //pob2:src/Modules/Common.lua:762-769
 func alwaysPositiveRound(val float64) float64 {
-	return floorSymmetric(val + 0.5)
+	return floorSymmetric(float64(val) + 0.5)
 }
 
 //pob2:src/Modules/Common.lua:772-779
@@ -210,7 +210,7 @@ func applyValueScalar(line string, valueScalar, baseValueScalar *float64, number
 		if baseValueScalar != nil {
 			numVal = round(numVal * *baseValueScalar)
 		}
-		numVal = math.Floor(numVal*scalar + 0.001)
+		numVal = math.Floor(float64(numVal*scalar) + 0.001)
 		return luaNum(numVal) + g[2]
 	})
 }
@@ -233,7 +233,7 @@ func formatValue(value float64, baseValueScalar, valueScalar *float64, precision
 	} else if displayPrecision != nil {
 		return luaNum(value)
 	}
-	return luaNum(roundSymmetric(value, min(2, int(math.Floor(math.Log10(precision)+0.001)))))
+	return luaNum(roundSymmetric(value, min(2, int(math.Floor(float64(math.Log10(precision))+0.001)))))
 }
 
 //pob2:src/Modules/ItemTools.lua:158-168
@@ -434,7 +434,7 @@ func applyRange(line string, rangeVal float64, ranges []float64, valueScalar, ba
 		}
 		lo, _ := luaToNumber(g[2])
 		hi, _ := luaToNumber(g[3])
-		value := lo + valueRange*(hi-lo)
+		value := lo + float64(valueRange*(hi-lo))
 		if g[1] == "-" {
 			value *= -1
 		}
@@ -480,7 +480,7 @@ func applyRange(line string, rangeVal float64, ranges []float64, valueScalar, ba
 		testLine = gsubFunc(applyRangePlusRangeRe, line, -1, func(g []string) string {
 			lo, _ := luaToNumber(g[2])
 			hi, _ := luaToNumber(g[3])
-			maxPrecision := lo + rangeVal*(hi-lo)
+			maxPrecision := lo + float64(rangeVal*(hi-lo))
 			minPrecision := math.Floor(maxPrecision + 0.5)
 			if minPrecision != maxPrecision {
 				precisionSame = false
@@ -520,7 +520,7 @@ func applyRange(line string, rangeVal float64, ranges []float64, valueScalar, ba
 		}
 		lo, _ := luaToNumber(g[2])
 		hi, _ := luaToNumber(g[3])
-		numVal := math.Floor((lo+rangeVal*(hi-lo))*power+0.5) / power
+		numVal := math.Floor(float64((lo+float64(rangeVal*(hi-lo)))*power)+0.5) / power
 		if numVal < 0 {
 			return luaNum(numVal)
 		}

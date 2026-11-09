@@ -133,7 +133,7 @@ func bumpTie(v float64, prec int) float64 {
 	if prec < 0 || prec > 20 || math.IsNaN(v) || math.IsInf(v, 0) {
 		return v
 	}
-	scaled := math.Abs(v) * math.Pow10(prec)
+	scaled := float64(math.Abs(v) * math.Pow10(prec))
 	if math.Abs(scaled-math.Floor(scaled)-0.5) > 1e-6 {
 		return v
 	}

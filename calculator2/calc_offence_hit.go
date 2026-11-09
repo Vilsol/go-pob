@@ -118,8 +118,8 @@ func calcConvertedDamage(state *offenceHitState, output map[string]float64, dama
 		convMult := state.conversionTable[otherType].to[damageType]
 		if convMult > 0 {
 			// Damage is being converted/gained from the other damage type
-			convertedMin += output[otherType+"MinBase"] * convMult
-			convertedMax += output[otherType+"MaxBase"] * convMult
+			convertedMin += float64(output[otherType+"MinBase"] * convMult)
+			convertedMax += float64(output[otherType+"MaxBase"] * convMult)
 		}
 	}
 	return convertedMin, convertedMax
@@ -129,14 +129,14 @@ func calcConvertedDamage(state *offenceHitState, output map[string]float64, dama
 func calcGainedDamage(state *offenceHitState, output map[string]float64, damageType string) (float64, float64) {
 	gainedMin, gainedMax := 0.0, 0.0
 	for _, otherType := range dmgTypeList {
-		baseMin := output[otherType+"MinBase"] * state.conversionTable[otherType].mult
-		baseMax := output[otherType+"MaxBase"] * state.conversionTable[otherType].mult
+		baseMin := float64(output[otherType+"MinBase"] * state.conversionTable[otherType].mult)
+		baseMax := float64(output[otherType+"MaxBase"] * state.conversionTable[otherType].mult)
 		gainMult := state.gainTable[otherType][damageType]
 		if gainMult > 0 {
 			// Damage is being converted/gained from the other damage type
 			convertedMin, convertedMax := calcConvertedDamage(state, output, otherType)
-			gainedMin += (baseMin + convertedMin) * gainMult
-			gainedMax += (baseMax + convertedMax) * gainMult
+			gainedMin += float64((baseMin + convertedMin) * gainMult)
+			gainedMax += float64((baseMax + convertedMax) * gainMult)
 		}
 	}
 	return gainedMin, gainedMax
@@ -188,8 +188,8 @@ func calcDamage(activeSkill *ActiveSkill, output map[string]float64, cfg *moddb.
 	moreMinDamage := skillModList.More(cfg, "Min"+damageType+"Damage")
 	moreMaxDamage := skillModList.More(cfg, "Max"+damageType+"Damage")
 
-	return round(summedMin*inc*more*moreMinDamage + addMin),
-		round(summedMax*inc*more*moreMaxDamage + addMax)
+	return round(float64(summedMin*inc*more*moreMinDamage) + addMin),
+		round(float64(summedMax*inc*more*moreMaxDamage) + addMax)
 }
 
 //pob2:src/Modules/CalcOffence.lua:466-468
@@ -262,7 +262,7 @@ func hitChance(evasion, accuracy float64, uncapped bool) float64 {
 	if accuracy < 0 {
 		return 5
 	}
-	rawChance := (accuracy * 1.25) / (accuracy + evasion*0.3) * 100
+	rawChance := (accuracy * 1.25) / (accuracy + float64(evasion*0.3)) * 100
 	if uncapped {
 		return math.Max(round(rawChance), 5)
 	}
@@ -539,12 +539,12 @@ func (state *offenceHitState) combineStat(output map[string]float64, skillFlags 
 		}
 	case mode == "CHANCE" || mode == "CHANCE_AILMENT":
 		if mhOK && ohOK {
-			mainChance := state.mainHand[extra[0]] * state.mainHand["HitChance"]
-			offChance := state.offHand[extra[0]] * state.offHand["HitChance"]
+			mainChance := float64(state.mainHand[extra[0]] * state.mainHand["HitChance"])
+			offChance := float64(state.offHand[extra[0]] * state.offHand["HitChance"])
 			mainPortion := mainChance / (mainChance + offChance)
 			offPortion := offChance / (mainChance + offChance)
 			if mode == "CHANCE" {
-				output[stat] = mh*mainPortion + oh*offPortion
+				output[stat] = float64(mh*mainPortion) + float64(oh*offPortion)
 			} else {
 				maxInstance := math.Max(mh, oh)
 				minInstance := math.Min(mh, oh)
@@ -558,7 +558,7 @@ func (state *offenceHitState) combineStat(output map[string]float64, skillFlags 
 					stacksMax = 1
 				}
 				maxInstanceStacks := math.Min(1, stacks/stacksMax)
-				output[stat] = maxInstance*maxInstanceStacks + minInstance*(1-maxInstanceStacks)
+				output[stat] = float64(maxInstance*maxInstanceStacks) + float64(minInstance*(1-maxInstanceStacks))
 			}
 		} else if mhOK {
 			output[stat] = mh
@@ -779,15 +779,15 @@ func offenceHitSpeed(env *Environment, actor *Actor, activeSkill *ActiveSkill, s
 
 			//Calculates the max number of trauma stacks you can sustain
 			if skillModList.Flag(nil, "HasTrauma") {
-				effectiveAttackRateCap := tick * output["Repeats"]
+				effectiveAttackRateCap := float64(tick * output["Repeats"])
 				duration := skillModList.Sum(mod.TypeBase, cfg, "TraumaDuration") * calcLibMod(skillModList, skillCfg, "Duration", "DamagingAilmentDuration")
 				traumaPerAttack := 1 + math.Min(skillModList.Sum(mod.TypeBase, cfg, "ExtraTrauma"), 100)/100
 				incAttackSpeedPerTrauma := skillModList.Sum(mod.TypeIncrease, skillCfg, "SpeedPerTrauma")
 				// compute trauma using an exact form.
 				configTrauma := skillModList.Sum(mod.TypeBase, skillCfg, "Multiplier:TraumaStacks")
-				inc := skillModList.Sum(mod.TypeIncrease, cfg, "Speed") - incAttackSpeedPerTrauma*configTrauma // remove trauma attack speed added by config.
+				inc := skillModList.Sum(mod.TypeIncrease, cfg, "Speed") - float64(incAttackSpeedPerTrauma*configTrauma) // remove trauma attack speed added by config.
 				attackSpeedBeforeInc := 1 / baseTime * globalOutput["ActionSpeedMod"] * more
-				incAttackSpeedPerTraumaCap := (effectiveAttackRateCap - attackSpeedBeforeInc*(1+inc/100)) / attackSpeedBeforeInc * 100
+				incAttackSpeedPerTraumaCap := (effectiveAttackRateCap - float64(attackSpeedBeforeInc*(1+inc/100))) / attackSpeedBeforeInc * 100
 				traumaRateBeforeInc := traumaPerAttack * (output["HitChance"] / 100) * attackSpeedBeforeInc / output["Repeats"]
 				trauma := traumaRateBeforeInc * (1 + inc/100) / (1/duration - traumaRateBeforeInc*incAttackSpeedPerTrauma/100)
 				if trauma < 0 || incAttackSpeedPerTrauma*trauma > incAttackSpeedPerTraumaCap { // invalid long term trauma generation as maximum attack rate is once per tick.
@@ -1155,7 +1155,7 @@ func offenceMovementPenalty(actor *Actor, activeSkill *ActiveSkill) float64 {
 		}
 		penaltyMod = math.Max(0, penaltyMod)
 		base := calcLibMod(skillModList, skillCfg, "SkillMovementSpeed")
-		total := (1 - base) * penaltyMod
+		total := float64((1 - base) * penaltyMod)
 		output["MovementSpeedWhileUsingSkill"] = (1 - total) * output["MovementSpeedMod"]
 		output["MovementSpeedWhileUsingSkillPercent"] = (1 - total) * 100
 	}
@@ -1170,7 +1170,7 @@ func accuracyHitChanceBreakdown(env *Environment, breakdown *Breakdown, output m
 	falloffStart, falloffEnd := miscConstant("AccuracyFalloffStart"), miscConstant("AccuracyFalloffEnd")
 	distances := []float64{2, 5, 9}
 	accuracyPenalty := func(distance float64) float64 {
-		return 1 - ((distance*10-falloffStart)/(falloffEnd-falloffStart))*modValue/100
+		return 1 - ((float64(distance*10)-falloffStart)/(falloffEnd-falloffStart))*modValue/100
 	}
 	from := " ^8(can be overridden in the Configuration tab)"
 	if _, ok := env.ConfigInput["enemyLevel"]; ok {
