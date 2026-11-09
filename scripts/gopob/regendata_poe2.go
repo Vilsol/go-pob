@@ -474,6 +474,7 @@ var p2eConstantTables = []struct{ key, goName string }{
 	{"monsterAilmentThresholdTable", "MonsterAilmentThresholdTable"},
 	{"monsterPoiseThresholdTable", "MonsterPoiseThresholdTable"},
 	{"minionLevelTable", "MinionLevelTable"},
+	{"goldRespecPrices", "GoldRespecPrices"},
 }
 
 var p2eConstantPairTables = []struct{ key, goName, doc string }{

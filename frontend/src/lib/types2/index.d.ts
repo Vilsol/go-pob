@@ -739,6 +739,9 @@ export declare namespace exposition {
     readonly Used: number;
     readonly Sockets: number;
     readonly Version: string;
+    readonly RespecGold: number;
+    readonly RespecPassives: number;
+    readonly RespecAscendancy: number;
   }
   interface TreeSpecsView {
     readonly Labels?: Array<string>;

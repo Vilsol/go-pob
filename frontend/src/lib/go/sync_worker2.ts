@@ -152,8 +152,18 @@ export type Poe2Calc = Poe2View & {
   treeSpecs?: { labels: string[]; active: number };
 };
 
-/* PassiveSpecListControl.lua:77-85, TreeTab.lua:67-78 (PoB-PoE2) */
-export type Poe2TreeSpecRow = { title: string; className: string; ascendClassName: string; used: number; sockets: number; version: string };
+/* PassiveSpecListControl.lua:77-85, TreeTab.lua:67-102 (PoB-PoE2) */
+export type Poe2TreeSpecRow = {
+  title: string;
+  className: string;
+  ascendClassName: string;
+  used: number;
+  sockets: number;
+  version: string;
+  respecGold: number;
+  respecPassives: number;
+  respecAscendancy: number;
+};
 
 /* Build.lua:1519-1540 (PoB-PoE2): a class dropdown entry and its ascendancies, by ascendClassId */
 export type Poe2TreeClass = { label: string; classId: number; ascendancies: string[] };
@@ -1077,7 +1087,7 @@ class PoB2Worker {
     return [...(this.calc?.TreeSpecAlloc(specID).unwrap() ?? [])];
   }
 
-  /* PassiveSpecListControl.lua:77-85, TreeTab.lua:67-78 (PoB-PoE2) */
+  /* PassiveSpecListControl.lua:77-85, TreeTab.lua:67-102 (PoB-PoE2) */
   TreeSpecRows(): Poe2TreeSpecRow[] {
     return (this.calc?.TreeSpecRows().unwrap() ?? []).map((r) => ({
       title: r.Title,
@@ -1085,7 +1095,10 @@ class PoB2Worker {
       ascendClassName: r.AscendClassName,
       used: r.Used,
       sockets: r.Sockets,
-      version: r.Version
+      version: r.Version,
+      respecGold: r.RespecGold,
+      respecPassives: r.RespecPassives,
+      respecAscendancy: r.RespecAscendancy
     }));
   }
 

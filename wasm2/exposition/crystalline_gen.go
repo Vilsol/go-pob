@@ -9741,6 +9741,9 @@ func crystallineMarshalExpositionTreeSpecRow(v *TreeSpecRow) any {
 	out.Set("Used", float64(v.Used))
 	out.Set("Sockets", float64(v.Sockets))
 	out.Set("Version", string(v.Version))
+	out.Set("RespecGold", float64(v.RespecGold))
+	out.Set("RespecPassives", float64(v.RespecPassives))
+	out.Set("RespecAscendancy", float64(v.RespecAscendancy))
 
 	return out
 }
@@ -12762,6 +12765,12 @@ func crystallineAppendExpositionTreeSpecRow(b []byte, v *TreeSpecRow, ok *bool) 
 	b = crystallineAppendNumber(b, float64(v.Sockets), ok)
 	b = append(b, ",\"Version\":"...)
 	b = crystallineAppendString(b, string(v.Version))
+	b = append(b, ",\"RespecGold\":"...)
+	b = crystallineAppendNumber(b, float64(v.RespecGold), ok)
+	b = append(b, ",\"RespecPassives\":"...)
+	b = crystallineAppendNumber(b, float64(v.RespecPassives), ok)
+	b = append(b, ",\"RespecAscendancy\":"...)
+	b = crystallineAppendNumber(b, float64(v.RespecAscendancy), ok)
 
 	return append(b, '}')
 }

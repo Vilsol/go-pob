@@ -101,7 +101,7 @@ func (c *Calculator) NodeTip(id int, trace []int, tracing bool) (*NodeTipView, e
 		return nil, err
 	}
 	return &NodeTipView{
-		PathLines:       calculator2.NodePathLines(spec, node, tracePath),
+		PathLines:       calculator2.NodePathLines(spec, node, tracePath, c.build.Build.Level),
 		DistanceToStart: node.DistanceToClassStart,
 		Granted:         c.env.GrantedPassives[id],
 	}, nil

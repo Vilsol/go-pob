@@ -1,5 +1,6 @@
 import { untrack } from 'svelte';
 import { poe2Build } from '$lib/global';
+import { formatNumSep } from '$lib/display/format_stat';
 import type { SpecOp } from '$lib/design/tree';
 import type { TreeModel } from './engine';
 import { poe2Error, poe2Run, poe2Worker } from './engine_poe2.svelte';
@@ -123,7 +124,7 @@ class Poe2Tree implements TreeModel {
     return this.rows;
   }
 
-  // TreeTab.lua:67-119 (PoB-PoE2), without the stat comparison and the respec cost
+  // TreeTab.lua:67-119 (PoB-PoE2), without the stat comparison
   hoverSpec(index: number | null) {
     this.specHover = index;
     if (index === null) {
@@ -135,7 +136,14 @@ class Poe2Tree implements TreeModel {
       if (this.specHover !== index || !r) return;
       const lines = [`Class: ${r.className}`, `Ascendancy: ${r.ascendClassName}`, `Points used: ${r.used}`];
       if (r.sockets > 0) lines.push(`Jewel sockets: ${r.sockets}`);
-      this.specTip = { index, title: this.specs[index] ?? r.title, lines, footer: `Game Version: ${r.version}`, pending: false, blocks: [] };
+      // TreeTab.lua:100-112 (PoB-PoE2)
+      const footer = [
+        ...(r.respecPassives > 0 || r.respecAscendancy > 0 ? [`${formatNumSep(String(r.respecGold))} Gold required to switch to this tree.`] : []),
+        ...(r.respecPassives > 0 ? [`${r.respecPassives} ${r.respecPassives === 1 ? 'Passive node' : 'Passive nodes'} to be refunded.`] : []),
+        ...(r.respecAscendancy > 0 ? [`${r.respecAscendancy} ${r.respecAscendancy === 1 ? 'Ascendancy node' : 'Ascendancy nodes'} to be refunded.`] : []),
+        `Game Version: ${r.version}`
+      ].join('\n');
+      this.specTip = { index, title: this.specs[index] ?? r.title, lines, footer, pending: false, blocks: [] };
     });
   }
 

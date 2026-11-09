@@ -53,6 +53,8 @@ vi.mock('$lib/go/worker', () => ({ syncWrap: undefined, syncWorker: undefined })
 
 const { poe2Build } = await import('$lib/global');
 const Host = (await import('./poe2_tree_calc_host.test.svelte')).default;
+const TreeHost = (await import('./poe2_tree_host.test.svelte')).default;
+const CALC2_FIXTURES = resolve(process.cwd(), '../calculator2/testdata');
 
 beforeAll(async () => {
   if (!existsSync(WASM2)) throw new Error(`REFUSING: the PoE2 wasm module is missing — run \`mise run build-go2\`\n  missing: ${WASM2}`);
@@ -105,5 +107,26 @@ describe('the PoE2 tree calculations', () => {
     expect(worker2Instance.Serialize()).toBe(before);
     expect(get(poe2Build)).toBe(opened);
     expect(issued).not.toContain('Open');
+  }, 120_000);
+
+  // PoB-PoE2 on warrior_ascendancy (level 80): PassiveTreeView.lua:2026-2057 shows 14,520 Gold to unallocate the ascendancy
+  // node 27418, and TreeTab.lua:85-112 37,752 Gold, 3 passive and 2 ascendancy nodes to switch to the "Respec" tree
+  it('the node and tree list tooltips show the gold a respec costs', async () => {
+    poe2Build.set(await worker2Instance.Open(await readFile(resolve(CALC2_FIXTURES, 'warrior_ascendancy.xml'), 'utf8')));
+    let tree: ReturnType<typeof import('./engine_poe2_tree.svelte').poe2TreeModel> | undefined;
+    render(TreeHost, { onmodel: (m: typeof tree) => (tree = m) });
+    await vi.waitFor(() => expect(tree?.specs).toEqual(['Default', 'Respec']));
+
+    tree!.calc.hoverNode(27418);
+    await vi.waitFor(() => expect(tree!.calc.tip?.pathLines).toEqual(['14520 Gold required to unallocate this node']));
+
+    tree!.hoverSpec(1);
+    await vi.waitFor(() =>
+      expect(tree!.specTip?.footer).toBe(
+        '37,752 Gold required to switch to this tree.\n3 Passive nodes to be refunded.\n2 Ascendancy nodes to be refunded.\nGame Version: 0_5'
+      )
+    );
+    tree!.hoverSpec(0);
+    await vi.waitFor(() => expect(tree!.specTip?.footer).toBe('Game Version: 0_5'));
   }, 120_000);
 });

@@ -100,6 +100,10 @@ test('with the PoE2 flag on, clicking a tree node allocates it and recalculates 
   await expect(poe2Stat(page, 'EnergyShield')).toHaveText('10');
   await expect(poe2Stat(page, 'TotalEHP')).toHaveText('546');
   await expect(view.getByRole('status', { name: 'Points used' })).toContainText('Points 1 / 123');
+  // PassiveTreeView.lua:2026-2057 (PoB-PoE2): unallocating it costs data.goldRespecPrices[40], 736 Gold
+  await page.mouse.move(at.x + 1, at.y + 1);
+  await page.mouse.move(at.x, at.y);
+  await expect(tip.getByLabel('Node tips')).toContainText('736 Gold required to unallocate this node');
 
   // a second click deallocates it
   await page.mouse.down();

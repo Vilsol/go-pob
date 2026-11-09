@@ -150,7 +150,7 @@ function dumpers.constants()
 	for _, name in ipairs({ "misc", "gameConstants", "characterConstants", "monsterConstants", "playerMinionIntrinsicStats",
 		"monsterEvasionTable", "monsterAccuracyTable", "monsterLifeTable", "monsterAllyLifeTable", "monsterDamageTable",
 		"monsterAllyDamageTable", "monsterArmourTable", "monsterAilmentThresholdTable", "monsterPoiseThresholdTable",
-		"minionLevelTable", "hollowPalmAddedPhys" }) do
+		"minionLevelTable", "hollowPalmAddedPhys", "goldRespecPrices" }) do
 		out[name] = assert(data[name], "REFUSING: data." .. name .. " is absent")
 	end
 	-- keyed by skillTotemId, a sparse integer key the encoder refuses

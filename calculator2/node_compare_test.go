@@ -182,16 +182,20 @@ func TestNodeComparesMatchPoB(t *testing.T) {
 		for _, b := range got.Blocks {
 			headers = append(headers, b.Header)
 		}
-		// the pathing lines, the gold lines left out
+		// the pathing, refund and gold lines; the gold number before formatNumSep's default "," separators
 		var wantPath []string
 		for _, l := range r.Lines {
 			l = stripColours(l)
-			if strings.Contains(l, "points to node") || strings.Contains(l, "To reach this node") || strings.Contains(l, "points gained from") {
+			if strings.Contains(l, " Gold required to unallocate") {
+				l = strings.ReplaceAll(l, ",", "")
+			}
+			if strings.Contains(l, "points to node") || strings.Contains(l, "To reach this node") || strings.Contains(l, "points gained from") ||
+				strings.Contains(l, " Gold required to unallocate") {
 				wantPath = append(wantPath, l)
 			}
 		}
 		pathLines++
-		if gotPath := NodePathLines(misc.main.Spec, node, nil); strings.Join(gotPath, "|") != strings.Join(wantPath, "|") {
+		if gotPath := NodePathLines(misc.main.Spec, node, nil, misc.main.Build.Build.Level); strings.Join(gotPath, "|") != strings.Join(wantPath, "|") {
 			t.Errorf("%s %d: path lines\n got %q\nwant %q", r.Build, r.Node, gotPath, wantPath)
 		}
 		for _, l := range r.Lines {
@@ -215,6 +219,35 @@ func TestNodeComparesMatchPoB(t *testing.T) {
 	// the base-pass stats left out, a ceiling
 	if left > 4 {
 		t.Errorf("%d base-pass stats differ, more than the 4 known", left)
+	}
+}
+
+// TestNodePathLinesAscendancyGold grades the ascendancy nodes' gold lines, five times a passive's, against PoB-PoE2's
+// tooltip on warrior_ascendancy (warrior_items at level 80 with a Titan path PoB-PoE2 allocated and saved).
+func TestNodePathLinesAscendancyGold(t *testing.T) {
+	misc := nodeCompareBuild(t, "warrior_ascendancy")
+	want := map[int][]string{
+		19424: {"3 points gained from unallocating these nodes", "43,560 Gold required to unallocate these nodes"},
+		27418: {"14,520 Gold required to unallocate this node"},
+		60634: {"2 points gained from unallocating these nodes", "29,040 Gold required to unallocate these nodes"},
+	}
+	for id, lines := range want {
+		node := misc.main.Spec.Nodes[id]
+		if node == nil || !node.Alloc || node.AscendancyName == "" {
+			t.Fatalf("%d is not an allocated ascendancy node", id)
+		}
+		var got []string
+		for _, l := range NodePathLines(misc.main.Spec, node, nil, misc.main.Build.Build.Level) {
+			if strings.Contains(l, "points gained") || strings.Contains(l, " Gold ") {
+				got = append(got, l)
+			}
+		}
+		for i := range lines {
+			lines[i] = strings.ReplaceAll(lines[i], ",", "")
+		}
+		if strings.Join(got, "|") != strings.Join(lines, "|") {
+			t.Errorf("%d: got %q, PoB-PoE2 %q", id, got, lines)
+		}
 	}
 }
 

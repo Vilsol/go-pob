@@ -352,8 +352,12 @@
                   Tip: Right click this socket to go to the items page and choose the jewel for this socket.
                 </p>{/if}
             {:else}
-              <!-- PassiveTreeView.lua:2011-2057 (PoB-PoE2), without the gold costs -->
-              {#each t?.pathLines ?? [] as line, i (i)}<p class={['m-0', line.startsWith('Tip:') ? 'text-text-2' : 'text-text']}>{line}</p>{/each}
+              <!-- PassiveTreeView.lua:2011-2057 (PoB-PoE2) -->
+              {#each t?.pathLines ?? [] as line, i (i)}
+                {@const gold = /^(\d+) Gold( .*)$/.exec(line)}
+                {#if gold}<p class="m-0 text-text"><span class="text-code-gold">{formatNumSep(gold[1])} Gold</span>{gold[2]}</p>
+                {:else}<p class={['m-0', line.startsWith('Tip:') ? 'text-text-2' : 'text-text']}>{line}</p>{/if}
+              {/each}
               <!-- PassiveTreeView.lua:2085-2093 (PoB-PoE2) -->
               <p class="m-0 text-text-2">Shift + Right-Click to add a build note (PoE2 .build export)</p>
               {#if view?.tree?.notes?.[n.id]}<p class="m-0 whitespace-pre-line text-text" aria-label="Node note">Note: {view.tree.notes[n.id]}</p>{/if}

@@ -621,6 +621,7 @@ calculator2/compare_items.go        PORT       src/Classes/CompareTab.lua
 calculator2/compare_power.go        PORT       src/Classes/CompareTab.lua,src/Classes/CalcsTab.lua,src/Classes/ItemsTab.lua
 calculator2/item_compare.go         PORT       src/Modules/Calcs.lua,src/Classes/ItemsTab.lua
 calculator2/node_compare.go         PORT       src/Classes/PassiveTreeView.lua
+calculator2/tree_respec.go          PORT       src/Classes/TreeTab.lua
 calculator2/power.go                PORT       src/Modules/Data.lua,src/Classes/CalcsTab.lua,src/Classes/TreeTab.lua,src/Classes/PassiveTree.lua
 calculator2/config_sets.go          PORT       src/Classes/ConfigTab.lua,src/Classes/ConfigSetListControl.lua,src/Classes/ListControl.lua
 calculator2/player_progress.go      PORT       src/Modules/Build.lua

@@ -4,6 +4,7 @@ import (
 	"slices"
 	"strconv"
 
+	"github.com/Vilsol/go-pob/data/poe2"
 	"github.com/Vilsol/go-pob/data/tree2"
 )
 
@@ -89,12 +90,13 @@ func NodeCompares(m *MiscCalculator, node *tree2.SpecNode, tracePath []*tree2.Sp
 	return out
 }
 
-// NodePathLines is AddNodeTooltip's pathing distance and refund lines without colour codes, tracePath being the
-// Shift-traced path (nil out of trace mode). The gold lines are left out: data.goldRespecPrices is not ported.
+// NodePathLines is AddNodeTooltip's pathing distance, refund and gold lines without colour codes, tracePath being the
+// Shift-traced path (nil out of trace mode) and characterLevel build.characterLevel. A gold line leads with its number
+// unformatted: the page applies formatNumSep with the user's separators.
 //
 //pob2:block:src/Classes/PassiveTreeView.lua:2011-2025
-//pob2:block:src/Classes/PassiveTreeView.lua:2030-2053
-func NodePathLines(spec *tree2.PassiveSpec, node *tree2.SpecNode, tracePath []*tree2.SpecNode) []string {
+//pob2:block:src/Classes/PassiveTreeView.lua:2026-2057
+func NodePathLines(spec *tree2.PassiveSpec, node *tree2.SpecNode, tracePath []*tree2.SpecNode, characterLevel int) []string {
 	var lines []string
 	if node.HasPath && len(node.Path) > 0 {
 		if tracePath != nil && slices.Contains(tracePath, node) {
@@ -109,6 +111,10 @@ func NodePathLines(spec *tree2.PassiveSpec, node *tree2.SpecNode, tracePath []*t
 				lines = append(lines, "Tip: To reach this node by a different path, hold Shift, then trace the path and click this node")
 			}
 		}
+	}
+	goldCost, hasGold := goldRespecPrice(characterLevel)
+	if node.AscendancyName != "" {
+		goldCost *= 5
 	}
 	if len(node.Depends) > 1 {
 		dependCount := len(node.Depends)
@@ -130,9 +136,22 @@ func NodePathLines(spec *tree2.PassiveSpec, node *tree2.SpecNode, tracePath []*t
 		}
 		if dependCount > 0 {
 			lines = append(lines, strconv.Itoa(dependCount)+" points gained from unallocating these nodes")
+			if hasGold {
+				lines = append(lines, strconv.FormatFloat(float64(dependCount)*goldCost, 'f', -1, 64)+" Gold required to unallocate these nodes")
+			}
 		}
+	} else if node.Alloc && hasGold {
+		lines = append(lines, strconv.FormatFloat(float64(len(node.Depends))*goldCost, 'f', -1, 64)+" Gold required to unallocate this node")
 	}
 	return lines
+}
+
+// goldRespecPrice is data.goldRespecPrices[characterLevel]; false where the Lua's index is nil.
+func goldRespecPrice(characterLevel int) (float64, bool) {
+	if characterLevel < 1 || characterLevel > len(poe2.GoldRespecPrices) {
+		return 0, false
+	}
+	return poe2.GoldRespecPrices[characterLevel-1], true
 }
 
 // TraceStep is one hover in Shift path tracing: the trace path after hovering node, and the node it highlights (nil

@@ -4,6 +4,7 @@ import (
 	"slices"
 	"strconv"
 
+	"github.com/Vilsol/go-pob/calculator2"
 	"github.com/Vilsol/go-pob/data/tree2"
 	"github.com/Vilsol/go-pob/pob2"
 )
@@ -60,32 +61,45 @@ func (c *Calculator) activeSpecIndex() int {
 	return idx
 }
 
-// TreeSpecRow is what PassiveSpecListControl's rows and the tree list's tooltip show of one spec.
+// TreeSpecRow is what PassiveSpecListControl's rows and the tree list's tooltip show of one spec; the Respec fields are
+// the cost of switching to it from the active spec, zero for the active spec itself.
 type TreeSpecRow struct {
-	Title           string
-	ClassName       string
-	AscendClassName string
-	Used            int
-	Sockets         int
-	Version         string
+	Title            string
+	ClassName        string
+	AscendClassName  string
+	Used             int
+	Sockets          int
+	Version          string
+	RespecGold       float64
+	RespecPassives   int
+	RespecAscendancy int
 }
 
 // TreeSpecRows loads every spec, as the tree list holds each as a PassiveSpec.
 //
 //pob2:block:src/Classes/PassiveSpecListControl.lua:77-85
-//pob2:block:src/Classes/TreeTab.lua:67-78
+//pob2:block:src/Classes/TreeTab.lua:67-79
 func (c *Calculator) TreeSpecRows() ([]TreeSpecRow, error) {
 	out := make([]TreeSpecRow, 0, len(c.build.Tree.Specs))
+	active, err := c.specAt(c.activeSpecIndex())
+	if err != nil {
+		return nil, err
+	}
 	for i := range c.build.Tree.Specs {
 		spec, err := c.specAt(i + 1)
 		if err != nil {
 			return nil, err
 		}
 		used, _, _, sockets, _, _ := spec.CountAllocNodes()
-		out = append(out, TreeSpecRow{
+		row := TreeSpecRow{
 			Title: specTitle(&c.build.Tree.Specs[i]), ClassName: spec.CurClassName, AscendClassName: spec.CurAscendClassName,
 			Used: used, Sockets: sockets, Version: treeVersionDisplay(specTreeVersion(&c.build.Tree.Specs[i])),
-		})
+		}
+		if i+1 != c.activeSpecIndex() {
+			respec := calculator2.TreeSpecRespecCost(active, spec, c.build.Build.Level)
+			row.RespecGold, row.RespecPassives, row.RespecAscendancy = respec.Gold, respec.Passives, respec.Ascendancy
+		}
+		out = append(out, row)
 	}
 	return out, nil
 }
