@@ -649,8 +649,7 @@ func (h *offenceHit) offenceCrit(pass *offencePass) {
 	}
 }
 
-// offenceDamagePass calculates damage (exerts, crits, ruthless, DPS, etc) for one pass. The
-// breakdowns are not ported.
+// offenceDamagePass calculates damage (exerts, crits, ruthless, DPS, etc) for one pass.
 //
 //pob2:block:src/Modules/CalcOffence.lua:3435-4719
 func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier float64) {
@@ -658,7 +657,7 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 	globalOutput := actor.Output
 	enemyDB := actor.Enemy.ModDB
 	skillModList, skillCfg, skillData := activeSkill.SkillModList, activeSkill.SkillCfg, activeSkill.SkillData
-	source, output, cfg := pass.source, pass.output, pass.cfg
+	source, output, cfg, breakdown := pass.source, pass.output, pass.cfg, pass.breakdown
 
 	h.offenceWarcryExerts(cfg)
 	h.offenceAncestralBoosts(pass)
@@ -782,6 +781,29 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 		baseMax := (source.num(damageTypeMax) + source.num(damageType+"BonusMax") + float64(addedMax*addedMult)) * baseMultiplier
 		output[damageTypeMin+"Base"] = baseMin
 		output[damageTypeMax+"Base"] = baseMax
+		if breakdown != nil {
+			breakdown.set(damageType)
+			if baseMin != 0 || baseMax != 0 {
+				breakdown.insert(damageType, "Base damage:")
+				plus := ""
+				if source.num(damageTypeMin) != 0 || source.num(damageTypeMax) != 0 {
+					from := "skill"
+					if source.typ != "" {
+						from = "weapon"
+					}
+					breakdown.insert(damageType, sFormat("%d to %d ^8(damage from %s)", source.num(damageTypeMin), source.num(damageTypeMax), from))
+				}
+				if addedMin != 0 || addedMax != 0 {
+					breakdown.insert(damageType, sFormat("%s%d to %d ^8(added damage)", plus, addedMin, addedMax))
+					if addedMult != 1 {
+						breakdown.insert(damageType, sFormat("x %.2f ^8(added damage multiplier)", addedMult))
+					}
+				}
+				if baseMultiplier != 1 {
+					breakdown.insert(damageType, sFormat("x %.2f ^8(base damage multiplier)", baseMultiplier))
+				}
+			}
+		}
 	}
 
 	//pob2:block:src/Modules/CalcOffence.lua:4160-4190
@@ -791,8 +813,26 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 		gainedMin, gainedMax := calcGainedDamage(state, output, damageType)
 		baseMin := output[damageType+"MinBase"]
 		baseMax := output[damageType+"MaxBase"]
-		output[damageType+"SummedMinBase"] = float64(baseMin*convMult) + convertedMin + gainedMin
-		output[damageType+"SummedMaxBase"] = float64(baseMax*convMult) + convertedMax + gainedMax
+		summedMin := float64(baseMin*convMult) + convertedMin + gainedMin
+		summedMax := float64(baseMax*convMult) + convertedMax + gainedMax
+		output[damageType+"SummedMinBase"] = summedMin
+		output[damageType+"SummedMaxBase"] = summedMax
+		if breakdown != nil {
+			if baseMin != 0 || baseMax != 0 {
+				if convMult != 1 {
+					breakdown.insert(damageType, sFormat("x %g ^8(%g%% converted to other damage types)", convMult, (1-convMult)*100))
+				}
+			} else { // this means base damage header wasn't applied in the previous section
+				breakdown.insert(damageType, "Base damage:")
+			}
+			if convertedMin != 0 || convertedMax != 0 {
+				breakdown.insert(damageType, sFormat("+ %d to %d ^8(damage converted from other damage types)", round(convertedMin), round(convertedMax)))
+			}
+			if gainedMin != 0 || gainedMax != 0 {
+				breakdown.insert(damageType, sFormat("+ %d to %d ^8(damage gained from other damage types)", round(gainedMin), round(gainedMax)))
+			}
+			breakdown.insert(damageType, sFormat("= %.1f to %.1f", summedMin, summedMax))
+		}
 		output[damageType+"StoredCombinedAvg"] = 0
 	}
 
@@ -820,7 +860,41 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 		for _, damageType := range dmgTypeList {
 			damageTypeHitMin, damageTypeHitMax, damageTypeHitAvg := 0.0, 0.0, 0.0
 			if skillFlags["hit"] && state.canDeal[damageType] {
-				damageTypeHitMin, damageTypeHitMax = calcDamage(activeSkill, output, cfg, damageType, 0)
+				var typeBreakdown *BreakdownEntry
+				if critPass == 2 && breakdown != nil {
+					typeBreakdown = breakdown.Entries[damageType]
+				}
+				damageTypeHitMin, damageTypeHitMax = calcDamage(activeSkill, output, cfg, typeBreakdown, damageType, 0)
+				if critPass == 2 && breakdown != nil {
+					breakdown.insert(damageType, "Hit damage:", sFormat("%d to %d ^8(total damage)", damageTypeHitMin, damageTypeHitMax))
+					if output["DoubleDamageEffect"] != 0 {
+						if output["TripleDamageEffect"] != 0 {
+							breakdown.insert(damageType, sFormat("x %.2f ^8(1 + %.2f + %.2f multiplier from %.1f%% chance to deal double damage and %d%% chance to deal triple damage)", 1+output["DoubleDamageEffect"]+output["TripleDamageEffect"], output["DoubleDamageEffect"], output["TripleDamageEffect"], output["DoubleDamageChance"], output["TripleDamageChance"]))
+						} else {
+							breakdown.insert(damageType, sFormat("x %.2f ^8(multiplier from %d%% chance to deal double damage)", 1+output["DoubleDamageEffect"], output["DoubleDamageChance"]))
+						}
+					} else if output["TripleDamageEffect"] != 0 {
+						breakdown.insert(damageType, sFormat("x %.2f ^8(multiplier from %d%% chance to deal triple damage)", 1+output["TripleDamageEffect"], output["TripleDamageChance"]))
+					}
+					if output["FistOfWarDamageEffect"] != 1 {
+						breakdown.insert(damageType, sFormat("x %.2f ^8(fist of war effect modifier)", output["FistOfWarDamageEffect"]))
+					}
+					if output["AncestralCallDamageEffect"] != 1 {
+						breakdown.insert(damageType, sFormat("x %.2f ^8(ancestral call effect modifier)", output["AncestralCallDamageEffect"]))
+					}
+					if output["AncestralEmpowermentDamageEffect"] != 1 {
+						breakdown.insert(damageType, sFormat("x %.2f ^8(ancestral empowerment effect modifier)", output["AncestralEmpowermentDamageEffect"]))
+					}
+					if output["AncestralEmpowermentCombinedDamageEffect"] != 1 {
+						breakdown.insert(damageType, sFormat("x %.2f ^8(ancestral empowerment combined effect modifier)", output["AncestralEmpowermentCombinedDamageEffect"]))
+					}
+					if globalOutput["OffensiveWarcryEffect"] != 1 && !activeSkill.SkillModList.Flag(nil, "Condition:WarcryMaxHit") {
+						breakdown.insert(damageType, sFormat("x %.2f ^8(aggregated warcry exerted effect modifier)", globalOutput["OffensiveWarcryEffect"]))
+					}
+					if globalOutput["MaxOffensiveWarcryEffect"] != 1 && activeSkill.SkillModList.Flag(nil, "Condition:WarcryMaxHit") {
+						breakdown.insert(damageType, sFormat("x %.2f ^8(aggregated max warcry exerted effect modifier)", globalOutput["MaxOffensiveWarcryEffect"]))
+					}
+				}
 				if activeSkill.SkillModList.Flag(nil, "Condition:WarcryMaxHit") {
 					output["allMult"] = output["ScaledDamageEffect"] * output["FistOfWarDamageEffect"] * output["AncestralCallDamageEffect"] * output["AncestralEmpowermentDamageEffect"] * output["AncestralEmpowermentCombinedDamageEffect"] * globalOutput["MaxOffensiveWarcryEffect"]
 				} else {
@@ -860,10 +934,26 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 				}
 
 				if (damageTypeHitMin != 0 || damageTypeHitMax != 0) && env.ModeEffective {
-					effMult := h.hitEffMult(cfg, damageType, damageTypeHitAvg)
+					e := h.hitEffMult(cfg, damageType, damageTypeHitAvg)
+					effMult := e.effMult
 					damageTypeHitMin *= effMult
 					damageTypeHitMax *= effMult
 					damageTypeHitAvg *= effMult
+					//pob2:block:src/Modules/CalcOffence.lua:4395-4402
+					breakdownResist := e.normalHitResist
+					if e.invertChance > 0 {
+						breakdownResist = e.resist
+					}
+					if critPass == 2 && breakdown != nil && (effMult != 1 || e.sourceRes != damageType || e.invertChance > 0) && e.cannotElePenIgnore {
+						breakdown.insert(damageType, sFormat("x %.3f ^8(effective DPS modifier)", effMult))
+						breakdown.set(damageType+"EffMult", breakdown.effMult(damageType, breakdownResist, 0, e.takenInc, effMult, e.takenMore, e.sourceRes, e.usesResistance, e.invertChance, e.minPen, e.effectiveResist, e.normalHitResist, e.invertedRes)...)
+					} else if critPass == 2 && breakdown != nil && (effMult != 1 || (e.resist-e.pen) < e.minPen || e.sourceRes != damageType || e.invertChance > 0) {
+						breakdown.insert(damageType, sFormat("x %.3f ^8(effective DPS modifier)", effMult))
+						breakdown.set(damageType+"EffMult", breakdown.effMult(damageType, breakdownResist, e.pen, e.takenInc, effMult, e.takenMore, e.sourceRes, e.usesResistance, e.invertChance, e.minPen, e.effectiveResist, e.normalHitResist, e.invertedRes)...)
+					}
+				}
+				if critPass == 2 && breakdown != nil {
+					breakdown.insert(damageType, sFormat("= %d to %d", damageTypeHitMin, damageTypeHitMax))
 				}
 
 				// Beginning of Leech Calculation for this DamageType
@@ -893,6 +983,8 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 				if energyShieldLeech > 0 && !noEnergyShieldLeech {
 					energyShieldLeechTotal += damageTypeHitAvg * energyShieldLeech / 100
 				}
+			} else if breakdown != nil {
+				breakdown.set(damageType, "You can't deal "+damageType+" damage")
 			}
 			if critPass == 1 {
 				output[damageType+"CritAverage"] = damageTypeHitAvg
@@ -946,6 +1038,10 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 			skillModList.AddMod(newFlagMod("Condition:"+damageType+"HasDamage", "Config"))
 			if output[damageType+"HitAverage"] > output[highestType+"HitAverage"] {
 				highestType = damageType
+			}
+			if breakdown != nil {
+				portion := output[damageType+"HitAverage"] / totalHitAvg * 100
+				breakdown.insert(damageType, sFormat("Portion of total damage: %d%%", portion))
 			}
 		}
 	}
@@ -1097,11 +1193,19 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 	h.offencePvp(pass, totalHitMin, totalHitMax, hitSpeed)
 }
 
+// hitEffect is what hitEffMult leaves for the hit's breakdown: the multiplier and breakdown.effMult's inputs.
+type hitEffect struct {
+	effMult, resist, pen, minPen, takenInc, takenMore           float64
+	invertChance, effectiveResist, normalHitResist, invertedRes float64
+	sourceRes                                                   string
+	usesResistance, cannotElePenIgnore                          bool
+}
+
 // hitEffMult applies enemy resistances and damage taken modifiers to one damage type of a hit. The
-// party member resistance source and the breakdowns are not ported.
+// party member resistance source is not ported.
 //
-//pob2:block:src/Modules/CalcOffence.lua:4284-4403
-func (h *offenceHit) hitEffMult(cfg *moddb.ListCfg, damageType string, damageTypeHitAvg float64) float64 {
+//pob2:block:src/Modules/CalcOffence.lua:4284-4395
+func (h *offenceHit) hitEffMult(cfg *moddb.ListCfg, damageType string, damageTypeHitAvg float64) hitEffect {
 	env, actor, activeSkill, skillFlags := h.env, h.actor, h.activeSkill, h.skillFlags
 	modDB := actor.ModDB
 	enemyDB := actor.Enemy.ModDB
@@ -1110,6 +1214,7 @@ func (h *offenceHit) hitEffMult(cfg *moddb.ListCfg, damageType string, damageTyp
 	resist := 0.0
 	pen := 0.0
 	minPen := 0.0
+	sourceRes := damageType
 	takenInc := enemyDB.Sum(mod.TypeIncrease, cfg, "DamageTaken", damageType+"DamageTaken")
 	takenMore := enemyDB.More(cfg, "DamageTaken", damageType+"DamageTaken")
 
@@ -1185,6 +1290,7 @@ func (h *offenceHit) hitEffMult(cfg *moddb.ListCfg, damageType string, damageTyp
 			} else if elementUsed == "Chaos" {
 				pen = skillModList.Sum(mod.TypeBase, cfg, "ChaosPenetration")
 			}
+			sourceRes = elementUsed
 		} else if isElemental[damageType] {
 			pen = skillModList.Sum(mod.TypeBase, cfg, damageType+"Penetration", "ElementalPenetration")
 			minPen = skillModList.Sum(mod.TypeBase, cfg, damageType+"PenetrationMinimum", "ElementalPenetrationMinimum")
@@ -1197,6 +1303,9 @@ func (h *offenceHit) hitEffMult(cfg *moddb.ListCfg, damageType string, damageTyp
 	invertChance := 0.0
 	if isElemental[damageType] {
 		invertChance = math.Max(math.Min(skillModList.Sum(mod.TypeChance, cfg, "HitsInvertEleResChance"), 1), 0)
+	}
+	if env.ModDB.Flag(nil, "Enemy"+sourceRes+"ResistEqualToYours") {
+		sourceRes = "Your " + sourceRes + " Resistance"
 	}
 	if skillFlags["projectile"] {
 		takenInc += enemyDB.Sum(mod.TypeIncrease, nil, "ProjectileDamageTaken")
@@ -1211,10 +1320,11 @@ func (h *offenceHit) hitEffMult(cfg *moddb.ListCfg, damageType string, damageTyp
 	useRes := h.useThisResist(cfg, damageType)
 	cannotElePenIgnore := isElemental[damageType] && skillModList.Flag(cfg, "CannotElePenIgnore")
 	ignoreNonNegativeEleRes := isElemental[damageType] && modDB.Flag(cfg, "IgnoreNonNegativeEleRes")
+	effectiveResist := resist
 	normalHitResist := calcHitResist(resist, minPen, pen, cannotElePenIgnore, ignoreNonNegativeEleRes)
 	invertedHitResist := calcHitResist(-resist, minPen, pen, cannotElePenIgnore, ignoreNonNegativeEleRes)
-	if cannotElePenIgnore || useRes {
-		var effectiveResist float64
+	usesResistance := cannotElePenIgnore || useRes
+	if usesResistance {
 		if isElemental[damageType] && invertChance > 0 {
 			effectiveResist = float64(normalHitResist*(1-invertChance)) + float64(invertedHitResist*invertChance)
 		} else {
@@ -1222,7 +1332,11 @@ func (h *offenceHit) hitEffMult(cfg *moddb.ListCfg, damageType string, damageTyp
 		}
 		effMult *= 1 - effectiveResist/100
 	}
-	return effMult
+	return hitEffect{
+		effMult: effMult, resist: resist, pen: pen, minPen: minPen, takenInc: takenInc, takenMore: takenMore,
+		invertChance: invertChance, effectiveResist: effectiveResist, normalHitResist: normalHitResist, invertedRes: invertedHitResist,
+		sourceRes: sourceRes, usesResistance: usesResistance, cannotElePenIgnore: cannotElePenIgnore,
+	}
 }
 
 // offencePvp calculates the PvP values. The breakdowns are not ported.
@@ -1315,7 +1429,7 @@ func (h *offenceHit) offenceCombineDamage() {
 		return
 	}
 	combine := func(stat, mode string) {
-		state.combineStat(output, skillFlags, skillData, stat, mode)
+		state.combineStat(output, h.actor.Breakdown, skillFlags, skillData, stat, mode)
 	}
 	combine("PreEffectiveCritChance", "AVERAGE")
 	combine("CritChance", "CRIT")

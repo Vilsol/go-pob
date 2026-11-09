@@ -164,10 +164,10 @@ func damageStatsForTypes(typeFlags int) []string {
 	return modNames
 }
 
-// Calculate min/max damage for the given damage type
+// Calculate min/max damage for the given damage type; breakdown is nil for none. convDst is always nil here.
 //
 //pob2:src/Modules/CalcOffence.lua:178-223
-func calcDamage(activeSkill *ActiveSkill, output map[string]float64, cfg *moddb.ListCfg, damageType string, typeFlags int) (float64, float64) {
+func calcDamage(activeSkill *ActiveSkill, output map[string]float64, cfg *moddb.ListCfg, breakdown *BreakdownEntry, damageType string, typeFlags int) (float64, float64) {
 	skillModList := activeSkill.SkillModList
 
 	typeFlags |= dmgTypeFlags[damageType]
@@ -187,6 +187,21 @@ func calcDamage(activeSkill *ActiveSkill, output map[string]float64, cfg *moddb.
 	more := skillModList.More(cfg, modNames...)
 	moreMinDamage := skillModList.More(cfg, "Min"+damageType+"Damage")
 	moreMaxDamage := skillModList.More(cfg, "Max"+damageType+"Damage")
+
+	if breakdown != nil {
+		row := map[string]string{
+			"source": damageType,
+			"base":   luaToString(summedMin) + " to " + luaToString(summedMax),
+			"total":  luaToString(round(float64(summedMin*inc*more))+addMin) + " to " + luaToString(round(float64(summedMax*inc*more))+addMax),
+		}
+		if inc != 1 {
+			row["inc"] = "x " + luaToString(inc)
+		}
+		if more != 1 {
+			row["more"] = "x " + luaToString(more)
+		}
+		breakdown.DamageTypes = append(breakdown.DamageTypes, row)
+	}
 
 	return round(float64(summedMin*inc*more*moreMinDamage) + addMin),
 		round(float64(summedMax*inc*more*moreMaxDamage) + addMax)
@@ -506,10 +521,10 @@ func offencePasses(env *Environment, actor *Actor, activeSkill *ActiveSkill, ski
 }
 
 // combineStat combines stats from Main Hand and Off Hand according to the mode. extra is the
-// varargs key the CHANCE modes weight by; the breakdowns are not ported.
+// varargs key the CHANCE modes weight by; breakdown is the actor's, nil for none.
 //
 //pob2:block:src/Modules/CalcOffence.lua:2600-2687
-func (state *offenceHitState) combineStat(output map[string]float64, skillFlags map[string]bool, skillData map[string]any, stat, mode string, extra ...string) {
+func (state *offenceHitState) combineStat(output map[string]float64, breakdown *Breakdown, skillFlags map[string]bool, skillData map[string]any, stat, mode string, extra ...string) {
 	mh, mhOK := state.mainHand[stat]
 	oh, ohOK := state.offHand[stat]
 	switch {
@@ -546,6 +561,23 @@ func (state *offenceHitState) combineStat(output map[string]float64, skillFlags 
 			offPortion := offChance / (mainChance + offChance)
 			if mode == "CHANCE" {
 				output[stat] = float64(mh*mainPortion) + float64(oh*offPortion)
+				if breakdown != nil {
+					if breakdown.Entries[stat] == nil {
+						breakdown.set(stat)
+					}
+					breakdown.insert(stat,
+						"Contribution from Main Hand:",
+						sFormat("%.1f", mh),
+						sFormat("x %.3f ^8(portion of instances created by main hand)", mainPortion),
+						sFormat("= %.1f", mh*mainPortion),
+						"Contribution from Off Hand:",
+						sFormat("%.1f", oh),
+						sFormat("x %.3f ^8(portion of instances created by off hand)", offPortion),
+						sFormat("= %.1f", oh*offPortion),
+						"Total:",
+						sFormat("%.1f + %.1f", mh*mainPortion, oh*offPortion),
+						sFormat("= %.1f", output[stat]))
+				}
 			} else {
 				maxInstance := math.Max(mh, oh)
 				minInstance := math.Min(mh, oh)
@@ -560,13 +592,44 @@ func (state *offenceHitState) combineStat(output map[string]float64, skillFlags 
 				}
 				maxInstanceStacks := math.Min(1, stacks/stacksMax)
 				output[stat] = float64(maxInstance*maxInstanceStacks) + float64(minInstance*(1-maxInstanceStacks))
+				if breakdown != nil {
+					if breakdown.Entries[stat] == nil {
+						breakdown.set(stat)
+					}
+					maxFrom := "Off Hand"
+					if mh >= oh {
+						maxFrom = "Main Hand"
+					}
+					breakdown.insert(stat, sFormat(""), sFormat("%.2f%% of ailment stacks use maximum damage", maxInstanceStacks*100),
+						sFormat("Max Damage comes from %s", maxFrom), sFormat("= %.1f", maxInstance*maxInstanceStacks))
+					if maxInstanceStacks < 1 {
+						breakdown.insert(stat, sFormat("%.2f%% of ailment stacks use non-maximum damage", (1-maxInstanceStacks)*100), sFormat("= %.1f", minInstance*(1-maxInstanceStacks)))
+					}
+					breakdown.insert(stat, "", "Total:")
+					if maxInstanceStacks < 1 {
+						breakdown.insert(stat, sFormat("%.1f + %.1f", maxInstance*maxInstanceStacks, minInstance*(1-maxInstanceStacks)))
+					}
+					breakdown.insert(stat, sFormat("= %.1f", output[stat]))
+				}
 			}
-		} else if mhOK {
-			output[stat] = mh
-		} else if ohOK {
-			output[stat] = oh
 		} else {
-			delete(output, stat)
+			if mhOK {
+				output[stat] = mh
+			} else if ohOK {
+				output[stat] = oh
+			} else {
+				delete(output, stat)
+			}
+			if mode == "CHANCE_AILMENT" && breakdown != nil {
+				if breakdown.Entries[stat] == nil {
+					breakdown.set(stat)
+				}
+				from := "Off Hand"
+				if mhOK {
+					from = "Main Hand"
+				}
+				breakdown.insert(stat, sFormat("All ailment stacks comes from %s", from))
+			}
 		}
 	case mode == "DPS":
 		output[stat] = mh + oh
@@ -1037,12 +1100,12 @@ func offenceCombineSpeed(env *Environment, actor *Actor, activeSkill *ActiveSkil
 		return
 	}
 	// Combine hit chance and attack speed
-	state.combineStat(output, skillFlags, skillData, "AccuracyHitChance", "AVERAGE")
-	state.combineStat(output, skillFlags, skillData, "HitChance", "AVERAGE")
-	state.combineStat(output, skillFlags, skillData, "AccuracyHitChanceUncapped", "AVERAGE")
-	state.combineStat(output, skillFlags, skillData, "Speed", "HARMONICMEAN")
-	state.combineStat(output, skillFlags, skillData, "HitSpeed", "OR")
-	state.combineStat(output, skillFlags, skillData, "HitTime", "OR")
+	state.combineStat(output, actor.Breakdown, skillFlags, skillData, "AccuracyHitChance", "AVERAGE")
+	state.combineStat(output, actor.Breakdown, skillFlags, skillData, "HitChance", "AVERAGE")
+	state.combineStat(output, actor.Breakdown, skillFlags, skillData, "AccuracyHitChanceUncapped", "AVERAGE")
+	state.combineStat(output, actor.Breakdown, skillFlags, skillData, "Speed", "HARMONICMEAN")
+	state.combineStat(output, actor.Breakdown, skillFlags, skillData, "HitSpeed", "OR")
+	state.combineStat(output, actor.Breakdown, skillFlags, skillData, "HitTime", "OR")
 	if output["Speed"] == 0 {
 		output["Time"] = 0
 	} else {

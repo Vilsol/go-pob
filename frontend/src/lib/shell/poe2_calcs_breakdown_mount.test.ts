@@ -60,6 +60,7 @@ const numbers = Object.fromEntries(Object.entries(calcs.output).filter((e): e is
 const w2 = vi.hoisted(() => ({
   CalcsPage: vi.fn(),
   CalcsModSection: vi.fn(),
+  CalcsBreakdownModList: vi.fn(),
   SidebarBreakdownKey: vi.fn(),
   SidebarBreakdownSections: vi.fn(),
   TreeData: vi.fn(() => new Promise(() => {}))
@@ -196,6 +197,69 @@ describe('a PoE2 Calcs cell with a breakdown', () => {
     expect(w2.CalcsModSection).toHaveBeenCalledWith({ ModName: ['Life'], Multi: false, ModType: 'BASE', Cfg: '', ModSource: '', Enemy: false, Actor: '' });
     const rows = within(table).getAllByRole('row').slice(1);
     expect(rows.map((r) => within(r).getAllByRole('cell')[0].textContent)).toEqual(want.map((r) => r.value));
+  }, 30_000);
+
+  it("lists the buffs, combat buffs and curses PoB-PoE2's Calcs tab shows", async () => {
+    // oracle/poe2_calcs_buff_lists.lua: the lists PoB-PoE2's CALCS calculation writes
+    const want = readFileSync(resolve(__dirname, '../../../../testdata/oracle/poe2_calcs_buff_lists.jsonl'), 'utf8')
+      .split('\n')
+      .filter(Boolean)
+      .map(
+        (l) =>
+          JSON.parse(l) as {
+            build: string;
+            BuffList: string;
+            CombatList: string;
+            CurseList: string;
+            SkillBuffs?: { value: string; name: string; flags: string; tags: string; source: string; sourceName: string }[];
+          }
+      )
+      .find((r) => r.build === 'skill_buffs.xml')!;
+    expect(want.BuffList && want.CurseList, 'PoB-PoE2 lists buffs and curses for the fixture').toBeTruthy();
+    w2.CalcsPage.mockResolvedValue({
+      mods: calcs.mods,
+      flags: {},
+      strings: { BuffList: want.BuffList, CombatList: want.CombatList, CurseList: want.CurseList },
+      breakdowns: calcsBreakdowns2(breakdowns as never)
+    });
+    poe2Build.set({
+      className: 'Sorceress',
+      ascendClassName: 'None',
+      level: 1,
+      output: numbers,
+      skillFlags: calcs.skillFlags,
+      skillData: calcs.skillData,
+      socketGroups: [],
+      mainSocketGroup: 1,
+      mainActiveSkill: 1
+    } as never);
+    render(AppCalcs);
+
+    const list = await vi.waitFor(
+      () => {
+        const l = document.querySelector('dl[aria-label="Buffs and debuffs"]');
+        if (!l) throw new Error('no buff lists');
+        return l;
+      },
+      { timeout: 10_000 }
+    );
+    const terms = [...list.querySelectorAll('dt')].map((d) => d.textContent);
+    const texts = [...list.querySelectorAll('dd')].map((d) => d.textContent);
+    expect(terms).toEqual(['Aura and Buff Skills', 'Combat Buffs', 'Curses and Debuffs']);
+    expect(texts).toEqual([want.BuffList, want.CombatList || '—', want.CurseList]);
+
+    // CalcBreakdownControl.lua:293-296 (PoB-PoE2): the SkillBuffs breakdown's mod table
+    const buffs = want.SkillBuffs ?? [];
+    expect(buffs.length, 'PoB-PoE2 lists SkillBuffs mods for the fixture').toBeGreaterThan(1);
+    w2.CalcsBreakdownModList.mockResolvedValue(
+      buffs.map((r) => ({ Value: r.value, Name: r.name, Flags: r.flags, Tags: r.tags, Source: r.source, SourceName: r.sourceName }))
+    );
+    await fireEvent.mouseEnter(within(list as HTMLElement).getByRole('button', { name: 'Aura and Buff Skills' }));
+    const table = await vi.waitFor(() => within(screen.getByRole('complementary', { name: 'Breakdown' })).getByRole('table', { name: 'Modifiers' }));
+    expect(w2.CalcsBreakdownModList).toHaveBeenCalledWith('SkillBuffs');
+    const rows = within(table).getAllByRole('row').slice(1);
+    expect(rows.map((r) => within(r).getAllByRole('cell')[0].textContent)).toEqual(buffs.map((r) => r.value));
+    expect(rows.map((r) => within(r).getAllByRole('cell')[1].textContent)).toEqual(buffs.map((r) => r.name));
   }, 30_000);
 
   it("hands a sidebar line's breakdown the cells PoB-PoE2's GetSidebarBreakdown shows", async () => {

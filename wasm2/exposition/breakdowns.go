@@ -66,6 +66,15 @@ func (c *Calculator) CalcsModSection(sd calculator2.ModSectionData) ([]calculato
 	return c.env.ModSection(sd), nil
 }
 
+// CalcsBreakdownModList is the mod table the Calcs tab's SkillBuffs or SkillDebuffs list shows over the last
+// calculation's player, or its minion.
+func (c *Calculator) CalcsBreakdownModList(name string, minion bool) ([]calculator2.ModSectionRow, error) {
+	if c.env == nil {
+		return nil, notCalculatedError{}
+	}
+	return c.env.CalcsBreakdownModList(name, minion), nil
+}
+
 // SidebarBreakdownRef is the breakdown a sidebar stat's line names, and the breakdown whose Calcs cell it shows:
 // Source, or Key where it has none.
 type SidebarBreakdownRef struct {

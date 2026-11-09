@@ -2,6 +2,7 @@ package exposition
 
 import (
 	"encoding/json"
+	"maps"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -134,8 +135,13 @@ func TestCalcsOutputsMatchPoB(t *testing.T) {
 					wantStrings[k] = s
 				}
 			}
-			if len(wantStrings) == 0 || !reflect.DeepEqual(got.Strings, wantStrings) {
-				t.Errorf("string outputs:\n PoB-PoE2 %v\n ours     %v", wantStrings, got.Strings)
+			// PoB-PoE2 writes the Calcs tab's lists in its CALCS pass only, which calculator2's lists test grades
+			gotStrings := maps.Clone(got.Strings)
+			for _, k := range []string{"BuffList", "CombatList", "CurseList"} {
+				delete(gotStrings, k)
+			}
+			if len(wantStrings) == 0 || !reflect.DeepEqual(gotStrings, wantStrings) {
+				t.Errorf("string outputs:\n PoB-PoE2 %v\n ours     %v", wantStrings, gotStrings)
 			}
 			for _, hand := range []struct {
 				ns   string

@@ -32,7 +32,7 @@
   });
   // CalcsTab.lua:135-137
   const lists = $derived.by(() => {
-    if (!calc.inputs) return undefined;
+    if (!calc.inputs && !$tab?.lists) return undefined;
     const s = $tab?.lists ?? {};
     const rank = ['UNBUFFED', 'BUFFED', 'COMBAT', 'EFFECTIVE'].indexOf(inputs.buffMode);
     return [

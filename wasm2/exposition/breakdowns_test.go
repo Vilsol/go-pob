@@ -26,6 +26,20 @@ var breakdownsPorted = []string{
 	"preventedLifeLossTotal", "TotemDuration", "FreezeBuildup", "PinBuildup", "ExertedAttackUptimeRatio", "BoostedAttackUptimeRatio",
 }
 
+// breakdownsPortedIn are breakdowns one fixture's main calculation holds, which must be present.
+var breakdownsPortedIn = map[string][]string{
+	"sorceress_spark": {"Physical", "Lightning", "Cold", "Fire", "Chaos", "LightningEffMult", "ShockChance", "ShockDPS", "ShockEffectMod"},
+	"warrior_dual_mace": {
+		"MainHand.Physical", "MainHand.Lightning", "MainHand.Cold", "MainHand.Fire", "MainHand.Chaos",
+		"OffHand.Physical", "OffHand.Lightning", "OffHand.Cold", "OffHand.Fire", "OffHand.Chaos",
+		"MainHand.PhysicalEffMult", "MainHand.FireEffMult", "OffHand.PhysicalEffMult",
+		"BleedDPS", "BleedRollAverage", "BleedStackPotential", "IgniteDPS", "IgniteEffMult", "IgniteRollAverage", "IgniteStackPotential",
+		"PoisonDPS", "PoisonRollAverage", "PoisonStackPotential", "MainHand.BleedChance", "MainHand.BleedDPS", "MainHand.IgniteChance",
+		"MainHand.IgniteDPS", "MainHand.PoisonChance", "MainHand.PoisonDPS", "OffHand.BleedChance", "OffHand.BleedDPS",
+		"OffHand.PoisonChance", "OffHand.PoisonDPS",
+	},
+}
+
 // Every breakdown we show is the one PoB-PoE2's CalcBreakdownControl builds over its main calculation
 // (oracle/poe2_breakdowns.lua, `mise run breakdowns-poe2`), mod list sections aside.
 func TestCalcsBreakdownsMatchPoB(t *testing.T) {
@@ -50,7 +64,7 @@ func TestCalcsBreakdownsMatchPoB(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			for _, k := range breakdownsPorted {
+			for _, k := range append(append([]string(nil), breakdownsPorted...), breakdownsPortedIn[name]...) {
 				if _, ok := got[k]; !ok {
 					t.Errorf("%s: no breakdown", k)
 				}

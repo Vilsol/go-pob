@@ -31,6 +31,12 @@ var reservationCols = []BreakdownCol{
 	{"Efficiency", "efficiency"}, {"Efficiency More/less", "efficiencyMore"}, {"Count", "count"}, {"Reservation", "total"},
 }
 
+//pob2:block:src/Classes/CalcBreakdownControl.lua:227-235
+var damageTypeCols = []BreakdownCol{
+	{"From", "source"}, {"Base", "base"}, {"Inc/red", "inc"}, {"More/less", "more"}, {"Converted Damage", "convSrc"},
+	{"Total", "total"}, {"Conversion", "convDst"},
+}
+
 //pob2:block:src/Classes/CalcBreakdownControl.lua:246-250
 var gearSlotCols = []BreakdownCol{{"Value", "base"}, {"Source", "source"}, {"Name", "sourceLabel"}}
 
@@ -99,6 +105,9 @@ func (b *Breakdown) View(name string) (BreakdownView, bool) {
 			}))
 		}
 		v.Tables = append(v.Tables, BreakdownTable{Columns: reservationCols, Rows: rows})
+	}
+	if len(e.DamageTypes) > 0 {
+		v.Tables = append(v.Tables, BreakdownTable{Columns: damageTypeCols, Rows: e.DamageTypes})
 	}
 	if len(e.Slots) > 0 {
 		slots := append([]BreakdownSlot(nil), e.Slots...)

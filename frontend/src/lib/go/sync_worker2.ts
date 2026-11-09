@@ -1023,6 +1023,12 @@ class PoB2Worker {
     return [...(this.calc.CalcsModSection(sd).unwrap() ?? [])];
   }
 
+  /* CalcBreakdownControl.lua:293-296 (PoB-PoE2): the SkillBuffs or SkillDebuffs list's mod table over the last calculation */
+  CalcsBreakdownModList(name: string): calculator2.ModSectionRow[] {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    return [...(this.calc.CalcsBreakdownModList(name, false).unwrap() ?? [])];
+  }
+
   /* Build.lua:2334-2370 (PoB-PoE2): the breakdown a sidebar stat's line names, undefined for none */
   SidebarBreakdownKey(ref: SidebarStatRef): { key: string; source: string } | undefined {
     if (!this.calc) throw new Error('no PoE2 build is open');

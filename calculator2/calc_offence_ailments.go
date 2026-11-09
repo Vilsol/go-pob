@@ -2,6 +2,8 @@ package calculator2
 
 import (
 	"math"
+	"slices"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -17,6 +19,7 @@ var ailmentTypeList = []string{"Bleed", "Poison", "Ignite", "Chill", "Freeze", "
 type nonDamagingAilment struct {
 	associatedType string
 	min, max       float64
+	precision      float64
 	duration       float64
 }
 
@@ -26,7 +29,7 @@ func nonDamagingAilmentData(ailment string) (nonDamagingAilment, bool) {
 	case "Chill":
 		return nonDamagingAilment{associatedType: "Cold", min: 30, max: gameConstant("ChillMaxEffect"), duration: gameConstant("BaseChillDuration")}, true
 	case "Freeze":
-		return nonDamagingAilment{associatedType: "Cold", min: 0.3, max: 3, duration: gameConstant("FreezeDuration")}, true
+		return nonDamagingAilment{associatedType: "Cold", min: 0.3, max: 3, precision: 2, duration: gameConstant("FreezeDuration")}, true
 	case "Shock":
 		return nonDamagingAilment{associatedType: "Lightning", min: gameConstant("BaseShockMagnitude"), max: 100, duration: gameConstant("BaseShockDuration")}, true
 	}
@@ -57,6 +60,40 @@ var ailmentKeywordFlags = map[string]mod.KeywordFlag{
 	"Bleed": KeywordFlagBleed, "Poison": KeywordFlagPoison, "Ignite": KeywordFlagIgnite,
 	"PhysicalDot": KeywordFlagPhysicalDot, "LightningDot": KeywordFlagLightningDot, "ColdDot": KeywordFlagColdDot,
 	"FireDot": KeywordFlagFireDot, "ChaosDot": KeywordFlagChaosDot,
+}
+
+// nonDamagingAilmentConfig is a nonDamagingAilmentsConfig entry: the breakdown's effect list and its formulas.
+type nonDamagingAilmentConfig struct {
+	effList        []float64
+	effect, thresh func(damage, x, effectMod float64) float64
+	ramping        bool
+}
+
+// nonDamagingAilmentsConfigFor is nonDamagingAilmentsConfig over the pass's enemyThreshold; effect takes no value.
+//
+//pob2:block:src/Modules/CalcOffence.lua:5671-5684
+func nonDamagingAilmentsConfigFor(enemyThreshold float64) map[string]nonDamagingAilmentConfig {
+	return map[string]nonDamagingAilmentConfig{
+		"Chill": {
+			effList: []float64{10, 20},
+			effect: func(damage, effectMod, _ float64) float64 {
+				return gameConstant("ChillEffectMultiplier") * (damage / enemyThreshold) * effectMod
+			},
+			thresh: func(damage, value, effectMod float64) float64 {
+				return float64(damage * (gameConstant("ChillEffectMultiplier") * effectMod / value))
+			},
+		},
+		"Shock": {
+			effList: []float64{10, 20, 40},
+			effect: func(damage, effectMod, _ float64) float64 {
+				return 50 * math.Pow(damage/enemyThreshold, 0.4) * effectMod
+			},
+			thresh: func(damage, value, effectMod float64) float64 {
+				return float64(damage * math.Pow(50*effectMod/value, 2.5))
+			},
+			ramping: true,
+		},
+	}
 }
 
 // monsterTable is data.<table>[level].
@@ -102,7 +139,7 @@ func overrideFloat(v *mod.ModValueMulti) (float64, bool) {
 }
 
 // offenceAilments calculates ailments and debuffs (poison, bleed, ignite, impale, exposure, etc) for
-// every pass, then combines them. The breakdowns are not ported.
+// every pass, then combines them.
 //
 //pob2:block:src/Modules/CalcOffence.lua:4962-5964
 func (h *offenceHit) offenceAilments() {
@@ -124,13 +161,14 @@ func (h *offenceHit) offenceAilments() {
 	skillFlags["impale"] = false
 
 	// Calculate ailment thresholds
-	enemyThreshold := monsterTable(poe2.MonsterAilmentThresholdTable, env.EnemyLevel) * calcLibMod(enemyDB, nil, "EnemyAilmentThreshold")
+	enemyThreshold := float64(monsterTable(poe2.MonsterAilmentThresholdTable, env.EnemyLevel) * calcLibMod(enemyDB, nil, "EnemyAilmentThreshold"))
 	globalOutput["EnemyAilmentThreshold"] = enemyThreshold
 
 	// Calculate ailments and debuffs (poison, bleed, ignite, impale, exposure, etc)
 	for _, pass := range state.passList {
 		output := pass.output
 		cfg := pass.cfg
+		breakdown, globalBreakdown := pass.breakdown, actor.Breakdown
 
 		// Legacy PoE1 ailments (to be removed later): Scorched, Brittle, Sapped, Impale
 		output["ImpaleChance"] = 0
@@ -251,7 +289,9 @@ func (h *offenceHit) offenceAilments() {
 		}
 
 		// Calculate the inflict chance and base damage of a secondary effect (bleed/poison/ignite/shock/freeze)
-		calcAilmentDamage := func(ailment string, sourceCritChance, sourceHitDmg, sourceCritDmg float64) float64 {
+		//
+		//pob2:block:src/Modules/CalcOffence.lua:5111-5189
+		calcAilmentDamage := func(ailment string, sourceCritChance, sourceHitDmg, sourceCritDmg float64, hideFromBreakdown bool) float64 {
 			chanceOnHit, chanceOnCrit := output[ailment+"ChanceOnHit"], output[ailment+"ChanceOnCrit"]
 			// Use sourceCritChance to factor in chance a critical ailment is present
 			chanceFromHit := float64(chanceOnHit * (1 - sourceCritChance/100))
@@ -260,7 +300,73 @@ func (h *offenceHit) offenceAilments() {
 			output[ailment+"Chance"] = chance
 			baseFromHit := sourceHitDmg * chanceFromHit / (chanceFromHit + chanceFromCrit)
 			baseFromCrit := sourceCritDmg * chanceFromCrit / (chanceFromHit + chanceFromCrit)
-			return baseFromHit + baseFromCrit
+			baseVal := baseFromHit + baseFromCrit
+			sourceMult := skillModList.More(cfg, ailment+"AsThoughDealing")
+			if breakdown != nil && chance != 0 && !hideFromBreakdown {
+				key := ailment + "Chance"
+				if breakdown.Entries[key] == nil {
+					breakdown.set(key)
+				}
+				if len(breakdown.Entries[key].Lines) > 0 {
+					breakdown.insert(key, "")
+				}
+				if isAttack {
+					breakdown.insert(key, pass.label+":")
+				}
+				breakdown.insert(key, sFormat("Chance on Non-crit: %d%%", chanceOnHit), sFormat("Chance on Crit: %d%%", chanceOnCrit))
+				if chanceOnHit != chanceOnCrit {
+					chancePerHit := float64(chanceOnHit*(1-sourceCritChance/100)) + chanceOnCrit*sourceCritChance/100
+					breakdown.insert(key, "Combined chance:",
+						sFormat("%d x (1 - %.4f) ^8(chance from non-crits)", chanceOnHit, sourceCritChance/100),
+						sFormat("+ %d x %.4f ^8(chance from crits)", chanceOnCrit, sourceCritChance/100),
+						sFormat("= %.2f", chancePerHit))
+				}
+			}
+			if breakdown != nil && baseVal > 0 && !hideFromBreakdown {
+				key := ailment + "DPS"
+				if breakdown.Entries[key] == nil {
+					breakdown.set(key)
+				}
+				if len(breakdown.Entries[key].Lines) > 0 {
+					breakdown.insert(key, "")
+				}
+				if isAttack {
+					breakdown.insert(key, pass.label+":")
+				}
+				if sourceHitDmg == sourceCritDmg || output["CritChance"] == 0 {
+					breakdown.insert(key, "Total base DPS per "+ailment+":", sFormat("%.1f ^8(source damage)", sourceHitDmg))
+					if sourceMult > 1 {
+						breakdown.insert(key, sFormat("x %.2f ^8(inflicting as though dealing more damage)", sourceMult), sFormat("= %.1f", baseVal*sourceMult))
+					}
+				} else {
+					if baseFromHit > 0 {
+						breakdown.insert(key, "Damage from Non-crits:",
+							sFormat("%.1f ^8(source damage from non-crits)", sourceHitDmg),
+							sFormat("x %.3f ^8(portion of instances created by non-crits)", chanceFromHit/(chanceFromHit+chanceFromCrit)))
+						if sourceMult == 1 || baseFromCrit != 0 {
+							breakdown.insert(key, sFormat("= %.1f", baseFromHit))
+						}
+					}
+					if baseFromCrit > 0 {
+						breakdown.insert(key, "Damage from Crits:",
+							sFormat("%.1f ^8(source damage from crits)", sourceCritDmg),
+							sFormat("x %.3f ^8(portion of instances created by crits)", chanceFromCrit/(chanceFromHit+chanceFromCrit)))
+						if sourceMult == 1 || baseFromHit != 0 {
+							breakdown.insert(key, sFormat("= %.1f", baseFromCrit))
+						}
+					}
+					if baseFromHit > 0 && baseFromCrit > 0 {
+						breakdown.insert(key, "Total base DPS per "+ailment+":", sFormat("%.1f + %.1f", baseFromHit, baseFromCrit))
+						if sourceMult == 1 {
+							breakdown.insert(key, sFormat("= %.1f", baseVal))
+						}
+					}
+					if sourceMult > 1 {
+						breakdown.insert(key, sFormat("x %.2f ^8(inflicting as though dealing more damage)", sourceMult), sFormat("= %.1f", baseVal*sourceMult))
+					}
+				}
+			}
+			return baseVal
 		}
 
 		// Calculate global / breakdown values for a damaging ailment
@@ -298,6 +404,11 @@ func (h *offenceHit) offenceAilments() {
 			}
 			activeSkill.AilmentCfg[cfgKey] = dotCfg
 			checkWeapon1HFlags(dotCfg)
+			if breakdown != nil {
+				for _, damageType := range dmgTypeList {
+					breakdown.setEntry(ailment+damageType, &BreakdownEntry{})
+				}
+			}
 
 			globalOutput[ailment+"ChancePerHit"] = float64(output[ailment+"ChanceOnHit"]*(1-output["CritChance"]/100)) + output[ailment+"ChanceOnCrit"]*output["CritChance"]/100
 
@@ -369,6 +480,27 @@ func (h *offenceHit) offenceAilments() {
 			// Ratio of ailments applied : max effective ailments
 			globalOutput[ailment+"StackPotential"] = ailmentStacks / maxStacks
 			globalOutput[ailment+"StackPotentialPercent"] = globalOutput[ailment+"StackPotential"] * 100
+			if globalBreakdown != nil {
+				key := ailment + "StackPotential"
+				globalBreakdown.set(key, sFormat(colorCustom+"The percentage of your max stacks that are applied on average if you are attacking constantly"), sFormat(""))
+				if configStacks > 0 {
+					globalBreakdown.insert(key, sFormat("%.2f ^8(ailment stacks config override)", configStacks))
+				} else {
+					globalBreakdown.insert(key, sFormat("%.2f ^8(chance to hit)", output["HitChance"]/100), sFormat("* %.2f ^8(chance to apply)", ailmentChance))
+					hitSpeed := outputDefault(globalOutput, "HitSpeed", globalOutput["Speed"])
+					if truthy(skillData["triggeredOnDeath"]) {
+						globalBreakdown.insert(key, sFormat("* 1 ^8Cast on Death override"))
+					} else if cooldown, ok := output["Cooldown"]; ok {
+						globalBreakdown.insert(key, sFormat("* (%.2f / max(%.2f, %.2f) ^8(Duration / max(Cooldown, Cast Time))", globalOutput[ailment+"Duration"], cooldown, outputDefault(output, "HitTime", output["Time"])))
+					} else if hitSpeed > 0 {
+						globalBreakdown.insert(key, sFormat("* (%.2f / %.2f) ^8(Duration / Attack Time)", globalOutput[ailment+"Duration"], outputDefault(globalOutput, "HitTime", output["Time"])))
+					}
+					if output["DpsMultiplier"] != 1 {
+						globalBreakdown.insert(key, sFormat("* %g ^8(DPS multiplier for this skill)", output["DpsMultiplier"]))
+					}
+				}
+				globalBreakdown.insert(key, sFormat("/ %d ^8(max number of stacks)", maxStacks), sFormat("= %.2f", globalOutput[key]))
+			}
 
 			// the amount of damage each application does as % maximum
 			var ailmentRollAverage float64
@@ -381,18 +513,46 @@ func (h *offenceHit) offenceAilments() {
 			}
 			globalOutput[ailment+"RollAverage"] = ailmentRollAverage
 
+			if globalBreakdown != nil {
+				key := ailment + "RollAverage"
+				globalBreakdown.set(key,
+					sFormat(colorCustom+"This is the average roll of an ailment affecting the enemy if you are constantly attacking"),
+					sFormat(colorCustom+"Uses a weighted average formula when stack potential is over 100%%"),
+					sFormat(colorCustom+"If hitting constantly, your average strongest ailment currently achieves ^7%.2f%%"+colorCustom+" of its max damage", ailmentRollAverage),
+					sFormat(""),
+					sFormat("Average Roll:"))
+				if ailmentStacks >= maxStacks {
+					globalBreakdown.insert(key, sFormat("%.2f - (%.2f - 1)/2", ailmentStacks, maxStacks), sFormat("/ (%.2f + 1)", ailmentStacks), sFormat("= %.2f%%", ailmentRollAverage))
+				} else {
+					globalBreakdown.insert(key, sFormat("50%% (averaging <= %d applications)", maxStacks))
+				}
+			}
+
 			hitMin, hitMax, critMin, critMax := calcMinMaxUnmitigatedAilmentSourceDamage(ailment, defaultDamageTypes)
 			hitAvg := hitMin + ((hitMax - hitMin) * ailmentRollAverage / 100)
 			critAvg := critMin + ((critMax - critMin) * ailmentRollAverage / 100)
+			if globalBreakdown != nil {
+				key := ailment + "DPS"
+				globalBreakdown.set(key,
+					sFormat("Non-Crit Dmg Derivation:"),
+					sFormat("%.0f + (%.0f - %.0f) * %.2f%%", hitMin, hitMax, hitMin, ailmentRollAverage),
+					sFormat("^8min combined sources + (max combined sources - min combined sources) * average roll"),
+					sFormat("= %.2f", hitAvg))
+				if hitAvg != critAvg || output["CritChance"] > 0 {
+					globalBreakdown.insert(key, "", "Crit Dmg Derivation:",
+						sFormat("%.0f + (%.0f - %.0f) * %.2f%%", critMin, critMax, critMin, ailmentRollAverage),
+						"^8min combined sources + (max combined sources - min combined sources) * average roll",
+						sFormat("= %.2f", critAvg))
+				}
+			}
 
 			// Over-stacking stacks increases the chance a critical is present
 			ailmentCritChance := 100 * (1 - math.Pow(1-output["CritChance"]/100, math.Max(globalOutput[ailment+"StackPotential"], 1)))
 			globalOutput[ailment+"MagnitudeEffect"] = calcLibMod(skillModList, dotCfg, "AilmentMagnitude")
 			ailmentPercentBase := miscConstant(ailment+"PercentBase") * globalOutput[ailment+"MagnitudeEffect"]
-			// The min and max values feed the breakdown alone, but set output[ailment.."Chance"] in turn.
-			calcAilmentDamage(ailment, ailmentCritChance, hitMin, 0)
-			calcAilmentDamage(ailment, 100, hitMax, critMax)
-			baseVal := calcAilmentDamage(ailment, ailmentCritChance, hitAvg, critAvg) * ailmentPercentBase
+			baseMinVal := calcAilmentDamage(ailment, ailmentCritChance, hitMin, 0, true) * ailmentPercentBase
+			baseMaxVal := calcAilmentDamage(ailment, 100, hitMax, critMax, true) * ailmentPercentBase
+			baseVal := calcAilmentDamage(ailment, ailmentCritChance, hitAvg, critAvg, false) * ailmentPercentBase
 
 			if baseVal > 0 {
 				skillFlags[strings.ToLower(ailment)] = true
@@ -415,12 +575,23 @@ func (h *offenceHit) offenceAilments() {
 					takenMore := enemyDB.More(dotCfg, names...)
 					effMult = (1 - resist/100) * (1 + takenInc/100) * takenMore
 					globalOutput[ailment+"EffMult"] = effMult
+					if breakdown != nil && effMult != 1 {
+						sourceRes := takenType
+						if env.ModDB.Flag(nil, "Enemy"+takenType+"ResistEqualToYours") {
+							sourceRes = "Your " + takenType + " Resistance"
+						}
+						globalBreakdown.set(ailment+"EffMult", breakdown.effMult(takenType, resist, 0, takenInc, effMult, takenMore, sourceRes, true, 0, 0, calcPenResist(resist, 0, 0), 0, 0)...)
+					}
 				}
 
 				effectMod := calcLibMod(skillModList, dotCfg, "AilmentEffect")
 				activeAilments := math.Min(ailmentStacks, maxStacks)
-				ailmentDPSUncapped := baseVal * effectMod * rateMod * activeAilments * effMult
+				ailmentDPSUncapped := float64(baseVal * effectMod * rateMod * activeAilments * effMult)
 				ailmentDPSCapped := math.Min(ailmentDPSUncapped, miscConstant("DotDpsCap"))
+				minAilmentDPSUncapped := float64(baseMinVal * effectMod * rateMod * activeAilments * effMult)
+				minAilmentDPSCapped := luaMin(minAilmentDPSUncapped, miscConstant("DotDpsCap"))
+				maxAilmentDPSUncapped := float64(baseMaxVal * effectMod * rateMod * activeAilments * effMult)
+				maxAilmentDPSCapped := luaMin(maxAilmentDPSUncapped, miscConstant("DotDpsCap"))
 				output[ailment+"DPS"] = ailmentDPSCapped
 
 				switch ailment {
@@ -430,12 +601,26 @@ func (h *offenceHit) offenceAilments() {
 						groundDPSUncapped := baseVal * effectMod * rateMod * effMult * groundMult / 100
 						globalOutput["BurningGroundDPS"] = math.Min(groundDPSUncapped, miscConstant("DotDpsCap"))
 						h.actor.setOutputFlag("BurningGroundFromIgnite", true)
+						if globalBreakdown != nil {
+							globalBreakdown.set("BurningGroundDPS",
+								sFormat("%.1f ^8(ignite damage per second)", baseVal*effectMod*rateMod),
+								sFormat("* %.1f%% ^8(percent as Burning ground)", groundMult),
+								sFormat("* %.3f ^8(effective DPS modifier)", effMult),
+								sFormat("= %.1f ^8per second", globalOutput["BurningGroundDPS"]))
+						}
 					}
 				case "Poison":
 					groundMult := math.Max(skillModList.Max(nil, "PoisonDpsAsCausticGround"), enemyDB.Max(nil, "PoisonDpsAsCausticGround"))
 					if groundMult > 0 {
 						groundDPSUncapped := baseVal * effectMod * rateMod * effMult * groundMult / 100
 						globalOutput["CausticGroundDPS"] = math.Min(groundDPSUncapped, miscConstant("DotDpsCap"))
+						if globalBreakdown != nil {
+							globalBreakdown.set("CausticGroundDPS",
+								sFormat("%.1f ^8(single poison damage per second)", baseVal*effectMod*rateMod),
+								sFormat("* %.1f%% ^8(percent as Caustic ground)", groundMult),
+								sFormat("* %.3f ^8(effective DPS modifier)", effMult),
+								sFormat("= %.1f ^8per second", globalOutput["CausticGroundDPS"]))
+						}
 					}
 				}
 
@@ -444,6 +629,81 @@ func (h *offenceHit) offenceAilments() {
 					output[ailment+"Damage"] = output[ailment+"DPS"] * globalOutput[ailment+"Duration"]
 					output[ailment+"StacksMax"] = maxStacks
 					output["Total"+ailment+"DPS"] = output[ailment+"DPS"]
+				}
+
+				//pob2:block:src/Modules/CalcOffence.lua:5449-5518
+				if breakdown != nil {
+					key := ailment + "DPS"
+					percentBase := miscConstant(ailment + "PercentBase")
+					breakdown.insert(key,
+						sFormat("x %.2f ^8(ailment deals %d%% per second)", percentBase, percentBase*100),
+						sFormat("x %.2f ^8(ailment magnitude effect)", globalOutput[ailment+"MagnitudeEffect"]),
+						sFormat("= %.1f", baseVal, 1),
+						"",
+						"Average DPS for all "+ailment+"s:")
+					if baseVal != ailmentDPSUncapped {
+						breakdown.insert(key, sFormat("%.1f ^8(base damage per second)", baseVal))
+					}
+					if effectMod != 1 {
+						breakdown.insert(key, sFormat("x %.2f ^8(ailment effect modifier)", effectMod))
+					}
+					if rateMod != 1 {
+						breakdown.insert(key, sFormat("x %.2f ^8(rate modifier)", rateMod))
+					}
+					if activeAilments != 1 {
+						breakdown.insert(key, sFormat("x %.2f ^8(avg ailment stacks)", activeAilments))
+					}
+					if effMult != 1 {
+						breakdown.insert(key, sFormat("x %.3f ^8(effective DPS modifier from enemy debuffs)", effMult))
+					}
+					if output[key] != ailmentDPSUncapped {
+						breakdown.insert(key,
+							sFormat("= %.1f ^8(Uncapped raw ailment DPS)", ailmentDPSUncapped),
+							sFormat("^8(Raw ailment DPS is "+colorNegative+"overcapped ^8by^7 %.0f ^8:^7 %.1f%%^8)", ailmentDPSUncapped-ailmentDPSCapped, (ailmentDPSUncapped-ailmentDPSCapped)/ailmentDPSCapped*100),
+							sFormat("= %d ^8(Capped ailment DPS)", ailmentDPSCapped))
+					} else {
+						breakdown.insert(key, sFormat("= %.1f ^8per second", output[key]))
+					}
+					breakdown.insert(key, sFormat("%.2f%% of Maximum ailment DPS", output[key]/maxAilmentDPSCapped*100), "", "DPS Range:")
+					if maxAilmentDPSCapped == maxAilmentDPSUncapped && minAilmentDPSCapped == minAilmentDPSUncapped {
+						breakdown.insert(key, sFormat("%.0f to %.0f ^8(ailment DPS Range)", minAilmentDPSUncapped, maxAilmentDPSUncapped))
+					} else {
+						breakdown.insert(key, sFormat("%.0f to %.0f ^8(Uncapped ailment DPS Range)", minAilmentDPSUncapped, maxAilmentDPSUncapped))
+					}
+					if minAilmentDPSCapped != minAilmentDPSUncapped {
+						breakdown.insert(key, sFormat("^8(Raw Min ailment DPS is "+colorNegative+"overcapped ^8by^7 %.0f ^8:^7 %.1f%%^8)", minAilmentDPSUncapped-minAilmentDPSCapped, (minAilmentDPSUncapped-minAilmentDPSCapped)/minAilmentDPSCapped*100))
+					}
+					if maxAilmentDPSCapped != maxAilmentDPSUncapped {
+						breakdown.insert(key, sFormat("^8(Raw Max ailment DPS is "+colorNegative+"overcapped ^8by^7 %.0f ^8:^7 %.1f%%^8)", maxAilmentDPSUncapped-maxAilmentDPSCapped, (maxAilmentDPSUncapped-maxAilmentDPSCapped)/maxAilmentDPSCapped*100))
+					}
+					if maxAilmentDPSCapped != maxAilmentDPSUncapped || minAilmentDPSCapped != minAilmentDPSUncapped {
+						breakdown.insert(key, sFormat("%.0f to %.0f ^8(Capped ailment DPS Range)", minAilmentDPSCapped, maxAilmentDPSCapped))
+					}
+					if skillFlags[strings.ToLower(ailment)+"CanStack"] {
+						dmgKey := ailment + "Damage"
+						breakdown.set(dmgKey)
+						if isAttack {
+							breakdown.insert(dmgKey, pass.label+":")
+						}
+						breakdown.insert(dmgKey,
+							sFormat("%.1f ^8(DPS of all stacks)", baseVal),
+							sFormat("x %.2fs ^8(ailment duration)", globalOutput[ailment+"Duration"]),
+							sFormat("= %.1f ^8total damage of all stacks", output[dmgKey]))
+					}
+					if globalOutput[ailment+"Duration"] != durationBase {
+						durKey := ailment + "Duration"
+						globalBreakdown.set(durKey, sFormat("%.2fs ^8(base duration)", durationBase))
+						if durationMod != 1 {
+							globalBreakdown.insert(durKey, sFormat("x %.2f ^8(duration modifier)", durationMod))
+						}
+						if rateMod != 1 {
+							globalBreakdown.insert(durKey, sFormat("/ %.2f ^8(burn rate modifier)", rateMod))
+						}
+						if debuffDurationMult != 1 {
+							globalBreakdown.insert(durKey, sFormat("/ %.2f ^8(debuff expires slower/faster)", 1/debuffDurationMult))
+						}
+						globalBreakdown.insert(durKey, sFormat("= %.2fs", globalOutput[durKey]))
+					}
 				}
 			}
 		}
@@ -625,6 +885,7 @@ func (h *offenceHit) offenceAilments() {
 		}
 
 		// Calculate non-damaging ailments effect and duration modifiers
+		nonDamagingAilmentsConfig := nonDamagingAilmentsConfigFor(enemyThreshold)
 		if activeSkill.SkillTypes["ChillingArea"] || activeSkill.SkillTypes["NonHitChill"] {
 			skillFlags["chill"] = true
 			incChill := skillModList.Sum(mod.TypeIncrease, cfg, "EnemyChillMagnitude", "AilmentMagnitude")
@@ -637,19 +898,32 @@ func (h *offenceHit) offenceAilments() {
 			}
 			output["ChillSourceEffect"] = math.Min(chillMax, math.Floor(nonDamagingAilmentChillDefault*output["ChillEffectMod"]))
 		}
+		ailmentModeText := "Average Damage"
+		if ailmentMode == "CRIT" {
+			ailmentModeText = "Crits Only"
+		}
 		if output["FreezeChanceOnHit"]+output["FreezeChanceOnCrit"] > 0 {
+			if globalBreakdown != nil {
+				globalBreakdown.set("FreezeDurationMod", sFormat("Ailment mode: %s ^8(can be changed in the Configuration tab)", ailmentModeText))
+			}
 			hitDmg, critDmg := calcAverageUnmitigatedSourceDamage("Freeze", nil)
-			baseVal := calcAilmentDamage("Freeze", output["CritChance"], hitDmg, critDmg) * skillModList.More(cfg, "FreezeAsThoughDealing")
+			baseVal := calcAilmentDamage("Freeze", output["CritChance"], hitDmg, critDmg, false) * skillModList.More(cfg, "FreezeAsThoughDealing")
 			if baseVal > 0 {
 				skillFlags["freeze"] = true
 				output["FreezeDurationMod"] = 1 + skillModList.Sum(mod.TypeIncrease, cfg, "EnemyFreezeDuration", "EnemyAilmentDuration", "EnemyElementalAilmentDuration")/100 + enemyDB.Sum(mod.TypeIncrease, nil, "SelfFreezeDuration", "SelfElementalAilmentDuration", "SelfAilmentDuration", "HoarfrostFreezeDuration")/100
+				if breakdown != nil {
+					breakdown.insert("FreezeDPS", sFormat("For freeze to apply for the minimum of 0.3 seconds, target must have no more than %.0f Ailment Threshold.", baseVal*20*output["FreezeDurationMod"]))
+				}
 			}
 		}
 		// pairs(nonDamagingAilmentsConfig) visits Chill and Shock; each writes its own keys.
 		for _, ailment := range []string{"Chill", "Shock"} {
 			if output[ailment+"ChanceOnHit"]+output[ailment+"ChanceOnCrit"] > 0 {
 				hitDmg, critDmg := calcAverageUnmitigatedSourceDamage(ailment, defaultAilmentScalesFrom[ailment])
-				damage := calcAilmentDamage(ailment, output["CritChance"], hitDmg, critDmg) * skillModList.More(cfg, ailment+"AsThoughDealing")
+				if globalBreakdown != nil {
+					globalBreakdown.set(ailment+"EffectMod", sFormat("Ailment mode: %s ^8(can be changed in the Configuration tab)", ailmentModeText))
+				}
+				damage := calcAilmentDamage(ailment, output["CritChance"], hitDmg, critDmg, false) * skillModList.More(cfg, ailment+"AsThoughDealing")
 				if damage > 0 {
 					skillFlags[strings.ToLower(ailment)] = true
 					incDur := skillModList.Sum(mod.TypeIncrease, cfg, "Enemy"+ailment+"Duration", "EnemyElementalAilmentDuration", "EnemyAilmentDuration") + enemyDB.Sum(mod.TypeIncrease, nil, "Self"+ailment+"Duration", "SelfElementalAilmentDuration", "SelfAilmentDuration")
@@ -657,6 +931,92 @@ func (h *offenceHit) offenceAilments() {
 					data, _ := nonDamagingAilmentData(ailment)
 					output[ailment+"Duration"] = data.duration * (1 + incDur/100) * moreDur * debuffDurationMult
 					output[ailment+"EffectMod"] = calcLibMod(skillModList, cfg, "Enemy"+ailment+"Magnitude", "AilmentMagnitude") * calcLibMod(enemyDB, cfg, "Self"+ailment+"Magnitude", "AilmentMagnitude")
+					//pob2:block:src/Modules/CalcOffence.lua:5732-5802
+					if breakdown != nil {
+						val := nonDamagingAilmentsConfig[ailment]
+						maximum, ok := globalOutput["Maximum"+ailment]
+						if !ok {
+							maximum = data.max
+						}
+						current := math.Max(math.Min(globalOutput["Current"+ailment], maximum), 0)
+						desired := math.Max(math.Min(enemyDB.Sum(mod.TypeBase, nil, "Desired"+ailment+"Val"), maximum), 0)
+						effList := append([]float64(nil), val.effList...)
+						if data.min != 0 {
+							effList = append(effList, data.min)
+						}
+						if enemyThreshold > 0 {
+							effList = append(effList, val.effect(damage, output[ailment+"EffectMod"], 0))
+						}
+						if !slices.Contains(effList, maximum) {
+							effList = append(effList, maximum)
+						}
+						if current > 0 && !slices.Contains(effList, current) {
+							effList = append(effList, current)
+						}
+						if desired > 0 && !slices.Contains(effList, desired) && current == 0 {
+							effList = append(effList, desired)
+						}
+						e := breakdown.Entries[ailment+"DPS"]
+						e.Label = "Resulting ailment effect"
+						if current > 0 && val.ramping {
+							e.Label += sFormat(" ^8(with a ^7%s%% ^8%s on the enemy)^7", current, ailment)
+						}
+						e.RowList = []map[string]string{}
+						e.ColList = []BreakdownCol{{"Ailment Threshold", "thresh"}, {ailment + " Effect", "effect"}}
+						sort.Float64s(effList)
+						boss := "Pinnacle"
+						if v, ok := env.ConfigInput["enemyIsBoss"]; ok && v.IsString {
+							boss = enemyIsBossInput(v.String)
+						}
+						for _, value := range effList {
+							thresh := val.thresh(damage, value, output[ailment+"EffectMod"])
+							decCheck := value / math.Floor(value)
+							value = math.Floor(value*math.Pow(10, data.precision)) / math.Pow(10, data.precision)
+							valueFormat := "%." + luaToString(data.precision) + "f%%"
+							threshString := sFormat("%d", thresh)
+							if math.Floor(thresh+0.5) == math.Floor(enemyThreshold+0.5) {
+								threshString += sFormat(" ^8(%s)", boss)
+							}
+							var labels []string
+							if decCheck == 1 && value != 0 {
+								if value == current {
+									labels = append(labels, "current")
+								}
+								if value == desired {
+									labels = append(labels, "desired")
+								}
+								if value == maximum {
+									labels = append(labels, "maximum")
+								}
+								if value == data.min {
+									labels = append(labels, "minimum")
+								}
+							}
+							effect := sFormat(valueFormat, value)
+							if len(labels) > 0 {
+								effect += " ^8(" + strings.Join(labels, ", ") + ")"
+							}
+							e.RowList = append(e.RowList, map[string]string{"effect": effect, "thresh": threshString})
+						}
+					}
+					if breakdown != nil && output[ailment+"Duration"] != data.duration {
+						durKey := ailment + "Duration"
+						breakdown.set(durKey)
+						if isAttack {
+							breakdown.insert(durKey, pass.label+":")
+						}
+						breakdown.insert(durKey, sFormat("%.2fs ^8(base duration)", data.duration))
+						if incDur != 0 {
+							breakdown.insert(durKey, sFormat("x %.2f ^8(increased/reduced duration)", 1+incDur/100))
+						}
+						if moreDur != 1 {
+							breakdown.insert(durKey, sFormat("x %.2f ^8(more/less duration)", moreDur))
+						}
+						if debuffDurationMult != 1 {
+							breakdown.insert(durKey, sFormat("/ %.2f ^8(debuff expires slower/faster)", 1/debuffDurationMult))
+						}
+						breakdown.insert(durKey, sFormat("= %.2fs", output[durKey]))
+					}
 				}
 			}
 		}
@@ -741,7 +1101,7 @@ func (h *offenceHit) offenceAilments() {
 	if isAttack {
 		output := globalOutput
 		combine := func(stat, mode string, extra ...string) {
-			state.combineStat(output, skillFlags, skillData, stat, mode, extra...)
+			state.combineStat(output, actor.Breakdown, skillFlags, skillData, stat, mode, extra...)
 		}
 		for _, ailment := range []string{"Bleed", "Poison", "Ignite"} {
 			combine(ailment+"Chance", "AVERAGE")

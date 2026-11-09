@@ -153,6 +153,8 @@ const calcsTab2 = readable<CalcsTabView | undefined>(undefined, (set) => {
         mods: page.mods,
         breakdowns: page.breakdowns
       }),
+      // CalcsTab.lua:177-180 (PoB-PoE2)
+      lists: { BuffList: page.strings.BuffList, CombatList: page.strings.CombatList, CurseList: page.strings.CurseList },
       controls:
         group && group.skills.length > 0 ? ({ Skills: group.skills, MainActiveSkill: at.mainActiveSkill || 1 } as calculator.MainSkillControls) : undefined
     });
@@ -295,6 +297,8 @@ export const poe2Engine: BuildEngine = {
     setMainSkill: setMainSkill2,
     // CalcBreakdownControl.lua:300-548 (PoB-PoE2)
     modrows: (sd) =>
-      get(poe2Build) ? poe2Worker().then((w) => w.CalcsModSection(sd as calculator2.ModSectionData) as unknown as calculator.ModSectionRow[]) : undefined
+      get(poe2Build) ? poe2Worker().then((w) => w.CalcsModSection(sd as calculator2.ModSectionData) as unknown as calculator.ModSectionRow[]) : undefined,
+    // CalcsTab.lua:178-180, CalcBreakdownControl.lua:293-296 (PoB-PoE2)
+    listrows: (bd) => (get(poe2Build) ? poe2Worker().then((w) => w.CalcsBreakdownModList(bd) as unknown as calculator.ModSectionRow[]) : undefined)
   }
 };

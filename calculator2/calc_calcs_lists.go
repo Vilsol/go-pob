@@ -44,8 +44,8 @@ var calcsMinionCombatFlags = []struct{ flag, label string }{
 	{"MassiveShrine", "Massive Shrine"},
 }
 
-// calcsBuffLists writes output.BuffList, CombatList and CurseList, and the minion's. The breakdowns'
-// SkillBuffs and SkillDebuffs mod lists are not built.
+// calcsBuffLists writes output.BuffList, CombatList and CurseList, and the minion's, and the SkillBuffs and
+// SkillDebuffs breakdowns' mod lists.
 //
 //pob2:block:src/Modules/Calcs.lua:745-938
 func calcsBuffLists(env *Environment, multipliersUsed map[string][]mod.Mod) {
@@ -86,8 +86,15 @@ func calcsBuffLists(env *Environment, multipliersUsed map[string][]mod.Mod) {
 	if env.ModDB.Flag(nil, "Elusive") {
 		combatList = append(combatList, "Elusive")
 	}
+	var skillBuffs, skillDebuffs []BreakdownMod
+	for _, name := range buffList {
+		skillBuffs = appendEvalMods(skillBuffs, env.ModDB, env.buffs.buffs[name].Mods())
+	}
 	curseList := make([]string, 0, len(env.buffs.debuffs)+len(env.buffs.curseSlots))
 	for _, name := range sortedModListKeys(env.buffs.debuffs) {
+		if env.Enemy != nil {
+			skillDebuffs = appendEvalMods(skillDebuffs, env.Enemy.ModDB, env.buffs.debuffs[name].Mods())
+		}
 		entry := name
 		if stackCount := env.buffs.debuffs[name].Sum(mod.TypeBase, nil, "Multiplier:"+name+"Stack"); stackCount > 0 {
 			s := ""
@@ -100,6 +107,13 @@ func calcsBuffLists(env *Environment, multipliersUsed map[string][]mod.Mod) {
 	}
 	for _, slot := range env.buffs.curseSlots {
 		curseList = append(curseList, slot.name)
+		if slot.modList != nil && env.Enemy != nil {
+			skillDebuffs = appendEvalMods(skillDebuffs, env.Enemy.ModDB, slot.modList.Mods())
+		}
+	}
+	if bd := env.Player.Breakdown; bd != nil {
+		bd.Entries["SkillBuffs"] = &BreakdownEntry{ModList: skillBuffs}
+		bd.Entries["SkillDebuffs"] = &BreakdownEntry{ModList: skillDebuffs}
 	}
 	env.Player.setOutputString("BuffList", strings.Join(buffList, ", "))
 	env.Player.setOutputString("CombatList", strings.Join(combatList, ", "))
@@ -120,7 +134,16 @@ func calcsBuffLists(env *Environment, multipliersUsed map[string][]mod.Mod) {
 			minionCombat = append(minionCombat, f.label)
 		}
 	}
-	minion.setOutputString("BuffList", strings.Join(sortedModListKeys(env.buffs.minionBuffs), ", "))
+	minionBuffList := sortedModListKeys(env.buffs.minionBuffs)
+	if bd := minion.Breakdown; bd != nil {
+		var minionSkillBuffs []BreakdownMod
+		for _, name := range minionBuffList {
+			minionSkillBuffs = appendEvalMods(minionSkillBuffs, minion.ModDB, env.buffs.minionBuffs[name].Mods())
+		}
+		bd.Entries["SkillBuffs"] = &BreakdownEntry{ModList: minionSkillBuffs}
+		bd.Entries["SkillDebuffs"] = &BreakdownEntry{ModList: skillDebuffs}
+	}
+	minion.setOutputString("BuffList", strings.Join(minionBuffList, ", "))
 	minion.setOutputString("CombatList", strings.Join(minionCombat, ", "))
 	minion.setOutputString("CurseList", env.Player.OutputStrings["CurseList"])
 }

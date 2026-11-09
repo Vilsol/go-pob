@@ -199,6 +199,7 @@ export declare namespace exposition {
     AddSkillsUndoState(): void;
     AllocateAttributeNode(id: number, attributeIndex: number, allocMode: number): Result<void>;
     BuildItemCompare(id: number): Promise<Result<(exposition.ItemCompareView | undefined)>>;
+    CalcsBreakdownModList(name: string, minion: boolean): Result<(Array<calculator2.ModSectionRow> | undefined)>;
     CalcsBreakdowns(): Result<(Record<string, Readonly<exposition.CalcsBreakdown>> | undefined)>;
     CalcsModSection(sd: calculator2.ModSectionData): Result<(Array<calculator2.ModSectionRow> | undefined)>;
     CalcsMods(query: exposition.CalcsModQuery): Result<(Record<string, number> | undefined)>;

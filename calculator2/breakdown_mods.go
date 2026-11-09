@@ -537,3 +537,39 @@ func (env *Environment) ModSection(sd ModSectionData) []ModSectionRow {
 	}
 	return rows
 }
+
+// CalcsBreakdownModList is the mod table AddModSection builds from breakdown name's modList over the player, or the
+// minion; nil where it has no rows.
+//
+//pob2:block:src/Classes/CalcBreakdownControl.lua:293-296,src/Classes/CalcBreakdownControl.lua:311-312,src/Classes/CalcBreakdownControl.lua:355-358,src/Classes/CalcBreakdownControl.lua:407-421
+func (env *Environment) CalcsBreakdownModList(name string, minion bool) []ModSectionRow {
+	if env == nil || env.Player == nil {
+		return nil
+	}
+	actor := env.Player
+	if minion && env.Minion != nil {
+		actor = &env.Minion.Actor
+	}
+	if actor.Breakdown == nil || actor.Breakdown.Entries[name] == nil {
+		return nil
+	}
+	rowList := slices.Clone(actor.Breakdown.Entries[name].ModList)
+	if len(rowList) == 0 {
+		return nil
+	}
+	luaSort(rowList, func(a, b BreakdownMod) bool {
+		if a.Mod.Name() != b.Mod.Name() {
+			return a.Mod.Name() > b.Mod.Name()
+		}
+		return a.List == nil && b.List == nil && a.Mod.Type() != mod.TypeFlag && b.Mod.Type() != mod.TypeFlag && a.Value > b.Value
+	})
+	rows := make([]ModSectionRow, 0, len(rowList))
+	for _, r := range rowList {
+		row := ModSectionRow{Value: formatModValue(r.Value, r.List, r.Mod.Type()), Name: formatModName(r.Mod.Name())}
+		row.Source, row.SourceName, row.ItemID, row.NodeID = env.modSourceName(string(r.Mod.GetSource()))
+		row.Flags = modFlagText(r.Mod)
+		row.Tags = env.modTagText(r.Mod)
+		rows = append(rows, row)
+	}
+	return rows
+}

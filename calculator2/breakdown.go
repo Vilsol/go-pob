@@ -194,6 +194,38 @@ type BreakdownEntry struct {
 	HasRadius bool
 	// BreakdownSource is breakdownSource: the breakdown whose Calcs cell the sidebar shows for this one.
 	BreakdownSource string
+	// DamageTypes is damageTypes: a hit damage breakdown's rows by damage type, a missing key an empty cell.
+	DamageTypes []map[string]string
+	// ModList is modList: the mods the Calcs tab's SkillBuffs and SkillDebuffs lists show, with their values.
+	ModList []BreakdownMod
+}
+
+// BreakdownMod is one modList entry; List is a LIST mod's value, Value a number or 1 for a true flag.
+type BreakdownMod struct {
+	Mod   mod.Mod
+	Value float64
+	List  any
+}
+
+// appendEvalMods appends the mods whose value db evaluates to something other than nil, false or 0.
+func appendEvalMods(out []BreakdownMod, db *moddb.ModDB, mods []mod.Mod) []BreakdownMod {
+	for _, m := range mods {
+		value := db.EvalMod(m, nil)
+		switch {
+		case value == nil:
+		case value.Type() == mod.ModValueMultiTypeFloat:
+			if value.Float() != 0 {
+				out = append(out, BreakdownMod{Mod: m, Value: value.Float()})
+			}
+		case value.Type() == mod.ModValueMultiTypeFlag:
+			if value.Flag() {
+				out = append(out, BreakdownMod{Mod: m, Value: 1})
+			}
+		default:
+			out = append(out, BreakdownMod{Mod: m, Value: 1, List: value.List()})
+		}
+	}
+	return out
 }
 
 // Breakdown is the table CalcBreakdown.lua returns: the generators over one actor, and the entries the calc
@@ -309,6 +341,68 @@ func (b *Breakdown) multiChain(out []string, chain multiChainSpec) ([]string, in
 		out = append(out, sFormat("= %.2f", multiplier*b))
 	}
 	return out, lines
+}
+
+// luaMin is LuaJIT's math.min of two numbers: b where a is NaN, NaN where only b is.
+func luaMin(a, b float64) float64 {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+// effMult is breakdown.effMult; Lua's optional minPen, effectiveResist, normalHitResist and invertedHitResist are
+// always given here.
+//
+//pob2:src/Modules/CalcBreakdown.lua:117-171
+func (b *Breakdown) effMult(damageType string, resist, pen, taken, mult, takenMore float64, sourceRes string, useRes bool, invertChance, minPen, effectiveResist, normalHitResist, invertedHitResist float64) []string {
+	out := []string{}
+	resistForm := "resistance"
+	if damageType == "Physical" {
+		resistForm = "physical damage reduction"
+	}
+	resistLabel := resistForm
+
+	if sourceRes != "" && sourceRes != damageType {
+		out = append(out, sFormat("Enemy %s: %d%% ^8(%s)", resistLabel, resist, sourceRes))
+	} else if resist != 0 {
+		out = append(out, sFormat("Enemy %s: %d%%", resistLabel, resist))
+	}
+	if invertChance != 0 && useRes {
+		out = append(out, "Effective resistance:",
+			sFormat("%g%% ^8(non-inverted hit after penetration)", normalHitResist),
+			sFormat("%g%% ^8(inverted hit after penetration)", invertedHitResist),
+			sFormat("= %g%% ^8(weighted average from %.0f%% inversion chance)", effectiveResist, invertChance*100))
+	} else if pen != 0 || !useRes {
+		out = append(out, "Effective resistance:", sFormat("%d%% ^8(resistance)", resist))
+		if pen < 0 {
+			out = append(out, sFormat("+ %d%% ^8(penetration)", -pen))
+		} else if pen > 0 {
+			out = append(out, sFormat("- %d%% ^8(penetration)", pen))
+		}
+		switch {
+		case !useRes:
+			out = append(out, sFormat("x %d%% ^8(resistance ignored)", 0), sFormat("= %d%%", 0))
+		case resist <= minPen:
+			out = append(out, sFormat("= %d%% ^8(negative resistance unaffected by penetration)", resist))
+		case resist-pen < minPen:
+			out = append(out, sFormat("= %d%% ^8(penetration cannot bring resistances below %d%%)", math.Max(resist-pen, minPen), minPen))
+		default:
+			out = append(out, sFormat("= %d%%", resist-pen))
+		}
+	}
+	if useRes {
+		r := link("%.2f ^8(%s)", 1-effectiveResist/100)
+		r.Args = []any{resistForm}
+		out, _ = b.multiChain(out, multiChainSpec{
+			Label: "Effective DPS modifier:",
+			Links: []chainLink{r, link("%.2f ^8(increased/reduced damage taken)", 1+taken/100), link("%.2f ^8(more/less damage taken)", takenMore)},
+			Total: sFormat("= %.3f", mult),
+		})
+	} else {
+		out = append(out, "Effective DPS modifier:", sFormat("= %.3f ^8(increased/reduced damage taken)", mult))
+	}
+	return out
 }
 
 //pob2:src/Modules/CalcBreakdown.lua:84-96
