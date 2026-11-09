@@ -11,7 +11,7 @@ export const prepareTree = async () => {
   if (loaded) return;
   const m = await go.model();
   const version = m.exposition.CalcTreeVersion();
-  const raw = await m.exposition.GetRawTree(version);
+  const raw = (await m.exposition.GetRawTree(version)).unwrap();
   if (!raw) {
     throw new Error(`REFUSING: the model has no ${version} tree`);
   }
@@ -61,7 +61,7 @@ export const treeState = (build: Build, cluster?: { ID: number; Type: string; Li
   const active = go.fresh(build, (b) => [...(b.Build.PassiveNodes ?? [])]);
   const roots = classStartNodes(t)[t.classes.findIndex((c) => c.name === className)];
   const paths = withClusterPaths(
-    m.exposition.CalculateAllocationPaths(version, active, roots) ?? {},
+    m.exposition.CalculateAllocationPaths(version, active, roots).unwrap() ?? {},
     (cluster ?? []).map((c) => ({ id: c.ID, type: c.Type, linked: c.Linked ?? [] }))
   );
   const selectable = (id: number) => {
@@ -73,7 +73,7 @@ export const treeState = (build: Build, cluster?: { ID: number; Type: string; Li
   const subgraph = (cluster ?? []).map((c) => ({ ID: c.ID, Type: c.Type, Linked: c.Linked ?? [] }));
   const depends = (id: number) => {
     if (!cluster && active.some((n) => n >= 1 << 16)) throw new Error('treeState(build) without clusterOf(build) on a build holding cluster subgraph nodes');
-    return m.exposition.CalculateDependentNodesWith(version, active, id, roots, subgraph) ?? [];
+    return m.exposition.CalculateDependentNodesWith(version, active, id, roots, subgraph).unwrap() ?? [];
   };
 
   return {

@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 
 	"github.com/andybalholm/brotli"
 	"github.com/dominikbraun/graph"
@@ -72,6 +73,7 @@ type TreeVersionData struct {
 	notableMu    sync.Mutex
 	ascendancyMu sync.Mutex
 	graphMu      sync.Mutex
+	rawLoaded    atomic.Bool
 }
 
 func (v *TreeVersionData) Tree() *Tree {
@@ -89,6 +91,11 @@ func (v *TreeVersionData) Tree() *Tree {
 	v.cachedTree = &outTree
 
 	return v.cachedTree
+}
+
+// RawLoaded reports whether RawTree answers without reading the cache or the network
+func (v *TreeVersionData) RawLoaded() bool {
+	return v.rawLoaded.Load()
 }
 
 func (v *TreeVersionData) RawTree() []byte {
@@ -136,6 +143,7 @@ func (v *TreeVersionData) RawTree() []byte {
 	if err != nil {
 		panic(fmt.Errorf("failed to read unzipped data: %w", err))
 	}
+	v.rawLoaded.Store(true)
 
 	return v.rawTree
 }

@@ -2284,10 +2284,10 @@ export declare namespace exposition {
   function CalcMasteryEffect(m: exposition.MiscCalculator | undefined, nodeID: number, effect: number, addNodes: Array<number> | undefined): Promise<exposition.StatOutputs>;
   function CalcTreeSpec(m: exposition.MiscCalculator | undefined, specID: number): Promise<exposition.StatOutputs>;
   function CalcTreeVersion(): string;
-  function CalculateAllocationPaths(version: string, activeNodes: Array<number> | undefined, rootNodes: Array<number> | undefined): (Record<number, number> | undefined);
-  function CalculateDependentNodes(version: string, activeNodes: Array<number> | undefined, target: number, rootNodes: Array<number> | undefined): (Array<number> | undefined);
-  function CalculateDependentNodesWith(version: string, activeNodes: Array<number> | undefined, target: number, rootNodes: Array<number> | undefined, subgraph: Array<data.SubgraphNode> | undefined): (Array<number> | undefined);
-  function CalculatePrunableNodes(version: string, activeNodes: Array<number> | undefined, rootNodes: Array<number> | undefined): (Array<number> | undefined);
+  function CalculateAllocationPaths(version: string, activeNodes: Array<number> | undefined, rootNodes: Array<number> | undefined): Result<(Record<number, number> | undefined)>;
+  function CalculateDependentNodes(version: string, activeNodes: Array<number> | undefined, target: number, rootNodes: Array<number> | undefined): Result<(Array<number> | undefined)>;
+  function CalculateDependentNodesWith(version: string, activeNodes: Array<number> | undefined, target: number, rootNodes: Array<number> | undefined, subgraph: Array<data.SubgraphNode> | undefined): Result<(Array<number> | undefined)>;
+  function CalculatePrunableNodes(version: string, activeNodes: Array<number> | undefined, rootNodes: Array<number> | undefined): Result<(Array<number> | undefined)>;
   function ChangeSecondaryAscendancy(build: pob.PathOfBuilding | undefined, ascendClassID: number): Promise<void>;
   function ChangeTreeAscendancy(build: pob.PathOfBuilding | undefined, ascendancy: string): Promise<void>;
   function ChangeTreeClass(build: pob.PathOfBuilding | undefined, className: string, decision: number): Promise<calculator.ClassChange>;
@@ -2331,7 +2331,7 @@ export declare namespace exposition {
   function GetMasterySelections(build: pob.PathOfBuilding | undefined): (Record<number, number> | undefined);
   function GetMiscCalculator(build: pob.PathOfBuilding | undefined): Promise<(exposition.MiscCalculator | undefined)>;
   function GetPartySummaries(build: pob.PathOfBuilding | undefined): (Record<string, Array<calculator.PartySummaryEntry> | undefined> | undefined);
-  function GetRawTree(version: string): Promise<(Uint8Array | undefined)>;
+  function GetRawTree(version: string): Promise<Result<(Uint8Array | undefined)>>;
   function GetSkillGems(): (Array<exposition.SkillGem> | undefined);
   function GetStatByIndex(id: number): (poe.Stat | undefined);
   function GetTattooChoices(build: pob.PathOfBuilding | undefined, nodeID: number, showLegacy: boolean): (Array<exposition.TattooChoice> | undefined);
@@ -2440,6 +2440,7 @@ export declare namespace exposition {
   function TimelessTradeTypes(): (Array<string> | undefined);
   function ToggleEquipItem(build: pob.PathOfBuilding | undefined, itemID: number, second: boolean): Promise<boolean>;
   function TreeConqueredNodes(m: exposition.MiscCalculator | undefined): (Array<calculator.SpecNodeRewrite> | undefined);
+  function TreeLoaded(version: string): boolean;
   function TreeSocketChoices(build: pob.PathOfBuilding | undefined, nodeID: number): Promise<(Array<exposition.TreeJewel> | undefined)>;
   function TreeSocketedJewels(build: pob.PathOfBuilding | undefined): Promise<(Array<exposition.TreeJewel> | undefined)>;
   function TreeSpecCompare(build: pob.PathOfBuilding | undefined, specID: number): calculator.TreeCompareSpec;

@@ -236,7 +236,10 @@ describe('each step is named from what it changed', () => {
       if (a.status !== 200) throw new Error(`REFUSING: no ${v} tree in the bundle cache`);
       return brotliDecompressSync(a.body).toString('utf8');
     };
-    vi.spyOn(types.exposition, 'GetRawTree').mockImplementation((v) => Promise.resolve(new TextEncoder().encode(rawTree(v))));
+    vi.spyOn(types.exposition, 'GetRawTree').mockImplementation((v) => {
+      const value = new TextEncoder().encode(rawTree(v));
+      return Promise.resolve({ ok: true, value, unwrap: () => value, unwrapOr: () => value });
+    });
     await importBuild('0280-elementalist-fireball.xml');
     const xml0 = serialize();
     const version = /<Spec(?=\s)[^>]*treeVersion="([^"]+)"/.exec(xml0.slice(xml0.indexOf('<Tree')))![1];

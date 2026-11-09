@@ -249,6 +249,7 @@ export const initializeCrystalline = () => {
     TimelessTradeTypes: wrap('exposition.TimelessTradeTypes', globalThis['go']['go-pob']['exposition']['TimelessTradeTypes']),
     ToggleEquipItem: wrap('exposition.ToggleEquipItem', globalThis['go']['go-pob']['exposition']['ToggleEquipItem']),
     TreeConqueredNodes: wrap('exposition.TreeConqueredNodes', globalThis['go']['go-pob']['exposition']['TreeConqueredNodes']),
+    TreeLoaded: wrap('exposition.TreeLoaded', globalThis['go']['go-pob']['exposition']['TreeLoaded']),
     TreeSocketChoices: wrap('exposition.TreeSocketChoices', globalThis['go']['go-pob']['exposition']['TreeSocketChoices']),
     TreeSocketedJewels: wrap('exposition.TreeSocketedJewels', globalThis['go']['go-pob']['exposition']['TreeSocketedJewels']),
     TreeSpecCompare: wrap('exposition.TreeSpecCompare', globalThis['go']['go-pob']['exposition']['TreeSpecCompare']),

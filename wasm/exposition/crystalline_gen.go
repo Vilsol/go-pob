@@ -131,6 +131,7 @@ func init() {
 	crystallineNamespace("go-pob", "exposition").Set("GetSkillGems", crystallineWrap(js.FuncOf(crystallineFnExpositionGetSkillGems)))
 	crystallineNamespace("go-pob", "exposition").Set("CalcTreeVersion", crystallineWrap(js.FuncOf(crystallineFnExpositionCalcTreeVersion)))
 	crystallineNamespace("go-pob", "exposition").Set("GetRawTree", crystallineWrap(js.FuncOf(crystallineFnExpositionGetRawTree)))
+	crystallineNamespace("go-pob", "exposition").Set("TreeLoaded", crystallineWrap(js.FuncOf(crystallineFnExpositionTreeLoaded)))
 	crystallineNamespace("go-pob", "exposition").Set("GetStatByIndex", crystallineWrap(js.FuncOf(crystallineFnExpositionGetStatByIndex)))
 	crystallineNamespace("go-pob", "exposition").Set("CalculateAllocationPaths", crystallineWrap(js.FuncOf(crystallineFnExpositionCalculateAllocationPaths)))
 	crystallineNamespace("go-pob", "exposition").Set("CalculatePrunableNodes", crystallineWrap(js.FuncOf(crystallineFnExpositionCalculatePrunableNodes)))
@@ -4792,10 +4793,31 @@ func crystallineFnExpositionGetRawTree(this js.Value, args []js.Value) (result a
 			return crystallineFail(err.Error())
 		}
 
-		r0 := GetRawTree(a0)
+		r0, r1 := GetRawTree(a0)
 
-		return crystallineBytes(r0)
+		if r1 != nil {
+			return crystallineErr(r1)
+		}
+
+		return crystallineOk(crystallineBytes(r0))
 	})
+}
+
+func crystallineFnExpositionTreeLoaded(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 1 {
+		return crystallineFail("TreeLoaded: expected 1 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	a0, err := crystallineToPobTreeVersion(args[0])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	r0 := TreeLoaded(a0)
+
+	return bool(r0)
 }
 
 func crystallineFnExpositionGetStatByIndex(this js.Value, args []js.Value) (result any) {
@@ -4837,9 +4859,13 @@ func crystallineFnExpositionCalculateAllocationPaths(this js.Value, args []js.Va
 		return crystallineFail(err.Error())
 	}
 
-	r0 := CalculateAllocationPaths(a0, a1, a2)
+	r0, r1 := CalculateAllocationPaths(a0, a1, a2)
 
-	return crystallineJSON(func(b []byte, ok *bool) []byte {
+	if r1 != nil {
+		return crystallineErr(r1)
+	}
+
+	return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
 		if entries0 := r0; entries0 == nil {
 			b = append(b, "null"...)
 		} else {
@@ -4872,7 +4898,7 @@ func crystallineFnExpositionCalculateAllocationPaths(this js.Value, args []js.Va
 
 			return out
 		}()
-	})
+	}))
 }
 
 func crystallineFnExpositionCalculatePrunableNodes(this js.Value, args []js.Value) (result any) {
@@ -4897,9 +4923,13 @@ func crystallineFnExpositionCalculatePrunableNodes(this js.Value, args []js.Valu
 		return crystallineFail(err.Error())
 	}
 
-	r0 := CalculatePrunableNodes(a0, a1, a2)
+	r0, r1 := CalculatePrunableNodes(a0, a1, a2)
 
-	return func() any {
+	if r1 != nil {
+		return crystallineErr(r1)
+	}
+
+	return crystallineOk(func() any {
 		items := r0
 		if items == nil {
 			return nil
@@ -4911,7 +4941,7 @@ func crystallineFnExpositionCalculatePrunableNodes(this js.Value, args []js.Valu
 		}
 
 		return out
-	}()
+	}())
 }
 
 func crystallineFnExpositionCalculateDependentNodes(this js.Value, args []js.Value) (result any) {
@@ -4941,9 +4971,13 @@ func crystallineFnExpositionCalculateDependentNodes(this js.Value, args []js.Val
 		return crystallineFail(err.Error())
 	}
 
-	r0 := CalculateDependentNodes(a0, a1, a2, a3)
+	r0, r1 := CalculateDependentNodes(a0, a1, a2, a3)
 
-	return func() any {
+	if r1 != nil {
+		return crystallineErr(r1)
+	}
+
+	return crystallineOk(func() any {
 		items := r0
 		if items == nil {
 			return nil
@@ -4955,7 +4989,7 @@ func crystallineFnExpositionCalculateDependentNodes(this js.Value, args []js.Val
 		}
 
 		return out
-	}()
+	}())
 }
 
 func crystallineFnExpositionCalculateDependentNodesWith(this js.Value, args []js.Value) (result any) {
@@ -4990,9 +5024,13 @@ func crystallineFnExpositionCalculateDependentNodesWith(this js.Value, args []js
 		return crystallineFail(err.Error())
 	}
 
-	r0 := CalculateDependentNodesWith(a0, a1, a2, a3, a4)
+	r0, r1 := CalculateDependentNodesWith(a0, a1, a2, a3, a4)
 
-	return func() any {
+	if r1 != nil {
+		return crystallineErr(r1)
+	}
+
+	return crystallineOk(func() any {
 		items := r0
 		if items == nil {
 			return nil
@@ -5004,7 +5042,7 @@ func crystallineFnExpositionCalculateDependentNodesWith(this js.Value, args []js
 		}
 
 		return out
-	}()
+	}())
 }
 
 func crystallineFnExpositionGetMiscCalculator(this js.Value, args []js.Value) (result any) {

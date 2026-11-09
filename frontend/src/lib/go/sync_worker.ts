@@ -321,6 +321,7 @@ class PoBWorker {
     }
     this.treeNamesLoading = Promise.resolve()
       .then(() => exposition.GetRawTree(version))
+      .then((r) => r.unwrap())
       .then((bytes) => {
         if (!bytes) return;
         const tree = JSON.parse(new TextDecoder().decode(bytes)) as { nodes?: Record<string, TreeNode> };
@@ -955,7 +956,7 @@ class PoBWorker {
   }
 
   async GetTree(version: string): Promise<string> {
-    const rawData = await exposition.GetRawTree(version);
+    const rawData = (await exposition.GetRawTree(version)).unwrap();
     if (!rawData) {
       throw new Error('Failed loading tree');
     }
@@ -997,16 +998,21 @@ class PoBWorker {
     void this.edit('DeallocateNodes');
   }
 
+  // a Go call answered synchronously cannot wait for a tree it is the first to read, so that read happens first
+  private withTree<T>(version: string, call: () => T): T | Promise<T> {
+    return exposition.TreeLoaded(version) ? call() : exposition.GetRawTree(version).then((r) => (r.unwrap(), call()));
+  }
+
   CalculateAllocationPaths(version: string, activeNodes: number[], rootNodes: number[]) {
-    return exposition.CalculateAllocationPaths(version, activeNodes, rootNodes);
+    return this.withTree(version, () => exposition.CalculateAllocationPaths(version, activeNodes, rootNodes).unwrap());
   }
 
   CalculatePrunableNodes(version: string, activeNodes: number[], rootNodes: number[]) {
-    return exposition.CalculatePrunableNodes(version, activeNodes, rootNodes);
+    return this.withTree(version, () => exposition.CalculatePrunableNodes(version, activeNodes, rootNodes).unwrap());
   }
 
   CalculateDependentNodes(version: string, activeNodes: number[], target: number, rootNodes: number[]) {
-    return exposition.CalculateDependentNodes(version, activeNodes, target, rootNodes);
+    return this.withTree(version, () => exposition.CalculateDependentNodes(version, activeNodes, target, rootNodes).unwrap());
   }
 
   /* PassiveSpec.lua:1438-1592 */
@@ -1017,7 +1023,7 @@ class PoBWorker {
     rootNodes: number[],
     subgraph: Parameters<typeof exposition.CalculateDependentNodesWith>[4]
   ) {
-    return exposition.CalculateDependentNodesWith(version, activeNodes, target, rootNodes, subgraph);
+    return this.withTree(version, () => exposition.CalculateDependentNodesWith(version, activeNodes, target, rootNodes, subgraph).unwrap());
   }
 
   /* src/Modules/Calcs.lua:123-148 */
