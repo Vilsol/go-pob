@@ -69,6 +69,8 @@ type Environment struct {
 
 	// data is env.data's skill half: data.skills and the gem lookups.
 	data *skillData
+	// buffs is env.buffs, env.debuffs, env.minionBuffs and env.curseSlots as perform leaves them.
+	buffs *buffState
 	// SocketGroupList is build.skillsTab.socketGroupList as initEnv leaves it.
 	SocketGroupList []*SocketGroup
 

@@ -18,6 +18,8 @@ type buffState struct {
 	minionBuffs            map[string]*moddb.ModList
 	notBuff                map[string]bool
 	curses, minionCurses   []*performCurse
+	// curseSlots is env.curseSlots: the curses and marks applied to the enemy.
+	curseSlots []*performCurse
 }
 
 // performCurse is one curses entry: a curse or mark the player or an ally applies.
@@ -944,6 +946,8 @@ func applyCursesAndBuffs(env *Environment, st *buffState) {
 	for _, name := range sortedModListKeys(debuffs) {
 		enemyDB.AddList(debuffs[name])
 	}
+	st.curseSlots = curseSlots
+	env.buffs = st
 	cursesInCurseSlots := 0
 	for _, slot := range curseSlots {
 		if !slot.isMark {

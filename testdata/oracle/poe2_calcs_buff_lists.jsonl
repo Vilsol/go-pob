@@ -1,0 +1,54 @@
+{"BuffList":"","CombatList":"Onslaught, Adrenaline","CurseList":"","build":"actor_misc.xml","calcsSkill":"Punch","mainSkill":"Punch"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"ailment_limits.xml","calcsSkill":"Punch","mainSkill":"Punch"}
+{"BuffList":"","CombatList":"Alchemist's Genius","CurseList":"","build":"alchemists_genius.xml","calcsSkill":"Punch","mainSkill":"Punch"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"avoid_damage_types.xml","calcsSkill":"Punch","mainSkill":"Punch"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"bloodbarrier_corrupted_blood.xml","calcsSkill":"Bloodbarrier","mainSkill":"Bloodbarrier"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"charges_curses.xml","calcsSkill":"Punch","mainSkill":"Punch"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"crossbow_cannot_load_ammunition.xml","calcsSkill":"Permafrost Bolts","mainSkill":"Permafrost Bolts"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"crossbow_plain.xml","calcsSkill":"Permafrost Bolts","mainSkill":"Permafrost Bolts"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"defence_custom_mods.xml","calcsSkill":"Punch","mainSkill":"Punch"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"defence_recovery_mods.xml","calcsSkill":"Punch","mainSkill":"Punch"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"doomfletch_gain_each_element.xml","calcsSkill":"Bow Shot","mainSkill":"Bow Shot"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"explode_sources.xml","calcsSkill":"Mace Strike","mainSkill":"Mace Strike"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"facebreaker_unarmed_mace.xml","calcsSkill":"Mace Strike","mainSkill":"Mace Strike"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"from_nothing.xml","calcsSkill":"Punch","mainSkill":"Punch"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"full_dps_hollow_palm.xml","calcsSkill":"Ice Strike","mainSkill":"Ice Strike"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"gem_global_level.xml","calcsSkill":"Spark","mainSkill":"Spark"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"items_edit.xml","calcsSkill":"Spark","mainSkill":"Spark"}
+{"BuffList":"Companion: Quill Crab, Companion: Swarming Wasp","CombatList":"","CurseList":"","Minion":{"BuffList":"","CombatList":"","CurseList":""},"build":"loyalty_companions.xml","calcsSkill":"Companion: Quill Crab","mainSkill":"Companion: Quill Crab"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"main_group_other_weapon_set.xml","calcsSkill":"Twister","mainSkill":"Twister"}
+{"BuffList":"EternalRage, Purity of Fire, Rage","CombatList":"","CurseList":"Elemental Weakness","build":"mana_regen_to_rage.xml","calcsSkill":"Purity of Fire","mainSkill":"Purity of Fire"}
+{"BuffList":"","CombatList":"","CurseList":"","Minion":{"BuffList":"","CombatList":"","CurseList":""},"build":"manifest_weapon_item_set.xml","calcsSkill":"Manifest Weapon","mainSkill":"Manifest Weapon"}
+{"BuffList":"","CombatList":"","CurseList":"Basic Attack, Leap Slam, Summon Wolf, Predator's Mark","build":"minion_skill_debuffs.xml","calcsSkill":"Pounce","mainSkill":"Pounce"}
+{"BuffList":"","CombatList":"","CurseList":"","Minion":{"BuffList":"","CombatList":"","CurseList":""},"build":"necromantic_talisman.xml","calcsSkill":"Unearth","mainSkill":"Unearth"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"offence_ailments.xml","calcsSkill":"Spark","mainSkill":"Spark"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"offence_setup.xml","calcsSkill":"Spark","mainSkill":"Spark"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"radius_jewel.xml","calcsSkill":"Punch","mainSkill":"Punch"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"ring_mageblood.xml","calcsSkill":"Punch","mainSkill":"Punch"}
+{"BuffList":"EternalRage, Purity of Fire, Rage","CombatList":"","CurseList":"Elemental Weakness","build":"skill_buffs.xml","calcsSkill":"Purity of Fire","mainSkill":"Purity of Fire"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"skill_modlist.xml","calcsSkill":"Falling Thunder","mainSkill":"Falling Thunder"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"skill_perform.xml","calcsSkill":"Artillery Ballista","mainSkill":"Artillery Ballista"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"skill_reservation.xml","calcsSkill":"Herald of Ice","mainSkill":"Herald of Ice"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"skills_edit_generated.xml","calcsSkill":"Boneshatter","mainSkill":"Boneshatter"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"skills_edit.xml","calcsSkill":"Spark","mainSkill":"Spark"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"skills_paste.xml","calcsSkill":"Spark","mainSkill":"Spark"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"skills_sets_legacy.xml","calcsSkill":"Spark","mainSkill":"Spark"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"timeless_abyss.xml","calcsSkill":"Punch","mainSkill":"Punch"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"timeless_kalguur_keystone.xml","calcsSkill":"Punch","mainSkill":"Punch"}
+{"BuffList":"Ancestral Warrior Totem, Totem Ancestral Warrior Totem","CombatList":"","CurseList":"","build":"totem_life_ancestral_warrior.xml","calcsSkill":"Ancestral Warrior Totem","mainSkill":"Ancestral Warrior Totem"}
+{"BuffList":"Dark Effigy, Totem Dark Effigy","CombatList":"","CurseList":"Poison","build":"totem_life_effigy.xml","calcsSkill":"Dark Effigy","mainSkill":"Dark Effigy"}
+{"BuffList":"","CombatList":"","CurseList":"","Minion":{"BuffList":"","CombatList":"","CurseList":""},"build":"unearth_added_fire.xml","calcsSkill":"Unearth","mainSkill":"Unearth"}
+{"BuffList":"","CombatList":"","CurseList":"","Minion":{"BuffList":"","CombatList":"","CurseList":""},"build":"unearth_armour_broken.xml","calcsSkill":"Unearth","mainSkill":"Unearth"}
+{"BuffList":"","CombatList":"","CurseList":"","Minion":{"BuffList":"","CombatList":"","CurseList":""},"build":"unearth_minion_limit.xml","calcsSkill":"Unearth","mainSkill":"Unearth"}
+{"BuffList":"Fortifying Cry, Infernal Cry","CombatList":"","CurseList":"","build":"warcry_buffs.xml","calcsSkill":"Mace Strike","mainSkill":"Mace Strike"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"warrior_amulet.xml","calcsSkill":"Punch","mainSkill":"Punch"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"warrior_items.xml","calcsSkill":"Punch","mainSkill":"Punch"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"warrior_tree_only.xml","calcsSkill":"Punch","mainSkill":"Punch"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"weapon_conditions.xml","calcsSkill":"Quarterstaff Strike","mainSkill":"Quarterstaff Strike"}
+{"BuffList":"Archmage, Purity of Fire","CombatList":"","CurseList":"","build":"weapon_set_context.xml","calcsSkill":"Spark","mainSkill":"Spark"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"sorceress_items.xml","calcsSkill":"Spark","mainSkill":"Spark"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"sorceress_spark_weapon_sets.xml","calcsSkill":"Spark","mainSkill":"Spark"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"sorceress_spark.xml","calcsSkill":"Spark","mainSkill":"Spark"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"sorceress_three_spells.xml","calcsSkill":"Spark","mainSkill":"Spark"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"tree_specs.xml","calcsSkill":"Punch","mainSkill":"Punch"}
+{"BuffList":"","CombatList":"","CurseList":"","build":"warrior_dual_mace.xml","calcsSkill":"Boneshatter","mainSkill":"Boneshatter"}
