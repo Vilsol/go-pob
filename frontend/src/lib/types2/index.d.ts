@@ -158,6 +158,25 @@ export declare namespace exposition {
     readonly HaveRange: boolean;
     readonly Tooltip?: Array<string>;
   }
+  interface BuildPlannerFile {
+    readonly FileName: string;
+    readonly JSON: string;
+  }
+  interface BuildPlannerMeta {
+    readonly Name: string;
+    readonly Author: string;
+    readonly Description: string;
+    readonly UseGeneratedItemText: boolean;
+  }
+  interface BuildPlannerSet {
+    readonly Label: string;
+    readonly Key: number;
+  }
+  interface BuildPlannerSets {
+    readonly Trees?: Array<exposition.BuildPlannerSet>;
+    readonly SkillSets?: Array<exposition.BuildPlannerSet>;
+    readonly ItemSets?: Array<exposition.BuildPlannerSet>;
+  }
   interface CalcsBreakdown {
     readonly Lines?: Array<string>;
     readonly Radius: number;
@@ -199,6 +218,8 @@ export declare namespace exposition {
     AddSkillsUndoState(): void;
     AllocateAttributeNode(id: number, attributeIndex: number, allocMode: number): Result<void>;
     BuildItemCompare(id: number): Promise<Result<(exposition.ItemCompareView | undefined)>>;
+    BuildPlannerExport(meta: exposition.BuildPlannerMeta, specIndex: number, skillSetID: number, itemSetID: number): Result<exposition.BuildPlannerFile>;
+    BuildPlannerSets(): exposition.BuildPlannerSets;
     CalcsBreakdownModList(name: string, minion: boolean): Result<(Array<calculator2.ModSectionRow> | undefined)>;
     CalcsBreakdowns(): Result<(Record<string, Readonly<exposition.CalcsBreakdown>> | undefined)>;
     CalcsModSection(sd: calculator2.ModSectionData): Result<(Array<calculator2.ModSectionRow> | undefined)>;

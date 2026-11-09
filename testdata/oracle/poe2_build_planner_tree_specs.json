@@ -1,0 +1,405 @@
+{
+  "cases":[{
+      "build":{
+        "author":"Author",
+        "description":"",
+        "inventory_slots":[{
+            "additional_text":"<rgb(136, 136, 255)>{<b>{Amber Amulet of the Brute}}\n\n<rgb(136, 136, 255)>{+12 to Strength}\n<rgb(136, 136, 255)>{+15 to Strength}\n<rgb(136, 136, 255)>{Allocates 1 Sinister Jewel socket}",
+            "inventory_id":"Amulet1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(136, 136, 255)>{<b>{Double Belt}}\n\n<rgb(136, 136, 255)>{Has 2 Charm Slot}\n<rgb(136, 136, 255)>{25% increased Charm Charges gained}\n<rgb(136, 136, 255)>{+40 to maximum Life}",
+            "inventory_id":"Belt1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(255, 255, 119)>{<b>{Storm Shell\nVaal Cuirass}}\n\n<rgb(184, 218, 241)>{34% increased Armour, Evasion and Energy Shield}\n<rgb(184, 218, 241)>{Bonded: +40 to maximum Life}\n<rgb(184, 218, 241)>{Bonded: +40 to maximum Mana}\n<rgb(136, 136, 255)>{+120 to Armour}\n<rgb(136, 136, 255)>{85% increased Armour}\n<rgb(136, 136, 255)>{+90 to maximum Life}\n<rgb(136, 136, 255)>{+35% to Fire Resistance}\n<rgb(184, 218, 241)>{+20 to Strength}",
+            "inventory_id":"BodyArmour1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(255, 255, 119)>{<b>{Hollow Stride\nVaal Greaves}}\n\n<rgb(184, 218, 241)>{+12% to Lightning Resistance}\n<rgb(136, 136, 255)>{25% increased Movement Speed}\n<rgb(136, 136, 255)>{+90 to Armour}",
+            "inventory_id":"Boots1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(136, 136, 255)>{<b>{Ultimate Life Flask of the Rainbow}}\n\n<rgb(136, 136, 255)>{30% increased Amount Recovered}",
+            "inventory_id":"Flask1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(200, 200, 200)>{<b>{Antidote Charm}}\n",
+            "inventory_id":"Flask1",
+            "slot_x":2
+          },{
+            "additional_text":"<rgb(255, 255, 119)>{<b>{Gloom Grasp\nUtility Wraps}}\n\n<rgb(184, 218, 241)>{+12% to Lightning Resistance}\n<rgb(136, 136, 255)>{+40 to Evasion Rating}\n<rgb(136, 136, 255)>{+20 to maximum Energy Shield}\n<rgb(136, 136, 255)>{40% increased Evasion and Energy Shield}\n<rgb(136, 136, 255)>{+70 to maximum Life}",
+            "inventory_id":"Gloves1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(200, 200, 200)>{<b>{Aromatic Sceptre}}\n",
+            "inventory_id":"Offhand1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(136, 136, 255)>{<b>{Reinforced Vaal Tower Shield of the Lynx}}\n\n<rgb(136, 136, 255)>{Grants Skill: Raise Shield}\n<rgb(136, 136, 255)>{45% increased Armour}\n<rgb(136, 136, 255)>{+18 to Dexterity}\n<rgb(136, 136, 255)>{+8% to Block chance}",
+            "inventory_id":"Offhand2",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(255, 255, 119)>{<b>{Vortex Loop\nTwo-Stone Ring}}\n\n<rgb(136, 136, 255)>{+14% to Cold and Lightning Resistances}\n<rgb(136, 136, 255)>{+60 to maximum Life}\n<rgb(136, 136, 255)>{+25 to Intelligence}\n<rgb(136, 136, 255)>{10% increased Mana Regeneration Rate}",
+            "inventory_id":"Ring1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(255, 255, 119)>{<b>{Grim Coil\nGold Ring}}\n\n<rgb(136, 136, 255)>{8% increased Rarity of Items found}\n<rgb(136, 136, 255)>{+30 to maximum Mana}\n<rgb(136, 136, 255)>{+20 to Dexterity}",
+            "inventory_id":"Ring2",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(255, 255, 119)>{<b>{Vortex Loop\nTwo-Stone Ring}}\n\n<rgb(136, 136, 255)>{+14% to Cold and Lightning Resistances}\n<rgb(136, 136, 255)>{+60 to maximum Life}\n<rgb(136, 136, 255)>{+25 to Intelligence}\n<rgb(136, 136, 255)>{10% increased Mana Regeneration Rate}",
+            "inventory_id":"Ring3",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(255, 255, 119)>{<b>{Doom Knuckle\nBandit Mace}}\n\n<rgb(184, 218, 241)>{18% increased Physical Damage}\n<rgb(184, 218, 241)>{Bonded: 20% increased effect of Fully Broken Armour}\n<rgb(136, 136, 255)>{120% increased Physical Damage}\n<rgb(136, 136, 255)>{Adds 10 to 20 Physical Damage}\n<rgb(136, 136, 255)>{Adds 5 to 50 Lightning Damage}\n<rgb(136, 136, 255)>{12% increased Attack Speed}\n<rgb(136, 136, 255)>{+1.5% to Critical Hit Chance}\n<rgb(136, 136, 255)>{+150 to Accuracy Rating}",
+            "inventory_id":"Weapon1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(255, 255, 119)>{<b>{Mind Song\nTwisted Wand}}\n\n<rgb(184, 218, 241)>{30% increased Spell Damage}\n<rgb(184, 218, 241)>{Bonded: Break Armour on Critical Hit with Spells equal to 12% of Physical Damage dealt}\n<rgb(136, 136, 255)>{Grants Skill: Level 15 Coiling Bolts}\n<rgb(136, 136, 255)>{80% increased Spell Damage}\n<rgb(136, 136, 255)>{+2 to Level of all Lightning Spell Skills}",
+            "inventory_id":"Weapon2",
+            "slot_x":0
+          }],
+        "name":"Planner build",
+        "passives":[{
+            "id":"armour6",
+            "weapon_set":0
+          },{
+            "id":"armour7",
+            "weapon_set":0
+          },{
+            "id":"attributes32",
+            "weapon_set":0
+          },{
+            "id":"jewel_slot1956",
+            "weapon_set":0
+          },{
+            "id":"life_regeneration19",
+            "weapon_set":0
+          },{
+            "id":"life_regeneration20",
+            "weapon_set":0
+          },{
+            "id":"marauder594",
+            "weapon_set":0
+          },{
+            "id":"marauder_brute_notable1",
+            "weapon_set":0
+          },{
+            "id":"melee17",
+            "weapon_set":0
+          },{
+            "id":"melee18",
+            "weapon_set":0
+          },{
+            "id":"melee25",
+            "weapon_set":0
+          },{
+            "id":"melee44",
+            "weapon_set":0
+          },{
+            "id":"strength15",
+            "weapon_set":0
+          },{
+            "id":"strength17",
+            "weapon_set":0
+          },{
+            "id":"strength18",
+            "weapon_set":0
+          },{
+            "id":"strength19",
+            "weapon_set":0
+          },{
+            "id":"strength20",
+            "weapon_set":0
+          },{
+            "id":"strength21",
+            "weapon_set":0
+          },{
+            "id":"strength24_",
+            "weapon_set":0
+          },{
+            "id":"strength25",
+            "weapon_set":0
+          },{
+            "id":"strength26",
+            "weapon_set":0
+          },{
+            "id":"strength3",
+            "weapon_set":0
+          },{
+            "id":"stun4_",
+            "weapon_set":0
+          },{
+            "id":"stun5",
+            "weapon_set":0
+          },{
+            "id":"stun_threshold12",
+            "weapon_set":0
+          },{
+            "id":"stun_threshold13",
+            "weapon_set":0
+          },{
+            "id":"stun_threshold15",
+            "weapon_set":0
+          },{
+            "id":"stun_threshold21",
+            "weapon_set":0
+          },{
+            "id":"voices_jewel_slot1",
+            "weapon_set":0
+          }],
+        "skills":[{
+            "additional_text":"Level 7",
+            "id":"Metadata/Items/Gems/SkillGemCoilingBolts"
+          },{
+            "additional_text":"Level 1",
+            "id":"Metadata/Items/Gem/SkillGemShieldBlock"
+          },{
+            "additional_text":"Level 18",
+            "id":"Metadata/Items/Gem/SkillGemPlayerDefault1HMace"
+          }]
+      },
+      "itemSetId":1,
+      "meta":1,
+      "path":"Planner build [0.5].build",
+      "skillSetId":1,
+      "specIndex":1
+    },{
+      "build":{
+        "author":"Someone",
+        "description":"Line one {braces}",
+        "inventory_slots":[],
+        "name":"Planner build",
+        "passives":[{
+            "id":"armour6",
+            "weapon_set":0
+          },{
+            "id":"armour7",
+            "weapon_set":0
+          },{
+            "id":"attributes32",
+            "weapon_set":0
+          },{
+            "id":"jewel_slot1956",
+            "weapon_set":0
+          },{
+            "id":"life_regeneration19",
+            "weapon_set":0
+          },{
+            "id":"life_regeneration20",
+            "weapon_set":0
+          },{
+            "id":"marauder594",
+            "weapon_set":0
+          },{
+            "id":"marauder_brute_notable1",
+            "weapon_set":0
+          },{
+            "id":"melee17",
+            "weapon_set":0
+          },{
+            "id":"melee18",
+            "weapon_set":0
+          },{
+            "id":"melee25",
+            "weapon_set":0
+          },{
+            "id":"melee44",
+            "weapon_set":0
+          },{
+            "id":"strength15",
+            "weapon_set":0
+          },{
+            "id":"strength17",
+            "weapon_set":0
+          },{
+            "id":"strength18",
+            "weapon_set":0
+          },{
+            "id":"strength19",
+            "weapon_set":0
+          },{
+            "id":"strength20",
+            "weapon_set":0
+          },{
+            "id":"strength21",
+            "weapon_set":0
+          },{
+            "id":"strength24_",
+            "weapon_set":0
+          },{
+            "id":"strength25",
+            "weapon_set":0
+          },{
+            "id":"strength26",
+            "weapon_set":0
+          },{
+            "id":"strength3",
+            "weapon_set":0
+          },{
+            "id":"stun4_",
+            "weapon_set":0
+          },{
+            "id":"stun5",
+            "weapon_set":0
+          },{
+            "id":"stun_threshold12",
+            "weapon_set":0
+          },{
+            "id":"stun_threshold13",
+            "weapon_set":0
+          },{
+            "id":"stun_threshold15",
+            "weapon_set":0
+          },{
+            "id":"stun_threshold21",
+            "weapon_set":0
+          },{
+            "id":"voices_jewel_slot1",
+            "weapon_set":0
+          }],
+        "skills":[{
+            "additional_text":"Level 7",
+            "id":"Metadata/Items/Gems/SkillGemCoilingBolts"
+          },{
+            "additional_text":"Level 1",
+            "id":"Metadata/Items/Gem/SkillGemShieldBlock"
+          },{
+            "additional_text":"Level 18",
+            "id":"Metadata/Items/Gem/SkillGemPlayerDefault1HMace"
+          }]
+      },
+      "itemSetId":1,
+      "meta":2,
+      "path":"Planner build [0.5].build",
+      "skillSetId":1,
+      "specIndex":1
+    },{
+      "build":{
+        "author":"Author",
+        "description":"",
+        "inventory_slots":[{
+            "additional_text":"<rgb(136, 136, 255)>{<b>{Amber Amulet of the Brute}}\n\n<rgb(136, 136, 255)>{+12 to Strength}\n<rgb(136, 136, 255)>{+15 to Strength}\n<rgb(136, 136, 255)>{Allocates 1 Sinister Jewel socket}",
+            "inventory_id":"Amulet1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(136, 136, 255)>{<b>{Double Belt}}\n\n<rgb(136, 136, 255)>{Has 2 Charm Slot}\n<rgb(136, 136, 255)>{25% increased Charm Charges gained}\n<rgb(136, 136, 255)>{+40 to maximum Life}",
+            "inventory_id":"Belt1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(255, 255, 119)>{<b>{Storm Shell\nVaal Cuirass}}\n\n<rgb(184, 218, 241)>{34% increased Armour, Evasion and Energy Shield}\n<rgb(184, 218, 241)>{Bonded: +40 to maximum Life}\n<rgb(184, 218, 241)>{Bonded: +40 to maximum Mana}\n<rgb(136, 136, 255)>{+120 to Armour}\n<rgb(136, 136, 255)>{85% increased Armour}\n<rgb(136, 136, 255)>{+90 to maximum Life}\n<rgb(136, 136, 255)>{+35% to Fire Resistance}\n<rgb(184, 218, 241)>{+20 to Strength}",
+            "inventory_id":"BodyArmour1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(255, 255, 119)>{<b>{Hollow Stride\nVaal Greaves}}\n\n<rgb(184, 218, 241)>{+12% to Lightning Resistance}\n<rgb(136, 136, 255)>{25% increased Movement Speed}\n<rgb(136, 136, 255)>{+90 to Armour}",
+            "inventory_id":"Boots1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(136, 136, 255)>{<b>{Ultimate Life Flask of the Rainbow}}\n\n<rgb(136, 136, 255)>{30% increased Amount Recovered}",
+            "inventory_id":"Flask1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(200, 200, 200)>{<b>{Antidote Charm}}\n",
+            "inventory_id":"Flask1",
+            "slot_x":2
+          },{
+            "additional_text":"<rgb(255, 255, 119)>{<b>{Gloom Grasp\nUtility Wraps}}\n\n<rgb(184, 218, 241)>{+12% to Lightning Resistance}\n<rgb(136, 136, 255)>{+40 to Evasion Rating}\n<rgb(136, 136, 255)>{+20 to maximum Energy Shield}\n<rgb(136, 136, 255)>{40% increased Evasion and Energy Shield}\n<rgb(136, 136, 255)>{+70 to maximum Life}",
+            "inventory_id":"Gloves1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(200, 200, 200)>{<b>{Aromatic Sceptre}}\n",
+            "inventory_id":"Offhand1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(136, 136, 255)>{<b>{Reinforced Vaal Tower Shield of the Lynx}}\n\n<rgb(136, 136, 255)>{Grants Skill: Raise Shield}\n<rgb(136, 136, 255)>{45% increased Armour}\n<rgb(136, 136, 255)>{+18 to Dexterity}\n<rgb(136, 136, 255)>{+8% to Block chance}",
+            "inventory_id":"Offhand2",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(255, 255, 119)>{<b>{Vortex Loop\nTwo-Stone Ring}}\n\n<rgb(136, 136, 255)>{+14% to Cold and Lightning Resistances}\n<rgb(136, 136, 255)>{+60 to maximum Life}\n<rgb(136, 136, 255)>{+25 to Intelligence}\n<rgb(136, 136, 255)>{10% increased Mana Regeneration Rate}",
+            "inventory_id":"Ring1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(255, 255, 119)>{<b>{Grim Coil\nGold Ring}}\n\n<rgb(136, 136, 255)>{8% increased Rarity of Items found}\n<rgb(136, 136, 255)>{+30 to maximum Mana}\n<rgb(136, 136, 255)>{+20 to Dexterity}",
+            "inventory_id":"Ring2",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(255, 255, 119)>{<b>{Vortex Loop\nTwo-Stone Ring}}\n\n<rgb(136, 136, 255)>{+14% to Cold and Lightning Resistances}\n<rgb(136, 136, 255)>{+60 to maximum Life}\n<rgb(136, 136, 255)>{+25 to Intelligence}\n<rgb(136, 136, 255)>{10% increased Mana Regeneration Rate}",
+            "inventory_id":"Ring3",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(255, 255, 119)>{<b>{Doom Knuckle\nBandit Mace}}\n\n<rgb(184, 218, 241)>{18% increased Physical Damage}\n<rgb(184, 218, 241)>{Bonded: 20% increased effect of Fully Broken Armour}\n<rgb(136, 136, 255)>{120% increased Physical Damage}\n<rgb(136, 136, 255)>{Adds 10 to 20 Physical Damage}\n<rgb(136, 136, 255)>{Adds 5 to 50 Lightning Damage}\n<rgb(136, 136, 255)>{12% increased Attack Speed}\n<rgb(136, 136, 255)>{+1.5% to Critical Hit Chance}\n<rgb(136, 136, 255)>{+150 to Accuracy Rating}",
+            "inventory_id":"Weapon1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(255, 255, 119)>{<b>{Mind Song\nTwisted Wand}}\n\n<rgb(184, 218, 241)>{30% increased Spell Damage}\n<rgb(184, 218, 241)>{Bonded: Break Armour on Critical Hit with Spells equal to 12% of Physical Damage dealt}\n<rgb(136, 136, 255)>{Grants Skill: Level 15 Coiling Bolts}\n<rgb(136, 136, 255)>{80% increased Spell Damage}\n<rgb(136, 136, 255)>{+2 to Level of all Lightning Spell Skills}",
+            "inventory_id":"Weapon2",
+            "slot_x":0
+          }],
+        "name":"Planner build",
+        "passives":[{
+            "id":"energy_shield15",
+            "weapon_set":1
+          },{
+            "id":"spells15",
+            "weapon_set":2
+          },{
+            "id":"spells18",
+            "weapon_set":2
+          },{
+            "id":"witch595",
+            "weapon_set":0
+          }],
+        "skills":[{
+            "additional_text":"Level 7",
+            "id":"Metadata/Items/Gems/SkillGemCoilingBolts"
+          },{
+            "additional_text":"Level 1",
+            "id":"Metadata/Items/Gem/SkillGemShieldBlock"
+          },{
+            "additional_text":"Level 18",
+            "id":"Metadata/Items/Gem/SkillGemPlayerDefault1HMace"
+          }]
+      },
+      "itemSetId":1,
+      "meta":1,
+      "path":"Planner build [0.5].build",
+      "skillSetId":1,
+      "specIndex":2
+    },{
+      "build":{
+        "author":"Someone",
+        "description":"Line one {braces}",
+        "inventory_slots":[],
+        "name":"Planner build",
+        "passives":[{
+            "id":"energy_shield15",
+            "weapon_set":1
+          },{
+            "id":"spells15",
+            "weapon_set":2
+          },{
+            "id":"spells18",
+            "weapon_set":2
+          },{
+            "id":"witch595",
+            "weapon_set":0
+          }],
+        "skills":[{
+            "additional_text":"Level 7",
+            "id":"Metadata/Items/Gems/SkillGemCoilingBolts"
+          },{
+            "additional_text":"Level 1",
+            "id":"Metadata/Items/Gem/SkillGemShieldBlock"
+          },{
+            "additional_text":"Level 18",
+            "id":"Metadata/Items/Gem/SkillGemPlayerDefault1HMace"
+          }]
+      },
+      "itemSetId":1,
+      "meta":2,
+      "path":"Planner build [0.5].build",
+      "skillSetId":1,
+      "specIndex":2
+    }]
+}

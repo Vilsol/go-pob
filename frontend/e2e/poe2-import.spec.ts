@@ -116,3 +116,33 @@ test("a PoE2 build's exported code imports back as a new build with the same XML
   expect(decode((await exportCode()).out)).toBe(xml);
   expect(errors).toEqual([]);
 });
+
+// ImportTab.lua:286-294, 312 (PoB-PoE2): a code imported as a comparison opens beside the open build on the Compare page
+test('a PoE2 code imported as a comparison opens on the Compare page beside the open build', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.addInitScript(() => localStorage.setItem('options:poe2', 'true'));
+  await page.context().route(`${DATA_HOST}**`, async (route) => {
+    const asset = cachedAsset(route.request().url());
+    return route.fulfill({
+      status: asset.status,
+      body: asset.status === 200 ? asset.body : undefined,
+      headers: { 'access-control-allow-origin': '*', 'content-type': 'application/octet-stream' }
+    });
+  });
+  await routeTreeAssets(page);
+  await page.goto(`/?import=${encodeURIComponent(code())}`);
+  await expect(poe2Stat(page, 'Life')).toHaveText(POB2.Life, { timeout: 180_000 });
+
+  await page.getByRole('link', { name: 'Import / Export' }).click();
+  const region = page.getByRole('dialog', { name: 'Import / Export' }).getByRole('region', { name: 'Build import' });
+  await region.getByRole('textbox', { name: /^To import a build/ }).fill(code());
+  await region.getByRole('radio', { name: /Import as a comparison/ }).click();
+  await region.getByRole('button', { name: 'Import', exact: true }).click();
+  await page.waitForURL((u) => u.pathname.endsWith('/compare'));
+  const rows = page.getByRole('region', { name: 'Stat comparison' });
+  await expect(rows).toBeVisible({ timeout: 60_000 });
+  await expect(rows.getByRole('group', { name: new RegExp(`^Total Life: A ${POB2.Life}, B ${POB2.Life}(,|$)`) })).toHaveCount(1);
+  await expect(poe2Stat(page, 'Life')).toHaveText(POB2.Life);
+  expect(errors).toEqual([]);
+});

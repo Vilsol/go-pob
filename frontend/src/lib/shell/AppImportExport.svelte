@@ -15,12 +15,15 @@
   import { logError } from '$lib/utils';
   import { addToast } from '$lib/design/toast';
   import ImportExportPage from '$lib/design/ImportExportPage.svelte';
-  import { POE2_CHARACTER, POE2_CHARACTER_DISABLED, downloadUrl, importFailure, jsonVerdict, type ImportMode } from '$lib/design/share';
+  import { NOT_A_CODE, POE2_CHARACTER, POE2_CHARACTER_DISABLED, downloadUrl, importFailure, jsonVerdict, type ImportMode } from '$lib/design/share';
   import { POE2_NO_PARTY, REALMS, SITE_KEY, UNAVAILABLE, loadExportSite, saveExportSite } from './import_export';
   import { followOtherTabs } from '$lib/storage/tabs';
   import { identityOf } from './identity';
   import { beforeReplace, downloadBuild, shareBuild } from './link_import';
   import { openForeign, openPoe2Code } from '$lib/go/game_route';
+  import { decodeCode, rootElement } from '$lib/go/game_detect';
+  import { poe2Worker } from '$lib/go/engine_poe2.svelte';
+  import { COMPARE_MIXED_POE1 } from './compare_types';
   import { opening, unsavedName } from './build_name.svelte';
   import Dialog from '$lib/design/Dialog.svelte';
   import DialogActions from '$lib/design/DialogActions.svelte';
@@ -30,6 +33,7 @@
   import { accountSession, importItems, importTree, resetAccountSession, startAccount } from './account_session.svelte';
   import { newBuild } from './build_list';
   import { compareLoaded, type ImportTab } from './import_modal.svelte';
+  import AppImportExportPlanner from './AppImportExportPlanner.svelte';
 
   // tab: the side the import dialog shows; focus: the code field takes focus (Build.lua:1160-1162); ondone: an
   // import that opened a build or the Compare page
@@ -62,7 +66,7 @@
   let importText = $state('');
   let mode = $state<ImportMode>('new');
   // an import never replaces the open build: it opens as a new one, or beside it on Compare
-  const modes = $derived<ImportMode[]>($game === 'poe1' ? ['new', 'compare'] : ['new']);
+  const modes = $derived<ImportMode[]>($game ? ['new', 'compare'] : ['new']);
   $effect(() => {
     if (!modes.includes(mode)) mode = 'new';
   });
@@ -132,11 +136,18 @@
       .catch(logError);
   };
 
+  // ImportTab.lua:286-294 (PoB-PoE2); a code whose XML is a PoE1 build is refused as the Compare page refuses it
+  const loadCompare2 = async (text: string) => {
+    const xml = await decodeCode(text);
+    if (xml === undefined) throw new Error(NOT_A_CODE);
+    if (rootElement(xml) === 'PathOfBuilding') throw new Error(COMPARE_MIXED_POE1);
+    return (await poe2Worker()).LoadCompare(xml, 'Imported comparison');
+  };
+
   const importCode = (text: string, how: ImportMode, failed: (err: unknown) => void) => {
     if (how === 'compare') {
-      syncWrap
-        ?.LoadCompareCode(text)
-        .then(() => {
+      void (get(game) === 'poe2' ? loadCompare2(text) : syncWrap?.LoadCompareCode(text))
+        ?.then(() => {
           compareLoaded.seq++;
           ondone?.();
           return goto(`${base}/compare`);
@@ -289,3 +300,4 @@
       }} />
   {/snippet}
 </ImportExportPage>
+{#if tab === 'export' && $game === 'poe2'}<AppImportExportPlanner />{/if}

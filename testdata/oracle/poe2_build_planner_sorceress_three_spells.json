@@ -1,0 +1,53 @@
+{
+  "cases":[{
+      "build":{
+        "author":"Author",
+        "description":"",
+        "inventory_slots":[{
+            "additional_text":"<rgb(255, 255, 119)>{<b>{Storm Shell\nVaal Cuirass}}\n\n<rgb(136, 136, 255)>{+120 to Armour}\n<rgb(136, 136, 255)>{85% increased Armour}\n<rgb(136, 136, 255)>{+90 to maximum Life}\n<rgb(136, 136, 255)>{+35% to Fire Resistance}",
+            "inventory_id":"BodyArmour1",
+            "slot_x":0
+          }],
+        "name":"Planner build",
+        "passives":[{
+            "id":"witch595",
+            "weapon_set":0
+          }],
+        "skills":[{
+            "additional_text":"Level 10",
+            "id":"Metadata/Items/Gems/SkillGemSpark"
+          },{
+            "additional_text":"Level 10",
+            "id":"Metadata/Items/Gems/SkillGemArc"
+          }]
+      },
+      "itemSetId":1,
+      "meta":1,
+      "path":"Planner build [0.5].build",
+      "skillSetId":1,
+      "specIndex":1
+    },{
+      "build":{
+        "author":"Someone",
+        "description":"Line one {braces}",
+        "inventory_slots":[],
+        "name":"Planner build",
+        "passives":[{
+            "id":"witch595",
+            "weapon_set":0
+          }],
+        "skills":[{
+            "additional_text":"Level 10",
+            "id":"Metadata/Items/Gems/SkillGemSpark"
+          },{
+            "additional_text":"Level 10",
+            "id":"Metadata/Items/Gems/SkillGemArc"
+          }]
+      },
+      "itemSetId":1,
+      "meta":2,
+      "path":"Planner build [0.5].build",
+      "skillSetId":1,
+      "specIndex":1
+    }]
+}

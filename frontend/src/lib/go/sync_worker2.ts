@@ -1485,6 +1485,18 @@ class PoB2Worker {
     return this.calc.ExportCode(stats.player, stats.fullDPS, stats.minion).unwrap();
   }
 
+  /* ImportTab.lua:494-531 (PoB-PoE2): the build planner export's Tree, Skill and Item dropdowns */
+  BuildPlannerSets(): exposition.BuildPlannerSets {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    return this.calc.BuildPlannerSets();
+  }
+
+  /* BuildExportPoE2.lua:286-313 (PoB-PoE2): one tree, skill set and item set as a .build file */
+  BuildPlannerExport(meta: exposition.BuildPlannerMeta, specIndex: number, skillSetId: number, itemSetId: number): exposition.BuildPlannerFile {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    return this.calc.BuildPlannerExport(meta, specIndex, skillSetId, itemSetId).unwrap();
+  }
+
   /* ItemsTab.lua:2232-2246 (PoB-PoE2): the editor's affix drop-downs, prefixes first */
   DisplayItemAffixes(): Poe2AffixControl[] {
     if (!this.calc) throw new Error('no PoE2 build is open');

@@ -37,6 +37,7 @@ internal/importproxy/jscompat.go    GO-NATIVE  the JS runtime semantics proxy.ts
 internal/importproxy/proxy.go       GO-NATIVE  the desktop app's /api/* import relay, a port of frontend/src/lib/import_proxy/proxy.ts (TypeScript, not Lua); PoB fetches the sites itself and needs no relay
 internal/importproxy/sites.go       GO-NATIVE  share.ts's SITES table for the relay, checked against the TS source by its test; PoB's own table is BuildSiteTools.lua, which the TS already transcribes
 
+calculator2/build_export.go         GO-NATIVE  the skills list of PoB-PoE2's .build export (BuildExportPoE2.lua, a PoE2-only module); each function cites the Lua it ports
 calculator2/item.go                 PORT       src/Classes/Item.lua,src/Classes/ItemsTab.lua,src/Modules/Common.lua
 calculator2/item_luapattern.go      GO-NATIVE  compiles the Lua patterns Item.lua builds at runtime from item and data text into Go regexps; Lua's pattern engine itself is C, not Lua
 calculator2/item_modlist.go         PORT       src/Classes/Item.lua,src/Classes/ModStore.lua,src/Modules/ModTools.lua
@@ -341,6 +342,7 @@ wasm2/exposition/config.go          GO-NATIVE  crystalline binding surface for t
 wasm2/exposition/calculator.go      GO-NATIVE  crystalline binding surface for the PoE2 frontend
 wasm2/exposition/crystalline_gen.go GENERATED  [unverifiable: emitted by `go tool crystalline`, pinned in go.mod, not a script in this repo]
 wasm2/exposition/export.go          GO-NATIVE  crystalline binding surface for the PoE2 build code export (ImportTab.lua's Deflate and base64)
+wasm2/exposition/build_planner.go   GO-NATIVE  crystalline binding surface for PoB-PoE2's Export to in-game build planner (BuildExportPoE2.lua, a PoE2-only module); each function cites the Lua it ports
 wasm2/exposition/items.go           GO-NATIVE  crystalline binding surface for the PoE2 Items page's edits (ItemsTab.lua's controls over the last calculation)
 wasm2/exposition/items_craft.go     GO-NATIVE  crystalline binding surface for the PoE2 Craft Item popup (ItemsTab.lua's CraftItem)
 wasm2/exposition/item_db.go         GO-NATIVE  crystalline binding surface for the PoE2 unique database list (ItemDBControl.lua's filters, tooltip, copy and Ctrl+click)

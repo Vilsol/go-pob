@@ -1,0 +1,57 @@
+{
+  "cases":[{
+      "build":{
+        "author":"Author",
+        "description":"",
+        "inventory_slots":[{
+            "additional_text":"<rgb(200, 200, 200)>{<b>{Wooden Club}}\n",
+            "inventory_id":"Offhand1",
+            "slot_x":0
+          },{
+            "additional_text":"<rgb(200, 200, 200)>{<b>{Smithing Hammer}}\n",
+            "inventory_id":"Weapon1",
+            "slot_x":0
+          }],
+        "name":"Planner build",
+        "passives":[{
+            "id":"marauder594",
+            "weapon_set":0
+          }],
+        "skills":[{
+            "additional_text":"Level 10",
+            "id":"Metadata/Items/Gems/SkillGemBoneshatter"
+          },{
+            "additional_text":"Level 8",
+            "id":"Metadata/Items/Gem/SkillGemPlayerDefaultMaceMace"
+          }]
+      },
+      "itemSetId":1,
+      "meta":1,
+      "path":"Planner build [0.5].build",
+      "skillSetId":1,
+      "specIndex":1
+    },{
+      "build":{
+        "author":"Someone",
+        "description":"Line one {braces}",
+        "inventory_slots":[],
+        "name":"Planner build",
+        "passives":[{
+            "id":"marauder594",
+            "weapon_set":0
+          }],
+        "skills":[{
+            "additional_text":"Level 10",
+            "id":"Metadata/Items/Gems/SkillGemBoneshatter"
+          },{
+            "additional_text":"Level 8",
+            "id":"Metadata/Items/Gem/SkillGemPlayerDefaultMaceMace"
+          }]
+      },
+      "itemSetId":1,
+      "meta":2,
+      "path":"Planner build [0.5].build",
+      "skillSetId":1,
+      "specIndex":1
+    }]
+}
