@@ -321,7 +321,10 @@ func (c *Calculator) PartyImpact(stats []string) ([]PartyImpactRow, error) {
 		return nil, err
 	}
 	opts := calculator2.Options{Tree: t, Items: calculator2.NewItemsTab(c.build, t, nil), PartyApplied: true}
+	// the export is the main calculation's, not this one's
+	exported := c.build.Party.ExportedBuffs
 	without, err := calculator2.BuildOutput(c.build, opts)
+	c.build.Party.ExportedBuffs = exported
 	if err != nil {
 		return nil, err
 	}

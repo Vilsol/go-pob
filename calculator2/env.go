@@ -71,6 +71,8 @@ type Environment struct {
 	data *skillData
 	// buffs is env.buffs, env.debuffs, env.minionBuffs and env.curseSlots as perform leaves them.
 	buffs *buffState
+	// partyExports is buffExports, nil while the party export is off.
+	partyExports *partyBuffExports
 	// SocketGroupList is build.skillsTab.socketGroupList as initEnv leaves it.
 	SocketGroupList []*SocketGroup
 

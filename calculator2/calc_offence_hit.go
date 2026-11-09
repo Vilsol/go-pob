@@ -389,16 +389,9 @@ func offenceConversionTables(state *offenceHitState, skillModList *moddb.ModList
 		}
 
 		// Apply all conversions simultaneously
-		// Go must differ: the Lua's pairs() order changes from process to process, and a row's base
-		// overwrites what an earlier row added; this is the order that visits damageType's own row last.
-		applyOrder := make([]string, 0, len(dmgTypeList))
+		// The Lua's single pairs() loop lets a later base write overwrite an earlier row's added
+		// conversion, so its result depends on table order; every base is written before any addition.
 		for _, fromType := range dmgTypeList {
-			if fromType != damageType {
-				applyOrder = append(applyOrder, fromType)
-			}
-		}
-		applyOrder = append(applyOrder, damageType)
-		for _, fromType := range applyOrder {
 			data, ok := tempConversions[fromType]
 			if !ok {
 				continue
@@ -407,6 +400,12 @@ func offenceConversionTables(state *offenceHitState, skillModList *moddb.ModList
 				entry.mult = data.mult
 			} else {
 				entry.to[fromType] = data.base
+			}
+		}
+		for _, fromType := range dmgTypeList {
+			data, ok := tempConversions[fromType]
+			if !ok {
+				continue
 			}
 			for _, toType := range dmgTypeList {
 				if amount, ok := data.conv[toType]; ok {

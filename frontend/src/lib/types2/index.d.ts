@@ -324,6 +324,7 @@ export declare namespace exposition {
     EditItem(id: number): Result<void>;
     EquippedItems(): Result<(exposition.ItemsView | undefined)>;
     ExportCode(player: Array<exposition.SavedStat> | undefined, fullDPS: Array<exposition.SavedFullDPS> | undefined, minion: Array<exposition.SavedStat> | undefined): Result<string>;
+    ExportParty(): boolean;
     GemOptions(): calculator2.GemOptions;
     GemSortCache(group: number, gemIDs: Array<string> | undefined): Result<(exposition.GemSortCacheView | undefined)>;
     GemSortDPS(group: number, gemIDs: Array<string> | undefined, field: string): Promise<Result<(exposition.GemSortDPSView | undefined)>>;
@@ -351,6 +352,7 @@ export declare namespace exposition {
     PartyBuffers(): (Record<string, string> | undefined);
     PartyEffectsApplied(): boolean;
     PartyEffectsDisabled(): boolean;
+    PartyExports(): (Record<string, string> | undefined);
     PartyImpact(stats: Array<string> | undefined): Promise<Result<(Array<exposition.PartyImpactRow> | undefined)>>;
     PartyMembers(): (Array<exposition.PartyMember> | undefined);
     PartyOptions(): [string, boolean, boolean];
@@ -387,6 +389,7 @@ export declare namespace exposition {
     SetDisplayItemRangeLine(line: number, val: number): Result<void>;
     SetDisplayItemRune(socket: number, runeName: string): Result<void>;
     SetDisplayItemSocketCount(count: number): Result<void>;
+    SetExportParty(on: boolean): void;
     SetGem(group: number, gem: number, gemID: string): Result<void>;
     SetGemCorruption(group: number, gem: number, option: number): Result<void>;
     SetGemCount(group: number, gem: number, count: number): Result<void>;

@@ -9,8 +9,9 @@ import (
 )
 
 // TestConversionTableSkillThenGlobal is 30% skill conversion of physical to fire with 75% of all damage converted to
-// fire; the expected rows are PoB-PoE2's (CalcOffence.lua 2432-2512 under luajit). Summing the additions in another
-// order lands on 82.4999... and rounds to 82% instead.
+// fire. CalcOffence.lua 2432-2512 applies the rows "simultaneously": every base (30 * 0.25) is written before any
+// addition, summed in dmgTypeList order, so Physical to Fire is 82.4999... and rounds to 82%. A LuaJIT pairs() order
+// can land on 83% instead; that order is not ported.
 func TestConversionTableSkillThenGlobal(t *testing.T) {
 	skillModList := moddb.NewModList()
 	skillModList.AddMod(MOD("SkillPhysicalDamageConvertToFire", mod.TypeBase, 30.0))
@@ -19,7 +20,7 @@ func TestConversionTableSkillThenGlobal(t *testing.T) {
 	offenceConversionTables(state, skillModList, nil)
 
 	want := map[string]struct{ fire, mult float64 }{
-		"Physical":  {0.83, 0.17000000000000004},
+		"Physical":  {0.82, 0.18000000000000005},
 		"Lightning": {0.75, 0.25},
 		"Cold":      {0.75, 0.25},
 		"Fire":      {0.75, 0.25},
@@ -29,7 +30,7 @@ func TestConversionTableSkillThenGlobal(t *testing.T) {
 		row := state.conversionTable[damageType]
 		w := want[damageType]
 		if math.Abs(row.to["Fire"]-w.fire) > 1e-12 || math.Abs(row.mult-w.mult) > 1e-12 {
-			t.Errorf("%s: to Fire %v mult %v, PoB %v mult %v", damageType, row.to["Fire"], row.mult, w.fire, w.mult)
+			t.Errorf("%s: to Fire %v mult %v, want %v mult %v", damageType, row.to["Fire"], row.mult, w.fire, w.mult)
 		}
 	}
 }

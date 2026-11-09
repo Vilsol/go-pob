@@ -1,0 +1,44 @@
+{
+  "party_giver.xml":[{
+      "name":"PartyMemberStats",
+      "text":"MovementSpeedMod|percent|max=100"
+    },{
+      "name":"Aura",
+      "text":"Defiance Banner\n120\n30|Skill:DefianceBannerPlayer|MovementSpeed|INC|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n30|Skill:DefianceBannerPlayer|Armour|MORE|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n30|Skill:DefianceBannerPlayer|Evasion|MORE|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n---\nPurity of Fire\n120\n36|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---"
+    },{
+      "name":"Curse",
+      "text":"--- Curse Limit ---\n2\nDespair\n110\nfalse\n-45|Skill:DespairPlayer|ChaosResist|BASE|-|-|type=GlobalEffect/effectType=Curse\n---\nElemental Weakness\n110\nfalse\n-54|Skill:ElementalWeaknessPlayer|ElementalResist|BASE|-|-|type=GlobalEffect/effectType=Curse\n---"
+    },{
+      "name":"Warcry Skills",
+      "text":"Infernal Cry\n99.763062726026\n1|Skill:InfernalCryPlayer|UsesWarcryPower|FLAG|-|-|type=GlobalEffect/effectType=Warcry\n---"
+    },{
+      "name":"EnemyConditions",
+      "text":"Condition:AgainstDamageOverTime\nCondition:AlreadyChilled\nCondition:AlreadyShocked\nCondition:Burning\nCondition:ChampionIntimidate\nCondition:PinnacleBoss\nCondition:Poisoned\nCondition:RareOrUnique\nCondition:Unique"
+    }],
+  "skill_buffs.xml":[{
+      "name":"PartyMemberStats",
+      "text":"MovementSpeedMod|percent|max=100"
+    },{
+      "name":"Aura",
+      "text":"Purity of Fire\n100\n39|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---"
+    },{
+      "name":"Curse",
+      "text":"--- Curse Limit ---\n2\nElemental Weakness\n110\nfalse\n-57|Skill:ElementalWeaknessPlayer|ElementalResist|BASE|-|-|type=GlobalEffect/effectType=Curse\n---"
+    },{
+      "name":"EnemyConditions",
+      "text":"Condition:AgainstDamageOverTime\nCondition:AlreadyChilled\nCondition:AlreadyShocked\nCondition:Burning\nCondition:ChampionIntimidate\nCondition:PinnacleBoss\nCondition:Poisoned\nCondition:RareOrUnique\nCondition:Unique"
+    }],
+  "warcry_buffs.xml":[{
+      "name":"PartyMemberStats",
+      "text":"MovementSpeedMod|percent|max=100"
+    },{
+      "name":"Curse",
+      "text":"--- Curse Limit ---\n2"
+    },{
+      "name":"Warcry Skills",
+      "text":"Fortifying Cry\n99.763062726026\n1|Skill:FortifyingCryPlayer|UsesWarcryPower|FLAG|-|-|type=GlobalEffect/effectType=Warcry\n---\nInfernal Cry\n99.763062726026\n1|Skill:InfernalCryPlayer|UsesWarcryPower|FLAG|-|-|type=GlobalEffect/effectType=Warcry\n---"
+    },{
+      "name":"EnemyConditions",
+      "text":"Condition:AgainstDamageOverTime\nCondition:AlreadyChilled\nCondition:AlreadyShocked\nCondition:Burning\nCondition:ChampionIntimidate\nCondition:PinnacleBoss\nCondition:Poisoned\nCondition:RareOrUnique\nCondition:Unique"
+    }]
+}

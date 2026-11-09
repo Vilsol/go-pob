@@ -865,6 +865,7 @@ func perform(env *Environment) {
 
 	//pob2:block:src/Modules/CalcPerform.lua:1219-1220
 	env.Player.partyMembers = env.partyMembers()
+	env.partyExports = newPartyBuffExports(env)
 
 	//pob2:block:src/Modules/CalcPerform.lua:1223-1229
 	env.Minion = nil
@@ -1044,6 +1045,16 @@ func perform(env *Environment) {
 		defence(env, &env.Minion.Actor)
 		buildDefenceEstimations(env, &env.Minion.Actor)
 		offence(env, &env.Minion.Actor, env.Minion.MainSkill)
+	}
+
+	// Export modifiers to enemy conditions and stats for party tab
+	//pob2:block:src/Modules/CalcPerform.lua:3530-3650
+	if env.partyExports != nil {
+		env.partyExports.collectEnemyAndPlayer(env, env.Player.Output)
+		env.Build.Party.ExportedBuffs = env.partyExports.buffers()
+	} else if env.Build != nil && env.Mode != "CALCULATOR" {
+		// PartyTab:Save writes no ExportedBuffs while the export is off (PartyTab.lua:993)
+		env.Build.Party.ExportedBuffs = nil
 	}
 
 	calcMainSkillGemLevel(env)

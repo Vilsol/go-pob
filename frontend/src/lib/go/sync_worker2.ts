@@ -461,6 +461,9 @@ export type Poe2CompareItemRow = {
 
 export type Poe2CompareSetKind = 'tree' | 'skill' | 'item' | 'config' | 'group' | 'skills';
 
+// PartyTab.lua:612-653 (PoB-PoE2): the ExportedBuffs Save writes, in its order
+const PARTY_EXPORT_NAMES = ['PartyMemberStats', 'Aura', 'Curse', 'Warcry Skills', 'Link Skills', 'EnemyConditions', 'EnemyMods'];
+
 const NODE_RANK2: Record<string, number> = { Keystone: 5, Notable: 3, Mastery: 2, Socket: 1 };
 
 class PoB2Worker {
@@ -1727,6 +1730,18 @@ class PoB2Worker {
   SetPartyMemberActive(i: number, active: boolean): Promise<Poe2Calc> {
     const name = this.GetPartyMembers()[i]?.name ?? String(i + 1);
     return this.partyWrite('SetPartyMemberActive', `${active ? 'Enabled' : 'Disabled'} party member ${name}`, (c) => c.SetPartyMemberActive(i, active));
+  }
+
+  /* ImportTab.lua:138-141, 563-564 and PartyTab.lua:612-653 (PoB-PoE2): Export Support and the parts Save writes */
+  GetPartyExport(): { on: boolean; parts: { name: string; text: string }[] } | undefined {
+    const c = this.calc;
+    if (!c) return undefined;
+    const parts = c.PartyExports() ?? {};
+    return { on: c.ExportParty(), parts: PARTY_EXPORT_NAMES.filter((n) => parts[n]).map((name) => ({ name, text: parts[name] })) };
+  }
+
+  SetExportParty(on: boolean): Promise<Poe2Calc> {
+    return this.partyWrite('exportParty', on ? 'Turned on Export support' : 'Turned off Export support', (c) => c.SetExportParty(on));
   }
 
   RemovePartyMember(i: number): Promise<Poe2Calc> {

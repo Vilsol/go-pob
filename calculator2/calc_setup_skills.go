@@ -37,7 +37,7 @@ func (env *Environment) effectFromItem(ge *poe2skills.GrantedEffect) bool {
 }
 
 // loadSocketGroups is SkillsTab:Load for the active skill set: each group as LoadSkill reads it, then
-// ProcessSocketGroup. A gem saved with only a nameSpec is not looked up by FindSkillGem.
+// ProcessSocketGroup.
 //
 //pob2:src/Classes/SkillsTab.lua:288-399
 func loadSocketGroups(env *Environment) []*SocketGroup {
@@ -183,6 +183,18 @@ func processSocketGroup(env *Environment, socketGroup *SocketGroup) {
 			} else {
 				gemInstance.GrantedEffect = grantedEffect
 			}
+		case strings.TrimSpace(gemInstance.NameSpec) != "":
+			// Specified by gem/skill name, try to match it
+			// Used to migrate pre-1.4.20 builds
+			_, gemInstance.GemData = findSkillGem(env.data, gemInstance.NameSpec)
+			gemInstance.GemID, gemInstance.SkillID = "", ""
+			if gemInstance.GemData != nil {
+				gemInstance.GemID = gemInstance.GemData.Data.ID
+				gemInstance.SkillID = gemInstance.GemData.Data.GrantedEffectID
+				gemInstance.NameSpec = gemInstance.GemData.Data.Name
+			}
+		default:
+			gemInstance.SkillID = ""
 		}
 		if gemInstance.GemData != nil && gemInstance.GemData.GrantedEffect.Overlay.HideFromSideBar {
 			gemInstance.GemData = nil

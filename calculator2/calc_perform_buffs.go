@@ -201,8 +201,8 @@ func countHeraldsAndAuras(env *Environment) {
 	}
 }
 
-// combineBuffs gathers the player's and env.minion's skill buffs, guards, debuffs and curses. The party
-// tab's exports (buffExports) are not ported, so their branches are absent.
+// combineBuffs gathers the player's and env.minion's skill buffs, guards, debuffs and curses, and the party
+// tab's exports.
 //
 //pob2:block:src/Modules/CalcPerform.lua:2034-2050
 //pob2:block:src/Modules/CalcPerform.lua:2136-2610
@@ -211,6 +211,7 @@ func combineBuffs(env *Environment) *buffState {
 	enemyDB := env.Enemy.ModDB
 	st := &buffState{buffs: map[string]*moddb.ModList{}, guards: map[string]*moddb.ModList{}, debuffs: map[string]*moddb.ModList{}, notBuff: map[string]bool{}, minionBuffs: map[string]*moddb.ModList{}}
 	buffs, guards, debuffs, minionBuffs := st.buffs, st.guards, st.debuffs, st.minionBuffs
+	exports := env.partyExports
 	//pob2:block:src/Modules/CalcPerform.lua:2047
 	allyBuffs := env.partyMembers().Aura
 	// Spectre ally, minion and player modifiers (CalcPerform.lua:2049-2097) are absent: no PoE2 spectre
@@ -261,6 +262,12 @@ func combineBuffs(env *Environment) *buffState {
 						more := modStore.More(buffCfg, "BuffEffect") * minionDB.More(nil, "BuffEffectOnSelf") * calcLibMod(modStore, buffCfg, "Magnitude")
 						scaleAddList(srcList, buff.ModList, (1+inc/100)*more, false)
 						mergeBuff(srcList.Mods(), minionBuffs, buff.Name)
+					}
+					//pob2:block:src/Modules/CalcPerform.lua:2177-2182
+					if exports != nil && (buff.ApplyAllies || skillModList.Flag(nil, "BuffAppliesToAllies") || skillModList.Flag(nil, "BuffAppliesToPartyMembers")) {
+						inc := modStore.Sum(mod.TypeIncrease, buffCfg, "BuffEffect") + skillModList.Sum(mod.TypeIncrease, buffCfg, buffNameCompressed+"Effect")
+						more := modStore.More(buffCfg, "BuffEffect") * calcLibMod(modStore, buffCfg, "Magnitude")
+						exports.otherEffects[buff.Name] = &partyBuffExport{effectMult: (1 + inc/100) * more, modList: buff.ModList}
 					}
 				}
 			case "Guard":
@@ -333,8 +340,7 @@ func combineBuffs(env *Environment) *buffState {
 								mergeBuff(srcList.Mods(), buffs, buff.Name)
 							}
 						}
-						// No PoE2 skill is Rallying Cry, so its minion damage bonus (2259-2275) is absent; the party
-						// export (2278-2285) is not ported.
+						// No PoE2 skill is Rallying Cry, so its minion damage bonus (2259-2275) is absent.
 						//pob2:block:src/Modules/CalcPerform.lua:2248-2277
 						if env.Minion != nil && !env.Minion.ModDB.Flag(nil, "HiddenMonster") {
 							minionDB := env.Minion.ModDB
@@ -347,6 +353,12 @@ func combineBuffs(env *Environment) *buffState {
 								scaleAddList(srcList, []mod.Mod{warcryBuff}, mult, false)
 							}
 							mergeBuff(srcList.Mods(), minionBuffs, buff.Name)
+						}
+						//pob2:block:src/Modules/CalcPerform.lua:2278-2285
+						if exports != nil {
+							inc := skillModList.Sum(mod.TypeIncrease, skillCfg, "BuffEffect")
+							more := skillModList.More(skillCfg, "BuffEffect") * calcLibMod(skillModList, skillCfg, "Magnitude")
+							exports.warcry[buff.Name] = &partyBuffExport{effectMult: (1 + inc/100) * more * uptime, modList: buff.ModList, warcryPowerBonus: warcryPowerBonuses(buff.ModList, warcryPowerBonus)}
 						}
 					}
 				}
@@ -388,6 +400,12 @@ func combineBuffs(env *Environment) *buffState {
 								mergeBuff(srcList.Mods(), minionBuffs, buff.Name)
 							}
 						}
+						//pob2:block:src/Modules/CalcPerform.lua:2337-2346
+						if exports != nil {
+							inc := skillModList.Sum(mod.TypeIncrease, skillCfg, "AuraEffect", "BuffEffect")
+							more := skillModList.More(skillCfg, "AuraEffect", "BuffEffect") * calcLibMod(skillModList, skillCfg, "Magnitude")
+							exports.setAura(buff.Name, (1+inc/100)*more, joinMods(buff.ModList, extraAuraModList))
+						}
 					}
 					//pob2:block:src/Modules/CalcPerform.lua:2348-2383
 					if statSetSkillFlags(env.Player.MainSkill)["totem"] && !(modDB.Flag(nil, "SelfAurasCannotAffectAllies") || modDB.Flag(nil, "SelfAuraSkillsCannotAffectAllies")) {
@@ -428,6 +446,12 @@ func combineBuffs(env *Environment) *buffState {
 							for _, m := range extraAuraModList {
 								newList.AddMod(m)
 							}
+							//pob2:block:src/Modules/CalcPerform.lua:2409-2414
+							if exports != nil {
+								inc := skillModList.Sum(mod.TypeIncrease, skillCfg, "AuraEffect", "BuffEffect", "DebuffEffect")
+								more := skillModList.More(skillCfg, "AuraEffect", "BuffEffect", "DebuffEffect") * calcLibMod(skillModList, skillCfg, "Magnitude")
+								exports.setAuraDebuff(buff.Name, (1+inc/100)*more, extraAuraModList)
+							}
 							mergeBuff(newList.Mods(), debuffs, buff.Name)
 						}
 					}
@@ -461,6 +485,10 @@ func combineBuffs(env *Environment) *buffState {
 							inc := skillModList.Sum(mod.TypeIncrease, skillCfg, "AuraEffect", "BuffEffect", "DebuffEffect")
 							more := skillModList.More(skillCfg, "AuraEffect", "BuffEffect", "DebuffEffect") * calcLibMod(skillModList, skillCfg, "Magnitude")
 							mult = (1 + inc/100) * more
+							//pob2:block:src/Modules/CalcPerform.lua:2460-2471
+							if exports != nil {
+								exports.setAuraDebuff(buff.Name, mult, joinMods(buff.ModList, extraAuraModList))
+							}
 							//pob2:block:src/Modules/CalcPerform.lua:2472-2474
 							if allyBuffs.strongerThan("AuraDebuff", buff.Name, mult) {
 								mult = 0
@@ -499,6 +527,7 @@ func combineBuffs(env *Environment) *buffState {
 						inc = inc + skillModList.Sum(mod.TypeIncrease, skillCfg, "AuraEffect")
 					}
 					more := skillModList.More(skillCfg, "CurseEffect") * calcLibMod(skillModList, skillCfg, "Magnitude")
+					moreMark := more
 					// This is non-ideal, but the only More for enemy is the boss effect
 					if !curse.isMark {
 						more = more * enemyDB.More(nil, "CurseEffectOnSelf")
@@ -510,6 +539,14 @@ func combineBuffs(env *Environment) *buffState {
 					if buff.Type == "Curse" {
 						curse.modList = newModList()
 						scaleAddList(curse.modList, buff.ModList, mult, true)
+						//pob2:block:src/Modules/CalcPerform.lua:2520-2522
+						if exports != nil {
+							effectMult := (1 + inc/100) * moreMark
+							if curse.isMark {
+								effectMult = mult
+							}
+							exports.curse[buff.Name] = &partyBuffExport{isMark: curse.isMark, effectMult: effectMult, modList: buff.ModList}
+						}
 					} else {
 						// Curse applies a buff; scale by curse effect, then buff effect
 						temp := newModList()
@@ -568,14 +605,15 @@ func combineBuffs(env *Environment) *buffState {
 	return st
 }
 
-// combineMinionSkillBuffs adds the buffs, auras, curses and debuffs of a minion's skills. The party tab's
-// exports (buffExports) are not ported, so the branches that write them are absent.
+// combineMinionSkillBuffs adds the buffs, auras, curses and debuffs of a minion's skills, and their party
+// tab exports.
 //
 //pob2:block:src/Modules/CalcPerform.lua:2611-2822
 func combineMinionSkillBuffs(env *Environment, st *buffState, activeSkill *ActiveSkill) {
 	modDB := env.ModDB
 	enemyDB := env.Enemy.ModDB
 	buffs, debuffs, minionBuffs := st.buffs, st.debuffs, st.minionBuffs
+	exports := env.partyExports
 	allyBuffs := env.partyMembers().Aura
 	castingMinion := activeSkill.Minion
 	for _, activeMinionSkill := range castingMinion.ActiveSkillList {
@@ -603,6 +641,12 @@ func combineMinionSkillBuffs(env *Environment, st *buffState, activeSkill *Activ
 						mergeBuff(buff.ModList, buffs, buff.Name)
 						if truthy(activeMinionSkill.SkillData["thisIsNotABuff"]) {
 							st.notBuff[buff.Name] = true
+						}
+						//pob2:block:src/Modules/CalcPerform.lua:2633-2638
+						if exports != nil {
+							inc := modStore.Sum(mod.TypeIncrease, buffCfg, "BuffEffect")
+							more := modStore.More(buffCfg, "BuffEffect")
+							exports.otherEffects[buff.Name] = &partyBuffExport{effectMult: (1 + inc/100) * more, modList: buff.ModList}
 						}
 					}
 					//pob2:block:src/Modules/CalcPerform.lua:2640-2657
@@ -652,7 +696,6 @@ func combineMinionSkillBuffs(env *Environment, st *buffState, activeSkill *Activ
 								mergeBuff(srcList.Mods(), buffs, buff.Name)
 							}
 						}
-						// buffExports is not ported.
 						//pob2:block:src/Modules/CalcPerform.lua:2695-2709
 						if env.Minion != nil && !env.Minion.ModDB.Flag(nil, "HiddenMonster") && !env.Minion.ModDB.Conditions["AffectedBy"+buffNameCompressed] && (env.Minion != activeSkill.Minion || !truthy(activeSkill.SkillData["auraCannotAffectSelf"])) {
 							envMinionDB := env.Minion.ModDB
@@ -669,6 +712,18 @@ func combineMinionSkillBuffs(env *Environment, st *buffState, activeSkill *Activ
 								setSpectreSource(srcList, buff.Name, activeSkill, castingMinion)
 								mergeBuff(srcList.Mods(), minionBuffs, buff.Name)
 							}
+						}
+						//pob2:block:src/Modules/CalcPerform.lua:2710-2720
+						if exports != nil {
+							inc := skillModList.Sum(mod.TypeIncrease, skillCfg, "AuraEffect", "BuffEffect")
+							more := skillModList.More(skillCfg, "AuraEffect", "BuffEffect") * calcLibMod(skillModList, skillCfg, "Magnitude")
+							// Go must differ: Lua renames the skill's own mods in place
+							newModList := newModList()
+							for _, m := range joinMods(buff.ModList, extraAuraModList) {
+								newModList.AddMod(m.Clone())
+							}
+							setSpectreSource(newModList, buff.Name, activeSkill, castingMinion)
+							exports.setAura(buff.Name, (1+inc/100)*more, newModList.Mods())
 						}
 						if statSetSkillFlags(env.Player.MainSkill)["totem"] && !env.Player.MainSkill.SkillModList.ModStore.Conditions["AffectedBy"+buffNameCompressed] {
 							mainSkillModList := env.Player.MainSkill.SkillModList
@@ -733,6 +788,9 @@ func combineMinionSkillBuffs(env *Environment, st *buffState, activeSkill *Activ
 							mult = (1 + inc/100) * more
 							//pob2:block:src/Modules/CalcPerform.lua:2794-2801
 							if !enemyDB.Conditions["AffectedBy"+buffNameCompressed] {
+								if exports != nil {
+									exports.setAuraDebuff(buff.Name, mult, buff.ModList)
+								}
 								if allyBuffs.strongerThan("AuraDebuff", buff.Name, mult) {
 									mult = 0
 								}
@@ -825,6 +883,10 @@ func applyCursesAndBuffs(env *Environment, st *buffState) {
 		output["EnemyCurseLimit"] = modDB.Sum(mod.TypeBase, nil, "EnemyCurseLimit")
 	}
 	output["EnemyMarkLimit"] = modDB.Sum(mod.TypeBase, nil, "EnemyMarkLimit")
+	//pob2:block:src/Modules/CalcPerform.lua:3028
+	if env.partyExports != nil {
+		env.partyExports.curseLimit = output["EnemyCurseLimit"] + output["EnemyMarkLimit"]
+	}
 
 	// Temp different mark and curse slots to handle limits and priorities of both
 	var curseSlotList, markSlotList []*performCurse
@@ -1025,6 +1087,11 @@ func applyExtraAuras(env *Environment) {
 	}
 
 	// Check for extra auras
+	//pob2:block:src/Modules/CalcPerform.lua:3194
+	exports := env.partyExports
+	if exports != nil {
+		exports.aura["extraAura"] = &partyBuffExport{effectMult: 1}
+	}
 	for _, v := range modDB.List(nil, "ExtraAura") {
 		value, ok := v.(mod.ExtraAura)
 		if !ok || value.Mod == nil {
@@ -1037,11 +1104,14 @@ func applyExtraAuras(env *Environment) {
 			modDB.Multipliers["BuffOnSelf"] = modDB.Multipliers["BuffOnSelf"] + 1
 		}
 		if !modDB.Flag(nil, "SelfAurasCannotAffectAllies") {
-			//pob2:block:src/Modules/CalcPerform.lua:3206-3210
+			//pob2:block:src/Modules/CalcPerform.lua:3206-3211
 			if env.Minion != nil && !env.Minion.ModDB.Flag(nil, "HiddenMonster") {
 				inc := env.Minion.ModDB.Sum(mod.TypeIncrease, nil, "BuffEffectOnSelf", "AuraEffectOnSelf")
 				more := env.Minion.ModDB.More(nil, "BuffEffectOnSelf", "AuraEffectOnSelf")
 				env.Minion.ModDB.ScaleAddList(asPerformModList(value.Mod), (1+inc/100)*more)
+			}
+			if exports != nil {
+				exports.aura["extraAura"].modList = append(exports.aura["extraAura"].modList, value.Mod)
 			}
 			totemModBlacklist := value.Mod.Name() == "Speed" || value.Mod.Name() == "CritMultiplier" || value.Mod.Name() == "CritChance"
 			if statSetSkillFlags(env.Player.MainSkill)["totem"] && !totemModBlacklist {

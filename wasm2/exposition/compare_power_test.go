@@ -32,11 +32,7 @@ var comparePowerOracleStats = []struct {
 }{{"FullDPS", 0.05}, {"TotalEHP", 0.5}, {"Life", 1}, {"Mana", 1}, {"Speed", 0.005}}
 
 // rows where we differ from PoB-PoE2, each with its cause; a pin that starts matching fails
-var comparePowerDivergent = map[string]string{
-	// Item.lua:2907 leaves activeBondedState nil after BuildModList, so the copy keeps its parsed armour after
-	// NormaliseQuality; calculator2 rebuilds the slot lists on the first read and takes the 20% quality
-	"TotalEHP Item|Twig Focus, Weapon 2": "Item:BuildModList activeBondedState",
-}
+var comparePowerDivergent = map[string]string{}
 
 var colourCode = regexp.MustCompile(`\^x[0-9A-Fa-f]{6}|\^\d`)
 
@@ -167,12 +163,7 @@ func TestCompareItemsVsPoB(t *testing.T) {
 		for stat, d := range w.Delta {
 			got := b.Compare.Output[stat] - v.Base.Output[stat]
 			mismatch := math.Abs(got-d) > 1e-9*math.Max(1, math.Abs(d))
-			if pinned := slot == "Weapon 2" && stat == "TotalEHP"; pinned {
-				// the Twig Focus pin above: the same copy, the same cause
-				if !mismatch {
-					t.Errorf("%s: %s now matches PoB-PoE2; drop its pin", slot, stat)
-				}
-			} else if mismatch {
+			if mismatch {
 				t.Errorf("%s: %s %v, want %v", slot, stat, got, d)
 			}
 		}

@@ -576,13 +576,8 @@ func (h *offenceHit) offenceAilments() {
 					effMult = (1 - resist/100) * (1 + takenInc/100) * takenMore
 					globalOutput[ailment+"EffMult"] = effMult
 					if breakdown != nil && effMult != 1 {
-						sourceRes := takenType
 						//pob2:block:src/Modules/CalcOffence.lua:5391-5392
-						if env.ModDB.Flag(nil, "Enemy"+takenType+"ResistEqualToYours") {
-							sourceRes = "Your " + takenType + " Resistance"
-						} else if env.partyMembers().modDB.Flag(nil, "Enemy"+takenType+"ResistEqualToYours") {
-							sourceRes = "Party Member " + takenType + " Resistance"
-						}
+						sourceRes := enemyResistSource(env, takenType)
 						globalBreakdown.set(ailment+"EffMult", breakdown.effMult(takenType, resist, 0, takenInc, effMult, takenMore, sourceRes, true, 0, 0, calcPenResist(resist, 0, 0), 0, 0)...)
 					}
 				}
@@ -1159,6 +1154,10 @@ func (h *offenceHit) offenceDots() {
 			takenMore := enemyDB.More(nil, "DamageTaken", "DamageTakenOverTime", "ChaosDamageTaken", "ChaosDamageTakenOverTime")
 			effMult = (1 - resist/100) * (1 + takenInc/100) * takenMore
 			output["DecayEffMult"] = effMult
+			//pob2:block:src/Modules/CalcOffence.lua:5986-5989
+			if breakdown := actor.Breakdown; breakdown != nil && effMult != 1 {
+				breakdown.set("DecayEffMult", breakdown.effMult("Chaos", resist, 0, takenInc, effMult, takenMore, enemyResistSource(env, "Chaos"), true, 0, 0, calcPenResist(resist, 0, 0), 0, 0)...)
+			}
 		}
 		inc := skillModList.Sum(mod.TypeIncrease, dotCfg, "Damage", "ChaosDamage")
 		more := skillModList.More(dotCfg, "Damage", "ChaosDamage")
@@ -1258,6 +1257,10 @@ func (h *offenceHit) offenceDots() {
 				}
 				effMult = (1 - resist/100) * (1 + takenInc/100) * takenMore
 				output[damageType+"DotEffMult"] = effMult
+				//pob2:block:src/Modules/CalcOffence.lua:6102-6105
+				if breakdown := actor.Breakdown; breakdown != nil && effMult != 1 {
+					breakdown.set(damageType+"DotEffMult", breakdown.effMult(damageType, resist, 0, takenInc, effMult, takenMore, enemyResistSource(env, damageType), true, 0, 0, calcPenResist(resist, 0, 0), 0, 0)...)
+				}
 			}
 			// Variables below calculate DOT damage
 			names := []string{"Damage", damageType + "Damage"}
@@ -1501,4 +1504,16 @@ func (h *offenceHit) offenceCombinedDPS() {
 	output["CullingDPS"] = output["CombinedDPS"] * (bestCull - 1)
 	output["ReservationDPS"] = output["CombinedDPS"] * (output["ReservationDpsMultiplier"] - 1)
 	output["CombinedDPS"] = output["CombinedDPS"] * bestCull * output["ReservationDpsMultiplier"]
+}
+
+// enemyResistSource is the resistance a damage over time breakdown names.
+//
+//pob2:block:src/Modules/CalcOffence.lua:6103
+func enemyResistSource(env *Environment, damageType string) string {
+	if env.ModDB.Flag(nil, "Enemy"+damageType+"ResistEqualToYours") {
+		return "Your " + damageType + " Resistance"
+	} else if env.partyMembers().modDB.Flag(nil, "Enemy"+damageType+"ResistEqualToYours") {
+		return "Party Member " + damageType + " Resistance"
+	}
+	return damageType
 }

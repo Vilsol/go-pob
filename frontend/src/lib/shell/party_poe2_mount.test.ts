@@ -166,6 +166,28 @@ describe('the PoE2 Party page', () => {
     await waitFor(() => expect(view()?.output.CombinedDPS).toBeCloseTo(spark.with.player.CombinedDPS, 6));
   });
 
+  it('turns on Export Support and shows what PoB-PoE2 exports, which another build imports', async () => {
+    const exports = await oracle<Record<string, { name: string; text: string }[]>>('poe2_party_export.json');
+    const want = exports['party_giver.xml'];
+    poe2Build.set(await worker2Instance.Open(await readFile(resolve(process.cwd(), '../calculator2/testdata/party_giver.xml'), 'utf8')));
+    issued.length = 0;
+    const page = render(AppParty);
+    const exp = within(await page.findByRole('region', { name: 'Party export' }, { timeout: 10_000 }));
+    expect(exp.queryByRole('textbox')).toBeNull();
+    await fireEvent.click(exp.getByRole('checkbox', { name: 'Export Support' }));
+    await waitFor(() => expect(exp.getAllByRole('textbox').map((t) => t.getAttribute('aria-label'))).toEqual(want.map((p) => `${p.name} export`)), {
+      timeout: 10_000
+    });
+    expect(issued).toContain('SetExportParty');
+    const aura = exp.getByRole<HTMLTextAreaElement>('textbox', { name: 'Aura export' }).value;
+    expect(aura).toContain('Purity of Fire\n120\n36|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura');
+    const code = encode(worker2Instance.Serialize());
+    cleanup();
+    const receiver = await open('warrior_dual_mace.xml');
+    await importCode(receiver, code);
+    await waitFor(() => expect(worker2Instance.GetParty()?.buffers.Aura).toBe(aura), { timeout: 10_000 });
+  });
+
   it('refuses a PoE1 build code', async () => {
     const page = await open('sorceress_spark.xml');
     const imp = await importCode(page, encode('<PathOfBuilding><Build level="1"/></PathOfBuilding>'));

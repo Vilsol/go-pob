@@ -897,7 +897,7 @@ func (i *Item) BuildModList() {
 	i.SocketedJewelEffectModifier = 1 + calcLocal(&baseList, "SocketedJewelEffect", mod.TypeIncrease, 0)/100
 	i.BaseModList = baseList
 	i.BuildModListsForSlots(baseList)
-	i.activeBondedSet = false
+	i.activeBondedSet, i.activeBonded = true, ""
 }
 
 // GetActiveModListForSlotNum returns the item's mods for a slot (slotNum 0 is Lua's nil), adding the

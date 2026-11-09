@@ -354,6 +354,7 @@ wasm2/exposition/node_power.go       GO-NATIVE  crystalline binding surface for 
 wasm2/exposition/main.go            GO-NATIVE  crystalline binding surface for the PoE2 frontend
 wasm2/exposition/notes.go           GO-NATIVE  crystalline binding surface for the PoE2 Notes page (NotesTab.lua's text, and the rich document kept beside it)
 wasm2/exposition/party.go           PORT       src/Classes/PartyTab.lua
+wasm2/exposition/party_export.go    PORT       src/Classes/ImportTab.lua,src/Classes/PartyTab.lua
 wasm2/exposition/pages.go           GO-NATIVE  crystalline binding surface for the PoE2 Skills and Items pages (SkillListControl and AddItemTooltip's title and mod lines)
 wasm2/exposition/skills.go          GO-NATIVE  crystalline binding surface for the PoE2 Skills page's edits (SkillsTab.lua's controls over the last calculation)
 wasm2/exposition/tree.go            GO-NATIVE  crystalline binding surface for the PoE2 frontend's passive tree
@@ -593,6 +594,7 @@ calculator2/calc_perform_buffs.go PORT         src/Modules/CalcPerform.lua,src/M
 calculator2/calc_perform_requirements.go PORT    src/Modules/CalcPerform.lua,src/Modules/CalcSetup.lua
 calculator2/calc_perform_weapon.go PORT        src/Modules/CalcPerform.lua
 calculator2/calc_perform_party.go PORT        src/Modules/CalcPerform.lua
+calculator2/party_export.go         PORT       src/Classes/PartyTab.lua,src/Modules/ModTools.lua,src/Modules/CalcPerform.lua
 calculator2/party_tab.go            PORT       src/Classes/PartyTab.lua,src/Modules/ModTools.lua,src/Modules/CalcPerform.lua
 calculator2/calc_minion.go          PORT       src/Modules/CalcActiveSkill.lua,src/Modules/CalcPerform.lua,src/Modules/Build.lua
 calculator2/calc_offence.go PORT              src/Modules/CalcOffence.lua,src/Modules/CalcTools.lua,src/Modules/Common.lua

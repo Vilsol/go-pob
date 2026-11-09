@@ -11,6 +11,7 @@
   import PartyPage from '$lib/design/PartyPage.svelte';
   import { PARTY_CATEGORIES, type PartyCategory, type PartyEntry } from '$lib/design/party';
   import { linkCode } from './link_import';
+  import AppPartyExport from './AppPartyExport.svelte';
   import { NOT_A_CODE, importFailure } from '$lib/design/share';
   import type { PartyMemberView, PartyView } from '$lib/go/party_view';
 
@@ -216,4 +217,5 @@
     {onmember}
     {onremove}
     {onbuffer} />
+  {#if poe2}<AppPartyExport />{/if}
 {/if}
