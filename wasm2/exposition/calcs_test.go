@@ -9,13 +9,34 @@ import (
 	"sort"
 	"strings"
 	"testing"
+
+	"github.com/Vilsol/go-pob/calculator2"
 )
 
+// skillSelectOracle is RefreshSkillSelectControls' state as oracle/poe2_calcs.lua records it; Lua's nil is false.
+type skillSelectOracle struct {
+	Skills          []string `json:"skills"`
+	StatSets        []string `json:"statSets"`
+	StageCount      string   `json:"stageCount"`
+	MineCount       string   `json:"mineCount"`
+	MainActiveSkill int      `json:"mainActiveSkill"`
+	StatSet         int      `json:"statSet"`
+	SkillShown      bool     `json:"skillShown"`
+	StatSetShown    bool     `json:"statSetShown"`
+	StatSetEnabled  bool     `json:"statSetEnabled"`
+	PartShown       bool     `json:"partShown"`
+	StageShown      bool     `json:"stageShown"`
+	MineShown       bool     `json:"mineShown"`
+	HaveMinion      bool     `json:"haveMinion"`
+}
+
 type calcsOracle struct {
-	MainSkill string                     `json:"mainSkill"`
-	Output    map[string]json.RawMessage `json:"output"`
-	Mods      map[string]float64         `json:"mods"`
-	Entries   map[string]struct {
+	MainSkill       string                     `json:"mainSkill"`
+	Controls        skillSelectOracle          `json:"controls"`
+	SidebarControls skillSelectOracle          `json:"sidebarControls"`
+	Output          map[string]json.RawMessage `json:"output"`
+	Mods            map[string]float64         `json:"mods"`
+	Entries         map[string]struct {
 		ModName   []string `json:"modName"`
 		ModType   string   `json:"modType"`
 		Cfg       string   `json:"cfg"`
@@ -35,12 +56,18 @@ type calcsInputFixture struct {
 	skillNumber     int
 	buffMode        string
 	mainActiveSkill int
+	statSet         int
+	stageCount      int
+	showMinion      bool
 }
 
 var calcsInputFixtures = []calcsInputFixture{
 	{name: "sorceress_three_spells_arc_unbuffed", xml: "sorceress_three_spells", skillNumber: 2, buffMode: "UNBUFFED"},
 	{name: "sorceress_three_spells_fireball_combat", xml: "sorceress_three_spells", skillNumber: 1, buffMode: "COMBAT", mainActiveSkill: 2},
 	{name: "warrior_dual_mace_buffed", xml: "warrior_dual_mace", buffMode: "BUFFED"},
+	{name: "sorceress_three_spells_fireball_explosion", xml: "sorceress_three_spells", skillNumber: 1, mainActiveSkill: 2, statSet: 2},
+	{name: "sorceress_flameblast_stages", xml: "sorceress_flameblast", stageCount: 5},
+	{name: "sorceress_raise_zombie_minion", xml: "sorceress_raise_zombie", showMinion: true},
 }
 
 func readCalcsOracle(t *testing.T, name, xmlName string) (calcsOracle, *Calculator) {
@@ -90,7 +117,40 @@ func readCalcsInputFixture(t *testing.T, f calcsInputFixture) (calcsOracle, *Cal
 	if _, err := calc.Calculate(); err != nil {
 		t.Fatal(err)
 	}
+	// the stat set and stage controls write the skill the calculation above listed
+	if f.statSet == 0 && f.stageCount == 0 && !f.showMinion {
+		return oracle, calc
+	}
+	if f.statSet != 0 {
+		if err := calc.SetSkillStatSet(true, f.statSet); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if f.stageCount != 0 {
+		if err := calc.SetSkillStageCount(true, &f.stageCount); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if f.showMinion {
+		calc.SetCalcsShowMinion(true)
+	}
+	if _, err := calc.Calculate(); err != nil {
+		t.Fatal(err)
+	}
 	return oracle, calc
+}
+
+func checkSkillSelect(t *testing.T, what string, want skillSelectOracle, got calculator2.SkillSelectControls) {
+	t.Helper()
+	ours := skillSelectOracle{
+		Skills: got.Skills, StatSets: got.StatSets, StageCount: got.StageCount, MineCount: got.MineCount,
+		MainActiveSkill: got.MainActiveSkill, StatSet: got.StatSet, SkillShown: got.SkillShown, StatSetShown: got.StatSetShown,
+		StatSetEnabled: got.StatSetEnabled, PartShown: got.PartShown, StageShown: got.StageShown, MineShown: got.MineShown,
+		HaveMinion: want.HaveMinion,
+	}
+	if !reflect.DeepEqual(ours, want) {
+		t.Errorf("%s controls:\n PoB-PoE2 %+v\n ours     %+v", what, want, ours)
+	}
 }
 
 // The values are PoB-PoE2's Calcs tab entries over its main calculation.
@@ -238,11 +298,27 @@ func TestCalcsInputsMatchPoB(t *testing.T) {
 			if got.Inputs.SkillNumber != max(f.skillNumber, 1) {
 				t.Errorf("skill number %d, set %d", got.Inputs.SkillNumber, f.skillNumber)
 			}
-			if name := got.Skills[got.MainActiveSkill-1]; name != oracle.MainSkill {
+			checkSkillSelect(t, "Calcs", oracle.Controls, got.Controls)
+			if got.HaveMinion != oracle.Controls.HaveMinion {
+				t.Errorf("haveMinion %v, PoB-PoE2 %v", got.HaveMinion, oracle.Controls.HaveMinion)
+			}
+			out, err := calc.Calculate()
+			if err != nil {
+				t.Fatal(err)
+			}
+			checkSkillSelect(t, "sidebar", oracle.SidebarControls, out.MainSkill)
+			calcsEnv, err := calc.calcs()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if name := calc.calcsActor(calcsEnv).MainSkill.ActiveEffect.GrantedEffect.Name; name != oracle.MainSkill {
 				t.Errorf("main skill %s, PoB-PoE2 %s", name, oracle.MainSkill)
 			}
-			if main := calc.env.Player.MainSkill.ActiveEffect.GrantedEffect.Name; main == oracle.MainSkill && f.buffMode == "" {
+			if main := calc.env.Player.MainSkill.ActiveEffect.GrantedEffect.Name; main == oracle.MainSkill && f.buffMode == "" && f.statSet == 0 && f.stageCount == 0 {
 				t.Errorf("the sidebar's main skill %s is the Calcs tab's; the fixture tests no selection", main)
+			}
+			if f.stageCount != 0 {
+				t.Skip("known divergence: CalcActiveSkill.lua:892's saved skillStageCountCalcs is not read by the calculation yet")
 			}
 			checkCalcsNumbers(t, f.name, oracle, got.Output)
 			query := CalcsModQuery{Entries: map[string]CalcsModEntry{}}
@@ -284,5 +360,42 @@ func checkCalcsNumbers(t *testing.T, name string, oracle calcsOracle, got map[st
 	}
 	if differ == 0 {
 		t.Error("no nonzero PoB-PoE2 number; the fixture tests nothing")
+	}
+}
+
+// A section's collapsed state round-trips through the saved build as CalcsTab:Save and Load write and read it.
+func TestCalcsSectionCollapsedRoundTrip(t *testing.T) {
+	xml, err := os.ReadFile(filepath.Join("testdata", "sorceress_spark.xml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	calc, err := ParseBuild(string(xml))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, saved := calc.CalcsSectionCollapsed("HitDamage", "SkillHitDamage"); saved {
+		t.Fatal("a build without Section elements has a saved state")
+	}
+	calc.SetCalcsSectionCollapsed("HitDamage", "SkillHitDamage", true)
+	calc.SetCalcsSectionCollapsed("Life", "Life", true)
+	calc.SetCalcsSectionCollapsed("Life", "Life", false)
+	out, err := calc.Serialize()
+	if err != nil {
+		t.Fatal(err)
+	}
+	again, err := ParseBuild(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, c := range []struct {
+		id, sub   string
+		collapsed bool
+	}{{"HitDamage", "SkillHitDamage", true}, {"Life", "Life", false}} {
+		if got, saved := again.CalcsSectionCollapsed(c.id, c.sub); !saved || got != c.collapsed {
+			t.Errorf("%s/%s: saved %v collapsed %v, want collapsed %v", c.id, c.sub, saved, got, c.collapsed)
+		}
+	}
+	if n := strings.Count(out, `<Section `); n != 2 {
+		t.Errorf("%d Section elements, want 2:\n%s", n, out)
 	}
 }

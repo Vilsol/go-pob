@@ -50,7 +50,7 @@ func (c *Calculator) CalcsMods(query CalcsModQuery) (map[string]float64, error) 
 	if err != nil {
 		return nil, err
 	}
-	actor := env.Player
+	actor := c.calcsActor(env)
 	out := make(map[string]float64, len(query.Entries))
 	for k, sectionData := range query.Entries {
 		modCfg := &moddb.ListCfg{}
@@ -83,6 +83,17 @@ func (c *Calculator) CalcsMods(query CalcsModQuery) (map[string]float64, error) 
 	return out, nil
 }
 
+// calcsActor is the actor the Calcs tab shows: the minion while Show Minion Stats is on and the calculation has one.
+//
+//pob2:block:src/Classes/CalcSectionControl.lua:249
+//pob2:block:src/Classes/CalcBreakdownControl.lua:49-50
+func (c *Calculator) calcsActor(env *calculator2.Environment) *calculator2.Actor {
+	if calculator2.ReadCalcsInputs(c.build).ShowMinion && env.Minion != nil {
+		return &env.Minion.Actor
+	}
+	return env.Player
+}
+
 // calcs is calcsTab.calcsEnv, the Calcs tab's own calculation after the last main one.
 //
 //pob2:block:src/Classes/CalcsTab.lua:512-513
@@ -96,9 +107,10 @@ func (c *Calculator) calcs() (*calculator2.Environment, error) {
 	return c.calcsEnv, nil
 }
 
-// CalcsOutputs is what the Calcs page reads from the Calcs tab's calculation's player: its number, true and string
-// outputs, its output.MainHand and output.OffHand tables (nil when the main skill does not attack with that hand), the
-// main skill's flags and truthy skill data, the tab's inputs and the shown socket group's active skills.
+// CalcsOutputs is what the Calcs page reads from the actor the Calcs tab's calculation shows: its number, true and
+// string outputs, its output.MainHand and output.OffHand tables (nil when the main skill does not attack with that
+// hand), the main skill's flags and truthy skill data, the tab's inputs and skill select controls, and whether the
+// player's main skill has a minion.
 type CalcsOutputs struct {
 	Output     map[string]float64
 	Flags      map[string]bool
@@ -108,9 +120,8 @@ type CalcsOutputs struct {
 	SkillFlags map[string]bool
 	SkillData  map[string]bool
 	Inputs     calculator2.CalcsInputs
-	// Skills and MainActiveSkill are the Active Skill dropdown's list and 1-based selection.
-	Skills          []string
-	MainActiveSkill int
+	Controls   calculator2.SkillSelectControls
+	HaveMinion bool
 }
 
 func (c *Calculator) CalcsOutputs() (*CalcsOutputs, error) {
@@ -118,7 +129,7 @@ func (c *Calculator) CalcsOutputs() (*CalcsOutputs, error) {
 	if err != nil {
 		return nil, err
 	}
-	p := env.Player
+	p := c.calcsActor(env)
 	flags := make(map[string]bool, len(p.OutputFlags))
 	for k, v := range p.OutputFlags {
 		if v {
@@ -129,18 +140,17 @@ func (c *Calculator) CalcsOutputs() (*CalcsOutputs, error) {
 	for k, v := range p.OutputStrings {
 		strs[k] = v
 	}
-	skills, mainActiveSkill := calculator2.CalcsMainSkill(env)
 	return &CalcsOutputs{
-		Output:          p.Output,
-		Flags:           flags,
-		Strings:         strs,
-		MainHand:        p.OutputMainHand,
-		OffHand:         p.OutputOffHand,
-		SkillFlags:      statSetFlags(p.MainSkill),
-		SkillData:       truthySkillData(p.MainSkill),
-		Inputs:          calculator2.ReadCalcsInputs(c.build),
-		Skills:          skills,
-		MainActiveSkill: mainActiveSkill,
+		Output:     p.Output,
+		Flags:      flags,
+		Strings:    strs,
+		MainHand:   p.OutputMainHand,
+		OffHand:    p.OutputOffHand,
+		SkillFlags: statSetFlags(p.MainSkill),
+		SkillData:  truthySkillData(p.MainSkill),
+		Inputs:     calculator2.ReadCalcsInputs(c.build),
+		Controls:   calculator2.SkillSelect(c.build, env, env.MainSocketGroup, true),
+		HaveMinion: statSetFlags(env.Player.MainSkill)["haveMinion"],
 	}, nil
 }
 
@@ -178,6 +188,47 @@ func (c *Calculator) SetMainActiveSkillCalcs(index int) error {
 	return calculator2.SetMainActiveSkillCalcs(c.build, c.env, index)
 }
 
+// SetSkillStatSet, SetSkillStageCount and SetSkillMineCount are the Stat Set, Skill Stages and Active Mines controls
+// of the sidebar (calcs false) or the Calcs tab; a nil count clears the box.
+func (c *Calculator) SetSkillStatSet(calcs bool, index int) error {
+	env, group, err := c.skillSelectEnv(calcs)
+	if err != nil {
+		return err
+	}
+	return calculator2.SetSkillStatSet(c.build, env, group, calcs, index)
+}
+
+func (c *Calculator) SetSkillStageCount(calcs bool, count *int) error {
+	env, group, err := c.skillSelectEnv(calcs)
+	if err != nil {
+		return err
+	}
+	return calculator2.SetSkillStageCount(c.build, env, group, calcs, count)
+}
+
+func (c *Calculator) SetSkillMineCount(calcs bool, count *int) error {
+	env, group, err := c.skillSelectEnv(calcs)
+	if err != nil {
+		return err
+	}
+	return calculator2.SetSkillMineCount(c.build, env, group, calcs, count)
+}
+
+// skillSelectEnv is the calculation whose skill list the controls show, and the group they show.
+func (c *Calculator) skillSelectEnv(calcs bool) (*calculator2.Environment, int, error) {
+	env := c.env
+	if calcs {
+		var err error
+		if env, err = c.calcs(); err != nil {
+			return nil, 0, err
+		}
+	}
+	if env == nil {
+		return nil, 0, notCalculatedError{}
+	}
+	return env, env.MainSocketGroup, nil
+}
+
 // SyncCalcsSkillSelection is a compared build's load pointing its Calcs tab at its main skill.
 func (c *Calculator) SyncCalcsSkillSelection() {
 	calculator2.SyncCalcsSkillSelection(c.build)
@@ -190,4 +241,14 @@ func (c *Calculator) CompareSkillBreakdown(name string) ([]calculator2.CompareSk
 		return nil, err
 	}
 	return env.CompareSkillBreakdown(name), nil
+}
+
+// SetCalcsSectionCollapsed is a Calcs section's +/- toggle.
+func (c *Calculator) SetCalcsSectionCollapsed(id, subsection string, collapsed bool) {
+	calculator2.SetCalcsSectionCollapsed(c.build, id, subsection, collapsed)
+}
+
+// CalcsSectionCollapsed is a subsection's saved collapsed state, and whether the build saved one.
+func (c *Calculator) CalcsSectionCollapsed(id, subsection string) (bool, bool) {
+	return calculator2.CalcsSectionCollapsed(c.build, id, subsection)
 }

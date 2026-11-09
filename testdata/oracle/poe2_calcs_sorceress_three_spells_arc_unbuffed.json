@@ -294,6 +294,21 @@
     "Ward:0:5:0":"0",
     "Ward:0:6:0":"0 (0%)"
   },
+  "controls":{
+    "haveMinion":false,
+    "mainActiveSkill":1,
+    "mineCount":"",
+    "mineShown":false,
+    "partShown":false,
+    "skillShown":true,
+    "skills":["Arc"],
+    "stageCount":"",
+    "stageShown":false,
+    "statSet":1,
+    "statSetEnabled":false,
+    "statSetShown":true,
+    "statSets":["Arc"]
+  },
   "enabled":{
     "Armour":true,
     "Attributes":true,
@@ -2633,6 +2648,20 @@
     "totalEnemyDamageIn":4246,
     "totalTakenDamage":4309.6899999999996,
     "totalTakenHit":5347.9334999999992
+  },
+  "sidebarControls":{
+    "mainActiveSkill":1,
+    "mineCount":"",
+    "mineShown":false,
+    "partShown":false,
+    "skillShown":true,
+    "skills":["Spark","Fireball"],
+    "stageCount":"",
+    "stageShown":false,
+    "statSet":1,
+    "statSetEnabled":true,
+    "statSetShown":true,
+    "statSets":["Base","Cold-Infused"]
   },
   "skillData":{
     "CritChance":true,

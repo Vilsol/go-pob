@@ -5,18 +5,28 @@
   import Select from './Select.svelte';
   import Checkbox from './Checkbox.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
-  import { LISTED, REALMS, isTradeUnique, tradeSearchUrl, type TradeDefence, type TradeItem } from './trade';
+  import { LISTED, REALMS, isTradeUnique, tradeSearchUrl, type TradeDefence, type TradeItem, type TradeOptions } from './trade';
 
   // CompareBuySimilar.lua:281-520
   // CompareBuySimilar.lua:436-444
-  type Props = { open?: boolean; item?: TradeItem; slot?: string; defences?: TradeDefence[]; onsearch: (url: string) => void };
-  let { open = $bindable(false), item, slot, defences = [], onsearch }: Props = $props();
+  // realms: the Realm dropdown's choices, which a single choice locks (CompareBuySimilar.lua:385-396, PoB-PoE2); url: the
+  // game's own URL builder in place of PoE1's
+  type Props = {
+    open?: boolean;
+    item?: TradeItem;
+    slot?: string;
+    defences?: TradeDefence[];
+    realms?: [string, string][];
+    url?: (o: TradeOptions) => Promise<string | undefined>;
+    onsearch: (url: string) => void;
+  };
+  let { open = $bindable(false), item, slot, defences = [], realms = REALMS, url, onsearch }: Props = $props();
   let defenceRows = $state<{ on: boolean; min: string; max: string }[]>([]);
   $effect(() => {
     defenceRows = defences.map((d) => ({ on: false, min: String(Math.floor(d.value)), max: '' }));
   });
 
-  let realm = $state('pc');
+  let realm = $state(realms[0]?.[1] ?? 'pc');
   let league = $state('Standard');
   let listed = $state('securable');
   let baseType = $state(false);
@@ -30,7 +40,8 @@
   {#if item}
     <div class="flex flex-col gap-3 text-13">
       <div class="grid grid-cols-3 gap-2">
-        <FloatingLabel label="Realm"><Select options={REALMS.map(([label, value]) => ({ label, value }))} bind:value={realm} /></FloatingLabel>
+        <FloatingLabel label="Realm"
+          ><Select options={realms.map(([label, value]) => ({ label, value }))} disabled={realms.length < 2} bind:value={realm} /></FloatingLabel>
         <FloatingLabel label="League"><Input aria-label="League" bind:value={league} /></FloatingLabel>
         <FloatingLabel label="Listed"><Select options={LISTED.map(([label, value]) => ({ label, value }))} bind:value={listed} /></FloatingLabel>
       </div>
@@ -66,10 +77,16 @@
         const ticked = defences.flatMap((d, i) =>
           defenceRows[i]?.on ? [[d.tradeKey, { min: num(defenceRows[i].min), max: num(defenceRows[i].max) }] as const] : []
         );
-        onsearch(
-          tradeSearchUrl(item, slot, { realm, league, listed, baseType, ilvlMin: num(ilvlMin), ilvlMax: num(ilvlMax), defences: Object.fromEntries(ticked) })
-        );
-        open = false;
+        const o: TradeOptions = { realm, league, listed, baseType, ilvlMin: num(ilvlMin), ilvlMax: num(ilvlMax), defences: Object.fromEntries(ticked) };
+        if (!url) {
+          onsearch(tradeSearchUrl(item, slot, o));
+          open = false;
+          return;
+        }
+        void url(o).then((u) => {
+          if (u) onsearch(u);
+          open = false;
+        });
       }} />
   {/snippet}
 </Dialog>

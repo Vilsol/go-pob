@@ -75,7 +75,9 @@ type Outputs struct {
 	// MainSocketGroup and MainActiveSkill are 1-based, as the calculation resolved them.
 	MainSocketGroup int
 	MainActiveSkill int
-	ConfigInputs    map[string]calculator2.ConfigValue
+	// MainSkill is the sidebar's skill select controls.
+	MainSkill    calculator2.SkillSelectControls
+	ConfigInputs map[string]calculator2.ConfigValue
 	// SkillDPS is output.SkillDPS, the Full DPS rows.
 	SkillDPS []calculator2.SkillDPS
 }
@@ -211,6 +213,7 @@ func (c *Calculator) Calculate() (*Outputs, error) {
 		SkillData:       truthySkillData(env.Player.MainSkill),
 		SocketGroups:    calculator2.SocketGroupViews(env),
 		MainSocketGroup: env.MainSocketGroup,
+		MainSkill:       calculator2.SkillSelect(c.build, env, env.MainSocketGroup, false),
 		ConfigInputs:    calculator2.ConfigInputs(c.build),
 		SkillDPS:        env.Player.SkillDPS,
 	}

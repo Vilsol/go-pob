@@ -1,5 +1,5 @@
 -- usage (from PoB-PoE2's src/): luajit poe2_calcs.lua <build.xml> <out.json> [skill_number=<n>] [misc_buffMode=<mode>]
---   [mainActiveSkillCalcs=<n>]
+--   [mainActiveSkillCalcs=<n>] [statSetCalcs=<n>] [skillStageCountCalcs=<n>] [showMinion=true]
 -- Records the Calcs tab PoB-PoE2 draws for a build over its CALCS calculation, after setting the tab's inputs and the
 -- shown socket group's active skill the arguments name: the actor's number, true and string outputs
 -- (and its MainHand and OffHand tables'),
@@ -41,8 +41,55 @@ if next(set) then
 	end
 	build.buildFlag = true
 	runCallback("OnFrame")
+	-- CalcsTab.lua:65-91, 101-105: the shown skill is the one the calculation above listed
+	if set.statSetCalcs or set.skillStageCountCalcs then
+		local group = build.skillsTab.socketGroupList[calcsTab.input.skill_number]
+		local activeEffect = group.displaySkillListCalcs[group.mainActiveSkillCalcs or 1].activeEffect
+		local srcInstance = activeEffect.srcInstance
+		if set.statSetCalcs then
+			srcInstance.statSetCalcs = srcInstance.statSetCalcs or {}
+			srcInstance.statSetCalcs[activeEffect.grantedEffect.id] = tonumber(set.statSetCalcs)
+		end
+		if set.skillStageCountCalcs then
+			srcInstance.skillStageCountCalcs = tonumber(set.skillStageCountCalcs)
+		end
+	end
+	if set.showMinion then
+		calcsTab.input.showMinion = set.showMinion == "true"
+	end
+	build.buildFlag = true
+	runCallback("OnFrame")
 end
-local actor = calcsTab.calcsEnv.player
+local player = calcsTab.calcsEnv.player
+local actor = calcsTab.input.showMinion and calcsTab.calcsEnv.minion or player
+
+-- Build.lua:2059-2195: the Calcs tab's skill select controls, and the sidebar's
+local function selectControls(controls)
+	local function list(c)
+		local out = {}
+		for i, v in ipairs(c.list) do
+			out[i] = type(v) == "table" and v.label or v
+		end
+		return out
+	end
+	return {
+		skills = list(controls.mainSkill), mainActiveSkill = controls.mainSkill.selIndex, skillShown = controls.mainSkill.shown ~= false,
+		statSets = list(controls.statSet), statSet = controls.statSet.selIndex, statSetShown = controls.statSet.shown, statSetEnabled = controls.statSet.enabled,
+		partShown = controls.mainSkillPart.shown, stageShown = controls.mainSkillStageCount.shown, stageCount = controls.mainSkillStageCount.buf,
+		mineShown = controls.mainSkillMineCount.shown, mineCount = controls.mainSkillMineCount.buf,
+	}
+end
+local skillSelect
+for _, section in ipairs(calcsTab.sectionList) do
+	if section.id == "SkillSelect" then
+		skillSelect = section
+	end
+end
+build:RefreshSkillSelectControls(skillSelect.controls, calcsTab.input.skill_number, "Calcs")
+local controls = selectControls(skillSelect.controls)
+controls.haveMinion = calcsTab:CheckFlag({ flag = "haveMinion" }, player, player) and true or false
+build:RefreshSkillSelectControls(build.controls, build.mainSocketGroup, "")
+local sidebarControls = selectControls(build.controls)
 local sections = LoadModule("Modules/CalcSections")
 
 -- dkjson writes tostring's 14 digits; the frontend rounds the value itself, so it gets all 17
@@ -103,7 +150,7 @@ local mods, entries, cells, extras, enabled = {}, {}, {}, {}, {}
 for _, s in ipairs(sections) do
 	local id = s[2]
 	local sub1 = s[5][1]
-	local on = calcsTab:CheckFlag({ flag = sub1.data.flag, notFlag = sub1.data.notFlag }, actor, actor) and true or false
+	local on = calcsTab:CheckFlag({ flag = sub1.data.flag, notFlag = sub1.data.notFlag }, actor, player) and true or false
 	local any = false
 	for j, sub in ipairs(s[5]) do
 		for k, row in ipairs(sub.data) do
@@ -118,11 +165,11 @@ for _, s in ipairs(sections) do
 						entries[cell .. ":" .. (m - 1)] = { modName = type(e.modName) == "table" and e.modName or { e.modName }, modType = e.modType, cfg = e.cfg, enemy = e.enemy, modSource = e.modSource, actor = e.actor }
 					end
 				end
-				if on and calcsTab:CheckFlag(row, actor, actor) and col.format and calcsTab:CheckFlag(col, actor, actor) then
+				if on and calcsTab:CheckFlag(row, actor, player) and col.format and calcsTab:CheckFlag(col, actor, player) then
 					cells[cell] = formatCalcStr(col.format, actor, col)
 				end
 			end
-			if on and calcsTab:CheckFlag(row, actor, actor) then
+			if on and calcsTab:CheckFlag(row, actor, player) then
 				any = true
 			end
 		end
@@ -134,6 +181,6 @@ for _, s in ipairs(sections) do
 end
 
 local o = assert(io.open(outPath, "w"))
-o:write(json.encode(stable({ mainSkill = actor.mainSkill.activeEffect.grantedEffect.name, output = output, skillFlags = flags, skillData = skillData, mods = mods, entries = entries, cells = cells, extras = extras, enabled = enabled }), { indent = true }))
+o:write(json.encode(stable({ mainSkill = actor.mainSkill.activeEffect.grantedEffect.name, controls = controls, sidebarControls = sidebarControls, output = output, skillFlags = flags, skillData = skillData, mods = mods, entries = entries, cells = cells, extras = extras, enabled = enabled }), { indent = true }))
 o:write("\n")
 o:close()

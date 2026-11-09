@@ -102,10 +102,13 @@ export type TreeModel = {
   reset(): void;
 };
 
+// Build.lua:382-389, 2103-2109 (PoB-PoE2): the Stat Set dropdown, which PoE1 has none of
+export type StatSetControls = { StatSets?: string[]; StatSet?: number; StatSetShown?: boolean; StatSetEnabled?: boolean };
+
 // CalcsTab.lua:40-119 over the latest calculation
 export type CalcsTabView = {
   sections: CalcsView;
-  controls?: calculator.MainSkillControls;
+  controls?: calculator.MainSkillControls & StatSetControls;
   // CalcsTab.lua:135-137
   lists?: { BuffList?: string; CombatList?: string; CurseList?: string };
   haveMinion?: boolean;

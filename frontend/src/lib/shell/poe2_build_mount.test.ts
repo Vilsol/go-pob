@@ -332,6 +332,26 @@ describe('the PoE2 config and main skill writes', () => {
     await vi.waitFor(() => expect(get(poe2Build)?.output.TotalDPS).toBeCloseTo(25.020454545455, 9));
     expect(issued).toEqual(['SetMainActiveSkill(2)', 'SetMainSocketGroup(2)']);
   }, 120_000);
+
+  // Build.lua:402-408, 2128-2131 (PoB-PoE2): a multi-stage skill's Stages box, which Save writes as skillStageCount;
+  // the box's text is PoB-PoE2's (oracle/poe2_calcs.lua)
+  it("shows a multi-stage skill's Stages box and saves what it is set to", async () => {
+    const oracle = JSON.parse(await readFile(resolve(ORACLE, 'poe2_calcs_sorceress_flameblast_stages.json'), 'utf8')) as {
+      sidebarControls: { stageShown: boolean; stageCount: string };
+    };
+    poe2Build.set(await worker2Instance.Open(await fixture('sorceress_flameblast.xml')));
+    issued.length = 0;
+    const page = render(AppSidebar);
+    const box = within(page.getByRole('complementary', { name: 'Main skill and stats' }));
+    const stages = await vi.waitFor(() => box.getByRole<HTMLInputElement>('textbox', { name: 'Stages' }));
+    expect(oracle.sidebarControls.stageShown).toBe(true);
+    expect(stages.value).toBe(oracle.sidebarControls.stageCount);
+    expect(stages.disabled).toBe(false);
+    await fireEvent.input(stages, { target: { value: '4' } });
+    await vi.waitFor(() => expect(issued).toEqual(['SetSkillStageCount(false,4)']));
+    await vi.waitFor(() => expect(get(poe2Engine.mainSkill)?.StageCount).toBe('4'));
+    expect(worker2Instance.Serialize()).toMatch(/nameSpec="Flameblast"[^>]* skillStageCount="4"/);
+  }, 120_000);
 });
 
 // TreeTab.lua:355-364, SkillsTab.lua:594-599 (PoB-PoE2): the tabs' own undo binds the keys only when no whole-build
@@ -563,7 +583,7 @@ describe('the PoE2 Calcs page', () => {
     // Bleed:0:6:0 and Bleed:0:7:0
     await vi.waitFor(() => expect(row('MH Source Physical')?.textContent).toContain('7 to 12'));
     expect(row('OH Source Physical')?.textContent).toContain('8 to 13');
-    expect(issued.toSorted()).toEqual(['CalcsInputs()', 'CalcsPage()']);
+    expect(issued.filter((c) => !c.startsWith('GetCalcsSectionsCollapsed(')).toSorted()).toEqual(['CalcsInputs()', 'CalcsPage()']);
   }, 120_000);
 
   // CalcsTab.lua:41-177, 512-513 (PoB-PoE2): the tab calculates its own socket group, active skill and mode, and the
@@ -626,7 +646,7 @@ describe('the PoE2 Calcs page', () => {
     expect(shown.length).toBeGreaterThan(5);
     expect(shown).toEqual(want);
     expect(cells(row('Base from Gear'))).toEqual(['90']);
-    expect(issued.toSorted()).toEqual(['CalcsInputs()', 'CalcsPage()']);
+    expect(issued.filter((c) => !c.startsWith('GetCalcsSectionsCollapsed(')).toSorted()).toEqual(['CalcsInputs()', 'CalcsPage()']);
 
     // the mod cells follow a recalculation
     const set = await worker2Instance.SetConfigOption('resistancePenalty', 0);
@@ -635,6 +655,82 @@ describe('the PoE2 Calcs page', () => {
     const resists = within(page.getByRole('region', { name: 'Calculations' })).getByRole('region', { name: 'Resists' });
     await vi.waitFor(() => expect(resists.textContent).toContain('45%'));
     await worker2Instance.SetConfigOption('resistancePenalty', -60);
+  }, 120_000);
+
+  // CalcsTab.lua:65-74 and Build.lua:2103-2109 (PoB-PoE2): the shown skill's stat set; the values are PoB-PoE2's
+  // (oracle/poe2_calcs.lua with statSetCalcs=2)
+  it("picks the shown skill's stat set, apart from the sidebar's", async () => {
+    const oracle = JSON.parse(await readFile(resolve(ORACLE, 'poe2_calcs_sorceress_three_spells_fireball_explosion.json'), 'utf8')) as {
+      output: Record<string, number>;
+      controls: { statSets: string[] };
+    };
+    const sidebar = await worker2Instance.Open(await fixture('sorceress_three_spells.xml'));
+    poe2Build.set(sidebar);
+    issued.length = 0;
+    const page = render(AppCalcs);
+    await vi.waitFor(() => within(page.getByRole('region', { name: 'Calculations' })).getByRole('region', { name: 'Life' }), { timeout: 60_000 });
+    const skill = within(page.container).getByRole<HTMLSelectElement>('combobox', { name: 'Active Skill' });
+    skill.value = '2';
+    await fireEvent.change(skill);
+    const statSet = await vi.waitFor(() => {
+      const box = within(page.container).getByRole<HTMLSelectElement>('combobox', { name: 'Stat Set' });
+      expect([...box.options].map((o) => o.text)).toEqual(oracle.controls.statSets);
+      return box;
+    });
+    expect(statSet.disabled).toBe(false);
+    statSet.value = '2';
+    await fireEvent.change(statSet);
+    await vi.waitFor(() => expect(worker2Instance.CalcsPage().output.TotalDPS).toBe(oracle.output.TotalDPS));
+    await vi.waitFor(() => expect(statSet.value).toBe('2'));
+    expect((get(poe2Build) as Poe2Calc | undefined)?.output.TotalDPS).toBe(sidebar.output.TotalDPS);
+    expect(issued.filter((c) => c.startsWith('Set'))).toEqual(['SetMainActiveSkillCalcs(2)', 'SetSkillStatSet(true,2)']);
+  }, 120_000);
+
+  // CalcsTab.lua:101-105, 434 (PoB-PoE2): Show Minion Stats shows the minion's sections; the cells are PoB-PoE2's
+  // (oracle/poe2_calcs.lua with showMinion=true)
+  it('shows the minion with Show Minion Stats', async () => {
+    const { pobPlain } = await import('$lib/design/pob_text');
+    const oracle = JSON.parse(await readFile(resolve(ORACLE, 'poe2_calcs_sorceress_raise_zombie_minion.json'), 'utf8')) as {
+      cells: Record<string, string>;
+      output: Record<string, number>;
+    };
+    poe2Build.set(await worker2Instance.Open(await fixture('sorceress_raise_zombie.xml')));
+    issued.length = 0;
+    const page = render(AppCalcs);
+    const lifeOf = () => within(within(page.container).getByRole('region', { name: 'Calculations' })).getByRole('region', { name: 'Life' });
+    await vi.waitFor(lifeOf, { timeout: 60_000 });
+    const show = await vi.waitFor(() => within(page.container).getByRole<HTMLInputElement>('checkbox', { name: 'Show Minion Stats' }));
+    expect(show.checked).toBe(false);
+    await fireEvent.click(show);
+    await vi.waitFor(() => expect(worker2Instance.CalcsPage().output.TotalDPS).toBe(oracle.output.TotalDPS));
+    // a cell that moved with the switch says so after its value
+    const cells = (r: HTMLElement) => [...r.querySelectorAll<HTMLElement>('.font-mono > span')].map((c) => c.textContent?.trim().replace(/\(changed\)$/, ''));
+    const want = Object.entries(oracle.cells)
+      .filter(([k]) => k.startsWith('Life:0:'))
+      .sort(([a], [b]) => Number(a.split(':')[2]) - Number(b.split(':')[2]))
+      .map(([, v]) => pobPlain(v));
+    expect(want.length).toBeGreaterThan(2);
+    await vi.waitFor(() => expect([...lifeOf().querySelectorAll<HTMLElement>('[data-key]')].flatMap((r) => cells(r))).toEqual(want));
+    expect(show.checked).toBe(true);
+    expect(issued).toContain('SetCalcsShowMinion(true)');
+  }, 120_000);
+
+  // CalcSectionControl.lua:34, 49-55 and CalcsTab.lua:218-233, 252-260 (PoB-PoE2): a section's toggle is saved with
+  // the build, and the page opens with it
+  it('keeps a collapsed section collapsed in the build', async () => {
+    poe2Build.set(await worker2Instance.Open(await fixture('sorceress_spark.xml')));
+    const lifeOf = (container: HTMLElement) => within(within(container).getByRole('region', { name: 'Calculations' })).getByRole('region', { name: 'Life' });
+    let page = render(AppCalcs);
+    const life = await vi.waitFor(() => lifeOf(page.container), { timeout: 60_000 });
+    const toggle = within(life).getByRole('button', { expanded: true });
+    await fireEvent.click(toggle);
+    await vi.waitFor(() => expect(worker2Instance.GetCalcsSectionsCollapsed([['Life', 'Life']])).toEqual([true]));
+    expect(worker2Instance.GetCalcsSectionsCollapsed([['Mana', 'Mana']])).toEqual([null]);
+    expect(worker2Instance.Serialize()).toContain('<Section collapsed="true" id="Life" subsection="Life"/>');
+    page.unmount();
+    page = render(AppCalcs);
+    const again = await vi.waitFor(() => lifeOf(page.container), { timeout: 60_000 });
+    await vi.waitFor(() => expect(within(again).getByRole('button', { expanded: false })).toBeTruthy());
   }, 120_000);
 });
 

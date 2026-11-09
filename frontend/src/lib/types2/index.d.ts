@@ -23,6 +23,24 @@ export type Result<T> = (
   unwrapOr(fallback: T): T;
 };
 export declare namespace calculator2 {
+  interface BuySimilarDefence {
+    readonly Label: string;
+    readonly TradeKey: string;
+    readonly Value: number;
+  }
+  interface BuySimilarDefenceFilter {
+    readonly Min?: number;
+    readonly Max?: number;
+    readonly Checked: boolean;
+  }
+  interface BuySimilarOptions {
+    readonly League: string;
+    readonly Listed: number;
+    readonly BaseType: boolean;
+    readonly IlvlMin?: number;
+    readonly IlvlMax?: number;
+    readonly Defences?: Array<calculator2.BuySimilarDefenceFilter>;
+  }
   interface CalcsInputs {
     readonly SkillNumber: number;
     readonly BuffMode: string;
@@ -181,6 +199,21 @@ export declare namespace calculator2 {
     readonly SkillPart: string;
     readonly Source: string;
   }
+  interface SkillSelectControls {
+    readonly Skills?: Array<string>;
+    readonly StatSets?: Array<string>;
+    readonly StageCount: string;
+    readonly MineCount: string;
+    readonly MainActiveSkill: number;
+    readonly StatSet: number;
+    readonly SkillShown: boolean;
+    readonly SkillEnabled: boolean;
+    readonly StatSetShown: boolean;
+    readonly StatSetEnabled: boolean;
+    readonly PartShown: boolean;
+    readonly StageShown: boolean;
+    readonly MineShown: boolean;
+  }
   interface SkillSetView {
     readonly ID: number;
     readonly Title: string;
@@ -226,6 +259,14 @@ export declare namespace exposition {
     readonly SkillSets?: Array<exposition.BuildPlannerSet>;
     readonly ItemSets?: Array<exposition.BuildPlannerSet>;
   }
+  interface BuySimilarView {
+    readonly Name: string;
+    readonly BaseName: string;
+    readonly Category: string;
+    readonly Defences?: Array<calculator2.BuySimilarDefence>;
+    readonly Listed?: Array<string>;
+    readonly Unique: boolean;
+  }
   interface CalcsBreakdown {
     readonly Lines?: Array<string>;
     readonly Radius: number;
@@ -263,8 +304,8 @@ export declare namespace exposition {
     readonly SkillFlags?: Record<string, boolean>;
     readonly SkillData?: Record<string, boolean>;
     readonly Inputs: calculator2.CalcsInputs;
-    readonly Skills?: Array<string>;
-    readonly MainActiveSkill: number;
+    readonly Controls: calculator2.SkillSelectControls;
+    readonly HaveMinion: boolean;
   }
   interface Calculator {
     AddDBItem(kind: string, name: string, equip: boolean, second: boolean): Result<number>;
@@ -276,6 +317,8 @@ export declare namespace exposition {
     BuildItemCompare(id: number): Promise<Result<(exposition.ItemCompareView | undefined)>>;
     BuildPlannerExport(meta: exposition.BuildPlannerMeta, specIndex: number, skillSetID: number, itemSetID: number): Result<exposition.BuildPlannerFile>;
     BuildPlannerSets(): exposition.BuildPlannerSets;
+    BuySimilar(slotName: string): Result<(exposition.BuySimilarView | undefined)>;
+    BuySimilarURL(slotName: string, o: calculator2.BuySimilarOptions): Result<string>;
     CalcsBreakdownModList(name: string, minion: boolean): Result<(Array<calculator2.ModSectionRow> | undefined)>;
     CalcsBreakdowns(): Result<(Record<string, Readonly<exposition.CalcsBreakdown>> | undefined)>;
     CalcsCompareModRows(sd: calculator2.ModSectionData): Result<(Array<calculator2.CompareModRow> | undefined)>;
@@ -283,6 +326,7 @@ export declare namespace exposition {
     CalcsModSection(sd: calculator2.ModSectionData): Result<(Array<calculator2.ModSectionRow> | undefined)>;
     CalcsMods(query: exposition.CalcsModQuery): Result<(Record<string, number> | undefined)>;
     CalcsOutputs(): Result<(exposition.CalcsOutputs | undefined)>;
+    CalcsSectionCollapsed(id: string, subsection: string): [boolean, boolean];
     Calculate(): Promise<Result<(exposition.Outputs | undefined)>>;
     ChangeTreeAscendancy(ascendClassID: number): Result<void>;
     ChangeTreeClass(classID: number, choice: number): Result<boolean>;
@@ -378,6 +422,7 @@ export declare namespace exposition {
     SetActiveSkillSet(id: number): Result<void>;
     SetActiveTreeSpec(specID: number): void;
     SetCalcsBuffMode(mode: string): void;
+    SetCalcsSectionCollapsed(id: string, subsection: string, collapsed: boolean): void;
     SetCalcsShowMinion(show: boolean): void;
     SetCalcsSkillNumber(n: number): void;
     SetCharacterLevelAutoMode(auto: boolean): void;
@@ -405,6 +450,9 @@ export declare namespace exposition {
     SetPartyMemberActive(i: number, active: boolean): void;
     SetPartyOptions(destination: string, appendMode: boolean, showAdvanceTools: boolean): void;
     SetRichNotes(plain: string, doc: string): void;
+    SetSkillMineCount(calcs: boolean, count: number | undefined): Result<void>;
+    SetSkillStageCount(calcs: boolean, count: number | undefined): Result<void>;
+    SetSkillStatSet(calcs: boolean, index: number): Result<void>;
     SetSlotActive(slot: string, state: boolean): Result<void>;
     SetSlotItem(slot: string, id: number): Result<void>;
     SetSocketGroupCount(index: number, count: number): Result<void>;
@@ -606,6 +654,7 @@ export declare namespace exposition {
     readonly SocketGroups?: Array<calculator2.SocketGroupView>;
     readonly MainSocketGroup: number;
     readonly MainActiveSkill: number;
+    readonly MainSkill: calculator2.SkillSelectControls;
     readonly ConfigInputs?: Record<string, Readonly<calculator2.ConfigValue>>;
     readonly SkillDPS?: Array<calculator2.SkillDPS>;
   }

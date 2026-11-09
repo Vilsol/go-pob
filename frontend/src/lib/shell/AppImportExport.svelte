@@ -16,13 +16,13 @@
   import { addToast } from '$lib/design/toast';
   import ImportExportPage from '$lib/design/ImportExportPage.svelte';
   import { NOT_A_CODE, POE2_CHARACTER, POE2_CHARACTER_DISABLED, downloadUrl, importFailure, jsonVerdict, type ImportMode } from '$lib/design/share';
-  import { POE2_NO_PARTY, REALMS, SITE_KEY, UNAVAILABLE, loadExportSite, saveExportSite } from './import_export';
+  import { REALMS, SITE_KEY, UNAVAILABLE, loadExportSite, saveExportSite } from './import_export';
   import { followOtherTabs } from '$lib/storage/tabs';
   import { identityOf } from './identity';
   import { beforeReplace, downloadBuild, shareBuild } from './link_import';
   import { openForeign, openPoe2Code } from '$lib/go/game_route';
   import { decodeCode, rootElement } from '$lib/go/game_detect';
-  import { poe2Worker } from '$lib/go/engine_poe2.svelte';
+  import { poe2Run, poe2Worker } from '$lib/go/engine_poe2.svelte';
   import { COMPARE_MIXED_POE1 } from './compare_types';
   import { opening, unsavedName } from './build_name.svelte';
   import Dialog from '$lib/design/Dialog.svelte';
@@ -48,15 +48,28 @@
   );
   const code = $derived(exported.loading ? '' : (exported.current ?? ''));
 
-  // ImportTab.lua:506-509, 746-747
+  // ImportTab.lua:506-509, 746-747; ImportTab.lua:138-141 (PoB-PoE2)
   let exportParty = $state(false);
+  // a read that started before the latest one, or before a click, is stale
+  let partyRead = 0;
   $effect(() => {
     void $outputs;
-    void Promise.resolve($currentBuild?.ExportParty())
-      .then((on) => (exportParty = !!on))
+    // the PoE2 box shows only on the export side, and the worker is asked only there
+    const build = $game === 'poe2' && $poe2Build;
+    if (build && tab !== 'export') return;
+    const at = ++partyRead;
+    void Promise.resolve(build ? poe2Worker().then(async (w) => (await w.GetPartyExport())?.on) : $currentBuild?.ExportParty())
+      .then((on) => {
+        if (at === partyRead) exportParty = !!on;
+      })
       .catch(logError);
   });
   const onexportparty = (on: boolean) => {
+    partyRead++;
+    if ($game === 'poe2') {
+      void poe2Run((w) => w.SetExportParty(on));
+      return;
+    }
     $currentBuild
       ?.SetExportParty(on)
       .then(() => UITick('exportParty', on ? 'Turned on Export support' : 'Turned off Export support'))
@@ -263,7 +276,7 @@
   bind:site
   {onshare}
   realms={REALMS}
-  unavailable={$game === 'poe2' ? { ...UNAVAILABLE, exportParty: POE2_NO_PARTY } : UNAVAILABLE}
+  unavailable={UNAVAILABLE}
   sites={share.sites}
   bind:importText
   bind:mode

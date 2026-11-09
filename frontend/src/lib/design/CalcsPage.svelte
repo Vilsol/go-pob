@@ -19,19 +19,20 @@
   import type { CalcRow, CalcSectionFixture, CalcsFixture, ItemTip } from './fixtures';
   import type { Snippet } from 'svelte';
   import type { calculator } from '$lib/types';
+  import type { StatSetControls } from '$lib/go/engine';
 
   const MODES = ['Unbuffed', 'Buffed', 'In Combat', 'Effective DPS'];
   type Props = {
     calcs: CalcsFixture;
     socketGroups: string[];
     mainSocketGroup: number;
-    controls?: calculator.MainSkillControls;
+    controls?: calculator.MainSkillControls & StatSetControls;
     mode?: string;
     showAll?: boolean;
     q?: string;
     pin?: string;
     onmaingroup: (i: number) => void;
-    oncontrol: (key: 'MainActiveSkill' | 'SkillPart' | 'StageCount' | 'MineCount' | 'Minion' | 'MinionSkill', value: number | undefined) => void;
+    oncontrol: (key: 'MainActiveSkill' | 'StatSet' | 'SkillPart' | 'StageCount' | 'MineCount' | 'Minion' | 'MinionSkill', value: number | undefined) => void;
     /* CalcsTab.lua:106-110 */
     onspectres?: () => void;
     /* CalcsTab.lua:46-51 */
@@ -358,6 +359,17 @@
         options={opts(controls.Skills)}
         value={String(controls.MainActiveSkill)}
         onchange={(e: Event) => oncontrol('MainActiveSkill', num(e))} /></FloatingLabel>
+  {/if}
+  {#if controls?.StatSetShown}
+    <!-- CalcsTab.lua:65-74 (PoB-PoE2) -->
+    <FloatingLabel label="Stat Set"
+      ><Select
+        size="xs"
+        class="w-32.5"
+        disabled={!controls.StatSetEnabled}
+        options={opts(controls.StatSets)}
+        value={String(controls.StatSet)}
+        onchange={(e: Event) => oncontrol('StatSet', num(e))} /></FloatingLabel>
   {/if}
   {#if controls?.PartShown}
     <FloatingLabel label="Skill Part"

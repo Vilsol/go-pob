@@ -7,9 +7,10 @@ import { savePoe2Build, savedStats2 } from '$lib/shell/poe2_save';
 import { EXPORT_SITES2 } from '$lib/design/share';
 import type { calculator, exposition } from '$lib/types';
 import type { calculator2 } from '$lib/types2';
+import type { CalcSection2 } from '$lib/calcs/calc_section_types2';
 import type { MainSkillField } from '$lib/shell/main_skill';
-import type { BuildEngine, CalcsTabView, MainGroupView } from './engine';
-import type { Poe2Calc, Poe2CalcsPage, Poe2Restore, Poe2SocketGroup, Worker2Type } from './sync_worker2';
+import type { BuildEngine, CalcsTabView, MainGroupView, StatSetControls } from './engine';
+import type { Poe2Calc, Poe2CalcsPage, Poe2Restore, Poe2SkillSelect, Poe2SocketGroup, Worker2Type } from './sync_worker2';
 
 // the PoE2 worker hands back a Poe2Calc; a view without its fields shows what it has
 type Calc = Partial<Poe2Calc> & Poe2View;
@@ -40,14 +41,40 @@ export const poe2Run = async <T>(op: (w: Remote<Worker2Type>) => Promise<T>, vie
 
 const fail = (err: unknown) => poe2Error.set(err instanceof Error ? err.message : String(err));
 
-// Build.lua:376-381 (PoB-PoE2)
-const setMainSkill2 = (field: MainSkillField, value: number | undefined) => {
-  if (field === 'MainActiveSkill' && value !== undefined) void poe2Run((w) => w.SetMainActiveSkill(value));
+// Build.lua:376-420 (PoB-PoE2): the sidebar's controls, and with calcs the Calcs tab's (CalcsTab.lua:58-100)
+const writeSkillSelect2 = (calcs: boolean, field: MainSkillField, value: number | undefined) => {
+  if (field === 'MainActiveSkill' && value !== undefined) void poe2Run((w) => (calcs ? w.SetMainActiveSkillCalcs(value) : w.SetMainActiveSkill(value)));
+  else if (field === 'StatSet' && value !== undefined) void poe2Run((w) => w.SetSkillStatSet(calcs, value));
+  else if (field === 'StageCount') void poe2Run((w) => w.SetSkillStageCount(calcs, value));
+  else if (field === 'MineCount') void poe2Run((w) => w.SetSkillMineCount(calcs, value));
 };
+const setMainSkill2 = (field: MainSkillField, value: number | undefined) => writeSkillSelect2(false, field, value);
+
+// Build.lua:2059-2195 (PoB-PoE2): RefreshSkillSelectControls' state as the shared controls carry it; PoE2's skill data
+// has no multipart skill, and the minion controls are not ported
+const skillSelect2 = (c: Poe2SkillSelect): calculator.MainSkillControls & StatSetControls =>
+  ({
+    Skills: c.Skills,
+    SkillEnabled: c.SkillEnabled,
+    MainActiveSkill: c.MainActiveSkill || 1,
+    StatSets: c.StatSets,
+    StatSet: c.StatSet,
+    StatSetShown: c.StatSetShown,
+    StatSetEnabled: c.StatSetEnabled,
+    PartShown: false,
+    StageShown: c.StageShown,
+    StageCount: c.StageCount,
+    MineShown: c.MineShown,
+    MineCount: c.MineCount
+  }) as calculator.MainSkillControls & StatSetControls;
 
 // the config page reads the options again after every calculation
 let calcCount = 0;
 const revision2 = derived(poe2Build, (v) => (v ? ++calcCount : 0));
+
+// CalcSectionControl.lua:34 (PoB-PoE2): a subsection's id is its label without non-word characters
+const sectionKeys2 = (sections: readonly CalcSection2[]) =>
+  sections.map((s) => [s[1], (s[4][0]?.label ?? '').replace(/[^A-Za-z0-9]/g, '')] as [string, string]);
 
 // Build.lua:2375-2481 (PoB-PoE2): the minion's list over the player's, each stat warning once
 const sidebar2 = (calc: Calc): Sidebar => {
@@ -73,23 +100,30 @@ const sidebar2 = (calc: Calc): Sidebar => {
 
 const mainGroupOf = (calc: Calc | undefined): Poe2SocketGroup | undefined => calc?.socketGroups?.[(calc.mainSocketGroup ?? 1) - 1];
 
-// Build.lua:363-381 (PoB-PoE2): the main group's active skills; PoE2 has none of PoE1's gem parts, stages or minions here
+// Build.lua:363-420, 2059-2195 (PoB-PoE2): the main group's active skill, stat set, stages and mines; PoE2 has none of
+// PoE1's gem parts, and the minion controls are not ported
 const controls2 = (calc: Calc | undefined): calculator.MainSkillControls | undefined => {
   const group = mainGroupOf(calc);
   if (!group) return undefined;
+  const select = calc!.mainSkill;
   return {
     SkillSet: 0,
     SocketGroup: calc!.mainSocketGroup ?? 1,
-    GemIndex: -1,
+    // the sidebar writes the stage and mine boxes only with a gem; the PoE2 worker finds it itself
+    GemIndex: select ? 0 : -1,
     Skills: group.skills,
     SkillEnabled: group.skills.length > 1,
     MainActiveSkill: calc!.mainActiveSkill || 1,
     PartShown: false,
     SkillPart: 0,
-    StageShown: false,
-    StageCount: '',
-    MineShown: false,
-    MineCount: '',
+    StageShown: select?.StageShown ?? false,
+    StageCount: select?.StageCount ?? '',
+    MineShown: select?.MineShown ?? false,
+    MineCount: select?.MineCount ?? '',
+    StatSets: select?.StatSets,
+    StatSet: select?.StatSet,
+    StatSetShown: select?.StatSetShown,
+    StatSetEnabled: select?.StatSetEnabled,
     MinionShown: false,
     MinionEnabled: false,
     MinionLibraryShown: false,
@@ -155,11 +189,10 @@ const calcsTab2 = readable<CalcsTabView | undefined>(undefined, (set) => {
       }),
       // CalcsTab.lua:177-180 (PoB-PoE2)
       lists: { BuffList: page.strings.BuffList, CombatList: page.strings.CombatList, CurseList: page.strings.CurseList },
-      // Build.lua:2078-2090 (PoB-PoE2): RefreshSkillSelectControls with the "Calcs" suffix
-      controls:
-        page.skills.length > 0
-          ? ({ Skills: page.skills, SkillEnabled: page.skills.length > 1, MainActiveSkill: page.mainActiveSkill } as calculator.MainSkillControls)
-          : undefined
+      // Build.lua:2059-2195 (PoB-PoE2): RefreshSkillSelectControls with the "Calcs" suffix
+      controls: page.skills.length > 0 ? skillSelect2(page.controls) : undefined,
+      // CalcsTab.lua:101 (PoB-PoE2)
+      haveMinion: page.haveMinion
     });
   };
   return poe2Build.subscribe((v) => {
@@ -297,10 +330,8 @@ export const poe2Engine: BuildEngine = {
   tree: () => import('./engine_poe2_tree.svelte').then((m) => m.poe2TreeModel),
   calcs: {
     tab: calcsTab2,
-    // CalcsTab.lua:58-63 (PoB-PoE2)
-    setMainSkill: (field, value) => {
-      if (field === 'MainActiveSkill' && value !== undefined) void poe2Run((w) => w.SetMainActiveSkillCalcs(value));
-    },
+    // CalcsTab.lua:58-100 (PoB-PoE2)
+    setMainSkill: (field, value) => writeSkillSelect2(true, field, value),
     // CalcsTab.lua:31-33, 43-46, 101-105, 163-168 (PoB-PoE2)
     inputs: {
       read: () =>
@@ -312,6 +343,28 @@ export const poe2Engine: BuildEngine = {
       buffMode: (mode) => void poe2Run((w) => w.SetCalcsBuffMode(mode)),
       showMinion: (show) => void poe2Run((w) => w.SetCalcsShowMinion(show)),
       skillNumber: (n) => void poe2Run((w) => w.SetCalcsSkillNumber(n))
+    },
+    // CalcsTab.lua:218-233, CalcSectionControl.lua:34, 49-55 (PoB-PoE2): the first subsection's state, as PoE1's page keeps
+    collapse: {
+      revision: poe2Session,
+      read: () =>
+        get(poe2Build)
+          ? Promise.all([poe2Worker(), import('$lib/calcs/calc_sections2')]).then(async ([w, { calcSections2 }]) => {
+              const saved = await w.GetCalcsSectionsCollapsed(sectionKeys2(calcSections2));
+              return Object.fromEntries(calcSections2.map((s, i) => [s[1], saved[i] ?? !!s[4][0]?.defaultCollapsed]));
+            })
+          : undefined,
+      set: (id, value) => {
+        void Promise.all([poe2Worker(), import('$lib/calcs/calc_sections2')])
+          .then(async ([w, { calcSections2 }]) => {
+            const key = sectionKeys2(calcSections2).find(([k]) => k === id);
+            if (!key) return;
+            await w.SetCalcsSectionCollapsed(key[0], key[1], value);
+            const view = get(poe2Build);
+            if (view) poe2Edited(view);
+          })
+          .catch(fail);
+      }
     },
     // CalcBreakdownControl.lua:300-548 (PoB-PoE2)
     modrows: (sd) =>

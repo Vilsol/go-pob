@@ -32,7 +32,7 @@ func (c *Calculator) CalcsBreakdowns() (map[string]CalcsBreakdown, error) {
 	if err != nil {
 		return nil, err
 	}
-	views := env.Player.Breakdown.Views()
+	views := c.calcsActor(env).Breakdown.Views()
 	out := make(map[string]CalcsBreakdown, len(views))
 	for name, v := range views {
 		out[name] = calcsBreakdownOf(v)
@@ -81,11 +81,17 @@ func calcsBreakdownTableOf(t calculator2.BreakdownTable) CalcsBreakdownTable {
 	return CalcsBreakdownTable{Label: t.Label, Footer: t.Footer, Columns: cols, Rows: t.Rows}
 }
 
-// CalcsModSection is the mod table a Calcs cell entry shows over the Calcs tab's calculation's player.
+// CalcsModSection is the mod table a Calcs cell entry shows over the actor the Calcs tab's calculation shows.
 func (c *Calculator) CalcsModSection(sd calculator2.ModSectionData) ([]calculator2.ModSectionRow, error) {
 	env, err := c.calcs()
 	if err != nil {
 		return nil, err
+	}
+	if actor := c.calcsActor(env); actor != env.Player {
+		// ModSection reads env.player; a shallow copy stands the minion in for it
+		shown := *env
+		shown.Player = actor
+		return shown.ModSection(sd), nil
 	}
 	return env.ModSection(sd), nil
 }

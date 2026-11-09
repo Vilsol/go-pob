@@ -53,7 +53,7 @@
   import type { SavedBuild } from '$lib/design/fixtures/app';
   import { BUILD_SORT_KEY, loadBuildSort, saveBuildSort } from '$lib/display/build_sort';
   import { followOtherTabs } from '$lib/storage/tabs';
-  import { tradeDefences, type TradeDefence, type TradeItem } from '$lib/design/trade';
+  import { LISTED, tradeDefences, type TradeDefence, type TradeItem, type TradeOptions } from '$lib/design/trade';
   import type { CompareFixture, PowerRow } from '$lib/design/fixtures';
   import type { Tree } from '$lib/skill_tree/types';
   import { calculateAllocationPath } from '$lib/components/skill-tree/paths';
@@ -235,7 +235,7 @@
     return [m?.items.a.find((i) => i.slot === slot)?.text ?? '', m?.items.b.find((i) => i.slot === slot)?.text ?? ''];
   };
   // CompareTab.lua:3806-3809, 3950-3952, CompareBuySimilar.lua:281-531
-  let buying = $state<{ item: TradeItem; slot?: string; defences: TradeDefence[] }>();
+  let buying = $state<{ item: TradeItem; slot?: string; defences: TradeDefence[]; url?: (o: TradeOptions) => Promise<string | undefined> }>();
 
   type Power = { receiver: 'a' | 'b'; rows: ComparePowerRow[]; configBack: Record<string, number[]> };
   const power = resource(
@@ -796,7 +796,24 @@
           return { tree: m.t, radii, alloc: new Set(m.sides.a.nodes) };
         }}
     onbuy={poe2
-      ? undefined
+      ? // CompareTab.lua:3776-3778, 3917-3918 and CompareBuySimilar.lua:284-541 (PoB-PoE2): the compared build's item
+        async (slot: string) => {
+          const w = await poe2Worker();
+          const v = await w.CompareBuySimilar(slot);
+          if (!v) return;
+          const defences = (v.Defences ?? []).map((d) => ({ label: d.Label, value: d.Value, tradeKey: d.TradeKey }));
+          const item = { rarity: v.Unique ? 'UNIQUE' : 'RARE', title: '', name: v.Name, baseName: v.BaseName, type: v.Category };
+          const url = async (o: TradeOptions) =>
+            w.CompareBuySimilarURL(slot, {
+              League: o.league,
+              Listed: LISTED.findIndex(([, value]) => value === o.listed) + 1,
+              BaseType: o.baseType,
+              IlvlMin: o.ilvlMin,
+              IlvlMax: o.ilvlMax,
+              Defences: defences.map((d) => ({ Checked: !!o.defences?.[d.tradeKey], Min: o.defences?.[d.tradeKey]?.min, Max: o.defences?.[d.tradeKey]?.max }))
+            });
+          buying = { item, slot, defences, url };
+        }
       : async (slot: string) => {
           const text = sideTexts(slot)[1];
           const p = text ? await syncWrap?.ParseItem(text) : undefined;
@@ -809,6 +826,8 @@
     item={buying?.item}
     slot={buying?.slot}
     defences={buying?.defences}
+    realms={poe2 ? [['PoE2', 'poe2']] : undefined}
+    url={buying?.url}
     onsearch={(url: string) => window.open(url, '_blank', 'noopener')} />
 {:else}
   <p class="note p-5" role="status">Calculating…</p>

@@ -141,6 +141,8 @@ export type Poe2Calc = Poe2View & {
   socketGroups: Poe2SocketGroup[];
   mainSocketGroup: number;
   mainActiveSkill: number;
+  // Build.lua:2059-2195 (PoB-PoE2): the sidebar's skill select controls
+  mainSkill?: Poe2SkillSelect;
   configInputs: Record<string, ConfigValue2>;
   relevance: calculator2.ConfigRelevance;
   tree: Poe2TreeState;
@@ -246,9 +248,17 @@ export type Poe2CalcsPage = {
   inputs: { skillNumber: number; buffMode: string; showMinion: boolean };
   skills: string[];
   mainActiveSkill: number;
+  /* Build.lua:2059-2195 (PoB-PoE2): RefreshSkillSelectControls with the "Calcs" suffix */
+  controls: Poe2SkillSelect;
+  /* CalcsTab.lua:101 (PoB-PoE2): the player's main skill has a minion */
+  haveMinion: boolean;
   /* CalcBreakdownControl.lua:147-297 (PoB-PoE2) */
   breakdowns: Record<string, CalcBreakdown>;
 };
+
+export type Poe2SkillSelect = Omit<calculator2.SkillSelectControls, 'Skills' | 'StatSets'> & { Skills: string[]; StatSets: string[] };
+
+const skillSelectOf = (c: calculator2.SkillSelectControls): Poe2SkillSelect => ({ ...c, Skills: [...(c.Skills ?? [])], StatSets: [...(c.StatSets ?? [])] });
 
 /* ItemsTab:AddItemTooltip's title and mod line groups (PoB-PoE2) */
 export type Poe2Item = { id: number; rarity: string; name: string[]; lines: string[][] };
@@ -544,6 +554,7 @@ class PoB2Worker {
       socketGroups: (out.SocketGroups ?? []).map((g) => ({ label: g.Label, skills: [...(g.Skills ?? [])] })),
       mainSocketGroup: out.MainSocketGroup,
       mainActiveSkill: out.MainActiveSkill,
+      mainSkill: skillSelectOf(out.MainSkill),
       configInputs: inputs,
       configSets: configSetsOf(calc),
       treeSpecs: treeSpecsOf(calc),
@@ -992,6 +1003,40 @@ class PoB2Worker {
     return this.changed('SetCalcsShowMinion', show ? 'Showed minion stats in Calcs' : 'Showed player stats in Calcs');
   }
 
+  /* Build.lua:382-420 and CalcsTab.lua:65-100 (PoB-PoE2): the Stat Set dropdown and the Skill Stages and Active Mines
+     boxes of the sidebar or the Calcs tab; an empty box clears the count */
+  async SetSkillStatSet(calcs: boolean, index: number): Promise<Poe2Calc> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    this.calc.SetSkillStatSet(calcs, index).unwrap();
+    return this.changed(calcs ? 'SetGemStatSetCalcs' : 'SetGemStatSet');
+  }
+
+  async SetSkillStageCount(calcs: boolean, count: number | undefined): Promise<Poe2Calc> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    this.calc.SetSkillStageCount(calcs, count).unwrap();
+    return this.changed(calcs ? 'SetGemSkillStageCountCalcs' : 'SetGemSkillStageCount', `Set the stage count to ${count ?? 'its default'}`);
+  }
+
+  async SetSkillMineCount(calcs: boolean, count: number | undefined): Promise<Poe2Calc> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    this.calc.SetSkillMineCount(calcs, count).unwrap();
+    return this.changed(calcs ? 'SetGemSkillMineCountCalcs' : 'SetGemSkillMineCount', `Set the mine count to ${count ?? 'its default'}`);
+  }
+
+  /* CalcsTab.lua:218-233 (PoB-PoE2): each subsection's saved collapsed state, null where the build saved none */
+  GetCalcsSectionsCollapsed(keys: [string, string][]): (boolean | null)[] {
+    const c = this.calc;
+    return keys.map(([id, sub]) => {
+      const [collapsed, saved] = c?.CalcsSectionCollapsed(id, sub) ?? [false, false];
+      return saved ? collapsed : null;
+    });
+  }
+
+  /* CalcSectionControl.lua:50-55 (PoB-PoE2): the toggle sets modFlag, not buildFlag */
+  SetCalcsSectionCollapsed(id: string, subsection: string, collapsed: boolean) {
+    this.calc?.SetCalcsSectionCollapsed(id, subsection, collapsed);
+  }
+
   /* CalcsTab.lua:58-63 (PoB-PoE2) */
   async SetMainActiveSkillCalcs(index: number): Promise<Poe2Calc> {
     if (!this.calc) throw new Error('no PoE2 build is open');
@@ -1178,8 +1223,10 @@ class PoB2Worker {
       skillFlags: { ...out?.SkillFlags },
       skillData: { ...out?.SkillData },
       inputs: { skillNumber: out?.Inputs.SkillNumber ?? 1, buffMode: out?.Inputs.BuffMode ?? 'EFFECTIVE', showMinion: out?.Inputs.ShowMinion ?? false },
-      skills: [...(out?.Skills ?? [])],
-      mainActiveSkill: out?.MainActiveSkill ?? 1,
+      skills: [...(out?.Controls.Skills ?? [])],
+      mainActiveSkill: out?.Controls.MainActiveSkill || 1,
+      controls: skillSelectOf(out?.Controls ?? ({} as calculator2.SkillSelectControls)),
+      haveMinion: out?.HaveMinion ?? false,
       breakdowns: calcsBreakdowns2(calc.CalcsBreakdowns().unwrap() ?? {})
     };
   }
@@ -1189,6 +1236,19 @@ class PoB2Worker {
     const b = this.compareB;
     if (!b || !this.calc) return undefined;
     return { a: this.calcsPageOf(this.calc), b: this.calcsPageOf(b.calc) };
+  }
+
+  /* CompareBuySimilar.lua:284-329, 421-434 (PoB-PoE2): the Buy Similar popup for the compared build's item in a slot */
+  CompareBuySimilar(slot: string): exposition.BuySimilarView | undefined {
+    const b = this.compareB;
+    if (!b) return undefined;
+    const v = b.calc.BuySimilar(slot).unwrap();
+    return v && { ...v, Defences: [...(v.Defences ?? [])].map((d) => ({ ...d })), Listed: [...(v.Listed ?? [])] };
+  }
+
+  /* CompareBuySimilar.lua:44-195 (PoB-PoE2): the Open URL button's trade search */
+  CompareBuySimilarURL(slot: string, o: calculator2.BuySimilarOptions): string | undefined {
+    return this.compareB?.calc.BuySimilarURL(slot, o).unwrap();
   }
 
   /* CompareTab.lua:4545-4561 (PoB-PoE2): whether each entry's mod rows match between the open build and the compared */
@@ -1213,7 +1273,7 @@ class PoB2Worker {
   /* CalcBreakdownControl.lua:293-296 (PoB-PoE2): the SkillBuffs or SkillDebuffs list's mod table over the last calculation */
   CalcsBreakdownModList(name: string): calculator2.ModSectionRow[] {
     if (!this.calc) throw new Error('no PoE2 build is open');
-    return [...(this.calc.CalcsBreakdownModList(name, false).unwrap() ?? [])];
+    return [...(this.calc.CalcsBreakdownModList(name, !!this.calc.CalcsInputs().unwrap()?.ShowMinion).unwrap() ?? [])];
   }
 
   /* Build.lua:2334-2370 (PoB-PoE2): the breakdown a sidebar stat's line names, undefined for none */

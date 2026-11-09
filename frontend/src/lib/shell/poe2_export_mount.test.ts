@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { expect, describe, it, vi, afterEach, beforeAll } from 'vitest';
-import { render, cleanup, fireEvent, within } from '@testing-library/svelte';
+import { render, cleanup, fireEvent, within, waitFor } from '@testing-library/svelte';
 
 afterEach(async () => {
   cleanup();
@@ -32,7 +32,7 @@ vi.mock('$app/navigation', () => ({ goto: () => Promise.resolve() }));
 
 const CODE = 'eJyzCSjKz0ksyS-yq8jNsbPRB1MANiQGFg==';
 const exportCode = vi.fn((stats: unknown) => Promise.resolve(stats ? CODE : ''));
-vi.mock('$lib/go/worker2', () => ({ poe2Worker: () => Promise.resolve({ ExportCode: exportCode }) }));
+vi.mock('$lib/go/worker2', () => ({ poe2Worker: () => Promise.resolve({ ExportCode: exportCode, GetPartyExport: () => ({ on: true, parts: [] }) }) }));
 
 const VIEW = { className: 'Sorceress', ascendClassName: 'None', level: 40, output: { Life: 683, Mana: 231 }, skillFlags: {}, socketGroups: [] };
 
@@ -83,10 +83,11 @@ describe('the Export tab for a PoE2 build', () => {
     vi.unstubAllGlobals();
   });
 
-  it('says why Export support is off: the PoE2 build has no party tab', async () => {
+  // ImportTab.lua:138-141 (PoB-PoE2): the box shows the build's Export Support
+  it("shows the PoE2 build's Export Support", async () => {
     const { panel } = await mount();
     const box = panel.getByRole<HTMLInputElement>('checkbox', { name: /^Export support/ });
-    expect(box.disabled).toBe(true);
-    expect(box.title).toMatch(/no Party tab/);
+    expect(box.disabled).toBe(false);
+    await waitFor(() => expect(box.checked).toBe(true));
   });
 });

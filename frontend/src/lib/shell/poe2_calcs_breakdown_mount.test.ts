@@ -64,11 +64,14 @@ const calcsPart = {
   skillData: calcs.skillData,
   inputs: { skillNumber: 1, buffMode: 'EFFECTIVE', showMinion: false },
   skills: ['Spark'],
-  mainActiveSkill: 1
+  mainActiveSkill: 1,
+  controls: { Skills: ['Spark'], StatSets: ['Base'], MainActiveSkill: 1, StatSet: 1, SkillShown: true, StatSetShown: true },
+  haveMinion: false
 };
 const w2 = vi.hoisted(() => ({
   CalcsPage: vi.fn(),
   CalcsInputs: vi.fn(() => Promise.resolve({ skillNumber: 1, buffMode: 'EFFECTIVE', showMinion: false })),
+  GetCalcsSectionsCollapsed: vi.fn((keys: unknown[]) => Promise.resolve(keys.map(() => null))),
   CalcsModSection: vi.fn(),
   CalcsBreakdownModList: vi.fn(),
   SidebarBreakdownKey: vi.fn(),

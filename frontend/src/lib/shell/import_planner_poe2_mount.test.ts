@@ -138,3 +138,19 @@ describe('Export to in-game build planner, with a PoE2 build open', () => {
     expect(JSON.parse(files[0].json)).toMatchObject({ name: 'Unnamed Build', author: 'Author', description: '' });
   });
 });
+
+// ImportTab.lua:138-141 (PoB-PoE2): the Export Support box lives on the Import / Export tab
+describe('Export support, with a PoE2 build open', () => {
+  it("is enabled and turns the build's Export Support on and off", async () => {
+    (await import('./import_modal.svelte')).openImport('export');
+    const view = render((await import('./AppImportModal.svelte')).default);
+    const box = (await view.findByRole('checkbox', { name: /^Export support/ })) as HTMLInputElement;
+    expect(box.disabled).toBe(false);
+    expect(box.checked).toBe(false);
+    await fireEvent.click(box);
+    await waitFor(() => expect(worker2Instance.GetPartyExport()?.on).toBe(true));
+    await waitFor(() => expect(box.checked).toBe(true));
+    await fireEvent.click(box);
+    await waitFor(() => expect(worker2Instance.GetPartyExport()?.on).toBe(false));
+  });
+});

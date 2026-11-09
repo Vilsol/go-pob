@@ -671,6 +671,36 @@ trap 'rm -f {{config_root}}/.task-calc-sections2.ts' EXIT
 ''',
 ]
 
+[tasks.calcs-skill-select-poe2]
+description = "Record the pinned PoB-PoE2's Calcs tab over its Stat Set, Skill Stages and Show Minion Stats controls for the Calcs page's fixtures"
+usage = '''
+flag "--pob2-dir <dir>" env="POB2_DIR" default="{{vars.POB2_DEFAULT}}"
+'''
+run = [
+  { task = "pob-pin --game poe2" },
+  '''
+{{vars.NICE}} mise x --cd {{usage.pob2_dir}}/src -- luajit {{config_root}}/oracle/poe2_calcs.lua \
+  {{config_root}}/wasm2/exposition/testdata/sorceress_three_spells.xml \
+  {{config_root}}/testdata/oracle/poe2_calcs_sorceress_three_spells_fireball_explosion.json skill_number=1 mainActiveSkillCalcs=2 statSetCalcs=2
+{{vars.NICE}} mise x --cd {{usage.pob2_dir}}/src -- luajit {{config_root}}/oracle/poe2_calcs.lua \
+  {{config_root}}/wasm2/exposition/testdata/sorceress_flameblast.xml \
+  {{config_root}}/testdata/oracle/poe2_calcs_sorceress_flameblast_stages.json skillStageCountCalcs=5
+{{vars.NICE}} mise x --cd {{usage.pob2_dir}}/src -- luajit {{config_root}}/oracle/poe2_calcs.lua \
+  {{config_root}}/wasm2/exposition/testdata/sorceress_raise_zombie.xml \
+  {{config_root}}/testdata/oracle/poe2_calcs_sorceress_raise_zombie_minion.json showMinion=true
+''',
+]
+
+[tasks.buy-similar-poe2]
+description = "Record the pinned PoB-PoE2's Buy Similar popup and trade URLs for the Compare page's items fixture"
+usage = '''
+flag "--pob2-dir <dir>" env="POB2_DIR" default="{{vars.POB2_DEFAULT}}"
+'''
+run = [
+  { task = "pob-pin --game poe2" },
+  '{{vars.NICE}} mise x --cd {{usage.pob2_dir}}/src -- luajit {{config_root}}/oracle/poe2_buy_similar.lua {{config_root}}/wasm2/exposition/testdata/buy_similar.xml {{config_root}}/testdata/oracle/poe2_buy_similar.json',
+]
+
 [tasks.compare-power-poe2]
 description = "Record the pinned PoB-PoE2's compare power report for the Compare page's fixture pair, and its Calcs header's buff and debuff panels"
 usage = '''

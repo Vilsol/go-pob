@@ -1,6 +1,9 @@
 package calculator2
 
 import (
+	"slices"
+	"strconv"
+
 	"github.com/Vilsol/go-pob/pob2"
 )
 
@@ -94,29 +97,197 @@ func BuildCalcsOutput(main *Environment, used *UsedTables) *Environment {
 	return env
 }
 
-// CalcsMainSkill is RefreshSkillSelectControls(controls, input.skill_number, "Calcs")'s Active Skill dropdown: the
-// shown group's displaySkillListCalcs and its mainActiveSkillCalcs.
-//
-//pob2:block:src/Modules/Build.lua:2078-2090
-func CalcsMainSkill(env *Environment) ([]string, int) {
-	skills := []string{}
-	if env.MainSocketGroup < 1 || env.MainSocketGroup > len(env.SocketGroupList) {
-		return skills, 0
+// SkillSelectControls is what RefreshSkillSelectControls leaves on the Active Skill, Stat Set, Skill Part, Skill Stages
+// and Active Mines controls. Indexes are 1-based; a buf is the edit box's text.
+type SkillSelectControls struct {
+	Skills          []string
+	StatSets        []string
+	StageCount      string
+	MineCount       string
+	MainActiveSkill int
+	StatSet         int
+	SkillShown      bool
+	SkillEnabled    bool
+	StatSetShown    bool
+	StatSetEnabled  bool
+	PartShown       bool
+	StageShown      bool
+	MineShown       bool
+}
+
+// skillSelectSkill is socketGroupList[mainGroup]'s displaySkillList..suffix and mainActiveSkill..suffix; calcs is the
+// "Calcs" suffix. displaySkillListCalcs is the group's socketGroupSkillList, CalcSetup.lua:2432-2434.
+func skillSelectSkill(env *Environment, mainGroup int, calcs bool) ([]*ActiveSkill, int) {
+	if mainGroup < 1 || mainGroup > len(env.SocketGroupList) {
+		return nil, 0
 	}
-	group := env.SocketGroupList[env.MainSocketGroup-1]
-	// displaySkillListCalcs is the group's socketGroupSkillList, CalcSetup.lua:2432-2434
-	if group.UsingSkillSet == env.WeaponSet {
-		for _, activeSkill := range env.Player.ActiveSkillList {
-			if activeSkill.SocketGroup == group {
-				skills = append(skills, getActiveSkillDisplayName(activeSkill))
-			}
-		}
+	group := env.SocketGroupList[mainGroup-1]
+	mainActiveSkill := group.MainActiveSkill
+	if calcs {
+		mainActiveSkill = group.MainActiveSkillCalcs
 	}
-	mainActiveSkill := group.MainActiveSkillCalcs
 	if mainActiveSkill == 0 {
 		mainActiveSkill = 1
 	}
-	return skills, mainActiveSkill
+	return displaySkillList(env, group), mainActiveSkill
+}
+
+// SkillSelect is RefreshSkillSelectControls(controls, mainGroup, suffix) over env, the calculation that listed the
+// group's skills; calcs is the "Calcs" suffix. The minion controls are not ported, and PoE2's skill data has no
+// multipart skill, so the Skill Part dropdown never shows.
+//
+//pob2:src/Modules/Build.lua:2059-2195
+func SkillSelect(build *pob2.PathOfBuilding2, env *Environment, mainGroup int, calcs bool) SkillSelectControls {
+	controls := SkillSelectControls{Skills: []string{}, StatSets: []string{}}
+	displaySkillList, mainActiveSkill := skillSelectSkill(env, mainGroup, calcs)
+	if mainGroup < 1 || mainGroup > len(env.SocketGroupList) {
+		return controls
+	}
+	for _, activeSkill := range displaySkillList {
+		controls.Skills = append(controls.Skills, getActiveSkillDisplayName(activeSkill))
+	}
+	controls.SkillEnabled = len(displaySkillList) > 1
+	controls.MainActiveSkill = mainActiveSkill
+	controls.SkillShown = true
+	if len(displaySkillList) == 0 || mainActiveSkill > len(displaySkillList) {
+		return controls
+	}
+	activeSkill := displaySkillList[mainActiveSkill-1]
+	activeEffect := activeSkill.ActiveEffect
+	if activeEffect == nil || activeEffect.GrantedEffect == nil {
+		return controls
+	}
+	for _, statSet := range activeEffect.GrantedEffect.StatSets {
+		controls.StatSets = append(controls.StatSets, statSet.Label)
+	}
+	controls.StatSet = 1
+	if src := activeEffect.SrcInstance; src != nil {
+		statSets := src.StatSet
+		if calcs {
+			statSets = src.StatSetCalcs
+		}
+		if i, ok := statSets[activeEffect.GrantedEffect.ID]; ok {
+			controls.StatSet = i
+		}
+	}
+	controls.StatSetEnabled = len(controls.StatSets) > 1
+	controls.StatSetShown = true
+	var skillFlags map[string]bool
+	if activeEffect.StatSet != nil {
+		skillFlags = activeEffect.StatSet.SkillFlags
+	}
+	gem := skillSelectGem(build, env, mainGroup, activeEffect.SrcInstance)
+	if skillFlags["mine"] {
+		controls.MineShown = true
+		if n := gemCount(gem, calcs, func(g *pob2.Gem) (*int, *int) { return g.SkillMineCount, g.SkillMineCountCalcs }); n != nil {
+			controls.MineCount = strconv.Itoa(*n)
+		}
+	}
+	if skillFlags["multiStage"] {
+		controls.StageShown = true
+		if n := gemCount(gem, calcs, func(g *pob2.Gem) (*int, *int) { return g.SkillStageCount, g.SkillStageCountCalcs }); n != nil {
+			controls.StageCount = strconv.Itoa(*n)
+		} else if v, ok := activeSkill.SkillData["stagesMin"].(float64); ok {
+			controls.StageCount = strconv.FormatFloat(v, 'f', -1, 64)
+		} else {
+			controls.StageCount = "1"
+		}
+	}
+	return controls
+}
+
+func gemCount(gem *pob2.Gem, calcs bool, field func(*pob2.Gem) (*int, *int)) *int {
+	if gem == nil {
+		return nil
+	}
+	main, calc := field(gem)
+	if calcs {
+		return calc
+	}
+	return main
+}
+
+// skillSelectGem is the saved entry of activeEffect.srcInstance, nil for a gem the build file does not hold.
+func skillSelectGem(build *pob2.PathOfBuilding2, env *Environment, mainGroup int, src *GemInstance) *pob2.Gem {
+	if src == nil || mainGroup < 1 || mainGroup > len(env.SocketGroupList) {
+		return nil
+	}
+	group := env.SocketGroupList[mainGroup-1]
+	saved := savedSocketGroup(build, group.savedIndex)
+	i := slices.Index(group.GemList, src)
+	if saved == nil || i < 0 || i >= len(saved.Gems) {
+		return nil
+	}
+	return &saved.Gems[i]
+}
+
+// skillSelectSrc is the saved gem the Stat Set, Skill Stages and Active Mines controls write: displaySkillList..suffix
+// [mainActiveSkill..suffix].activeEffect.srcInstance, and that effect's granted effect id.
+func skillSelectSrc(build *pob2.PathOfBuilding2, env *Environment, mainGroup int, calcs bool) (*pob2.Gem, string, error) {
+	displaySkillList, mainActiveSkill := skillSelectSkill(env, mainGroup, calcs)
+	if mainActiveSkill < 1 || mainActiveSkill > len(displaySkillList) || displaySkillList[mainActiveSkill-1].ActiveEffect == nil {
+		return nil, "", errNoSocketGroup
+	}
+	activeEffect := displaySkillList[mainActiveSkill-1].ActiveEffect
+	gem := skillSelectGem(build, env, mainGroup, activeEffect.SrcInstance)
+	if gem == nil || activeEffect.GrantedEffect == nil {
+		return nil, "", errNoSocketGroup
+	}
+	return gem, activeEffect.GrantedEffect.ID, nil
+}
+
+// SetSkillStatSet is the Stat Set dropdown: srcInstance.statSet..suffix[grantedEffectId] = index.
+//
+//pob2:block:src/Modules/Build.lua:382-389
+//pob2:block:src/Classes/CalcsTab.lua:65-74
+func SetSkillStatSet(build *pob2.PathOfBuilding2, env *Environment, mainGroup int, calcs bool, index int) error {
+	gem, id, err := skillSelectSrc(build, env, mainGroup, calcs)
+	if err != nil {
+		return err
+	}
+	list := &gem.StatSetIndexes
+	if calcs {
+		list = &gem.StatSetCalcsIndexes
+	}
+	for i := range *list {
+		if (*list)[i].GrantedEffect == id {
+			(*list)[i].Index = pob2.Nil[int]{V: index}
+			return nil
+		}
+	}
+	*list = append(*list, pob2.StatSetIndex{GrantedEffect: id, Index: pob2.Nil[int]{V: index}})
+	return nil
+}
+
+// SetSkillStageCount and SetSkillMineCount are the Skill Stages and Active Mines boxes: srcInstance.skillStageCount..
+// suffix = tonumber(buf); nil clears it.
+//
+//pob2:block:src/Modules/Build.lua:402-420
+//pob2:block:src/Classes/CalcsTab.lua:83-100
+func SetSkillStageCount(build *pob2.PathOfBuilding2, env *Environment, mainGroup int, calcs bool, count *int) error {
+	gem, _, err := skillSelectSrc(build, env, mainGroup, calcs)
+	if err != nil {
+		return err
+	}
+	if calcs {
+		gem.SkillStageCountCalcs = count
+	} else {
+		gem.SkillStageCount = count
+	}
+	return nil
+}
+
+func SetSkillMineCount(build *pob2.PathOfBuilding2, env *Environment, mainGroup int, calcs bool, count *int) error {
+	gem, _, err := skillSelectSrc(build, env, mainGroup, calcs)
+	if err != nil {
+		return err
+	}
+	if calcs {
+		gem.SkillMineCountCalcs = count
+	} else {
+		gem.SkillMineCount = count
+	}
+	return nil
 }
 
 // SyncCalcsSkillSelection points a compared build's Calcs tab at its main socket group and active skill, as loading it
@@ -130,4 +301,30 @@ func SyncCalcsSkillSelection(build *pob2.PathOfBuilding2) {
 		return
 	}
 	mainGroup.MainActiveSkillCalcs = mainGroup.MainActiveSkill
+}
+
+// SetCalcsSectionCollapsed is a section's +/- toggle, kept as Save writes subSection.collapsed.
+//
+//pob2:block:src/Classes/CalcSectionControl.lua:50-55
+//pob2:block:src/Classes/CalcsTab.lua:252-260
+func SetCalcsSectionCollapsed(build *pob2.PathOfBuilding2, id, subsection string, collapsed bool) {
+	for i := range build.Calcs.Sections {
+		if s := &build.Calcs.Sections[i]; s.ID == id && s.Subsection == subsection {
+			s.Collapsed = collapsed
+			return
+		}
+	}
+	build.Calcs.Sections = append(build.Calcs.Sections, pob2.Section{ID: id, Subsection: subsection, Collapsed: collapsed})
+}
+
+// CalcsSectionCollapsed is the collapsed state Load gives a subsection, and whether the build saved one.
+//
+//pob2:block:src/Classes/CalcsTab.lua:218-233
+func CalcsSectionCollapsed(build *pob2.PathOfBuilding2, id, subsection string) (bool, bool) {
+	for _, s := range build.Calcs.Sections {
+		if s.ID == id && s.Subsection == subsection {
+			return s.Collapsed, true
+		}
+	}
+	return false, false
 }

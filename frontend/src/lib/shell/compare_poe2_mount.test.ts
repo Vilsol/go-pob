@@ -6,7 +6,7 @@ import { render, fireEvent, cleanup, within, waitFor } from '@testing-library/sv
 import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { deflateSync } from 'node:zlib';
+import { deflateSync, gunzipSync } from 'node:zlib';
 import { get } from 'svelte/store';
 import type { Poe2Calc } from '$lib/go/sync_worker2';
 
@@ -437,6 +437,66 @@ describe('the PoE2 Compare page', () => {
       ])
     );
     expect(issued).toContain('CompareItemCards');
+  });
+
+  // CompareTab.lua:3776-3778, 3917-3918 and CompareBuySimilar.lua:44-195, 284-541 (PoB-PoE2): the compared item's trade
+  // search; the queries are PoB-PoE2's (oracle/poe2_buy_similar.lua)
+  it("opens Buy Similar for B's item and searches the PoE2 trade site as PoB-PoE2 does", async () => {
+    type Search = { base: string; query: unknown };
+    const pob = JSON.parse(await readFile(resolve(ORACLE, 'poe2_buy_similar.json'), 'utf8')) as Record<
+      string,
+      { defences: { label: string; min: string }[]; default: Search; set: Search }
+    >;
+    const opened: string[] = [];
+    const spy = vi.spyOn(window, 'open').mockImplementation((url) => {
+      opened.push(String(url));
+      return null;
+    });
+    const decode = (url: string): Search => {
+      const i = url.lastIndexOf('/');
+      const text = gunzipSync(
+        Buffer.from(
+          url
+            .slice(i + 1)
+            .replaceAll('-', '+')
+            .replaceAll('_', '/'),
+          'base64'
+        )
+      ).toString('utf8');
+      return { base: url.slice(0, i), query: JSON.parse(text) };
+    };
+    const page = await open('sorceress_spark.xml');
+    await compareCode(page, encode(await fixture('buy_similar.xml')));
+    await page.findByRole('region', { name: 'Stat comparison' }, { timeout: 30_000 });
+    await fireEvent.click(page.getByRole('tab', { name: 'Items' }));
+    const region = await page.findByRole('region', { name: 'Item differences' });
+    const rowOf = (label: string) =>
+      [...region.querySelectorAll<HTMLElement>('[role="row"]')].find((r) => r.querySelector('[role="cell"]')?.textContent?.trim() === label);
+    await waitFor(() => expect(rowOf('Gloves')).toBeTruthy());
+
+    await fireEvent.click(within(rowOf('Gloves')!).getByRole('button', { name: 'Buy' }));
+    let dialog = within(await page.findByRole('dialog', { name: 'Buy Similar' }));
+    expect(dialog.getByRole<HTMLSelectElement>('combobox', { name: 'Realm' }).disabled).toBe(true);
+    expect(dialog.getByRole<HTMLInputElement>('textbox', { name: 'Evasion min' }).value).toBe(pob.Gloves.defences[0].min);
+    await fireEvent.click(dialog.getByRole('button', { name: 'Search' }));
+    await waitFor(() => expect(opened).toHaveLength(1));
+    expect(decode(opened[0])).toEqual(pob.Gloves.default);
+
+    // every box set
+    await fireEvent.click(within(rowOf('Gloves')!).getByRole('button', { name: 'Buy' }));
+    dialog = within(await page.findByRole('dialog', { name: 'Buy Similar' }));
+    await fireEvent.input(dialog.getByRole('textbox', { name: 'League' }), { target: { value: 'Rise of the Abyssal' } });
+    await fireEvent.change(dialog.getByRole('combobox', { name: 'Listed' }), { target: { value: 'online' } });
+    await fireEvent.click(dialog.getByRole('checkbox', { name: /Use specific base/ }));
+    await fireEvent.input(dialog.getByRole('textbox', { name: 'Item level min' }), { target: { value: '70' } });
+    await fireEvent.input(dialog.getByRole('textbox', { name: 'Item level max' }), { target: { value: '85' } });
+    await fireEvent.click(dialog.getByRole('checkbox', { name: 'Evasion' }));
+    await fireEvent.input(dialog.getByRole('textbox', { name: 'Evasion max' }), { target: { value: '5000' } });
+    await fireEvent.click(dialog.getByRole('checkbox', { name: 'Energy Shield' }));
+    await fireEvent.click(dialog.getByRole('button', { name: 'Search' }));
+    await waitFor(() => expect(opened).toHaveLength(2));
+    expect(decode(opened[1])).toEqual(pob.Gloves.set);
+    spy.mockRestore();
   });
 
   it("copies the compared build's item and tree into the open build", async () => {
