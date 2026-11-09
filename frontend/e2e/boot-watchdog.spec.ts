@@ -37,3 +37,19 @@ test('a boot that never finishes turns into an error with a retry that reloads',
   await status(page).getByRole('button', { name: 'Retry' }).click();
   await reloaded;
 });
+
+test('a calculation worker that never answers turns into an error with a retry that reloads', async ({ page }) => {
+  // a worker script that runs but never takes a message, so the page's first question to it goes unanswered
+  await page.route(/\/workers\/sync_worker-[^/]*\.js$/, (route) => route.fulfill({ contentType: 'text/javascript', body: 'self.onmessage = () => {};' }));
+  await page.clock.install();
+  await page.goto('/');
+  await expect(status(page)).toContainText('Initializing...', { timeout: 60_000 });
+  await expect(status(page).getByRole('button', { name: 'Retry' })).toBeHidden();
+
+  await page.clock.fastForward(31_000);
+  await expect(status(page)).toContainText('The calculation worker did not start in 30 s.');
+  await expect(status(page).getByRole('button', { name: 'Retry' })).toBeVisible();
+  const reloaded = page.waitForEvent('framenavigated');
+  await status(page).getByRole('button', { name: 'Retry' }).click();
+  await reloaded;
+});

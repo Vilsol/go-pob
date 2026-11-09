@@ -90,6 +90,20 @@ const initializeStorage = async () => {
 
 export type Poe2SocketGroup = { label: string; skills: string[] };
 
+export type Poe2Progress = {
+  level: number;
+  act: string;
+  extra: number;
+  normalPassives: number;
+  usedMax: number;
+  weaponSet1Used: number;
+  weaponSet2Used: number;
+  weaponSetMax: number;
+  ascUsed: number;
+  ascMax: number;
+  warnings: string[];
+};
+
 // the spec as the tree view draws it; text holds the nodes whose name or stats the spec replaced
 export type Poe2TreeState = {
   alloc: number[];
@@ -108,20 +122,6 @@ export type Poe2TreeState = {
   // Build.lua:202-216, 1025-1103 (PoB-PoE2)
   levelAuto?: boolean;
   progress?: Poe2Progress;
-};
-
-export type Poe2Progress = {
-  level: number;
-  act: string;
-  extra: number;
-  normalPassives: number;
-  usedMax: number;
-  weaponSet1Used: number;
-  weaponSet2Used: number;
-  weaponSetMax: number;
-  ascUsed: number;
-  ascMax: number;
-  warnings: string[];
 };
 
 /* tree2.ClickResult */

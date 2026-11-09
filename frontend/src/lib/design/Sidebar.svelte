@@ -133,7 +133,8 @@
   };
   const tip = $derived(hover ? { ...(breakdown?.(hover.entry.line) ?? { groups: [] }), line: hover.entry.line } : undefined);
   const STEPS_DELAY = 150;
-  let tipSteps = $state.raw<{ entry: Entry; sections?: SidebarSection[] }>();
+  type TipSteps = { entry: Entry; sections?: SidebarSection[] };
+  let tipSteps = $state.raw<TipSteps>();
   $effect(() => {
     const entry = hover?.entry;
     void sidebar;

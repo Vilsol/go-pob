@@ -7,14 +7,14 @@ vi.unmock('@zenfs/dom');
 const { fs, mount } = await import('@zenfs/core');
 const { IndexedDB } = await import('@zenfs/dom');
 const { remountStore } = await import('$lib/go/storage_config');
-const { TabStorage } = await import('./tabs');
+const { TabStorage, WRITER_SILENT } = await import('./tabs');
 
 const text = (s: string) => new TextEncoder().encode(s);
 const open: InstanceType<typeof TabStorage>[] = [];
 let n = 0;
 
 // each tab is a realm with its own zenfs; here each tab mounts the shared database at its own point
-const tabs = (store: string, lazy?: number) => {
+const tabs = (store: string, lazy?: number, answerMs?: number) => {
   const lock = `test-storage-${++n}`;
   const tab = async (name: string) => {
     const point = `/${n}-${name}`;
@@ -27,7 +27,8 @@ const tabs = (store: string, lazy?: number) => {
       },
       remount: () => remountStore(point, store),
       changed: (b) => changes.push(b),
-      lazy: lazy === undefined ? undefined : { [store]: lazy }
+      lazy: lazy === undefined ? undefined : { [store]: lazy },
+      answerMs
     });
     open.push(t);
     const read = (key: string) => fs.promises.readFile(`${point}/${key}`, 'utf8');
@@ -88,6 +89,22 @@ describe('one writer across tabs', () => {
     expect(await c.read('kept')).toBe('from a');
     expect(await c.read('forwarded')).toBe('from b');
     expect(await c.read('after')).toBe('from b, writing');
+  });
+
+  it('a save forwarded to a writer that does not answer says so, and lands once the writer closes', async () => {
+    const { tab } = tabs('frozen-writer', undefined, 50);
+    const a = await tab('a');
+    const b = await tab('b');
+    await a.t.start();
+    await b.t.start();
+    // a frozen tab keeps its lock and takes no message
+    (a.t as unknown as { channel: BroadcastChannel }).channel.onmessage = null;
+
+    await expect(b.set('waiting', 'from b')).rejects.toThrow(WRITER_SILENT);
+
+    a.t.close();
+    await vi.waitFor(() => expect(b.t.isWriter).toBe(true));
+    expect(await b.read('waiting')).toBe('from b');
   });
 
   it('a tab that takes over rereads what it had not yet remounted before it writes', async () => {

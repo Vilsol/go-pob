@@ -55,7 +55,7 @@
       })
       .catch((e: Error) => {
         logError(e);
-        failed = saveErrorText(target);
+        failed = saveErrorText(target, e);
       });
   };
 

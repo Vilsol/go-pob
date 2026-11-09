@@ -26,7 +26,12 @@ export type TabStorageOptions = {
   // for the writer
   lazy?: Record<string, number>;
   locks?: LockManager;
+  // how long a forwarded write waits for the writer before it says so
+  answerMs?: number;
 };
+
+export const WRITER_SILENT = "The go-pob tab that writes this browser's saves has not answered";
+const ANSWER_MS = 15_000;
 
 type Pending = { write: StorageWrite; done: (error?: string) => void };
 
@@ -111,7 +116,17 @@ export class TabStorage {
     const acked = new Promise<string | undefined>((done) => this.pending.set(id, { write: w, done }));
     this.post({ type: 'write', id, from: this.id, write: w });
     if (!this.waits(w)) return;
-    const error = await acked;
+    // a frozen writer keeps the lock, and taking it would leave two zenfs instances writing once it wakes; the write
+    // stays pending and lands when the writer wakes or closes
+    const ms = this.o.answerMs ?? ANSWER_MS;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const silent = new Promise<never>((_, reject) => {
+      timer = setTimeout(
+        () => reject(new Error(`${WRITER_SILENT} in ${ms / 1000} s. The save completes once that tab answers or closes: switch to it, or close it.`)),
+        ms
+      );
+    });
+    const error = await Promise.race([acked, silent]).finally(() => clearTimeout(timer));
     if (error) throw new Error(error);
   }
 

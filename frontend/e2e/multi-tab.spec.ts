@@ -73,14 +73,52 @@ test('when the writing tab closes, another tab saves in its place', async ({ con
   c.on('pageerror', (e) => logC.push(`pageerror: ${e.message.slice(0, 300)}`));
   c.on('framenavigated', (f) => f === c.mainFrame() && logC.push(`navigated: ${f.url()}`));
   c.on('requestfailed', (r) => logC.push(`request failed: ${r.url()} ${r.failure()?.errorText ?? ''}`));
-  const appC = await App.open(c, 'handover: third').catch((e: unknown) => {
-    throw new Error(`${String(e)}\nthe third tab logged:\n${logC.join('\n') || '(nothing)'}`);
+  c.on('worker', (w) => logC.push(`worker started: ${w.url()}`));
+  const appC = await App.open(c, 'handover: third').catch(async (e: unknown) => {
+    const shown = await c
+      .getByRole('status')
+      .first()
+      .textContent({ timeout: 1_000 })
+      .catch(() => '(none)');
+    throw new Error(`${String(e)}\nthe third tab shows: ${shown}\nthe third tab logged:\n${logC.join('\n') || '(nothing)'}`);
   });
   await toList(c);
   await expect(level(appC, 'e2e-handover-first')).toHaveText('21');
   await expect(level(appC, 'e2e-handover-second')).toHaveText('42');
 
   appB.assertNoErrors();
+  appC.assertNoErrors();
+});
+
+test('a save in a tab whose writing tab does not answer says so, and lands once that tab answers', async ({ context }) => {
+  const a = await context.newPage();
+  const b = await context.newPage();
+  await App.open(a, 'silent writer: writing');
+  const appB = await App.open(b, 'silent writer: saving');
+
+  // the writing tab's calculation worker, which holds the write lock, spins and takes no message for a while
+  const writer = a.workers().find((w) => /sync_worker-/.test(w.url()));
+  expect(writer, "the writing tab's calculation worker").toBeDefined();
+  const spun = writer!.evaluate(() => {
+    const until = Date.now() + 25_000;
+    while (Date.now() < until);
+  });
+  await setLevel(appB, 37);
+  await b.getByRole('button', { name: /^Save \(/ }).click();
+  const dialog = b.getByRole('dialog', { name: 'Save build as' });
+  await dialog.getByRole('textbox', { name: 'Build name' }).fill('e2e-silent-writer');
+  await dialog.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(dialog.getByText("The go-pob tab that writes this browser's saves has not answered"), 'the save says why it is waiting').toBeVisible({
+    timeout: 60_000
+  });
+  await spun;
+  await dialog.getByRole('button', { name: 'Cancel' }).click();
+
+  const c = await context.newPage();
+  const appC = await App.open(c, 'silent writer: reading');
+  await toList(c);
+  await expect(level(appC, 'e2e-silent-writer'), 'the waiting save landed once the writing tab answered').toHaveText('37');
+  expect(appB.errors.filter((e) => !e.includes('has not answered'))).toEqual([]);
   appC.assertNoErrors();
 });
 
@@ -195,9 +233,9 @@ test('the build sort, the share site and the panel widths another tab stores rea
   await b.keyboard.press('Escape');
 
   await toList(b);
-  const level = b.getByRole('grid', { name: 'Builds' }).getByRole('columnheader', { name: /^LEVEL/ });
+  const levelHeader = b.getByRole('grid', { name: 'Builds' }).getByRole('columnheader', { name: /^LEVEL/ });
   await store('options:buildSortMode', JSON.stringify({ key: 'level', dir: 'asc' }));
-  await expect(level, "the build list takes the other tab's sort").toHaveAttribute('aria-sort', 'ascending');
+  await expect(levelHeader, "the build list takes the other tab's sort").toHaveAttribute('aria-sort', 'ascending');
 
   const games = b.getByRole('group', { name: 'Show builds of' });
   await store('options:poe2', 'false');

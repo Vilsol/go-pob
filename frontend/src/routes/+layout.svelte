@@ -188,8 +188,13 @@
         await backendLoaded;
         return worker.ItemArtPaths(queries);
       });
+      const silent = setTimeout(() => {
+        loadingMessage = `The calculation worker did not start in ${BOOT_STUCK_MS / 1000} s.`;
+        bootStuck = true;
+      }, BOOT_STUCK_MS);
       syncWrap.booted
         .then((booted) => {
+          clearTimeout(silent);
           if (booted) {
             wasmLoading = false;
             syncWrap

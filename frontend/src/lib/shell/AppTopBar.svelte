@@ -229,7 +229,7 @@
       .catch((e: Error) => {
         logError(e);
         afterSave = undefined;
-        saveError = saveErrorText(path);
+        saveError = saveErrorText(path, e);
       })
       .finally(() => (saving = false));
   };

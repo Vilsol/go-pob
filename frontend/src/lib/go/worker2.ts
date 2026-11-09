@@ -10,6 +10,21 @@ import { dataErrorText, poe2DataError } from './data_error';
 
 let worker2: Promise<Comlink.Remote<Worker2Type>> | undefined;
 
+// a page the service worker does not control yet (its first visit) fetches past it; fetched again once it does, so
+// the service worker caches it
+const cacheOnceControlled = (path: string) => {
+  const sw = typeof navigator === 'undefined' ? undefined : navigator.serviceWorker;
+  if (!sw || sw.controller) return;
+  sw.addEventListener(
+    'controllerchange',
+    () =>
+      void fetch(assets + path)
+        .then((r) => r.body?.cancel())
+        .catch(() => {}),
+    { once: true }
+  );
+};
+
 // the same byte check +layout.svelte does for the PoE1 wasm: a .br the host did not decode falls back to the .gz
 const wasm2Bytes = async (path: string): Promise<ArrayBuffer> => {
   const res = await fetch(assets + path);
@@ -30,21 +45,6 @@ const wasm2Bytes = async (path: string): Promise<ArrayBuffer> => {
     return wasm2Bytes(fallback);
   }
   throw new Error('Failed to load the PoE2 wasm runtime: not a wasm module');
-};
-
-// a page the service worker does not control yet (its first visit) fetches past it; fetched again once it does, so
-// the service worker caches it
-const cacheOnceControlled = (path: string) => {
-  const sw = typeof navigator === 'undefined' ? undefined : navigator.serviceWorker;
-  if (!sw || sw.controller) return;
-  sw.addEventListener(
-    'controllerchange',
-    () =>
-      void fetch(assets + path)
-        .then((r) => r.body?.cancel())
-        .catch(() => {}),
-    { once: true }
-  );
 };
 
 // created on the first PoE2 build, never at page load
