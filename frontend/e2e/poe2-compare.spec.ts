@@ -73,3 +73,35 @@ test("a PoE2 build compared with another: each side shows PoB-PoE2's numbers, an
 
   expect(errors).toEqual([]);
 });
+
+test("the power report and the config impact column carry PoB-PoE2's values, and the Items view lists its jewel rows", async ({ page }) => {
+  // PoB-PoE2's compare power report for this pair (oracle/poe2_compare_power.lua)
+  const pob = JSON.parse(readFileSync(resolve(ORACLE, 'poe2_compare_power.json'), 'utf8')) as {
+    FullDPS: { category: string; name: string; var?: string; impact: number }[];
+  };
+  const boss = pob.FullDPS.find((r) => r.var === 'enemyIsBoss')!;
+  const signed = (v: number) => (v > 0 ? '+' : '−') + Math.round(Math.abs(v)).toLocaleString('en-US');
+
+  const errors = await open(page, 'compare_power_primary');
+  await poe2Nav(page, 'Compare').click();
+  const choose = page.getByRole('region', { name: 'Choose a build to compare' });
+  await choose.getByRole('textbox', { name: 'Comparison build code' }).fill(code('compare_power_compared'));
+  await choose.getByRole('button', { name: 'Compare' }).click();
+  await expect(page.getByRole('region', { name: 'Stat comparison' })).toBeVisible({ timeout: 60_000 });
+
+  await page.getByRole('tab', { name: 'Power report' }).click();
+  const report = page.getByRole('table', { name: 'Power report rows' });
+  const bossRow = report.getByRole('row').filter({ hasText: 'Is the enemy a Boss?' });
+  await expect(bossRow).toContainText(signed(boss.impact), { timeout: 60_000 });
+  await expect(report.getByRole('row').filter({ hasText: 'Take Spell Damage' })).toHaveCount(1);
+
+  await page.getByRole('tab', { name: 'Config' }).click();
+  const cfgRow = page.getByRole('row').filter({ has: page.getByRole('combobox', { name: 'Is the enemy a Boss? (A)' }) });
+  await expect(cfgRow).toContainText(signed(boss.impact));
+
+  await page.getByRole('tab', { name: 'Items' }).click();
+  const items = page.getByRole('region', { name: 'Item differences' });
+  await expect(items.getByRole('row').filter({ hasText: 'Sapphire of Thought' })).toContainText('Socket');
+
+  expect(errors).toEqual([]);
+});

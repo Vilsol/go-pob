@@ -23,6 +23,39 @@ export type Result<T> = (
   unwrapOr(fallback: T): T;
 };
 export declare namespace calculator2 {
+  interface CompareModRow {
+    readonly Key: string;
+    readonly Value: number;
+    readonly Display: string;
+    readonly SourceType: string;
+    readonly SourceName: string;
+    readonly ModName: string;
+  }
+  interface ComparePowerBuilder {
+    Progress(): number;
+    Report(): (Array<calculator2.ComparePowerEntry> | undefined);
+    StepMs(budgetMs: number): number;
+    /** Releases the Go resources behind this wrapper. */
+    release(): void;
+    [Symbol.dispose](): void;
+  }
+  interface ComparePowerCategories {
+    readonly TreeNodes: boolean;
+    readonly Items: boolean;
+    readonly SkillGems: boolean;
+    readonly SupportGems: boolean;
+    readonly Config: boolean;
+  }
+  interface ComparePowerEntry {
+    readonly Category: string;
+    readonly Name: string;
+    readonly NodeID: number;
+    readonly SlotName: string;
+    readonly Var: string;
+    readonly Rarity: string;
+    readonly PathDist: number;
+    readonly Impact?: Array<number>;
+  }
   interface ConfigRelevance {
     readonly Conds?: Array<string>;
     readonly MinionConds?: Array<string>;
@@ -228,6 +261,7 @@ export declare namespace exposition {
     BuildPlannerSets(): exposition.BuildPlannerSets;
     CalcsBreakdownModList(name: string, minion: boolean): Result<(Array<calculator2.ModSectionRow> | undefined)>;
     CalcsBreakdowns(): Result<(Record<string, Readonly<exposition.CalcsBreakdown>> | undefined)>;
+    CalcsCompareModRows(sd: calculator2.ModSectionData): Result<(Array<calculator2.CompareModRow> | undefined)>;
     CalcsModSection(sd: calculator2.ModSectionData): Result<(Array<calculator2.ModSectionRow> | undefined)>;
     CalcsMods(query: exposition.CalcsModQuery): Result<(Record<string, number> | undefined)>;
     CalcsOutputs(): Result<(exposition.CalcsOutputs | undefined)>;
@@ -238,6 +272,10 @@ export declare namespace exposition {
     ClickNode(id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number, trace: Array<number> | undefined): Result<number>;
     ClickNodeConnectPath(id: number, hotkey: number, allocMode: number): Result<number>;
     CloseDisplayItem(): Result<void>;
+    CompareEquipItem(from: exposition.Calculator | undefined, slotName: string): Promise<Result<(exposition.ItemCompareView | undefined)>>;
+    CompareItemCards(from: exposition.Calculator | undefined, slotName: string): Result<(exposition.CompareItemCardsView | undefined)>;
+    CompareItems(from: exposition.Calculator | undefined): Result<(exposition.CompareItemsView | undefined)>;
+    CompareModsEqual(from: exposition.Calculator | undefined, sds: Array<calculator2.ModSectionData> | undefined): Result<(Array<boolean> | undefined)>;
     ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;
     ConfigSets(): exposition.ConfigSetsView;
     CopyCompareItem(from: exposition.Calculator | undefined, slotName: string, andUse: boolean): Result<boolean>;
@@ -279,6 +317,7 @@ export declare namespace exposition {
     MoveItemSet(from: number, to: number): Result<void>;
     MoveSocketGroup(from: number, to: number): Result<void>;
     MoveTreeSpec(from: number, to: number): void;
+    NewComparePowerBuilder(from: exposition.Calculator | undefined, stats: Array<string> | undefined, categories: calculator2.ComparePowerCategories): Result<(calculator2.ComparePowerBuilder | undefined)>;
     NewConfigSet(title: string): number;
     NewItemSet(title: string): Result<void>;
     NewSkillSet(title: string): Result<number>;
@@ -365,6 +404,24 @@ export declare namespace exposition {
     /** Releases the Go resources behind this wrapper. */
     release(): void;
     [Symbol.dispose](): void;
+  }
+  interface CompareItemCardsView {
+    readonly A?: Array<string>;
+    readonly B?: Array<string>;
+  }
+  interface CompareItemSlotView {
+    readonly Slot: string;
+    readonly Label: string;
+    readonly NodeID: number;
+    readonly A?: exposition.ItemView;
+    readonly B?: exposition.ItemView;
+    readonly Missing: boolean;
+    readonly AWarn: boolean;
+    readonly BWarn: boolean;
+  }
+  interface CompareItemsView {
+    readonly Slots?: Array<exposition.CompareItemSlotView>;
+    readonly Jewels?: Array<exposition.CompareItemSlotView>;
   }
   interface CompareOutputs {
     readonly Output?: Record<string, number>;

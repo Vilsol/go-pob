@@ -27,7 +27,7 @@
   import { buildOpens, buildRevision, currentBuild, currentBuildPath, outputs, poe2Build, poe2Session } from '$lib/global.js';
   import { game } from '$lib/go/engine';
   import { poe2Run, poe2Worker } from '$lib/go/engine_poe2.svelte';
-  import { compareCalcs2, compareFixture2, type Poe2CompareSides } from './compare_poe2';
+  import { compareCalcs2, compareFixture2, itemTip2, powerRows2, rowItem2, withPower2, type Poe2CompareSides, type Poe2Power } from './compare_poe2';
   import type { Poe2Calc } from '$lib/go/sync_worker2';
   import { decodeCode, rootElement } from '$lib/go/game_detect';
   import { COMPARE_MIXED_POE1 } from './compare_types';
@@ -84,6 +84,7 @@
   import { calcElements } from '$lib/display/calcs';
   import { compareCalcsView, modEntries, modKey } from '$lib/display/compare_calcs';
   import type { calculator } from '$lib/types';
+  import type { calculator2 } from '$lib/types2';
   import { compareLoaded } from './import_modal.svelte';
 
   // the frame is keyed on the game, so the page reads it once
@@ -222,8 +223,9 @@
       const w = await poe2Worker();
       tree2 ??= await w.TreeData().catch((e: Error) => (logError(e), undefined));
       const sides = (await w.CompareSides()) as Poe2CompareSides | undefined;
-      if (!sides) return undefined;
-      return { sides, ...compareFixture2(aView as never, sides, aName, metrics, showAll, tree2) };
+      const items = await w.CompareItemRows();
+      if (!sides || !items) return undefined;
+      return { sides, items, ...compareFixture2(aView as never, sides, aName, metrics, showAll, tree2, items) };
     }
   );
 
@@ -258,6 +260,46 @@
       const rows = powerRows(entries, mm.items[other], mm.items[receiver], mm.config, receiver, metricList);
       const configBack = Object.fromEntries((back ?? []).map((e) => [e.Var, [...(e.Impact ?? [])]]));
       return { receiver, rows, configBack };
+    }
+  );
+
+  // CompareTab.lua:3932-3977 (PoB-PoE2): each slot's Equip comparison into the shown build
+  const itemImpacts2 = resource(
+    () => [model2.current, ui.swapped, ui.view] as const,
+    async ([mm, swapped, view]) => {
+      if (!poe2 || !mm || view !== 'items') return undefined;
+      const w = await poe2Worker();
+      const receiver = swapped ? 'b' : 'a';
+      const out: Record<string, StatCompareSection[] | undefined> = {};
+      for (const r of mm.items.slots) if (r[swapped ? 'a' : 'b']) out[r.slot] = await w.CompareEquipImpact(receiver, r.slot);
+      return { receiver, out };
+    }
+  );
+
+  // CompareTab.lua:3129-3157 (PoB-PoE2): the report into the shown build, and the config-only report back
+  const power2 = resource(
+    () => [model2.current, ui.swapped, metricList] as const,
+    async ([mm, swapped, metrics]): Promise<Poe2Power | undefined> => {
+      if (!poe2 || !mm) return undefined;
+      const w = await poe2Worker();
+      const stats = metrics.map((x) => x.stat);
+      const receiver = swapped ? 'b' : 'a';
+      const all = { TreeNodes: true, Items: true, SkillGems: true, SupportGems: true, Config: true };
+      const entries = await w.BuildComparePower(receiver, stats, all);
+      if (!entries) return undefined;
+      const back = await w.BuildComparePower(receiver === 'a' ? 'b' : 'a', stats, {
+        TreeNodes: false,
+        Items: false,
+        SkillGems: false,
+        SupportGems: false,
+        Config: true
+      });
+      if (!back) return undefined;
+      return {
+        receiver,
+        rows: powerRows2(entries, mm.sides, mm.fixture.config, receiver, metrics),
+        configBack: Object.fromEntries(back.map((e) => [e.Var, [...(e.Impact ?? [])]]))
+      };
     }
   );
 
@@ -328,7 +370,9 @@
       if (!pages || !aView) return undefined;
       const a = { view: aView as Poe2Calc, page: pages.a };
       const b = { view: mm.sides.b.view, page: pages.b };
-      return swapped ? compareCalcs2(b, a, only) : compareCalcs2(a, b, only);
+      const w = await poe2Worker();
+      const modsEqual = (sds: calculator2.ModSectionData[]) => w.CompareModsEqual(sds);
+      return swapped ? compareCalcs2(b, a, only, modsEqual, [mm.sides.bName, aName]) : compareCalcs2(a, b, only, modsEqual, [aName, mm.sides.bName]);
     }
   );
   const calcsShown = $derived.by(() => {
@@ -380,7 +424,17 @@
     };
   });
   const compare = $derived.by((): CompareFixture | undefined => {
-    if (poe2) return model2.current?.fixture;
+    if (poe2) {
+      const mm = model2.current;
+      if (!mm) return undefined;
+      const ii = itemImpacts2.current;
+      const items = mm.fixture.items.map((r) => ({
+        ...r,
+        impactA: ii?.receiver === 'a' ? ii.out[r.slot] : undefined,
+        impactB: ii?.receiver === 'b' ? ii.out[r.slot] : undefined
+      }));
+      return withPower2({ ...mm.fixture, items }, power2.current);
+    }
     if (!m) return undefined;
     const p = power.current;
     const jp = jewelPower.current;
@@ -448,8 +502,21 @@
     const cut = (await syncWrap.CalculateDependentNodes(await syncWrap.GetTreeVersion(), [...nodes], id, classRoots(m.t, m.sides.a.className))) ?? [];
     await syncWrap.DeallocateNodes([id, ...cut]);
   };
+  // PassiveTreeView.lua:425-594 (PoB-PoE2): a click allocates the node and its path, or frees it and its dependents
+  const click2 = (id: number) =>
+    void poe2Run(
+      (w) => w.TreeClick(id, false, 0, false, 0),
+      (r) => r.calc
+    );
   const onapply = (row: PowerRow) => {
     const r = row as ComparePowerRow;
+    if (poe2) {
+      if (ui.swapped) return;
+      if (r.cat === 'tree' && r.nodeId !== undefined) click2(r.nodeId);
+      else if (r.cat === 'items' && r.slot) void poe2Run((w) => w.CopyCompareItem(r.slot!, true));
+      else if (r.cat === 'config' && r.key) void poe2Run((w) => w.UseCompareConfig(r.key!));
+      return;
+    }
     if (!syncWrap || !m || ui.swapped) return;
     if (r.cat === 'tree' && r.nodeId !== undefined) take(r.nodeId).catch(logError);
     else if (r.cat === 'items' && r.slot) {
@@ -459,6 +526,7 @@
   };
   const onnode = (id: number, action: 'Take' | 'Drop') => {
     if (ui.swapped) return;
+    if (poe2) return click2(id);
     (action === 'Take' ? take(id) : drop(id)).catch(logError);
   };
 
@@ -603,7 +671,11 @@
       ? undefined
       : async (side: 'a' | 'b', group: number) => (await syncWrap?.CompareGemSupportPairs((side === 'a') !== ui.swapped ? 'a' : 'b', group)) ?? []}
     itemtip={poe2
-      ? undefined
+      ? async (side: 'a' | 'b', name: string) => {
+          const mm = model2.current;
+          const it = mm && rowItem2([...mm.items.slots, ...mm.items.jewels], (side === 'a') !== ui.swapped ? 'a' : 'b', name);
+          return it && itemTip2(it);
+        }
       : async (side: 'a' | 'b', name: string) => {
           const t = await syncWrap?.CompareItemTooltip((side === 'a') !== ui.swapped ? 'a' : 'b', name);
           return t
@@ -611,9 +683,9 @@
             : undefined;
         }}
     calcsModRows={poe2
-      ? undefined
+      ? async (side: 0 | 1, sd: calculator.ModSectionData) => (await poe2Worker()).CompareCalcsModRows((side === 0) !== ui.swapped ? 'a' : 'b', sd)
       : async (side: 0 | 1, sd: calculator.ModSectionData) => (await syncWrap?.CompareModRows((ui.swapped ? 1 - side : side) as 0 | 1, sd)) ?? []}
-    powerBusy={!poe2 && (power.loading || !power.current || jewelPower.loading)}
+    powerBusy={poe2 ? power2.loading || !power2.current : power.loading || !power.current || jewelPower.loading}
     onswap={() => (ui.swapped = !ui.swapped)}
     {onapply}
     {onnode}
@@ -661,7 +733,10 @@
       else (equip ? syncWrap?.EquipItem(it.text, slot) : syncWrap?.CopyCompareItem(it.text))?.catch(logError);
     }}
     itemcards={poe2
-      ? undefined
+      ? async (slot: string) => {
+          const [a, b] = await (await poe2Worker()).CompareItemCards(slot);
+          return ui.swapped ? [b, a] : [a, b];
+        }
       : async (slot: string) => {
           const [l, r] = sideTexts(slot);
           return (await syncWrap?.CompareItemCards(ui.swapped ? r : l, ui.swapped ? l : r)) ?? [[], []];

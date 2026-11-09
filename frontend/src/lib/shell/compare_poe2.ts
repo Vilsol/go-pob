@@ -3,14 +3,15 @@
 import { displayStats2, minionDisplayStats2 } from '$lib/display/stats2';
 import type { Stat } from '$lib/display/stats';
 import { configurations2, currentValue, isVariable2, type ConfigValue2, type Variable2 } from '$lib/display/configurations2';
-import type { CompareFixture, CompareItemSide, ConfigKind, GemAttr, SkillsFixture } from '$lib/design/fixtures';
+import type { CompareFixture, CompareItemSide, ConfigKind, GemAttr, ItemTip, SkillsFixture } from '$lib/design/fixtures';
 import type { CompareSets } from '$lib/design/compare';
 import type { Tree2 } from '$lib/components/skill-tree/scene2';
-import type { Poe2Calc, Poe2CalcsPage, Poe2CompareParts } from '$lib/go/sync_worker2';
+import type { Poe2Calc, Poe2CalcsPage, Poe2CompareItemRow, Poe2CompareParts, Poe2Item } from '$lib/go/sync_worker2';
 import type { CalcsActor2 } from '$lib/display/calcs2';
 import type { CalcSectionEntry2, CalcSectionRow2 } from '$lib/calcs/calc_section_types2';
 import type { CompareCalcSection } from '$lib/display/compare_calcs';
-import { metricsOf, summaryStats, type CompareMetric } from './compare';
+import { metricsOf, powerRows, summaryStats, type CompareMetric, type ComparePowerRow } from './compare';
+import type { calculator2 } from '$lib/types2';
 
 type Value = ConfigValue2 | undefined;
 
@@ -144,7 +145,7 @@ export const skillsFixture2 = (p: Poe2CompareParts): SkillsFixture => {
 const RARITY: Record<string, NonNullable<CompareItemSide>['rarity']> = { NORMAL: 'normal', MAGIC: 'magic', RARE: 'rare', UNIQUE: 'unique', RELIC: 'relic' };
 
 // an item's title lines: a named item's name, then its base
-const itemSide = (it: Poe2CompareParts['items'][number] | undefined): CompareItemSide => {
+const itemSide = (it: Pick<Poe2Item, 'name' | 'rarity' | 'lines'> | undefined): CompareItemSide => {
   if (!it) return null;
   const [name, base] = it.name.map(plain);
   return {
@@ -155,12 +156,23 @@ const itemSide = (it: Poe2CompareParts['items'][number] | undefined): CompareIte
   };
 };
 
-export const itemRows2 = (a: Poe2CompareParts, b: Poe2CompareParts) =>
-  [...new Set([...a.items.map((i) => i.slot), ...b.items.map((i) => i.slot)])].map((slot) => ({
-    slot,
-    a: itemSide(a.items.find((i) => i.slot === slot)),
-    b: itemSide(b.items.find((i) => i.slot === slot))
-  }));
+// src/Classes/CompareTab.lua:3856-3862 (PoB-PoE2): every base slot, both empty included
+export const itemRows2 = (rows: Poe2CompareItemRow[]) => rows.map((r) => ({ slot: r.slot, a: itemSide(r.a), b: itemSide(r.b) }));
+
+// src/Classes/CompareTab.lua:3894-3907 (PoB-PoE2)
+export const jewelRows2 = (rows: Poe2CompareItemRow[]) =>
+  rows.map((r) => ({ slot: r.slot, label: r.label, node: r.node, a: itemSide(r.a), b: itemSide(r.b), aWarn: r.aWarn, bWarn: r.bWarn }));
+
+// src/Classes/CompareTab.lua:3921-3930 (PoB-PoE2): the hovered item's tooltip, its title then each group of mod lines
+export const itemTip2 = (it: Pick<Poe2Item, 'name' | 'lines'>): ItemTip => ({
+  influence: [],
+  title: it.name.map(plain),
+  lines: it.lines.flatMap((g) => [{ text: '', sep: true }, ...g.map((text) => ({ text, sep: false }))])
+});
+
+// the row's item on one side whose shown name is name
+export const rowItem2 = (rows: Poe2CompareItemRow[], side: 'a' | 'b', name: string) =>
+  rows.map((r) => r[side]).find((it) => it && plain(it.name[0] ?? '') === name);
 
 const KIND: Record<string, string> = { Keystone: 'k', Notable: 'n', Mastery: 'm', Socket: 'j' };
 
@@ -225,7 +237,8 @@ export const compareFixture2 = (
   aName: string,
   metrics: CompareMetric[],
   configToggle: boolean,
-  tree: Tree2 | undefined
+  tree: Tree2 | undefined,
+  items: { slots: Poe2CompareItemRow[]; jewels: Poe2CompareItemRow[] } = { slots: [], jewels: [] }
 ): { fixture: CompareFixture; aSkills: SkillsFixture } => {
   const bView = sides.b.view;
   const stats = summaryStats2(aView, bView);
@@ -245,7 +258,9 @@ export const compareFixture2 = (
     fixture: {
       a: side(aView, aName, 'a'),
       b: { ...side(bView, sides.bName, 'b'), skills: skillsFixture2(sides.b) },
-      items: itemRows2(sides.a, sides.b),
+      items: itemRows2(items.slots),
+      itemsInOrder: true,
+      jewels: jewelRows2(items.jewels),
       tree: tree ? treeOverlay2(tree, aView.tree.alloc, bView.tree.alloc) : { nodes: [], edges: [] },
       config: configRows2(aView.configInputs, bView.configInputs, configToggle)
     },
@@ -262,13 +277,15 @@ const calcsActor2 = (v: Poe2Calc, page: Poe2CalcsPage): CalcsActor2 => {
 };
 
 // src/Classes/CompareTab.lua:4538-4581, 4620-4652 (PoB-PoE2): each section A's flags show, with every row either
-// build shows; onlyDifferences leaves out a row whose value and breakdown match
+// build shows; onlyDifferences leaves out a row whose value, mod rows and breakdown match
 export const compareCalcs2 = async (
   a: { view: Poe2Calc; page: Poe2CalcsPage },
   b: { view: Poe2Calc; page: Poe2CalcsPage },
-  onlyDifferences: boolean
+  onlyDifferences: boolean,
+  modsEqual: (sds: calculator2.ModSectionData[]) => Promise<boolean[]> = (sds) => Promise.resolve(sds.map(() => true)),
+  names: [string, string] = ['A', 'B']
 ): Promise<CompareCalcSection[]> => {
-  const [{ checkFlag2, formatCalcStr2 }, { calcSections2 }, { cellId, elementsOf }] = await Promise.all([
+  const [{ checkFlag2, formatCalcStr2, modSectionData2 }, { calcSections2 }, { cellId, elementsOf }] = await Promise.all([
     import('$lib/display/calcs2'),
     import('$lib/calcs/calc_sections2'),
     import('$lib/display/calcs')
@@ -279,6 +296,27 @@ export const compareCalcs2 = async (
     const [x, y] = [lines(pa, bd), lines(ca, bd)];
     return x.length === y.length && x.every((l, i) => l === y[i]);
   };
+  // a modName table that also holds keys (CalcSections' modType or cfg inside it) is read by ipairs
+  const modSection = (e: CalcSectionEntry2) => ({
+    ...modSectionData2(e),
+    ModName: typeof e.modName === 'string' ? [e.modName] : elementsOf<string>(e.modName as unknown as Record<number, string>)
+  });
+  // CompareTab.lua:4545-4561: each mod entry's rows matched between the builds, asked once for the page
+  const sds = onlyDifferences
+    ? calcSections2.flatMap(([, , , , subs]) =>
+        subs.flatMap((sub) =>
+          elementsOf<CalcSectionRow2>(sub.data).flatMap((row) =>
+            row.label && row[0]?.format
+              ? elementsOf<CalcSectionEntry2>(row[0])
+                  .filter((e) => e.modName)
+                  .map(modSection)
+              : []
+          )
+        )
+      )
+    : [];
+  const equal = new Map((await modsEqual(sds)).map((eq, i) => [JSON.stringify(sds[i]), eq]));
+  const sameMods = (e: CalcSectionEntry2) => !e.modName || equal.get(JSON.stringify(modSection(e))) !== false;
   const view: CompareCalcSection[] = [];
   for (const [, id, , color, subs] of calcSections2) {
     const first = subs[0]?.data;
@@ -294,8 +332,17 @@ export const compareCalcs2 = async (
         const cid = cellId(id, j, k, 0);
         const [va, vb] = [formatCalcStr2(col.format, pa, col, cid), formatCalcStr2(col.format, ca, col, cid)];
         const entries = elementsOf<CalcSectionEntry2>(col);
-        if (onlyDifferences && shownA && shownB && va === vb && entries.every((e) => !e.breakdown || sameLines(e.breakdown))) return;
-        rows.push({ label: row.label, a: va, b: vb });
+        if (onlyDifferences && shownA && shownB && va === vb && entries.every((e) => sameMods(e) && (!e.breakdown || sameLines(e.breakdown)))) return;
+        // CompareCalcsHelpers.lua:179-227 (PoB-PoE2): each build's breakdown lines, then the entries' mod rows
+        const tip = [row.label];
+        for (const e of entries) {
+          if (!e.breakdown) continue;
+          const [la, lb] = [lines(pa, e.breakdown), lines(ca, e.breakdown)];
+          if (la.length) tip.push(`${names[0]}:`, ...la.map((l) => `  ${l}`));
+          if (lb.length) tip.push(`${names[1]}:`, ...lb.map((l) => `  ${l}`));
+        }
+        const mods = entries.filter((e) => e.modName).map((e) => ({ label: e.label ?? '', sd: modSection(e) }));
+        rows.push({ label: row.label, a: va, b: vb, ...(tip.length > 1 ? { tip } : {}), ...(mods.length ? { mods } : {}) });
       });
       const extra = sub.data.extra ? { a: formatCalcStr2(sub.data.extra, pa), b: formatCalcStr2(sub.data.extra, ca) } : undefined;
       if (rows.length || (onlyDifferences && extra && extra.a !== extra.b)) kept.push(extra ? { label: sub.label, extra, rows } : { label: sub.label, rows });
@@ -303,4 +350,34 @@ export const compareCalcs2 = async (
     if (kept.length) view.push({ id, color, blocks: kept });
   }
   return view;
+};
+
+export type Poe2Power = { receiver: 'a' | 'b'; rows: ComparePowerRow[]; configBack: Record<string, number[]> };
+
+// src/Classes/CompareTab.lua:2571-3126 (PoB-PoE2): the report's rows as the shared power view reads them; an item row
+// is toned by the giver's item and names the receiver's
+export const powerRows2 = (
+  entries: calculator2.ComparePowerEntry[],
+  sides: Pick<Poe2CompareSides, 'a' | 'b'>,
+  config: ConfigRow2[],
+  receiver: 'a' | 'b',
+  metrics: CompareMetric[]
+): ComparePowerRow[] => {
+  const items = (p: Poe2CompareParts) => p.items.map((i) => ({ slot: i.slot, name: plain(i.name[0] ?? ''), rarity: i.rarity }));
+  const giver = receiver === 'a' ? sides.b : sides.a;
+  return powerRows(entries, items(giver), items(sides[receiver]), config, receiver, metrics, LISTS2.player);
+};
+
+// the receiver's power rows, and each config row's impact into either build: the receiver's from its rows, the other's
+// from the config-only report back
+export const withPower2 = (f: CompareFixture, p: Poe2Power | undefined): CompareFixture => {
+  if (!p) return f;
+  const fromRows = Object.fromEntries(p.rows.filter((x) => x.cat === 'config').map((x): [string, number[]] => [x.key ?? '', x.impact]));
+  const into = (r: 'a' | 'b') => (p.receiver === r ? fromRows : p.configBack);
+  return {
+    ...f,
+    a: { ...f.a, power: p.receiver === 'a' ? p.rows : [] },
+    b: { ...f.b, power: p.receiver === 'b' ? p.rows : [] },
+    config: f.config.map((c) => ({ ...c, impactA: into('a')[c.key] ?? c.impactA, impactB: into('b')[c.key] ?? c.impactB }))
+  };
 };

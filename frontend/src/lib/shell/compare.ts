@@ -218,25 +218,29 @@ export const inputOf = (key: string, v: Value): pob.Input =>
         : { Name: key };
 
 // src/Classes/CompareTab.lua:2494-2504, src/Classes/CompareTab.lua:2598-2602
-const shownImpact = (impact: number[] = [], metrics: CompareMetric[]) =>
+const shownImpact = (impact: number[] = [], metrics: CompareMetric[], stats: Stat[]) =>
   metrics.map((m, i) => {
-    const ds = displayStats.find((d) => d.stat === m.stat);
+    const ds = stats.find((d) => d.stat === m.stat);
     const v = (impact[i] ?? 0) * (ds?.pc || ds?.mod ? 100 : 1);
     return Number(luaFormat(ds?.fmt ?? '.1f', v)) === 0 ? 0 : (impact[i] ?? 0);
   });
 
 export type ComparePowerRow = PowerRow & { nodeId?: number; slot?: string; key?: string };
 
+type PowerItem = Pick<CompareItem, 'slot' | 'name' | 'rarity'>;
+type PowerConfig = Pick<ConfigDiff, 'key' | 'section' | 'label' | 'a' | 'b'>;
+
 export const powerRows = (
   entries: calculator.ComparePowerEntry[],
-  giverItems: CompareItem[],
-  receiverItems: CompareItem[],
-  config: ConfigDiff[],
+  giverItems: PowerItem[],
+  receiverItems: PowerItem[],
+  config: PowerConfig[],
   receiver: 'a' | 'b',
-  metrics: CompareMetric[] = BASE_METRICS
+  metrics: CompareMetric[] = BASE_METRICS,
+  stats: Stat[] = displayStats
 ): ComparePowerRow[] =>
   entries.map((e): ComparePowerRow => {
-    const impact = shownImpact(e.Impact, metrics);
+    const impact = shownImpact(e.Impact, metrics, stats);
     switch (e.Category) {
       case 'Tree':
         return {

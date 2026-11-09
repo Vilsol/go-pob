@@ -247,12 +247,32 @@ describe('the PoE2 Compare page', () => {
         .flatMap((t) => [...t.querySelectorAll<HTMLElement>('[role="row"]')])
         .map((r) => [...r.querySelectorAll<HTMLElement>('[role="rowheader"], [role="cell"]')].map((c) => c.textContent?.trim() ?? ''))
         .filter((r) => r.length === 3 && !r[0].endsWith(':'));
-    await waitFor(() => expect(shown().length).toBeGreaterThan(0));
+    await waitFor(() => expect(shown().length).toBeGreaterThan(0), { timeout: 10_000 });
     const differing = shown().length;
     await fireEvent.click(only);
     await waitFor(() => expect(shown().length).toBeGreaterThan(differing));
     for (const row of want) expect(shown()).toContainEqual(row);
     expect(issued).toContain('CompareCalcsPages');
+    expect(issued).toContain('CompareModsEqual');
+    // CompareCalcsHelpers.lua:179-313 (PoB-PoE2): a row's tooltip lists each build's mod rows
+    const lifeRow = [...page.container.querySelectorAll<HTMLElement>('[role="table"]')]
+      .filter((t) => t.querySelector('[role="columnheader"]')?.textContent === 'Life')
+      .flatMap((t) => [...t.querySelectorAll<HTMLElement>('[role="row"][tabindex]')])
+      .find((r) => /^(Base|Total)/.test(r.querySelector('[role="rowheader"]')?.textContent?.trim() ?? ''))!;
+    expect(lifeRow).toBeTruthy();
+    await fireEvent.mouseEnter(lifeRow);
+    await waitFor(() => expect(document.getElementById('compare-calcs-tip')?.textContent).toMatch(/Common:|only:/));
+    expect(issued).toContain('CompareCalcsModRows');
+    // a row whose value and breakdown match is still shown when its mod rows differ
+    const { compareCalcs2 } = await import('./compare_poe2');
+    const pages = worker2Instance.CompareCalcsPages()!;
+    const sides = [
+      { view: view()!, page: pages.a },
+      { view: worker2Instance.CompareSides()!.b.view, page: pages.b }
+    ] as const;
+    const rowCount = async (eq: boolean) =>
+      (await compareCalcs2(sides[0], sides[1], true, (sds) => Promise.resolve(sds.map(() => eq)))).flatMap((sec) => sec.blocks.flatMap((b) => b.rows)).length;
+    expect(await rowCount(false)).toBeGreaterThan(await rowCount(true));
   });
 
   // CompareTab.lua (PoB-PoE2) is created with each build: its view lasts while the build stays open
@@ -269,6 +289,103 @@ describe('the PoE2 Compare page', () => {
     cleanup();
     const again = await open('sorceress_spark.xml');
     expect(await again.findByRole('region', { name: 'Choose a build to compare' })).toBeTruthy();
+  });
+
+  // CompareTab.lua:2571-3126 (PoB-PoE2); the rows and impacts are PoB-PoE2's (oracle/poe2_compare_power.lua)
+  it("reports what each part of the compared build is worth to the open build, as PoB-PoE2's power report does", async () => {
+    const { pobPlain } = await import('$lib/design/pob_text');
+    const { signed } = await import('$lib/design/compare');
+    const pob = JSON.parse(await readFile(resolve(ORACLE, 'poe2_compare_power.json'), 'utf8')) as Record<
+      string,
+      { category: string; name: string; var?: string; nodeId?: number; impact: number }[]
+    >;
+    const want = pob.FullDPS.map((r) => [pobPlain(r.category === 'Tree' ? `Take ${r.name}` : r.name).replace(/\s+/g, ' '), signed(r.impact)]).sort();
+    expect(want.length).toBeGreaterThan(4);
+
+    const page = await open('compare_power_primary.xml');
+    await compareCode(page, encode(await fixture('compare_power_compared.xml')));
+    await page.findByRole('region', { name: 'Stat comparison' }, { timeout: 30_000 });
+    await fireEvent.click(page.getByRole('tab', { name: 'Power report' }));
+    const table = await page.findByRole('table', { name: 'Power report rows' });
+    const shown = () =>
+      [...table.querySelectorAll<HTMLElement>('[role="row"]')]
+        .slice(1, -1)
+        .map((r) => {
+          const cells = r.querySelectorAll<HTMLElement>('[role="cell"]');
+          const what = (cells[1].querySelector('[role="button"]')?.textContent ?? '').replace(/\s+/g, ' ').trim();
+          return [what, /[+−]\S+/.exec(cells[3].textContent ?? '')?.[0] ?? ''];
+        })
+        .sort();
+    await waitFor(() => expect(shown()).toEqual(want), { timeout: 60_000 });
+    expect(issued).toContain('BuildComparePower');
+
+    // the config view's impact column is the same report's config row
+    const boss = pob.FullDPS.find((r) => r.var === 'enemyIsBoss')!;
+    await fireEvent.click(page.getByRole('tab', { name: 'Config' }));
+    const row = (await page.findByRole('combobox', { name: 'Is the enemy a Boss? (A)' })).closest<HTMLElement>('[role="row"]')!;
+    await waitFor(() => expect(row.querySelectorAll('[role="cell"]')[3].textContent).toContain(signed(boss.impact)));
+
+    // Take on a tree row allocates the node in the open build
+    await fireEvent.click(page.getByRole('tab', { name: 'Power report' }));
+    await fireEvent.click((await page.findAllByRole('button', { name: 'Take' }))[0]);
+    const node = pob.FullDPS.find((r) => r.category === 'Tree')!.nodeId!;
+    await waitFor(() => expect(view()?.tree.alloc).toContain(node));
+    expect(issued).toContain('TreeClick');
+  });
+
+  // CompareTab.lua:3670-3675, 3856-3977 (PoB-PoE2); rows and Equip differences are PoB-PoE2's (oracle/poe2_compare_power.lua)
+  it("lists PoB-PoE2's item and jewel rows, each with the Equip comparison and the item's tooltip", async () => {
+    const pob = JSON.parse(await readFile(resolve(ORACLE, 'poe2_compare_power.json'), 'utf8')) as {
+      items: { slot: string; label: string; p?: string; c?: string }[];
+      equip: Record<string, { delta: Record<string, number> }>;
+    };
+    const page = await open('compare_power_primary.xml');
+    await compareCode(page, encode(await fixture('compare_power_compared.xml')));
+    await page.findByRole('region', { name: 'Stat comparison' }, { timeout: 30_000 });
+    await fireEvent.click(page.getByRole('tab', { name: 'Items' }));
+    const region = await page.findByRole('region', { name: 'Item differences' });
+    const rowOf = (label: string) =>
+      [...region.querySelectorAll<HTMLElement>('[role="row"]')].find((r) => r.querySelector('[role="cell"]')?.textContent?.trim() === label);
+    await waitFor(() => expect(rowOf('Socket')).toBeTruthy());
+    // each row: its label, then each side's item name (PoB-PoE2's "title, base" keeps the title) or Empty
+    const cellText = (r: HTMLElement, i: number) => r.querySelectorAll<HTMLElement>('[role="cell"]')[i].textContent ?? '';
+    const shownRows = [...region.querySelectorAll<HTMLElement>('[role="row"]')]
+      .filter((r) => r.querySelectorAll('[role="cell"]').length === 4)
+      .map((r) => [
+        cellText(r, 0).trim(),
+        cellText(r, 1).includes('Empty') ? 'Empty' : cellText(r, 1),
+        cellText(r, 2).includes('Empty') ? 'Empty' : cellText(r, 2)
+      ]);
+    expect(shownRows.map((r) => r[0])).toEqual(pob.items.map((w) => w.label));
+    pob.items.forEach((w, i) => {
+      expect(shownRows[i][1]).toContain(w.p?.split(', ')[0] ?? 'Empty');
+      expect(shownRows[i][2]).toContain(w.c?.split(', ')[0] ?? 'Empty');
+    });
+    // Ring 1: B's ring raises the Effective Hit Pool by PoB-PoE2's difference
+    const ehp = `Effective Hit Pool +${Math.round(pob.equip['Ring 1'].delta.TotalEHP)}`;
+    expect(ehp).toBe('Effective Hit Pool +37');
+    await waitFor(() => expect(rowOf('Ring 1')!.querySelectorAll('[role="cell"]')[3].textContent).toContain(ehp));
+    expect(issued).toContain('CompareEquipImpact');
+
+    const sapphire = within(rowOf('Socket')!).getByRole('button', { name: /Sapphire of Thought/ });
+    await fireEvent.mouseEnter(sapphire);
+    await waitFor(() => expect(document.getElementById('compare-item-tip')?.textContent).toContain('12% increased Spell Damage'));
+    const tip = document.getElementById('compare-item-tip')!.textContent!;
+    expect(tip).toContain('7% increased Cast Speed');
+    expect(tip).not.toContain('^x');
+
+    // CompareTab.lua:3494-3659 (PoB-PoE2): the expanded mode shows each side's lines, B's ring's mods marked as B's only
+    const { pobPlain } = await import('$lib/design/pob_text');
+    const cards = (pob as unknown as { cards: Record<string, { a: string[]; b: string[] }> }).cards['Ring 1'];
+    await fireEvent.click(within(region).getByRole('checkbox', { name: 'Expanded mode' }));
+    const group = await within(region).findByRole('group', { name: 'Ring 1' });
+    await waitFor(() =>
+      expect([...group.querySelectorAll('ul')].map((u) => [...u.querySelectorAll('li')].map((l) => l.textContent))).toEqual([
+        cards.a.map(pobPlain),
+        cards.b.map(pobPlain)
+      ])
+    );
+    expect(issued).toContain('CompareItemCards');
   });
 
   it("copies the compared build's item and tree into the open build", async () => {

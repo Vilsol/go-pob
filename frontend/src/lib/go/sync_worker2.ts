@@ -436,6 +436,18 @@ const compareParts = (calc: exposition.Calculator): Poe2CompareParts => {
   };
 };
 
+/* CompareTab.lua:1427-1491, 3856-3907 (PoB-PoE2): one Items view row; node is the socket of a jewel row */
+export type Poe2CompareItemRow = {
+  slot: string;
+  label: string;
+  node: number;
+  a?: Poe2Item;
+  b?: Poe2Item;
+  missing: boolean;
+  aWarn: boolean;
+  bWarn: boolean;
+};
+
 export type Poe2CompareSetKind = 'tree' | 'skill' | 'item' | 'config' | 'group' | 'skills';
 
 const NODE_RANK2: Record<string, number> = { Keystone: 5, Notable: 3, Mastery: 2, Socket: 1 };
@@ -686,6 +698,77 @@ class PoB2Worker {
     if (!b || !this.calc) return this.view();
     this.calc.CopyCompareItem(b.calc, slot, andUse).unwrap();
     return this.changed('CopyCompareItem', `Copied the ${slot} item of ${b.name}`);
+  }
+
+  /* CompareTab.lua:3670-3675, 3856-3907 (PoB-PoE2): the Items view's slot rows and jewel rows, the open build's
+     item first */
+  CompareItemRows(): { slots: Poe2CompareItemRow[]; jewels: Poe2CompareItemRow[] } | undefined {
+    const b = this.compareB;
+    if (!b || !this.calc) return undefined;
+    const v = this.calc.CompareItems(b.calc).unwrap();
+    if (!v) return undefined;
+    const row = (r: exposition.CompareItemSlotView): Poe2CompareItemRow => ({
+      slot: r.Slot,
+      label: r.Label,
+      node: r.NodeID,
+      a: r.A ? item2(r.A) : undefined,
+      b: r.B ? item2(r.B) : undefined,
+      missing: r.Missing,
+      aWarn: r.AWarn,
+      bWarn: r.BWarn
+    });
+    return { slots: (v.Slots ?? []).map(row), jewels: (v.Jewels ?? []).map(row) };
+  }
+
+  /* CompareTab.lua:3494-3659, 3803-3807 (PoB-PoE2): the expanded mode's lines of slot's items, the open build's
+     first */
+  CompareItemCards(slot: string): [string[], string[]] {
+    const b = this.compareB;
+    const v = b && this.calc?.CompareItemCards(b.calc, slot).unwrap();
+    return v ? [[...(v.A ?? [])], [...(v.B ?? [])]] : [[], []];
+  }
+
+  /* CompareTab.lua:3932-3977 (PoB-PoE2): the stat differences of equipping the other build's item in slot of
+     receiver */
+  async CompareEquipImpact(receiver: 'a' | 'b', slot: string): Promise<StatCompareSection[] | undefined> {
+    const b = this.compareB;
+    if (!b || !this.calc) return undefined;
+    const [into, from] = receiver === 'a' ? [this.calc, b.calc] : [b.calc, this.calc];
+    const v = (await into.CompareEquipItem(from, slot)).unwrap();
+    const block = v?.Blocks?.[0];
+    if (!v || !block) return undefined;
+    const outputs = (o: exposition.CompareOutputs) => ({ output: { ...(o.Output ?? {}) }, minion: o.Minion ? { ...o.Minion } : undefined });
+    return addStatCompares2({ ...(v.SkillFlags ?? {}) }, { ...(v.MinionSkillFlags ?? {}) }, v.Minion, outputs(v.Base), outputs(block.Compare));
+  }
+
+  private comparePowerSeq = 0;
+
+  /* CompareTab.lua:3129-3157 (PoB-PoE2): the power report of what the other build has, into receiver; a newer report
+     or a change of the compared build abandons it */
+  async BuildComparePower(
+    receiver: 'a' | 'b',
+    stats: string[],
+    categories: calculator2.ComparePowerCategories
+  ): Promise<calculator2.ComparePowerEntry[] | undefined> {
+    const b = this.compareB;
+    const a = this.calc;
+    if (!b || !a) return undefined;
+    const seq = ++this.comparePowerSeq;
+    const bSeq = b.seq;
+    const [primary, other] = receiver === 'a' ? [a, b.calc] : [b.calc, a];
+    const builder = primary.NewComparePowerBuilder(other, stats, categories).unwrap();
+    if (!builder) return undefined;
+    const stale = () => seq !== this.comparePowerSeq || this.compareB !== b || b.seq !== bSeq || this.calc !== a;
+    try {
+      for (let done = 0; done < 1; ) {
+        if (stale()) return undefined;
+        done = builder.StepMs(40);
+        await new Promise((resolve) => setTimeout(resolve));
+      }
+      return stale() ? undefined : (builder.Report() ?? []).map((e) => ({ ...e, Impact: [...(e.Impact ?? [])] }));
+    } finally {
+      builder.release();
+    }
   }
 
   private saved(): { xml: string; snap: Snapshot } | undefined {
@@ -1022,6 +1105,19 @@ class PoB2Worker {
     const b = this.compareB;
     if (!b || !this.calc) return undefined;
     return { a: this.calcsPageOf(this.calc), b: this.calcsPageOf(b.calc) };
+  }
+
+  /* CompareTab.lua:4545-4561 (PoB-PoE2): whether each entry's mod rows match between the open build and the compared */
+  CompareModsEqual(sds: calculator2.ModSectionData[]): boolean[] {
+    const b = this.compareB;
+    if (!b || !this.calc) return sds.map(() => true);
+    return [...(this.calc.CompareModsEqual(b.calc, sds).unwrap() ?? [])];
+  }
+
+  /* CompareCalcsHelpers.lua:99-146 (PoB-PoE2): the Compare page's Calcs tooltip mod rows of one build */
+  CompareCalcsModRows(side: 'a' | 'b', sd: calculator2.ModSectionData): calculator2.CompareModRow[] {
+    const calc = side === 'a' ? this.calc : this.compareB?.calc;
+    return calc ? [...(calc.CalcsCompareModRows(sd).unwrap() ?? [])] : [];
   }
 
   /* CalcBreakdownControl.lua:300-548 (PoB-PoE2): a cell entry's mod table over the last calculation */

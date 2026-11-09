@@ -137,6 +137,8 @@ export type CompareFixture = {
   a: CompareSide;
   b: CompareSide & { skills: SkillsFixture };
   items: { slot: string; a: CompareItemSide; b: CompareItemSide; impactA?: StatCompareSection[]; impactB?: StatCompareSection[] }[];
+  /* the items are in the order to show them, as PoB-PoE2's CompareTab lists its base slots */
+  itemsInOrder?: boolean;
   /* CompareTab.lua:1372-1436 */
   jewels?: { slot: string; label: string; node: number; a: CompareItemSide; b: CompareItemSide; aWarn: boolean; bWarn: boolean }[];
   tree: { nodes: { id: number; name: string; kind: string; owner: 'a' | 'b' | 'both'; x: number | null; y: number | null }[]; edges: [number, number][] };

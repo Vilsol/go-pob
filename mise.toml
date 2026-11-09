@@ -662,6 +662,21 @@ trap 'rm -f {{config_root}}/.task-calc-sections2.ts' EXIT
 ''',
 ]
 
+[tasks.compare-power-poe2]
+description = "Record the pinned PoB-PoE2's compare power report for the Compare page's fixture pair"
+usage = '''
+flag "--pob2-dir <dir>" env="POB2_DIR" default="{{vars.POB2_DEFAULT}}"
+'''
+run = [
+  { task = "pob-pin --game poe2" },
+  '''
+fixtures={{config_root}}/wasm2/exposition/testdata
+{{vars.NICE}} mise x --cd {{usage.pob2_dir}}/src -- luajit {{config_root}}/oracle/poe2_compare_power.lua \
+  "$fixtures/compare_power_primary.xml" "$fixtures/compare_power_compared.xml" \
+  {{config_root}}/testdata/oracle/poe2_compare_power.json FullDPS TotalEHP Life Mana Speed
+''',
+]
+
 [tasks.rich-notes-pob]
 description = "Rewrite the go-pob-written <RichNotes> build fixture and record what the pinned PoB reads from it"
 usage = '''

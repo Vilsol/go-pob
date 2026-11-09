@@ -54,9 +54,9 @@ export function sidesOf(fx: CompareFixture, aSkills: SkillsFixture, swapped: boo
   const a: Side = { ...fx.a, skills: aSkills };
   const b: Side = fx.b;
   const [A, B] = swapped ? [b, a] : [a, b];
-  const items: ItemRow[] = [...fx.items]
-    .sort((x, y) => slotRank(x.slot) - slotRank(y.slot) || x.slot.localeCompare(y.slot))
-    .map((r) => (swapped ? { slot: r.slot, a: r.b, b: r.a, impact: r.impactB } : { slot: r.slot, a: r.a, b: r.b, impact: r.impactA }));
+  const items: ItemRow[] = (
+    fx.itemsInOrder ? [...fx.items] : [...fx.items].sort((x, y) => slotRank(x.slot) - slotRank(y.slot) || x.slot.localeCompare(y.slot))
+  ).map((r) => (swapped ? { slot: r.slot, a: r.b, b: r.a, impact: r.impactB } : { slot: r.slot, a: r.a, b: r.b, impact: r.impactA }));
   const jewels = (fx.jewels ?? []).map((j) => (swapped ? { ...j, a: j.b, b: j.a, aWarn: j.bWarn, bWarn: j.aWarn } : j));
   const config = fx.config.map((c) => (swapped ? { ...c, a: c.b, b: c.a, aValue: c.bValue, bValue: c.aValue, impactA: c.impactB, impactB: c.impactA } : c));
   const flip = { a: 'b', b: 'a', both: 'both' } as const;
