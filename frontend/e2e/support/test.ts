@@ -30,7 +30,9 @@ export const storageFingerprint = (page: Page): Promise<string> =>
       if (v instanceof Blob) return `blob:${v.size}`;
       return JSON.stringify(v) ?? String(v);
     };
+    // the activity panel's learned job durations are timing history, not settings or builds
     const local = Object.keys(localStorage)
+      .filter((k) => k !== 'activity:durations')
       .sort()
       .map((k) => `${k}=${localStorage.getItem(k)}`);
     const session = Object.keys(sessionStorage)
