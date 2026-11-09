@@ -519,9 +519,18 @@ func doActorMisc(env *Environment, actor *Actor) {
 		if modDB.Sum(mod.TypeBase, nil, "MinimumRage") > modDB.Multipliers["Rage"] {
 			modDB.Multipliers["Rage"] = modDB.Sum(mod.TypeBase, nil, "MinimumRage")
 		}
+		//pob2:block:src/Modules/CalcPerform.lua:600
 		alliedFortify := 0.0
+		parentFortify, parentOK := 0.0, false
 		if modDB.Flag(nil, "YourFortifyEqualToParent") && actor.Parent != nil {
-			alliedFortify = actor.Parent.Output["FortificationStacks"]
+			parentFortify, parentOK = actor.Parent.Output["FortificationStacks"]
+		}
+		if parentOK {
+			alliedFortify = parentFortify
+		} else if party := env.partyMembers(); party.modDB.Flag(nil, "PartyMemberFortifyEqualToYours") {
+			if v, ok := party.output["FortificationStacks"]; ok {
+				alliedFortify = v
+			}
 		}
 		if modDB.Sum(mod.TypeBase, nil, "MinimumFortification") > 0 || alliedFortify > 0 {
 			condList["Fortified"] = true
@@ -853,6 +862,9 @@ func perform(env *Environment) {
 
 	modDB := env.ModDB
 	output := env.Player.Output
+
+	//pob2:block:src/Modules/CalcPerform.lua:1219-1220
+	env.Player.partyMembers = env.partyMembers()
 
 	//pob2:block:src/Modules/CalcPerform.lua:1223-1229
 	env.Minion = nil

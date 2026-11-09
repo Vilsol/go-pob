@@ -52,6 +52,8 @@ type Calculator struct {
 	undo *tree2.UndoHandler
 	// skillsEdited is set once the Skills tab has edited the build.
 	skillsEdited bool
+	// partyAppliedText is the party tab's buffers as last applied, by name; nil is the saved buffers.
+	partyAppliedText map[string]string
 }
 
 // Outputs is the player's output table, the main skill's minion's when it has one, and the build's
@@ -160,6 +162,12 @@ func truthySkillData(skill *calculator2.ActiveSkill) map[string]bool {
 	return out
 }
 
+func (c *Calculator) calcOptions(t *tree2.PassiveTree, items *calculator2.ItemsTab) calculator2.Options {
+	opts := c.partyOptions()
+	opts.Tree, opts.Items = t, items
+	return opts
+}
+
 func (c *Calculator) Calculate() (*Outputs, error) {
 	t, err := loadTree()
 	if err != nil {
@@ -169,7 +177,7 @@ func (c *Calculator) Calculate() (*Outputs, error) {
 	if c.items != nil {
 		items.DisplayItem = c.items.DisplayItem
 	}
-	env, err := calculator2.BuildOutput(c.build, calculator2.Options{Tree: t, Items: items})
+	env, err := calculator2.BuildOutput(c.build, c.calcOptions(t, items))
 	if err != nil {
 		return nil, err
 	}
@@ -179,7 +187,7 @@ func (c *Calculator) Calculate() (*Outputs, error) {
 	if c.build.Build.CharacterLevelAutoMode {
 		if level := calculator2.EstimatePlayerProgress(env.Spec, env.Player.Output).Level; level != c.build.Build.Level {
 			c.build.Build.Level = level
-			env, err = calculator2.BuildOutput(c.build, calculator2.Options{Tree: t, Items: items})
+			env, err = calculator2.BuildOutput(c.build, c.calcOptions(t, items))
 			if err != nil {
 				return nil, err
 			}

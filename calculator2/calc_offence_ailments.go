@@ -577,8 +577,11 @@ func (h *offenceHit) offenceAilments() {
 					globalOutput[ailment+"EffMult"] = effMult
 					if breakdown != nil && effMult != 1 {
 						sourceRes := takenType
+						//pob2:block:src/Modules/CalcOffence.lua:5391-5392
 						if env.ModDB.Flag(nil, "Enemy"+takenType+"ResistEqualToYours") {
 							sourceRes = "Your " + takenType + " Resistance"
+						} else if env.partyMembers().modDB.Flag(nil, "Enemy"+takenType+"ResistEqualToYours") {
+							sourceRes = "Party Member " + takenType + " Resistance"
 						}
 						globalBreakdown.set(ailment+"EffMult", breakdown.effMult(takenType, resist, 0, takenInc, effMult, takenMore, sourceRes, true, 0, 0, calcPenResist(resist, 0, 0), 0, 0)...)
 					}

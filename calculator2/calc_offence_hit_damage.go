@@ -466,12 +466,17 @@ func (h *offenceHit) offenceCrit(pass *offencePass) {
 			critOverride, hasCritOverride = o.Float(), true
 		}
 		// destructive link
-		// actor.parent.output.MainHand and actor.partyMembers are not carried; the parent's weapon
-		// data stands in for both.
+		// actor.parent.output.MainHand is not carried; the parent's weapon data stands in for it.
 		if skillModList.Flag(cfg, "MainHandCritIsEqualToParent") && actor.Parent != nil {
 			critOverride, hasCritOverride = weaponData(env, actor.Parent, 1)["CritChance"], true
 		} else if skillModList.Flag(cfg, "MainHandCritIsEqualToPartyMember") {
+			//pob2:block:src/Modules/CalcOffence.lua:3856-3857
 			critOverride, hasCritOverride = 0, true
+			if actor.partyMembers != nil {
+				if v, ok := actor.partyMembers.outputTables["MainHand"]["CritChance"]; ok {
+					critOverride = v
+				}
+			}
 		}
 		baseCrit := source.num("CritChance")
 		if hasCritOverride {
@@ -1304,8 +1309,11 @@ func (h *offenceHit) hitEffMult(cfg *moddb.ListCfg, damageType string, damageTyp
 	if isElemental[damageType] {
 		invertChance = math.Max(math.Min(skillModList.Sum(mod.TypeChance, cfg, "HitsInvertEleResChance"), 1), 0)
 	}
+	//pob2:block:src/Modules/CalcOffence.lua:4363
 	if env.ModDB.Flag(nil, "Enemy"+sourceRes+"ResistEqualToYours") {
 		sourceRes = "Your " + sourceRes + " Resistance"
+	} else if env.partyMembers().modDB.Flag(nil, "Enemy"+sourceRes+"ResistEqualToYours") {
+		sourceRes = "Party Member " + sourceRes + " Resistance"
 	}
 	if skillFlags["projectile"] {
 		takenInc += enemyDB.Sum(mod.TypeIncrease, nil, "ProjectileDamageTaken")

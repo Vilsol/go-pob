@@ -1,0 +1,73 @@
+=== PartyMemberStats
+PartyMemberMaximumEnduranceChargesEqualToYours
+EnduranceChargesMax=6
+PartyMemberFortifyEqualToYours
+FortificationStacks=10
+MovementSpeedMod|percent|max=140
+MainHand.CritChance=12
+EnemyLightningResistEqualToYours
+LightningResist=40
+BlockChance=30
+BlockChanceMax=60
+MaxLifeLeechRatePercent=35
+EnergyShieldRecoveryCap=500
+=== Aura
+Purity of Fire
+200
+50|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura
+---
+Purity of Ice
+150
+40|Skill:PurityOfIcePlayer|ColdResist|BASE|-|-|type=GlobalEffect/effectType=Aura
+---
+Vaal Haste
+100
+10|Skill:VaalHaste|Speed|INC|-|-|type=GlobalEffect/effectType=Aura
+---
+Hostility_Debuff
+100
+-10|Skill:Hostility|LightningResist|BASE|-|-|type=GlobalEffect/effectType=AuraDebuff
+---
+extraAura
+5|Item:3:Party Ring|Damage|INC|-|-|-
+---
+otherEffects
+Onslaught|100|20|Skill:Onslaught|Speed|INC|-|-|type=GlobalEffect/effectType=Buff
+---
+=== Curse
+--- Curse Limit ---
+2
+Vulnerability
+120
+false
+20|Skill:VulnerabilityPlayer|PhysicalDamageTaken|INC|-|-|type=GlobalEffect/effectType=Curse
+---
+Sniper's Mark
+100
+true
+15|Skill:SnipersMarkPlayer|DamageTaken|INC|-|-|type=GlobalEffect/effectType=Curse
+---
+=== Warcry Skills
+Infernal Cry
+100
+10|Skill:InfernalCryPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Warcry/warcryPowerBonus=2
+---
+=== Link Skills
+Destructive Link
+100
+true|Skill:DestructiveLinkPlayer|MainHandCritIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link
+5|Skill:DestructiveLinkPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Link,type=Multiplier/var=PowerCharge/actor=parent
+---
+Soul Link
+100
+true|Skill:SoulLinkPlayer|BlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link
+true|Skill:SoulLinkPlayer|MaximumBlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link
+true|Skill:SoulLinkPlayer|MaximumLifeLeechIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link
+true|Skill:SoulLinkPlayer|MovementSpeedEqualHighestLinkedPlayers|FLAG|-|-|type=GlobalEffect/effectType=Link
+20|Skill:SoulLinkPlayer|TakenFromParentESBeforeYou|BASE|-|-|type=GlobalEffect/effectType=Link
+---
+=== EnemyConditions
+Condition:Intimidated
+=== EnemyMods
+Shock
+10|Skill:Shock|DamageTaken|INC|-|-|-

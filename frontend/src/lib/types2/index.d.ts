@@ -102,6 +102,11 @@ export declare namespace calculator2 {
     readonly ItemID: number;
     readonly NodeID: number;
   }
+  interface PartySummaryEntry {
+    readonly Group: string;
+    readonly Name: string;
+    readonly Value: string;
+  }
   interface PlayerProgress {
     readonly Level: number;
     readonly Act: string;
@@ -215,6 +220,7 @@ export declare namespace exposition {
     AddDBItem(kind: string, name: string, equip: boolean, second: boolean): Result<number>;
     AddDisplayItem(slot: string): Result<number>;
     AddGem(group: number, gemID: string): Result<void>;
+    AddPartyMember(xmlText: string, destination: string, appendMode: boolean): Result<void>;
     AddSkillsUndoState(): void;
     AllocateAttributeNode(id: number, attributeIndex: number, allocMode: number): Result<void>;
     BuildItemCompare(id: number): Promise<Result<(exposition.ItemCompareView | undefined)>>;
@@ -228,6 +234,7 @@ export declare namespace exposition {
     Calculate(): Promise<Result<(exposition.Outputs | undefined)>>;
     ChangeTreeAscendancy(ascendClassID: number): Result<void>;
     ChangeTreeClass(classID: number, choice: number): Result<boolean>;
+    ClearParty(destination: string): void;
     ClickNode(id: number, right: boolean, hotkey: number, confirmClassChange: boolean, allocMode: number, trace: Array<number> | undefined): Result<number>;
     ClickNodeConnectPath(id: number, hotkey: number, allocMode: number): Result<number>;
     CloseDisplayItem(): Result<void>;
@@ -251,6 +258,7 @@ export declare namespace exposition {
     DeleteSkillSet(id: number): Result<void>;
     DeleteSocketGroup(index: number): Result<void>;
     DeleteTreeSpec(specID: number): void;
+    DisablePartyEffects(): void;
     DisplayItemAffixRoll(control: number, val: number): Result<(Array<string> | undefined)>;
     DisplayItemAffixes(): Result<(Array<exposition.AffixControlView> | undefined)>;
     DisplayItemCompare(): Promise<Result<(exposition.ItemCompareView | undefined)>>;
@@ -263,6 +271,7 @@ export declare namespace exposition {
     GemSortCache(group: number, gemIDs: Array<string> | undefined): Result<(exposition.GemSortCacheView | undefined)>;
     GemSortDPS(group: number, gemIDs: Array<string> | undefined, field: string): Promise<Result<(exposition.GemSortDPSView | undefined)>>;
     HoverNode(id: number, allocMode: number): exposition.TreeHover;
+    ImportParty(xmlText: string, destination: string, appendMode: boolean): Result<void>;
     ItemDBRows(kind: string, f: calculator2.ItemDBFilter): Result<(Array<exposition.ItemDBRow> | undefined)>;
     ItemText(id: number): Result<string>;
     ItemsPage(): Result<(exposition.ItemsPageView | undefined)>;
@@ -281,10 +290,19 @@ export declare namespace exposition {
     NodeTip(id: number, trace: Array<number> | undefined, tracing: boolean): Result<(exposition.NodeTipView | undefined)>;
     Notes(): string;
     OpenDBItem(kind: string, name: string): Result<void>;
+    PartyBuffers(): (Record<string, string> | undefined);
+    PartyEffectsApplied(): boolean;
+    PartyEffectsDisabled(): boolean;
+    PartyImpact(stats: Array<string> | undefined): Promise<Result<(Array<exposition.PartyImpactRow> | undefined)>>;
+    PartyMembers(): (Array<exposition.PartyMember> | undefined);
+    PartyOptions(): [string, boolean, boolean];
+    PartySummaries(): (Record<string, Array<calculator2.PartySummaryEntry> | undefined> | undefined);
     PasteItem(raw: string): Result<void>;
     PasteSocketGroup(text: string): Result<number>;
+    RebuildParty(): void;
     Redo(): Result<boolean>;
     RemoveGem(group: number, gem: number): Result<void>;
+    RemovePartyMember(i: number): void;
     RenameConfigSet(id: number, title: string): void;
     RenameItemSet(id: number, title: string): Result<void>;
     RenameSkillSet(id: number, title: string): Result<void>;
@@ -318,6 +336,9 @@ export declare namespace exposition {
     SetLevel(level: number): void;
     SetMainActiveSkill(index: number): void;
     SetMainSocketGroup(index: number): void;
+    SetPartyBuffer(name: string, text: string): void;
+    SetPartyMemberActive(i: number, active: boolean): void;
+    SetPartyOptions(destination: string, appendMode: boolean, showAdvanceTools: boolean): void;
     SetRichNotes(plain: string, doc: string): void;
     SetSlotActive(slot: string, state: boolean): Result<void>;
     SetSlotItem(slot: string, id: number): Result<void>;
@@ -507,6 +528,20 @@ export declare namespace exposition {
     readonly Type: string;
     readonly Value: string;
     readonly Tags?: Array<string>;
+  }
+  interface PartyImpactRow {
+    readonly Stat: string;
+    readonly With: number;
+    readonly Without: number;
+  }
+  interface PartyMember {
+    readonly Name: string;
+    readonly ClassName: string;
+    readonly Ascendancy: string;
+    readonly Level: number;
+    readonly Destination: string;
+    readonly Active: boolean;
+    readonly Gives?: Array<string>;
   }
   interface PowerProgress {
     readonly Done: number;

@@ -3,6 +3,7 @@
 import { describe, expect, it, beforeAll, afterEach, vi } from 'vitest';
 import { render, cleanup, fireEvent, waitFor, within } from '@testing-library/svelte';
 import { get } from 'svelte/store';
+import { createRawSnippet } from 'svelte';
 
 afterEach(cleanup);
 
@@ -120,11 +121,12 @@ describe('a PoE2 build in the app frame', () => {
       ['Calcs', '/calcs'],
       ['Config', '/configuration'],
       ['Notes', '/notes'],
+      ['Party', '/party'],
       ['Compare', '/compare']
     ]);
   });
 
-  // the Notes page, the Compare page and the Import / Export dialog serve a PoE2 build; Party and Timeless do not yet
+  // the Notes, Party and Compare pages and the Import / Export dialog serve a PoE2 build
   it("the phone frame's More lists the pages PoE2 has", async () => {
     poe2Build.set(calc());
     const bar = render(AppTopBar, { props: { phone: true } });
@@ -134,14 +136,14 @@ describe('a PoE2 build in the app frame', () => {
       within(more)
         .getAllByRole('link')
         .map((l) => l.textContent?.trim())
-    ).toEqual(['Notes', 'Compare', 'Import/Export']);
+    ).toEqual(['Notes', 'Party', 'Compare', 'Import/Export']);
   });
 
   it('a route PoE2 has no page for says so', async () => {
     poe2Build.set(calc());
-    const Party = (await import('../../routes/party/+page.svelte')).default;
-    const page = render(Party);
-    expect(page.getByRole('status').textContent).toBe('The Party page is not available for Path of Exile 2 builds yet.');
+    const GamePage = (await import('./GamePage.svelte')).default;
+    const page = render(GamePage, { props: { route: 'timeless', children: createRawSnippet(() => ({ render: () => '<span>PoE1 page</span>' })) } });
+    expect(page.getByRole('status').textContent).toBe('The timeless page is not available for Path of Exile 2 builds yet.');
   });
 
   it('opens saved, an edit leaves it unsaved, and leaving without saving closes it', async () => {

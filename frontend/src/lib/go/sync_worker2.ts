@@ -24,6 +24,7 @@ import type { ItemDBFilterInput, ItemDBKind, ItemDBLists, ItemDBRowPlain } from 
 import { addStatCompares2 } from '../display/stat_compare2';
 import type { StatCompareSection } from '../skill_tree/stat_compare';
 import type { ConfigSetEdit } from './engine';
+import type { PartyMemberView, PartyView } from './party_view';
 import type { CompareInfo } from '../shell/compare_types';
 import type { SpecOp } from '../design/tree';
 import { DIFF_LABELS, UNRECORDED, UndoHistory, stepLabel, unrecordedLabel, type LabelOf, type Snapshot, type UndoView } from './undo';
@@ -1483,6 +1484,90 @@ class PoB2Worker {
   SetNotes(plain: string, doc: string) {
     if (!this.calc) throw new Error('no PoE2 build is open');
     this.calc.SetRichNotes(plain, doc);
+  }
+
+  /* PartyTab.lua:516-573, 897-980 (PoB-PoE2): the text boxes, their summaries and the import options */
+  GetParty(): PartyView | undefined {
+    const c = this.calc;
+    if (!c) return undefined;
+    const summaries = c.PartySummaries() ?? {};
+    const [destination, append, advanced] = c.PartyOptions();
+    return {
+      buffers: { ...(c.PartyBuffers() ?? {}) },
+      summaries: Object.fromEntries(Object.entries(summaries).map(([k, v]) => [k, (v ?? []).map((e) => ({ group: e.Group, name: e.Name, value: e.Value }))])),
+      destination,
+      append,
+      advanced,
+      applied: c.PartyEffectsApplied(),
+      disabled: c.PartyEffectsDisabled()
+    };
+  }
+
+  GetPartyMembers(): PartyMemberView[] {
+    return (this.calc?.PartyMembers() ?? []).map((m) => ({
+      name: m.Name,
+      className: m.ClassName,
+      ascendancy: m.Ascendancy,
+      level: m.Level,
+      active: m.Active,
+      gives: [...(m.Gives ?? [])]
+    }));
+  }
+
+  async GetPartyImpact(stats: string[]): Promise<{ stat: string; with: number; without: number }[]> {
+    const c = this.calc;
+    if (!c) return [];
+    return ((await c.PartyImpact(stats)).unwrap() ?? []).map((r) => ({ stat: r.Stat, with: r.With, without: r.Without }));
+  }
+
+  private partyWrite(source: string, action: string, write: (c: exposition.Calculator) => void): Promise<Poe2Calc> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    write(this.calc);
+    return this.changed(source, action);
+  }
+
+  SetPartyBuffer(name: string, text: string): Promise<Poe2Calc> {
+    return this.partyWrite('SetPartyBuffer', `Edited the party ${name}`, (c) => c.SetPartyBuffer(name, text));
+  }
+
+  SetPartyOptions(destination: string, append: boolean, advanced: boolean): Promise<Poe2Calc> {
+    return this.partyWrite('SetPartyOptions', 'Changed the party options', (c) => c.SetPartyOptions(destination, append, advanced));
+  }
+
+  /* PartyTab.lua:162-285 (PoB-PoE2): xml is the member's decoded build code */
+  async ImportPartyMember(xml: string, destination: string, append: boolean): Promise<Poe2Calc> {
+    let err: Error | undefined;
+    const view = await this.partyWrite('ImportParty', `Imported a party member into ${destination}`, (c) => {
+      try {
+        c.AddPartyMember(xml, destination, append).unwrap();
+      } catch (e) {
+        err = e as Error;
+      }
+    });
+    if (err) throw err;
+    return view;
+  }
+
+  ClearParty(destination: string): Promise<Poe2Calc> {
+    return this.partyWrite('ClearParty', `Cleared the party ${destination}`, (c) => c.ClearParty(destination));
+  }
+
+  DisablePartyEffects(): Promise<Poe2Calc> {
+    return this.partyWrite('DisablePartyEffects', 'Disabled the party effects', (c) => c.DisablePartyEffects());
+  }
+
+  RebuildParty(): Promise<Poe2Calc> {
+    return this.partyWrite('RebuildParty', 'Rebuilt the party', (c) => c.RebuildParty());
+  }
+
+  SetPartyMemberActive(i: number, active: boolean): Promise<Poe2Calc> {
+    const name = this.GetPartyMembers()[i]?.name ?? String(i + 1);
+    return this.partyWrite('SetPartyMemberActive', `${active ? 'Enabled' : 'Disabled'} party member ${name}`, (c) => c.SetPartyMemberActive(i, active));
+  }
+
+  RemovePartyMember(i: number): Promise<Poe2Calc> {
+    const name = this.GetPartyMembers()[i]?.name ?? String(i + 1);
+    return this.partyWrite('RemovePartyMember', `Removed party member ${name}`, (c) => c.RemovePartyMember(i));
   }
 
   /* ImportTab.lua:135-137 (PoB-PoE2) */

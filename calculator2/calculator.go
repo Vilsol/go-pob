@@ -26,6 +26,10 @@ type Options struct {
 	// SpecItems is the passive spec's view of build.itemsTab.items (jewel radius and jewelData) that
 	// allocation reads; nil is Items.SpecItem, or no item when Items is nil too.
 	SpecItems func(itemID int) *tree2.Item
+	// Party is the party tab's buffers as last applied; with PartyApplied unset the build's saved
+	// ImportedBuffs are, as PartyTab:Load applies them.
+	Party        []PartyBuffer
+	PartyApplied bool
 }
 
 // WithParser is modLib.parseMod: PoB-PoE2's shipped ModCache first, and the parser for a line the
@@ -75,6 +79,12 @@ func BuildOutput(build *pob2.PathOfBuilding2, opts Options) (*Environment, error
 	if env.data, err = loadSkillData(); err != nil {
 		return nil, fmt.Errorf("skill data: %w", err)
 	}
+	partyBuffers := opts.Party
+	if !opts.PartyApplied {
+		partyBuffers = ImportedPartyBuffers(build.Party)
+	}
+	data := env.data
+	env.partyTab = loadPartyTab(partyBuffers, func(id string) bool { return data.effect(id) != nil })
 	env.ClassID = spec.CurClassID
 	if spec.Tree.Classes[env.ClassID] == nil {
 		return nil, fmt.Errorf("class %d is not in the tree", env.ClassID)

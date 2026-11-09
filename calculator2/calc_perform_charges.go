@@ -22,8 +22,6 @@ func flagOr(cond bool, a, b float64) float64 {
 	return b
 }
 
-// No party is ported, so env.partyMembers' PartyMemberMaximumEnduranceChargesEqualToYours reads unset.
-//
 //pob2:src/Modules/CalcPerform.lua:862-1016
 func doActorCharges(env *Environment, actor *Actor) {
 	modDB := actor.ModDB
@@ -50,7 +48,14 @@ func doActorCharges(env *Environment, actor *Actor) {
 		}
 	}
 	output["EnduranceChargesMin"] = math.Max(modDB.Sum(mod.TypeBase, nil, "EnduranceChargesMin"), 0)
-	output["EnduranceChargesMax"] = math.Max(overrideOr(modDB, "EnduranceChargesMax", flagOr(modDB.Flag(nil, "MaximumEnduranceChargesIsMaximumFrenzyCharges"), output["FrenzyChargesMax"], modDB.Sum(mod.TypeBase, nil, "EnduranceChargesMax"))), 0)
+	//pob2:block:src/Modules/CalcPerform.lua:887
+	enduranceChargesMax := flagOr(modDB.Flag(nil, "MaximumEnduranceChargesIsMaximumFrenzyCharges"), output["FrenzyChargesMax"], modDB.Sum(mod.TypeBase, nil, "EnduranceChargesMax"))
+	if party := env.partyMembers(); party.modDB.Flag(nil, "PartyMemberMaximumEnduranceChargesEqualToYours") {
+		if v, ok := party.output["EnduranceChargesMax"]; ok {
+			enduranceChargesMax = v
+		}
+	}
+	output["EnduranceChargesMax"] = math.Max(overrideOr(modDB, "EnduranceChargesMax", enduranceChargesMax), 0)
 	output["EnduranceChargesDuration"] = math.Floor(modDB.Sum(mod.TypeBase, nil, "ChargeDuration") * calcLibMod(modDB, nil, "EnduranceChargesDuration", "ChargeDuration"))
 	output["SiphoningChargesMax"] = math.Max(modDB.Sum(mod.TypeBase, nil, "SiphoningChargesMax"), 0)
 	output["ChallengerChargesMax"] = math.Max(modDB.Sum(mod.TypeBase, nil, "ChallengerChargesMax"), 0)

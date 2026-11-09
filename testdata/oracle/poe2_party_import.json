@@ -1,0 +1,397 @@
+{
+  "inputs":{
+    "buffers":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<PathOfBuilding2><Build className=\"Warrior\" ascendClassName=\"None\" level=\"80\"/><Party><ExportedBuffs name=\"PartyMemberStats\">PartyMemberMaximumEnduranceChargesEqualToYours\nEnduranceChargesMax=6\nPartyMemberFortifyEqualToYours\nFortificationStacks=10\nMovementSpeedMod|percent|max=140\nMainHand.CritChance=12\nEnemyLightningResistEqualToYours\nLightningResist=40\nBlockChance=30\nBlockChanceMax=60\nMaxLifeLeechRatePercent=35\nEnergyShieldRecoveryCap=500</ExportedBuffs><ExportedBuffs name=\"Aura\">Purity of Fire\n200\n50|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nPurity of Ice\n150\n40|Skill:PurityOfIcePlayer|ColdResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nVaal Haste\n100\n10|Skill:VaalHaste|Speed|INC|-|-|type=GlobalEffect/effectType=Aura\n---\nHostility_Debuff\n100\n-10|Skill:Hostility|LightningResist|BASE|-|-|type=GlobalEffect/effectType=AuraDebuff\n---\nextraAura\n5|Item:3:Party Ring|Damage|INC|-|-|-\n---\notherEffects\nOnslaught|100|20|Skill:Onslaught|Speed|INC|-|-|type=GlobalEffect/effectType=Buff\n---</ExportedBuffs><ExportedBuffs name=\"Curse\">--- Curse Limit ---\n2\nVulnerability\n120\nfalse\n20|Skill:VulnerabilityPlayer|PhysicalDamageTaken|INC|-|-|type=GlobalEffect/effectType=Curse\n---\nSniper's Mark\n100\ntrue\n15|Skill:SnipersMarkPlayer|DamageTaken|INC|-|-|type=GlobalEffect/effectType=Curse\n---</ExportedBuffs><ExportedBuffs name=\"Warcry Skills\">Infernal Cry\n100\n10|Skill:InfernalCryPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Warcry/warcryPowerBonus=2\n---</ExportedBuffs><ExportedBuffs name=\"Link Skills\">Destructive Link\n100\ntrue|Skill:DestructiveLinkPlayer|MainHandCritIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\n5|Skill:DestructiveLinkPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Link,type=Multiplier/var=PowerCharge/actor=parent\n---\nSoul Link\n100\ntrue|Skill:SoulLinkPlayer|BlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumBlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumLifeLeechIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MovementSpeedEqualHighestLinkedPlayers|FLAG|-|-|type=GlobalEffect/effectType=Link\n20|Skill:SoulLinkPlayer|TakenFromParentESBeforeYou|BASE|-|-|type=GlobalEffect/effectType=Link\n---</ExportedBuffs><ExportedBuffs name=\"EnemyConditions\">Condition:Intimidated</ExportedBuffs><ExportedBuffs name=\"EnemyMods\">Shock\n10|Skill:Shock|DamageTaken|INC|-|-|-</ExportedBuffs></Party></PathOfBuilding2>",
+    "giver":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<PathOfBuilding2><Build className=\"Warrior\" ascendClassName=\"None\" level=\"80\"/><Party><ExportedBuffs name=\"PartyMemberStats\">MovementSpeedMod|percent|max=100</ExportedBuffs><ExportedBuffs name=\"Aura\">Defiance Banner\n120\n30|Skill:DefianceBannerPlayer|Armour|MORE|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n30|Skill:DefianceBannerPlayer|Evasion|MORE|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n30|Skill:DefianceBannerPlayer|MovementSpeed|INC|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n---\nPurity of Fire\n120\n36|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---</ExportedBuffs><ExportedBuffs name=\"Curse\">--- Curse Limit ---\n2\nDespair\n110\nfalse\n-45|Skill:DespairPlayer|ChaosResist|BASE|-|-|type=GlobalEffect/effectType=Curse\n---\nElemental Weakness\n110\nfalse\n-54|Skill:ElementalWeaknessPlayer|ElementalResist|BASE|-|-|type=GlobalEffect/effectType=Curse\n---</ExportedBuffs><ExportedBuffs name=\"Warcry Skills\">Infernal Cry\n99.763062726026\n1|Skill:InfernalCryPlayer|UsesWarcryPower|FLAG|-|-|type=GlobalEffect/effectType=Warcry\n---</ExportedBuffs><ExportedBuffs name=\"EnemyConditions\">Condition:AgainstDamageOverTime\nCondition:AlreadyChilled\nCondition:AlreadyShocked\nCondition:Burning\nCondition:ChampionIntimidate\nCondition:PinnacleBoss\nCondition:Poisoned\nCondition:RareOrUnique\nCondition:Unique</ExportedBuffs></Party></PathOfBuilding2>"
+  },
+  "scenarios":[{
+      "name":"replace all",
+      "steps":[{
+          "append":false,
+          "import":"giver",
+          "dest":"All"
+        }],
+      "buffers":{
+        "PartyMemberStats":"MovementSpeedMod|percent|max=100",
+        "Aura":"Defiance Banner\n120\n30|Skill:DefianceBannerPlayer|Armour|MORE|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n30|Skill:DefianceBannerPlayer|Evasion|MORE|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n30|Skill:DefianceBannerPlayer|MovementSpeed|INC|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n---\nPurity of Fire\n120\n36|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---",
+        "EnemyConditions":"Condition:AgainstDamageOverTime\nCondition:AlreadyChilled\nCondition:AlreadyShocked\nCondition:Burning\nCondition:ChampionIntimidate\nCondition:PinnacleBoss\nCondition:Poisoned\nCondition:RareOrUnique\nCondition:Unique",
+        "Link Skills":"",
+        "EnemyMods":"",
+        "Curse":"--- Curse Limit ---\n2\nDespair\n110\nfalse\n-45|Skill:DespairPlayer|ChaosResist|BASE|-|-|type=GlobalEffect/effectType=Curse\n---\nElemental Weakness\n110\nfalse\n-54|Skill:ElementalWeaknessPlayer|ElementalResist|BASE|-|-|type=GlobalEffect/effectType=Curse\n---",
+        "Warcry Skills":"Infernal Cry\n99.763062726026\n1|Skill:InfernalCryPlayer|UsesWarcryPower|FLAG|-|-|type=GlobalEffect/effectType=Warcry\n---"
+      },
+      "saved":[{
+          "name":"PartyMemberStats",
+          "elem":"ImportedBuffs",
+          "text":"MovementSpeedMod|percent|max=100"
+        },{
+          "name":"Aura",
+          "elem":"ImportedBuffs",
+          "text":"Defiance Banner\n120\n30|Skill:DefianceBannerPlayer|Armour|MORE|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n30|Skill:DefianceBannerPlayer|Evasion|MORE|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n30|Skill:DefianceBannerPlayer|MovementSpeed|INC|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n---\nPurity of Fire\n120\n36|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---"
+        },{
+          "name":"Curse",
+          "elem":"ImportedBuffs",
+          "text":"--- Curse Limit ---\n2\nDespair\n110\nfalse\n-45|Skill:DespairPlayer|ChaosResist|BASE|-|-|type=GlobalEffect/effectType=Curse\n---\nElemental Weakness\n110\nfalse\n-54|Skill:ElementalWeaknessPlayer|ElementalResist|BASE|-|-|type=GlobalEffect/effectType=Curse\n---"
+        },{
+          "name":"Warcry Skills",
+          "elem":"ImportedBuffs",
+          "text":"Infernal Cry\n99.763062726026\n1|Skill:InfernalCryPlayer|UsesWarcryPower|FLAG|-|-|type=GlobalEffect/effectType=Warcry\n---"
+        },{
+          "name":"EnemyConditions",
+          "elem":"ImportedBuffs",
+          "text":"Condition:AgainstDamageOverTime\nCondition:AlreadyChilled\nCondition:AlreadyShocked\nCondition:Burning\nCondition:ChampionIntimidate\nCondition:PinnacleBoss\nCondition:Poisoned\nCondition:RareOrUnique\nCondition:Unique"
+        }],
+      "attrib":{
+        "ShowAdvanceTools":"false",
+        "append":"false",
+        "destination":"All"
+      }
+    },{
+      "name":"replace then append all",
+      "steps":[{
+          "append":false,
+          "import":"giver",
+          "dest":"All"
+        },{
+          "append":true,
+          "import":"buffers",
+          "dest":"All"
+        }],
+      "buffers":{
+        "PartyMemberStats":"MovementSpeedMod|percent|max=100\nPartyMemberMaximumEnduranceChargesEqualToYours\nEnduranceChargesMax=6\nPartyMemberFortifyEqualToYours\nFortificationStacks=10\nMovementSpeedMod|percent|max=140\nMainHand.CritChance=12\nEnemyLightningResistEqualToYours\nLightningResist=40\nBlockChance=30\nBlockChanceMax=60\nMaxLifeLeechRatePercent=35\nEnergyShieldRecoveryCap=500",
+        "Aura":"Defiance Banner\n120\n30|Skill:DefianceBannerPlayer|Armour|MORE|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n30|Skill:DefianceBannerPlayer|Evasion|MORE|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n30|Skill:DefianceBannerPlayer|MovementSpeed|INC|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n---\nPurity of Fire\n120\n36|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nPurity of Fire\n200\n50|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nPurity of Ice\n150\n40|Skill:PurityOfIcePlayer|ColdResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nVaal Haste\n100\n10|Skill:VaalHaste|Speed|INC|-|-|type=GlobalEffect/effectType=Aura\n---\nHostility_Debuff\n100\n-10|Skill:Hostility|LightningResist|BASE|-|-|type=GlobalEffect/effectType=AuraDebuff\n---\nextraAura\n5|Item:3:Party Ring|Damage|INC|-|-|-\n---\notherEffects\nOnslaught|100|20|Skill:Onslaught|Speed|INC|-|-|type=GlobalEffect/effectType=Buff\n---",
+        "EnemyConditions":"Condition:AgainstDamageOverTime\nCondition:AlreadyChilled\nCondition:AlreadyShocked\nCondition:Burning\nCondition:ChampionIntimidate\nCondition:PinnacleBoss\nCondition:Poisoned\nCondition:RareOrUnique\nCondition:Unique\nCondition:Intimidated",
+        "Link Skills":"Destructive Link\n100\ntrue|Skill:DestructiveLinkPlayer|MainHandCritIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\n5|Skill:DestructiveLinkPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Link,type=Multiplier/var=PowerCharge/actor=parent\n---\nSoul Link\n100\ntrue|Skill:SoulLinkPlayer|BlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumBlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumLifeLeechIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MovementSpeedEqualHighestLinkedPlayers|FLAG|-|-|type=GlobalEffect/effectType=Link\n20|Skill:SoulLinkPlayer|TakenFromParentESBeforeYou|BASE|-|-|type=GlobalEffect/effectType=Link\n---",
+        "EnemyMods":"Shock\n10|Skill:Shock|DamageTaken|INC|-|-|-",
+        "Curse":"--- Curse Limit ---\n2\nVulnerability\n120\nfalse\n20|Skill:VulnerabilityPlayer|PhysicalDamageTaken|INC|-|-|type=GlobalEffect/effectType=Curse\n---\nSniper's Mark\n100\ntrue\n15|Skill:SnipersMarkPlayer|DamageTaken|INC|-|-|type=GlobalEffect/effectType=Curse\n---",
+        "Warcry Skills":"Infernal Cry\n99.763062726026\n1|Skill:InfernalCryPlayer|UsesWarcryPower|FLAG|-|-|type=GlobalEffect/effectType=Warcry\n---\nInfernal Cry\n100\n10|Skill:InfernalCryPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Warcry/warcryPowerBonus=2\n---"
+      },
+      "saved":[{
+          "name":"PartyMemberStats",
+          "elem":"ImportedBuffs",
+          "text":"MovementSpeedMod|percent|max=100\nPartyMemberMaximumEnduranceChargesEqualToYours\nEnduranceChargesMax=6\nPartyMemberFortifyEqualToYours\nFortificationStacks=10\nMovementSpeedMod|percent|max=140\nMainHand.CritChance=12\nEnemyLightningResistEqualToYours\nLightningResist=40\nBlockChance=30\nBlockChanceMax=60\nMaxLifeLeechRatePercent=35\nEnergyShieldRecoveryCap=500"
+        },{
+          "name":"Aura",
+          "elem":"ImportedBuffs",
+          "text":"Defiance Banner\n120\n30|Skill:DefianceBannerPlayer|Armour|MORE|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n30|Skill:DefianceBannerPlayer|Evasion|MORE|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n30|Skill:DefianceBannerPlayer|MovementSpeed|INC|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n---\nPurity of Fire\n120\n36|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nPurity of Fire\n200\n50|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nPurity of Ice\n150\n40|Skill:PurityOfIcePlayer|ColdResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nVaal Haste\n100\n10|Skill:VaalHaste|Speed|INC|-|-|type=GlobalEffect/effectType=Aura\n---\nHostility_Debuff\n100\n-10|Skill:Hostility|LightningResist|BASE|-|-|type=GlobalEffect/effectType=AuraDebuff\n---\nextraAura\n5|Item:3:Party Ring|Damage|INC|-|-|-\n---\notherEffects\nOnslaught|100|20|Skill:Onslaught|Speed|INC|-|-|type=GlobalEffect/effectType=Buff\n---"
+        },{
+          "name":"Curse",
+          "elem":"ImportedBuffs",
+          "text":"--- Curse Limit ---\n2\nVulnerability\n120\nfalse\n20|Skill:VulnerabilityPlayer|PhysicalDamageTaken|INC|-|-|type=GlobalEffect/effectType=Curse\n---\nSniper's Mark\n100\ntrue\n15|Skill:SnipersMarkPlayer|DamageTaken|INC|-|-|type=GlobalEffect/effectType=Curse\n---"
+        },{
+          "name":"Warcry Skills",
+          "elem":"ImportedBuffs",
+          "text":"Infernal Cry\n99.763062726026\n1|Skill:InfernalCryPlayer|UsesWarcryPower|FLAG|-|-|type=GlobalEffect/effectType=Warcry\n---\nInfernal Cry\n100\n10|Skill:InfernalCryPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Warcry/warcryPowerBonus=2\n---"
+        },{
+          "name":"Link Skills",
+          "elem":"ImportedBuffs",
+          "text":"Destructive Link\n100\ntrue|Skill:DestructiveLinkPlayer|MainHandCritIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\n5|Skill:DestructiveLinkPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Link,type=Multiplier/var=PowerCharge/actor=parent\n---\nSoul Link\n100\ntrue|Skill:SoulLinkPlayer|BlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumBlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumLifeLeechIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MovementSpeedEqualHighestLinkedPlayers|FLAG|-|-|type=GlobalEffect/effectType=Link\n20|Skill:SoulLinkPlayer|TakenFromParentESBeforeYou|BASE|-|-|type=GlobalEffect/effectType=Link\n---"
+        },{
+          "name":"EnemyConditions",
+          "elem":"ImportedBuffs",
+          "text":"Condition:AgainstDamageOverTime\nCondition:AlreadyChilled\nCondition:AlreadyShocked\nCondition:Burning\nCondition:ChampionIntimidate\nCondition:PinnacleBoss\nCondition:Poisoned\nCondition:RareOrUnique\nCondition:Unique\nCondition:Intimidated"
+        },{
+          "name":"EnemyMods",
+          "elem":"ImportedBuffs",
+          "text":"Shock\n10|Skill:Shock|DamageTaken|INC|-|-|-"
+        }],
+      "attrib":{
+        "ShowAdvanceTools":"false",
+        "append":"true",
+        "destination":"All"
+      }
+    },{
+      "name":"append onto itself",
+      "steps":[{
+          "append":false,
+          "import":"buffers",
+          "dest":"All"
+        },{
+          "append":true,
+          "import":"buffers",
+          "dest":"All"
+        }],
+      "buffers":{
+        "PartyMemberStats":"PartyMemberMaximumEnduranceChargesEqualToYours\nEnduranceChargesMax=6\nPartyMemberFortifyEqualToYours\nFortificationStacks=10\nMovementSpeedMod|percent|max=140\nMainHand.CritChance=12\nEnemyLightningResistEqualToYours\nLightningResist=40\nBlockChance=30\nBlockChanceMax=60\nMaxLifeLeechRatePercent=35\nEnergyShieldRecoveryCap=500\nPartyMemberMaximumEnduranceChargesEqualToYours\nEnduranceChargesMax=6\nPartyMemberFortifyEqualToYours\nFortificationStacks=10\nMovementSpeedMod|percent|max=140\nMainHand.CritChance=12\nEnemyLightningResistEqualToYours\nLightningResist=40\nBlockChance=30\nBlockChanceMax=60\nMaxLifeLeechRatePercent=35\nEnergyShieldRecoveryCap=500",
+        "Aura":"Purity of Fire\n200\n50|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nPurity of Ice\n150\n40|Skill:PurityOfIcePlayer|ColdResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nVaal Haste\n100\n10|Skill:VaalHaste|Speed|INC|-|-|type=GlobalEffect/effectType=Aura\n---\nHostility_Debuff\n100\n-10|Skill:Hostility|LightningResist|BASE|-|-|type=GlobalEffect/effectType=AuraDebuff\n---\nextraAura\n5|Item:3:Party Ring|Damage|INC|-|-|-\n---\notherEffects\nOnslaught|100|20|Skill:Onslaught|Speed|INC|-|-|type=GlobalEffect/effectType=Buff\n---\nPurity of Fire\n200\n50|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nPurity of Ice\n150\n40|Skill:PurityOfIcePlayer|ColdResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nVaal Haste\n100\n10|Skill:VaalHaste|Speed|INC|-|-|type=GlobalEffect/effectType=Aura\n---\nHostility_Debuff\n100\n-10|Skill:Hostility|LightningResist|BASE|-|-|type=GlobalEffect/effectType=AuraDebuff\n---\nextraAura\n5|Item:3:Party Ring|Damage|INC|-|-|-\n---\notherEffects\nOnslaught|100|20|Skill:Onslaught|Speed|INC|-|-|type=GlobalEffect/effectType=Buff\n---",
+        "EnemyConditions":"Condition:Intimidated\nCondition:Intimidated",
+        "Link Skills":"Destructive Link\n100\ntrue|Skill:DestructiveLinkPlayer|MainHandCritIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\n5|Skill:DestructiveLinkPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Link,type=Multiplier/var=PowerCharge/actor=parent\n---\nSoul Link\n100\ntrue|Skill:SoulLinkPlayer|BlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumBlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumLifeLeechIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MovementSpeedEqualHighestLinkedPlayers|FLAG|-|-|type=GlobalEffect/effectType=Link\n20|Skill:SoulLinkPlayer|TakenFromParentESBeforeYou|BASE|-|-|type=GlobalEffect/effectType=Link\n---",
+        "EnemyMods":"Shock\n10|Skill:Shock|DamageTaken|INC|-|-|-\nShock\n10|Skill:Shock|DamageTaken|INC|-|-|-",
+        "Curse":"--- Curse Limit ---\n2\nVulnerability\n120\nfalse\n20|Skill:VulnerabilityPlayer|PhysicalDamageTaken|INC|-|-|type=GlobalEffect/effectType=Curse\n---\nSniper's Mark\n100\ntrue\n15|Skill:SnipersMarkPlayer|DamageTaken|INC|-|-|type=GlobalEffect/effectType=Curse\n---",
+        "Warcry Skills":"Infernal Cry\n100\n10|Skill:InfernalCryPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Warcry/warcryPowerBonus=2\n---\nInfernal Cry\n100\n10|Skill:InfernalCryPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Warcry/warcryPowerBonus=2\n---"
+      },
+      "saved":[{
+          "name":"PartyMemberStats",
+          "elem":"ImportedBuffs",
+          "text":"PartyMemberMaximumEnduranceChargesEqualToYours\nEnduranceChargesMax=6\nPartyMemberFortifyEqualToYours\nFortificationStacks=10\nMovementSpeedMod|percent|max=140\nMainHand.CritChance=12\nEnemyLightningResistEqualToYours\nLightningResist=40\nBlockChance=30\nBlockChanceMax=60\nMaxLifeLeechRatePercent=35\nEnergyShieldRecoveryCap=500\nPartyMemberMaximumEnduranceChargesEqualToYours\nEnduranceChargesMax=6\nPartyMemberFortifyEqualToYours\nFortificationStacks=10\nMovementSpeedMod|percent|max=140\nMainHand.CritChance=12\nEnemyLightningResistEqualToYours\nLightningResist=40\nBlockChance=30\nBlockChanceMax=60\nMaxLifeLeechRatePercent=35\nEnergyShieldRecoveryCap=500"
+        },{
+          "name":"Aura",
+          "elem":"ImportedBuffs",
+          "text":"Purity of Fire\n200\n50|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nPurity of Ice\n150\n40|Skill:PurityOfIcePlayer|ColdResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nVaal Haste\n100\n10|Skill:VaalHaste|Speed|INC|-|-|type=GlobalEffect/effectType=Aura\n---\nHostility_Debuff\n100\n-10|Skill:Hostility|LightningResist|BASE|-|-|type=GlobalEffect/effectType=AuraDebuff\n---\nextraAura\n5|Item:3:Party Ring|Damage|INC|-|-|-\n---\notherEffects\nOnslaught|100|20|Skill:Onslaught|Speed|INC|-|-|type=GlobalEffect/effectType=Buff\n---\nPurity of Fire\n200\n50|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nPurity of Ice\n150\n40|Skill:PurityOfIcePlayer|ColdResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nVaal Haste\n100\n10|Skill:VaalHaste|Speed|INC|-|-|type=GlobalEffect/effectType=Aura\n---\nHostility_Debuff\n100\n-10|Skill:Hostility|LightningResist|BASE|-|-|type=GlobalEffect/effectType=AuraDebuff\n---\nextraAura\n5|Item:3:Party Ring|Damage|INC|-|-|-\n---\notherEffects\nOnslaught|100|20|Skill:Onslaught|Speed|INC|-|-|type=GlobalEffect/effectType=Buff\n---"
+        },{
+          "name":"Curse",
+          "elem":"ImportedBuffs",
+          "text":"--- Curse Limit ---\n2\nVulnerability\n120\nfalse\n20|Skill:VulnerabilityPlayer|PhysicalDamageTaken|INC|-|-|type=GlobalEffect/effectType=Curse\n---\nSniper's Mark\n100\ntrue\n15|Skill:SnipersMarkPlayer|DamageTaken|INC|-|-|type=GlobalEffect/effectType=Curse\n---"
+        },{
+          "name":"Warcry Skills",
+          "elem":"ImportedBuffs",
+          "text":"Infernal Cry\n100\n10|Skill:InfernalCryPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Warcry/warcryPowerBonus=2\n---\nInfernal Cry\n100\n10|Skill:InfernalCryPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Warcry/warcryPowerBonus=2\n---"
+        },{
+          "name":"Link Skills",
+          "elem":"ImportedBuffs",
+          "text":"Destructive Link\n100\ntrue|Skill:DestructiveLinkPlayer|MainHandCritIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\n5|Skill:DestructiveLinkPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Link,type=Multiplier/var=PowerCharge/actor=parent\n---\nSoul Link\n100\ntrue|Skill:SoulLinkPlayer|BlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumBlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumLifeLeechIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MovementSpeedEqualHighestLinkedPlayers|FLAG|-|-|type=GlobalEffect/effectType=Link\n20|Skill:SoulLinkPlayer|TakenFromParentESBeforeYou|BASE|-|-|type=GlobalEffect/effectType=Link\n---"
+        },{
+          "name":"EnemyConditions",
+          "elem":"ImportedBuffs",
+          "text":"Condition:Intimidated\nCondition:Intimidated"
+        },{
+          "name":"EnemyMods",
+          "elem":"ImportedBuffs",
+          "text":"Shock\n10|Skill:Shock|DamageTaken|INC|-|-|-\nShock\n10|Skill:Shock|DamageTaken|INC|-|-|-"
+        }],
+      "attrib":{
+        "ShowAdvanceTools":"false",
+        "append":"true",
+        "destination":"All"
+      }
+    },{
+      "name":"append curse only",
+      "steps":[{
+          "append":false,
+          "import":"buffers",
+          "dest":"All"
+        },{
+          "append":true,
+          "import":"giver",
+          "dest":"Curse"
+        }],
+      "buffers":{
+        "PartyMemberStats":"PartyMemberMaximumEnduranceChargesEqualToYours\nEnduranceChargesMax=6\nPartyMemberFortifyEqualToYours\nFortificationStacks=10\nMovementSpeedMod|percent|max=140\nMainHand.CritChance=12\nEnemyLightningResistEqualToYours\nLightningResist=40\nBlockChance=30\nBlockChanceMax=60\nMaxLifeLeechRatePercent=35\nEnergyShieldRecoveryCap=500",
+        "Aura":"Purity of Fire\n200\n50|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nPurity of Ice\n150\n40|Skill:PurityOfIcePlayer|ColdResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nVaal Haste\n100\n10|Skill:VaalHaste|Speed|INC|-|-|type=GlobalEffect/effectType=Aura\n---\nHostility_Debuff\n100\n-10|Skill:Hostility|LightningResist|BASE|-|-|type=GlobalEffect/effectType=AuraDebuff\n---\nextraAura\n5|Item:3:Party Ring|Damage|INC|-|-|-\n---\notherEffects\nOnslaught|100|20|Skill:Onslaught|Speed|INC|-|-|type=GlobalEffect/effectType=Buff\n---",
+        "EnemyConditions":"Condition:Intimidated",
+        "Link Skills":"Destructive Link\n100\ntrue|Skill:DestructiveLinkPlayer|MainHandCritIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\n5|Skill:DestructiveLinkPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Link,type=Multiplier/var=PowerCharge/actor=parent\n---\nSoul Link\n100\ntrue|Skill:SoulLinkPlayer|BlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumBlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumLifeLeechIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MovementSpeedEqualHighestLinkedPlayers|FLAG|-|-|type=GlobalEffect/effectType=Link\n20|Skill:SoulLinkPlayer|TakenFromParentESBeforeYou|BASE|-|-|type=GlobalEffect/effectType=Link\n---",
+        "EnemyMods":"Shock\n10|Skill:Shock|DamageTaken|INC|-|-|-",
+        "Curse":"--- Curse Limit ---\n2\nDespair\n110\nfalse\n-45|Skill:DespairPlayer|ChaosResist|BASE|-|-|type=GlobalEffect/effectType=Curse\n---\nElemental Weakness\n110\nfalse\n-54|Skill:ElementalWeaknessPlayer|ElementalResist|BASE|-|-|type=GlobalEffect/effectType=Curse\n---",
+        "Warcry Skills":"Infernal Cry\n100\n10|Skill:InfernalCryPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Warcry/warcryPowerBonus=2\n---"
+      },
+      "saved":[{
+          "name":"PartyMemberStats",
+          "elem":"ImportedBuffs",
+          "text":"PartyMemberMaximumEnduranceChargesEqualToYours\nEnduranceChargesMax=6\nPartyMemberFortifyEqualToYours\nFortificationStacks=10\nMovementSpeedMod|percent|max=140\nMainHand.CritChance=12\nEnemyLightningResistEqualToYours\nLightningResist=40\nBlockChance=30\nBlockChanceMax=60\nMaxLifeLeechRatePercent=35\nEnergyShieldRecoveryCap=500"
+        },{
+          "name":"Aura",
+          "elem":"ImportedBuffs",
+          "text":"Purity of Fire\n200\n50|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nPurity of Ice\n150\n40|Skill:PurityOfIcePlayer|ColdResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---\nVaal Haste\n100\n10|Skill:VaalHaste|Speed|INC|-|-|type=GlobalEffect/effectType=Aura\n---\nHostility_Debuff\n100\n-10|Skill:Hostility|LightningResist|BASE|-|-|type=GlobalEffect/effectType=AuraDebuff\n---\nextraAura\n5|Item:3:Party Ring|Damage|INC|-|-|-\n---\notherEffects\nOnslaught|100|20|Skill:Onslaught|Speed|INC|-|-|type=GlobalEffect/effectType=Buff\n---"
+        },{
+          "name":"Curse",
+          "elem":"ImportedBuffs",
+          "text":"--- Curse Limit ---\n2\nDespair\n110\nfalse\n-45|Skill:DespairPlayer|ChaosResist|BASE|-|-|type=GlobalEffect/effectType=Curse\n---\nElemental Weakness\n110\nfalse\n-54|Skill:ElementalWeaknessPlayer|ElementalResist|BASE|-|-|type=GlobalEffect/effectType=Curse\n---"
+        },{
+          "name":"Warcry Skills",
+          "elem":"ImportedBuffs",
+          "text":"Infernal Cry\n100\n10|Skill:InfernalCryPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Warcry/warcryPowerBonus=2\n---"
+        },{
+          "name":"Link Skills",
+          "elem":"ImportedBuffs",
+          "text":"Destructive Link\n100\ntrue|Skill:DestructiveLinkPlayer|MainHandCritIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\n5|Skill:DestructiveLinkPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Link,type=Multiplier/var=PowerCharge/actor=parent\n---\nSoul Link\n100\ntrue|Skill:SoulLinkPlayer|BlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumBlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumLifeLeechIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MovementSpeedEqualHighestLinkedPlayers|FLAG|-|-|type=GlobalEffect/effectType=Link\n20|Skill:SoulLinkPlayer|TakenFromParentESBeforeYou|BASE|-|-|type=GlobalEffect/effectType=Link\n---"
+        },{
+          "name":"EnemyConditions",
+          "elem":"ImportedBuffs",
+          "text":"Condition:Intimidated"
+        },{
+          "name":"EnemyMods",
+          "elem":"ImportedBuffs",
+          "text":"Shock\n10|Skill:Shock|DamageTaken|INC|-|-|-"
+        }],
+      "attrib":{
+        "ShowAdvanceTools":"false",
+        "append":"true",
+        "destination":"Curse"
+      }
+    },{
+      "name":"replace enemy mods only",
+      "steps":[{
+          "append":false,
+          "import":"giver",
+          "dest":"All"
+        },{
+          "append":false,
+          "import":"buffers",
+          "dest":"EnemyMods"
+        }],
+      "buffers":{
+        "PartyMemberStats":"MovementSpeedMod|percent|max=100",
+        "Aura":"Defiance Banner\n120\n30|Skill:DefianceBannerPlayer|Armour|MORE|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n30|Skill:DefianceBannerPlayer|Evasion|MORE|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n30|Skill:DefianceBannerPlayer|MovementSpeed|INC|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n---\nPurity of Fire\n120\n36|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---",
+        "EnemyConditions":"Condition:AgainstDamageOverTime\nCondition:AlreadyChilled\nCondition:AlreadyShocked\nCondition:Burning\nCondition:ChampionIntimidate\nCondition:PinnacleBoss\nCondition:Poisoned\nCondition:RareOrUnique\nCondition:Unique",
+        "Link Skills":"",
+        "EnemyMods":"Shock\n10|Skill:Shock|DamageTaken|INC|-|-|-",
+        "Curse":"--- Curse Limit ---\n2\nDespair\n110\nfalse\n-45|Skill:DespairPlayer|ChaosResist|BASE|-|-|type=GlobalEffect/effectType=Curse\n---\nElemental Weakness\n110\nfalse\n-54|Skill:ElementalWeaknessPlayer|ElementalResist|BASE|-|-|type=GlobalEffect/effectType=Curse\n---",
+        "Warcry Skills":"Infernal Cry\n99.763062726026\n1|Skill:InfernalCryPlayer|UsesWarcryPower|FLAG|-|-|type=GlobalEffect/effectType=Warcry\n---"
+      },
+      "saved":[{
+          "name":"PartyMemberStats",
+          "elem":"ImportedBuffs",
+          "text":"MovementSpeedMod|percent|max=100"
+        },{
+          "name":"Aura",
+          "elem":"ImportedBuffs",
+          "text":"Defiance Banner\n120\n30|Skill:DefianceBannerPlayer|Armour|MORE|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n30|Skill:DefianceBannerPlayer|Evasion|MORE|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n30|Skill:DefianceBannerPlayer|MovementSpeed|INC|-|-|type=Condition/var=BannerPlanted,type=GlobalEffect/effectType=Aura\n---\nPurity of Fire\n120\n36|Skill:PurityOfFirePlayer|FireResist|BASE|-|-|type=GlobalEffect/effectType=Aura\n---"
+        },{
+          "name":"Curse",
+          "elem":"ImportedBuffs",
+          "text":"--- Curse Limit ---\n2\nDespair\n110\nfalse\n-45|Skill:DespairPlayer|ChaosResist|BASE|-|-|type=GlobalEffect/effectType=Curse\n---\nElemental Weakness\n110\nfalse\n-54|Skill:ElementalWeaknessPlayer|ElementalResist|BASE|-|-|type=GlobalEffect/effectType=Curse\n---"
+        },{
+          "name":"Warcry Skills",
+          "elem":"ImportedBuffs",
+          "text":"Infernal Cry\n99.763062726026\n1|Skill:InfernalCryPlayer|UsesWarcryPower|FLAG|-|-|type=GlobalEffect/effectType=Warcry\n---"
+        },{
+          "name":"EnemyConditions",
+          "elem":"ImportedBuffs",
+          "text":"Condition:AgainstDamageOverTime\nCondition:AlreadyChilled\nCondition:AlreadyShocked\nCondition:Burning\nCondition:ChampionIntimidate\nCondition:PinnacleBoss\nCondition:Poisoned\nCondition:RareOrUnique\nCondition:Unique"
+        },{
+          "name":"EnemyMods",
+          "elem":"ImportedBuffs",
+          "text":"Shock\n10|Skill:Shock|DamageTaken|INC|-|-|-"
+        }],
+      "attrib":{
+        "ShowAdvanceTools":"false",
+        "append":"false",
+        "destination":"EnemyMods"
+      }
+    },{
+      "name":"stats only",
+      "steps":[{
+          "append":false,
+          "import":"buffers",
+          "dest":"Party Member Stats"
+        }],
+      "buffers":{
+        "PartyMemberStats":"PartyMemberMaximumEnduranceChargesEqualToYours\nEnduranceChargesMax=6\nPartyMemberFortifyEqualToYours\nFortificationStacks=10\nMovementSpeedMod|percent|max=140\nMainHand.CritChance=12\nEnemyLightningResistEqualToYours\nLightningResist=40\nBlockChance=30\nBlockChanceMax=60\nMaxLifeLeechRatePercent=35\nEnergyShieldRecoveryCap=500",
+        "Aura":"",
+        "EnemyConditions":"",
+        "Link Skills":"",
+        "EnemyMods":"",
+        "Curse":"",
+        "Warcry Skills":""
+      },
+      "saved":[{
+          "name":"PartyMemberStats",
+          "elem":"ImportedBuffs",
+          "text":"PartyMemberMaximumEnduranceChargesEqualToYours\nEnduranceChargesMax=6\nPartyMemberFortifyEqualToYours\nFortificationStacks=10\nMovementSpeedMod|percent|max=140\nMainHand.CritChance=12\nEnemyLightningResistEqualToYours\nLightningResist=40\nBlockChance=30\nBlockChanceMax=60\nMaxLifeLeechRatePercent=35\nEnergyShieldRecoveryCap=500"
+        }],
+      "attrib":{
+        "ShowAdvanceTools":"false",
+        "append":"false",
+        "destination":"Party Member Stats"
+      }
+    },{
+      "name":"clear auras",
+      "steps":[{
+          "append":false,
+          "import":"buffers",
+          "dest":"All"
+        },{
+          "clear":"Aura"
+        }],
+      "buffers":{
+        "PartyMemberStats":"PartyMemberMaximumEnduranceChargesEqualToYours\nEnduranceChargesMax=6\nPartyMemberFortifyEqualToYours\nFortificationStacks=10\nMovementSpeedMod|percent|max=140\nMainHand.CritChance=12\nEnemyLightningResistEqualToYours\nLightningResist=40\nBlockChance=30\nBlockChanceMax=60\nMaxLifeLeechRatePercent=35\nEnergyShieldRecoveryCap=500",
+        "Aura":"",
+        "EnemyConditions":"Condition:Intimidated",
+        "Link Skills":"Destructive Link\n100\ntrue|Skill:DestructiveLinkPlayer|MainHandCritIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\n5|Skill:DestructiveLinkPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Link,type=Multiplier/var=PowerCharge/actor=parent\n---\nSoul Link\n100\ntrue|Skill:SoulLinkPlayer|BlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumBlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumLifeLeechIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MovementSpeedEqualHighestLinkedPlayers|FLAG|-|-|type=GlobalEffect/effectType=Link\n20|Skill:SoulLinkPlayer|TakenFromParentESBeforeYou|BASE|-|-|type=GlobalEffect/effectType=Link\n---",
+        "EnemyMods":"Shock\n10|Skill:Shock|DamageTaken|INC|-|-|-",
+        "Curse":"--- Curse Limit ---\n2\nVulnerability\n120\nfalse\n20|Skill:VulnerabilityPlayer|PhysicalDamageTaken|INC|-|-|type=GlobalEffect/effectType=Curse\n---\nSniper's Mark\n100\ntrue\n15|Skill:SnipersMarkPlayer|DamageTaken|INC|-|-|type=GlobalEffect/effectType=Curse\n---",
+        "Warcry Skills":"Infernal Cry\n100\n10|Skill:InfernalCryPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Warcry/warcryPowerBonus=2\n---"
+      },
+      "saved":[{
+          "name":"PartyMemberStats",
+          "elem":"ImportedBuffs",
+          "text":"PartyMemberMaximumEnduranceChargesEqualToYours\nEnduranceChargesMax=6\nPartyMemberFortifyEqualToYours\nFortificationStacks=10\nMovementSpeedMod|percent|max=140\nMainHand.CritChance=12\nEnemyLightningResistEqualToYours\nLightningResist=40\nBlockChance=30\nBlockChanceMax=60\nMaxLifeLeechRatePercent=35\nEnergyShieldRecoveryCap=500"
+        },{
+          "name":"Curse",
+          "elem":"ImportedBuffs",
+          "text":"--- Curse Limit ---\n2\nVulnerability\n120\nfalse\n20|Skill:VulnerabilityPlayer|PhysicalDamageTaken|INC|-|-|type=GlobalEffect/effectType=Curse\n---\nSniper's Mark\n100\ntrue\n15|Skill:SnipersMarkPlayer|DamageTaken|INC|-|-|type=GlobalEffect/effectType=Curse\n---"
+        },{
+          "name":"Warcry Skills",
+          "elem":"ImportedBuffs",
+          "text":"Infernal Cry\n100\n10|Skill:InfernalCryPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Warcry/warcryPowerBonus=2\n---"
+        },{
+          "name":"Link Skills",
+          "elem":"ImportedBuffs",
+          "text":"Destructive Link\n100\ntrue|Skill:DestructiveLinkPlayer|MainHandCritIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\n5|Skill:DestructiveLinkPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Link,type=Multiplier/var=PowerCharge/actor=parent\n---\nSoul Link\n100\ntrue|Skill:SoulLinkPlayer|BlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumBlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumLifeLeechIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MovementSpeedEqualHighestLinkedPlayers|FLAG|-|-|type=GlobalEffect/effectType=Link\n20|Skill:SoulLinkPlayer|TakenFromParentESBeforeYou|BASE|-|-|type=GlobalEffect/effectType=Link\n---"
+        },{
+          "name":"EnemyConditions",
+          "elem":"ImportedBuffs",
+          "text":"Condition:Intimidated"
+        },{
+          "name":"EnemyMods",
+          "elem":"ImportedBuffs",
+          "text":"Shock\n10|Skill:Shock|DamageTaken|INC|-|-|-"
+        }],
+      "attrib":{
+        "ShowAdvanceTools":"false",
+        "append":"false",
+        "destination":"Aura"
+      }
+    },{
+      "name":"append links then warcries",
+      "steps":[{
+          "append":false,
+          "import":"buffers",
+          "dest":"Link Skills"
+        },{
+          "append":true,
+          "import":"buffers",
+          "dest":"Link Skills"
+        },{
+          "append":true,
+          "import":"giver",
+          "dest":"Warcry Skills"
+        }],
+      "buffers":{
+        "PartyMemberStats":"",
+        "Aura":"",
+        "EnemyConditions":"",
+        "Link Skills":"Destructive Link\n100\ntrue|Skill:DestructiveLinkPlayer|MainHandCritIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\n5|Skill:DestructiveLinkPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Link,type=Multiplier/var=PowerCharge/actor=parent\n---\nSoul Link\n100\ntrue|Skill:SoulLinkPlayer|BlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumBlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumLifeLeechIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MovementSpeedEqualHighestLinkedPlayers|FLAG|-|-|type=GlobalEffect/effectType=Link\n20|Skill:SoulLinkPlayer|TakenFromParentESBeforeYou|BASE|-|-|type=GlobalEffect/effectType=Link\n---",
+        "EnemyMods":"",
+        "Curse":"",
+        "Warcry Skills":"Infernal Cry\n99.763062726026\n1|Skill:InfernalCryPlayer|UsesWarcryPower|FLAG|-|-|type=GlobalEffect/effectType=Warcry\n---"
+      },
+      "saved":[{
+          "name":"Warcry Skills",
+          "elem":"ImportedBuffs",
+          "text":"Infernal Cry\n99.763062726026\n1|Skill:InfernalCryPlayer|UsesWarcryPower|FLAG|-|-|type=GlobalEffect/effectType=Warcry\n---"
+        },{
+          "name":"Link Skills",
+          "elem":"ImportedBuffs",
+          "text":"Destructive Link\n100\ntrue|Skill:DestructiveLinkPlayer|MainHandCritIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\n5|Skill:DestructiveLinkPlayer|Damage|INC|-|-|type=GlobalEffect/effectType=Link,type=Multiplier/var=PowerCharge/actor=parent\n---\nSoul Link\n100\ntrue|Skill:SoulLinkPlayer|BlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumBlockAttackChanceIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MaximumLifeLeechIsEqualToParent|FLAG|-|-|type=GlobalEffect/effectType=Link\ntrue|Skill:SoulLinkPlayer|MovementSpeedEqualHighestLinkedPlayers|FLAG|-|-|type=GlobalEffect/effectType=Link\n20|Skill:SoulLinkPlayer|TakenFromParentESBeforeYou|BASE|-|-|type=GlobalEffect/effectType=Link\n---"
+        }],
+      "attrib":{
+        "ShowAdvanceTools":"false",
+        "append":"true",
+        "destination":"Warcry Skills"
+      }
+    },{
+      "name":"clear all",
+      "steps":[{
+          "append":false,
+          "import":"buffers",
+          "dest":"All"
+        },{
+          "clear":"All"
+        }],
+      "buffers":{
+        "PartyMemberStats":"",
+        "Aura":"",
+        "EnemyConditions":"",
+        "Link Skills":"",
+        "EnemyMods":"",
+        "Curse":"",
+        "Warcry Skills":""
+      },
+      "saved":[],
+      "attrib":{
+        "ShowAdvanceTools":"false",
+        "append":"false",
+        "destination":"All"
+      }
+    }]
+}

@@ -47,8 +47,8 @@ const activeSkill = (page: Page) => page.getByRole('complementary', { name: 'Mai
 test('a PoE2 build runs in the app frame: every PoE2 page from the top bar, the main skill from the sidebar, saved and reopened', async ({ page }) => {
   const errors = await open(page);
   const tabs = page.locator('nav a.tab');
-  // with Notes and Compare
-  await expect(tabs).toHaveCount(PAGES.length + 2);
+  // with Notes, Party and Compare
+  await expect(tabs).toHaveCount(PAGES.length + 3);
   for (const [label, route] of PAGES) {
     await poe2Nav(page, label).click();
     await expect.poll(() => routeOf(page)).toBe(route);
@@ -58,11 +58,10 @@ test('a PoE2 build runs in the app frame: every PoE2 page from the top bar, the 
   await poe2Nav(page, 'Notes').click();
   await expect.poll(() => routeOf(page)).toBe('notes');
   await expect(page.getByRole('textbox', { name: 'Notes' })).toBeVisible();
-  // a direct URL to a page PoE2 has no body for
+  // a direct URL to the Party page
   await page.goto(`/party?import=${encodeURIComponent(code())}`);
-  await expect(page.getByRole('status').filter({ hasText: 'The Party page is not available for Path of Exile 2 builds yet.' })).toBeVisible({
-    timeout: 180_000
-  });
+  await expect(page.getByRole('region', { name: 'Party import' })).toBeVisible({ timeout: 180_000 });
+  await expect(page.getByRole('status').filter({ hasText: 'not available' })).toHaveCount(0);
 
   await page.goto(`/calcs?import=${encodeURIComponent(code())}`);
   await expect(poe2Stat(page, 'TotalDPS')).toHaveText(POB2.spark, { timeout: 180_000 });
@@ -86,7 +85,7 @@ test('a PoE2 build runs in the app frame: every PoE2 page from the top bar, the 
 
 test.describe('390px wide', () => {
   test.use(PHONE);
-  test('a PoE2 build on a phone: the bottom bar reaches every PoE2 page and More lists only Notes, Compare and Import/Export', async ({ page }) => {
+  test('a PoE2 build on a phone: the bottom bar reaches every PoE2 page and More lists only Notes, Party, Compare and Import/Export', async ({ page }) => {
     const errors = await open(page);
     await expect(bar(page).getByRole('link')).toHaveText(PAGES.map(([label]) => label));
     for (const [label, route] of PAGES) {
@@ -95,7 +94,7 @@ test.describe('390px wide', () => {
       await expect(poe2Page(page)).toBeVisible();
     }
     const more = await openMore(page);
-    await expect(more.getByRole('navigation', { name: 'More pages' }).getByRole('link')).toHaveText(['Notes', 'Compare', 'Import/Export']);
+    await expect(more.getByRole('navigation', { name: 'More pages' }).getByRole('link')).toHaveText(['Notes', 'Party', 'Compare', 'Import/Export']);
     await expect(more.getByRole('menuitem', { name: 'Settings' })).toBeVisible();
     expect(errors).toEqual([]);
   });

@@ -284,7 +284,7 @@ func hitChance(evasion, accuracy float64, uncapped bool) float64 {
 	return math.Max(math.Min(round(rawChance), 100), 5)
 }
 
-// calcResistForType is calcs.offence's local of that name. Party members are not ported.
+// calcResistForType is calcs.offence's local of that name.
 //
 //pob2:src/Modules/CalcOffence.lua:686-699
 func calcResistForType(env *Environment, enemyDB *moddb.ModDB, damageType string, cfg *moddb.ListCfg) float64 {
@@ -304,6 +304,8 @@ func calcResistForType(env *Environment, enemyDB *moddb.ModDB, damageType string
 		resist = resistOverride.Float()
 	} else if env.ModDB.Flag(nil, "Enemy"+damageType+"ResistEqualToYours") {
 		resist = env.Player.Output[damageType+"Resist"]
+	} else if env.partyMembers().modDB.Flag(nil, "Enemy"+damageType+"ResistEqualToYours") {
+		resist = env.partyMembers().output[damageType+"Resist"]
 	} else {
 		names := []string{damageType + "Resist"}
 		if isElemental[damageType] {

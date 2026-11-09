@@ -833,6 +833,9 @@ func initBaseModDBs(env *Environment, classStats *tree2.Class) {
 	buildConfigModList(env, configModList, configEnemyModList)
 	modDB.AddList(configModList)
 	enemyDB.AddList(configEnemyModList)
+	// Add mods from the party tab
+	//pob2:block:src/Modules/CalcSetup.lua:1036-1037
+	enemyDB.AddList(env.partyMembersTab().enemyModList)
 }
 
 // initEnvRest is calcs.initEnv from the weapon set on.
@@ -940,6 +943,7 @@ func newWeaponSetEnv(env *Environment, mode string, override calcOverride) *Envi
 		SocketGroupList: env.SocketGroupList,
 		fromItemEffects: env.fromItemEffects,
 		override:        override,
+		partyTab:        env.partyTab,
 	}
 }
 

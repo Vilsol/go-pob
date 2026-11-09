@@ -101,6 +101,8 @@ type Environment struct {
 	// WeaponSetValidationSkillList is env.weaponSetValidationSkillList: the active skill list before
 	// the other set's groups are swapped in.
 	WeaponSetValidationSkillList []*ActiveSkill
+	// partyTab is build.partyTab, parsed from the buffers it applies.
+	partyTab *partyTab
 }
 
 // calcOverride is CalcOverride's weaponSet, mainSocketGroup and skipWeaponSetContexts; 0 is nil. With RepSlotName
@@ -367,6 +369,8 @@ type Actor struct {
 	WeaponRange2 float64
 
 	appliedEnemyModifiers map[mod.Mod]bool
+	// partyMembers is actor.partyMembers, the party tab's actor.
+	partyMembers *partyActor
 }
 
 // buildBreakdown is env.buildBreakdown.
@@ -416,6 +420,11 @@ func (a *Actor) RelatedModDB(name string) moddb.ModStoreFuncs {
 		other = a.Enemy
 	case "parent":
 		other = a.Parent
+	case "partyMembers":
+		if a.partyMembers == nil {
+			return nil
+		}
+		return a.partyMembers.modDB
 	}
 	if other == nil || other.ModDB == nil {
 		return nil

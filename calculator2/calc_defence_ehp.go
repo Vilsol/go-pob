@@ -1557,7 +1557,6 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			}
 		}
 
-		// actor.partyMembers is not built, so the party-member branch has no energy shield to read.
 		output["SoulLinkMitigation"] = modDB.Sum(mod.TypeBase, nil, "TakenFromParentESBeforeYou")
 		if output["SoulLinkMitigation"] != 0 {
 			if actor.Parent != nil {
@@ -1565,6 +1564,10 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			}
 		} else {
 			output["SoulLinkMitigation"] = modDB.Sum(mod.TypeBase, nil, "TakenFromPartyMemberESBeforeYou")
+			//pob2:block:src/Modules/CalcDefence.lua:3184-3186
+			if output["SoulLinkMitigation"] != 0 && actor.partyMembers != nil {
+				output["AlliedEnergyShield"] = actor.partyMembers.output["EnergyShieldRecoveryCap"]
+			}
 		}
 	}
 

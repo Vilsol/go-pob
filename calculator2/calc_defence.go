@@ -685,10 +685,11 @@ func defence(env *Environment, actor *Actor) {
 		output["Base"+damageType+"DamageReductionWhenHit"] = globalMaxWhenHit
 	}
 
-	// MovementSpeedEqualHighestLinkedPlayers reads actor.partyMembers, which no actor here carries.
 	//pob2:block:src/Modules/CalcDefence.lua:1926-1930
 	if o := modDB.Override(nil, "MovementSpeed"); o != nil {
 		output["MovementSpeedMod"] = o.Float()
+	} else if v, ok := actor.partyOutput("MovementSpeedMod"); ok && modDB.Flag(nil, "MovementSpeedEqualHighestLinkedPlayers") {
+		output["MovementSpeedMod"] = v
 	} else {
 		output["MovementSpeedMod"] = round((1+modDB.Sum(mod.TypeBase, nil, "MovementSpeed"))*calcLibMod(modDB, nil, "MovementSpeed"), 3)
 	}
@@ -708,8 +709,7 @@ func defence(env *Environment, actor *Actor) {
 	defenceAvoidance(actor, spellSuppressionChance)
 }
 
-// The parent and party-member block chances read actor.parent and actor.partyMembers; a player has
-// neither, so those branches are not ported.
+// The parent block chances read actor.parent, which a player does not have, so those branches are not ported.
 //
 //pob2:block:src/Modules/CalcDefence.lua:1005-1105
 func defenceBlock(env *Environment, actor *Actor) {
@@ -731,6 +731,10 @@ func defenceBlock(env *Environment, actor *Actor) {
 			output["BlockChanceMax"] = math.Min(modDB.Sum(mod.TypeBase, nil, "BaseBlockChanceMax")+modDB.Sum(mod.TypeBase, nil, "BlockChanceMax"), blockChanceCap)
 		}
 	}
+	//pob2:block:src/Modules/CalcDefence.lua:1012-1013
+	if !modDB.Flag(nil, "MaximumBlockAttackChanceIsEqualToParent") && modDB.Flag(nil, "MaximumBlockAttackChanceIsEqualToPartyMember") && actor.partyMembers != nil {
+		output["BlockChanceMax"] = actor.partyMembers.output["BlockChanceMax"]
+	}
 	output["BlockChanceOverCap"] = 0
 	output["SpellBlockChanceOverCap"] = 0
 	baseBlockChance := 0.0
@@ -744,7 +748,10 @@ func defenceBlock(env *Environment, actor *Actor) {
 	if o := modDB.Override(nil, "ReplaceShieldBlock"); o != nil {
 		baseBlockChance = o.Float()
 	}
-	if modDB.Flag(nil, "MaxBlockIfNotBlockedRecently") {
+	//pob2:block:src/Modules/CalcDefence.lua:1028-1029
+	if !modDB.Flag(nil, "BlockAttackChanceIsEqualToParent") && modDB.Flag(nil, "BlockAttackChanceIsEqualToPartyMember") && actor.partyMembers != nil {
+		output["BlockChance"] = math.Min(actor.partyMembers.output["BlockChance"], output["BlockChanceMax"])
+	} else if modDB.Flag(nil, "MaxBlockIfNotBlockedRecently") {
 		output["BlockChance"] = output["BlockChanceMax"]
 	} else {
 		inc := modDB.Sum(mod.TypeIncrease, nil, "BlockChance")
@@ -1328,8 +1335,7 @@ func defenceSuppressionDodge(env *Environment, actor *Actor) float64 {
 // recoveryResources is the regeneration block's `resources`.
 var recoveryResources = []string{"Mana", "Life", "Energy Shield", "Rage", "Ward"}
 
-// The parent and party-member leech-rate branches read actor.parent and actor.partyMembers; a player
-// has neither, so those branches are not ported.
+// The parent leech-rate branch reads actor.parent, which a player does not have, so it is not ported.
 //
 //pob2:block:src/Modules/CalcDefence.lua:1654-1906
 func defenceRecovery(actor *Actor) {
@@ -1368,6 +1374,10 @@ func defenceRecovery(actor *Actor) {
 	//pob2:block:src/Modules/CalcDefence.lua:1677-1702
 	output["MaxLifeLeechInstance"] = output["Life"] * calcLibVal(modDB, "MaxLifeLeechInstance", nil) / 100
 	output["MaxLifeLeechRatePercent"] = calcLibVal(modDB, "MaxLifeLeechRate", nil)
+	//pob2:block:src/Modules/CalcDefence.lua:1681-1682
+	if !modDB.Flag(nil, "MaximumLifeLeechIsEqualToParent") && modDB.Flag(nil, "MaximumLifeLeechIsEqualToPartyMember") && actor.partyMembers != nil {
+		output["MaxLifeLeechRatePercent"] = actor.partyMembers.output["MaxLifeLeechRatePercent"]
+	}
 	output["MaxLifeLeechRate"] = output["Life"] * output["MaxLifeLeechRatePercent"] / 100
 	output["MaxEnergyShieldLeechInstance"] = output["EnergyShield"] * calcLibVal(modDB, "MaxEnergyShieldLeechInstance", nil) / 100
 	output["MaxEnergyShieldLeechRate"] = output["EnergyShield"] * calcLibVal(modDB, "MaxEnergyShieldLeechRate", nil) / 100
