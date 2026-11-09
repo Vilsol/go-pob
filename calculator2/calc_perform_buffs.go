@@ -305,6 +305,12 @@ func combineBuffs(env *Environment) *buffState {
 							env.Player.ModDB.AddMod(newMod("Multiplier:EmpoweringWarcryCount", mod.TypeBase, 1, mod.Source(buff.Name)))
 							warcryList[buff.Name] = true
 						}
+						if breakdown := env.Player.Breakdown; breakdown != nil {
+							breakdown.set(warcryName+"EmpoweringWarcryCount",
+								sFormat("(%d / %d) ^8(Power / per = base)", math.Min(warcryPower, powerCap), powerPer),
+								sFormat("= ((%.2f + %.2f) x %.2f) ^8((base + extra) x more)", baseEmpowers, extraEmpowers, empowerMultiplier),
+								sFormat("= %.2f", totalEmpowers))
+						}
 					}
 					if !activeSkill.SkillModList.Flag(nil, "CannotShareWarcryBuffs") {
 						// Lua stores warcryPowerBonus on the mod's first tag; only this block reads it here.

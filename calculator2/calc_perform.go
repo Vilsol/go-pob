@@ -87,10 +87,13 @@ func mergeKeystones(env *Environment) {
 // The second pass runs because one attribute can depend on another being higher.
 //
 //pob2:src/Modules/CalcPerform.lua:233-260
-func calculateAttributes(modDB *moddb.ModDB, output map[string]float64, condList map[string]bool) {
+func calculateAttributes(modDB *moddb.ModDB, output map[string]float64, breakdown *Breakdown, condList map[string]bool) {
 	for range 2 {
 		for _, stat := range []string{"Str", "Dex", "Int"} {
 			output[stat] = math.Max(round(calcLibVal(modDB, stat, nil)), 0)
+			if breakdown != nil {
+				breakdown.setEntry(stat, breakdown.simple(0, nil, output[stat], stat))
+			}
 		}
 
 		stats := []float64{output["Str"], output["Dex"], output["Int"]}
@@ -158,6 +161,16 @@ func calcBuffRadius(actor *Actor, key string) {
 	actor.Output[radiusKey+"Metres"] = finalRadius / 10
 	if scaledRadius/baseRadius != 1 {
 		actor.Output[modKey] = scaledRadius / baseRadius
+	}
+	if breakdown := actor.Breakdown; breakdown != nil {
+		breakdown.setEntry(radiusKey, breakdown.area(scaledRadius, (1+incArea/100)*moreArea, finalRadius, nil, "", 1))
+		if baseRadius != scaledRadius {
+			breakdown.set(modKey,
+				sFormat("%.1fm ^8(base radius)", baseRadius/10),
+				sFormat(" x %.2f  ^8(inc)", 1+incRadius/100),
+				sFormat(" x %.2f  ^8(more)", moreRadius),
+				sFormat(" = %.1fm", scaledRadius/10))
+		}
 	}
 }
 
@@ -346,7 +359,7 @@ func doActorAttribsConditions(env *Environment, actor *Actor) {
 		}
 	}
 
-	calculateAttributes(modDB, output, condList)
+	calculateAttributes(modDB, output, actor.Breakdown, condList)
 	output["TotalAttr"] = output["Str"] + output["Dex"] + output["Int"]
 
 	output["Devotion"] = modDB.Sum(mod.TypeBase, nil, "Devotion")

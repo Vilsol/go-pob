@@ -269,6 +269,120 @@ func (b *Breakdown) insert(key string, lines ...string) {
 	e.Lines = append(e.Lines, lines...)
 }
 
+// simple is breakdown.simple: the base of the first name with extraBase, then the increased and more multipliers,
+// nil where nothing scales it.
+//
+//pob2:src/Modules/CalcBreakdown.lua:47-70
+func (b *Breakdown) simple(extraBase float64, cfg *moddb.ListCfg, total float64, names ...string) *BreakdownEntry {
+	base := b.modDB.Sum(mod.TypeBase, cfg, names[0])
+	if base+extraBase != 0 {
+		inc := b.modDB.Sum(mod.TypeIncrease, cfg, names...)
+		more := b.modDB.More(cfg, names...)
+		if inc != 0 || more != 1 || (base != 0 && extraBase != 0) {
+			var out []string
+			if base != 0 && extraBase != 0 {
+				out = append(out, sFormat("(%g + %g) ^8(base)", extraBase, base))
+			} else {
+				out = append(out, sFormat("%g ^8(base)", base+extraBase))
+			}
+			if inc != 0 {
+				out = append(out, sFormat("x %.2f ^8(increased/reduced)", 1+inc/100))
+			}
+			if more != 1 {
+				out = append(out, sFormat("x %.2f ^8(more/less)", more))
+			}
+			out = append(out, sFormat("= %g", total))
+			return &BreakdownEntry{Lines: out}
+		}
+	}
+	return nil
+}
+
+// areaBreakpoints are calcRadiusBreakpoints' four results; a nil *areaBreakpoints is their nil.
+type areaBreakpoints struct{ inc, more, red, less float64 }
+
+// area is breakdown.area; label "" is nil, radiusMod 1 is nil.
+//
+//pob2:src/Modules/CalcBreakdown.lua:98-115
+func (b *Breakdown) area(base, areaMod, total float64, bp *areaBreakpoints, label string, radiusMod float64) *BreakdownEntry {
+	var out []string
+	if label != "" {
+		out = append(out, label)
+	}
+	if base != total {
+		out = append(out, sFormat("%.1fm ^8(base radius)", base/10))
+		out = append(out, sFormat("x %.2f ^8(square root of area of effect modifier)", math.Floor(100*math.Sqrt(areaMod))/100))
+		if radiusMod != 1 {
+			out = append(out, sFormat("x %.2f ^8(final radius modifier)", radiusMod))
+		}
+		out = append(out, sFormat("= %.1fm", total/10))
+	}
+	if bp != nil {
+		out = append(out, sFormat("^8Next 0.1m breakpoint: %d%% increased AoE / a %d%% more AoE multiplier", bp.inc, bp.more))
+		out = append(out, sFormat("^8Previous 0.1m breakpoint: %d%% reduced AoE / a %d%% less AoE multiplier", bp.red, bp.less))
+	}
+	return &BreakdownEntry{Lines: out, Radius: total, HasRadius: true}
+}
+
+// leech is breakdown.leech. The Lua reads a skillCfg it never defines, so the rate modifier has no cfg.
+//
+//pob2:src/Modules/CalcBreakdown.lua:209-263
+func (b *Breakdown) leech(instant, instantRate, instances, pool float64, rate string, maxRate, dur, instantLeechProportion, hitRate float64) *BreakdownEntry {
+	var out []string
+	leechRateBase := miscConstant("LeechRateBase")
+	if truthy(b.actor.MainSkill.SkillData["showAverage"]) {
+		if instant > 0 {
+			if instantLeechProportion != 1 {
+				out = append(out, sFormat("Instant Leech: %.1f ^8(%d%% x %.1f)", instant, instantLeechProportion*100, dur*pool*leechRateBase/(1-instantLeechProportion)))
+			} else {
+				out = append(out, sFormat("Instant Leech: %.1f", instant))
+			}
+		}
+		if instances > 0 {
+			out = append(out, "Total leeched per instance:",
+				sFormat("%d ^8(size of leech destination pool)", pool),
+				sFormat("x %.2f ^8(base leech rate is %d%% per second)", leechRateBase, 100*leechRateBase))
+			rateMod := calcLibMod(b.modDB, nil, rate)
+			if rateMod != 1 {
+				out = append(out, sFormat("x %.2f ^8(leech rate modifier)", rateMod))
+			}
+			out = append(out, sFormat("x %.2fs ^8(instance duration)", dur), sFormat("= %.1f", pool*leechRateBase*rateMod*dur))
+		}
+	} else {
+		if instantRate > 0 {
+			if instantLeechProportion != 1 {
+				out = append(out, sFormat("Instant Leech: %.1f ^8(%d%% x %.1f)", instant, instantLeechProportion*100, dur*pool*leechRateBase/(1-instantLeechProportion)))
+			} else {
+				out = append(out, sFormat("Instant Leech: %.1f", instant))
+			}
+			out = append(out, sFormat("Instant Leech per second: %.1f ^8(%.1f x %.2f)", instantRate, instant, hitRate))
+		}
+		if instances > 0 {
+			out = append(out, "Rate per instance:",
+				sFormat("%d ^8(size of leech destination pool)", pool),
+				sFormat("x %.2f ^8(base leech rate is %d%% per second)", leechRateBase, 100*leechRateBase))
+			rateMod := calcLibMod(b.modDB, nil, rate)
+			if rateMod != 1 {
+				out = append(out, sFormat("x %.2f ^8(leech rate modifier)", rateMod))
+			}
+			out = append(out, sFormat("= %.1f ^8per second", pool*leechRateBase*rateMod),
+				"Maximum leech rate against one target:",
+				sFormat("%.1f", pool*leechRateBase*rateMod),
+				sFormat("x %.2f ^8(average instances)", instances))
+			total := pool * leechRateBase * rateMod * instances
+			out = append(out, sFormat("= %.1f ^8per second", total))
+			if total <= maxRate {
+				out = append(out, sFormat("Time to reach max: %.1fs", dur))
+			}
+			out = append(out, sFormat("Leech rate cap: %.1f", maxRate))
+			if total > maxRate {
+				out = append(out, sFormat("Time to reach cap: %.1fs", dur/total*maxRate))
+			}
+		}
+	}
+	return &BreakdownEntry{Lines: out}
+}
+
 // mod is breakdown.mod: the increased and more multipliers of names, nil where either is neutral.
 //
 //pob2:src/Modules/CalcBreakdown.lua:72-82

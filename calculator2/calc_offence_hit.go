@@ -1068,7 +1068,7 @@ func offenceHitSpeed(env *Environment, actor *Actor, activeSkill *ActiveSkill, s
 	}
 }
 
-// offenceCombineSpeed combines the passes' hit chance and speed. The breakdowns are not ported.
+// offenceCombineSpeed combines the passes' hit chance and speed.
 //
 //pob2:block:src/Modules/CalcOffence.lua:3160-3307
 func offenceCombineSpeed(env *Environment, actor *Actor, activeSkill *ActiveSkill, skillFlags map[string]bool, state *offenceHitState) {
@@ -1098,6 +1098,7 @@ func offenceCombineSpeed(env *Environment, actor *Actor, activeSkill *ActiveSkil
 	modDB.Multipliers["BuffOnSelf"] += skillModList.Sum(mod.TypeBase, nil, "Multiplier:TraumaStacks")
 	modDB.Multipliers["BuffOnSelf"] += skillModList.Sum(mod.TypeBase, nil, "Multiplier:VoltaxicWaitingStages")
 	if !state.isAttack {
+		offenceHitTimeBreakdowns(actor, skillFlags, skillData, false)
 		return
 	}
 	// Combine hit chance and attack speed
@@ -1197,6 +1198,57 @@ func offenceCombineSpeed(env *Environment, actor *Actor, activeSkill *ActiveSkil
 			output["HitSpeed"] = math.Min(1/output["HitTime"], miscConstant("ServerTickRate"))
 		}
 	}
+	offenceHitTimeBreakdowns(actor, skillFlags, skillData, true)
+}
+
+//pob2:block:src/Modules/CalcOffence.lua:3266-3307
+func offenceHitTimeBreakdowns(actor *Actor, skillFlags map[string]bool, skillData map[string]any, isAttack bool) {
+	breakdown := actor.Breakdown
+	if breakdown == nil {
+		return
+	}
+	output := actor.Output
+	_, hasTime := output["Time"]
+	triggeredOnDeath := truthy(skillData["triggeredOnDeath"])
+	timeLabel := "cast"
+	if isAttack {
+		timeLabel = "attack"
+	}
+	if channelTimeMultiplier, ok := sdNum(skillData, "channelTimeMultiplier"); ok && hasTime && !triggeredOnDeath {
+		var lines []string
+		if minChannelTime, ok := sdNum(skillData, "minChannelTime"); ok {
+			lines = append(lines, sFormat("%.2fs ^8(minimum channel time)", minChannelTime), "")
+		}
+		breakdown.set("ChannelTime", append(lines,
+			sFormat("%.2f ^8("+timeLabel+" time per stage)", 1/output["ChannelSpeed"]),
+			sFormat("x %.2f ^8(channel time multiplier)", channelTimeMultiplier),
+			sFormat("= %.2f", output["ChannelTime"]))...)
+	}
+	_, hasHitTimeOverride := sdNum(skillData, "hitTimeOverride")
+	hitTimeMultiplier, hasHitTimeMultiplier := sdNum(skillData, "hitTimeMultiplier")
+	if hasHitTimeOverride && !triggeredOnDeath {
+		breakdown.set("HitSpeed", sFormat("1 / %.2f ^8(hit time override)", output["HitTime"]), sFormat("= %.2f", output["HitSpeed"]))
+	} else if hasHitTimeMultiplier && hasTime && !triggeredOnDeath {
+		var lines []string
+		if math.Floor(hitTimeMultiplier) != hitTimeMultiplier {
+			lines = append(lines, sFormat(colorCustom+"NOTE: First stage has a %.2fx channel time multiplier", hitTimeMultiplier-math.Floor(hitTimeMultiplier)))
+		}
+		breakdown.set("HitTime", append(lines,
+			sFormat("%.2f ^8("+timeLabel+" time)", output["Time"]),
+			sFormat("x %.2f ^8(channel time multiplier)", hitTimeMultiplier),
+			sFormat("= %.2f", output["HitTime"]))...)
+		cooldown, hasCooldown := output["Cooldown"]
+		var first string
+		switch {
+		case hasCooldown && truthy(skillData["triggered"]):
+			first = sFormat("1 / min(%.2f, %.2f) ^8min(hit time, cooldown)", output["HitTime"], cooldown)
+		case hasCooldown:
+			first = sFormat("1 / (%.2f + %.2f) ^8(hit time + cooldown)", output["HitTime"], cooldown)
+		default:
+			first = sFormat("1 / %.2f ^8(hit time)", output["HitTime"])
+		}
+		breakdown.set("HitSpeed", first, sFormat("= %.2f", output["HitSpeed"]))
+	}
 }
 
 // offenceMovementPenalty grabs the quantity multiplier and the movement speed while using the skill.
@@ -1223,6 +1275,21 @@ func offenceMovementPenalty(actor *Actor, activeSkill *ActiveSkill) float64 {
 		total := float64((1 - base) * penaltyMod)
 		output["MovementSpeedWhileUsingSkill"] = (1 - total) * output["MovementSpeedMod"]
 		output["MovementSpeedWhileUsingSkillPercent"] = (1 - total) * 100
+		//pob2:block:src/Modules/CalcOffence.lua:3323-3337
+		if breakdown := actor.Breakdown; breakdown != nil {
+			breakdown.set("MovementSpeedWhileUsingSkill",
+				"Minimum Movement Speed while using this skill",
+				"^8(This is the lowest movement speed you will reach while using this skill,",
+				"^8subject to acceleration and deceleration)",
+				"",
+				sFormat("%d%% ^8(movement speed penalty from using skill)", 100-float64(base*100)),
+				sFormat("x %.2f) ^8(increased/reduced penalty)", 1+inc/100),
+				sFormat("x %.2f) ^8(more/less penalty)", more),
+				sFormat("= %.1f%% ^8(movement speed penalty)", 100-output["MovementSpeedWhileUsingSkillPercent"]),
+				"",
+				sFormat("100%% - %.1f%% ^8(100 - movement speed penalty)", 100-output["MovementSpeedWhileUsingSkillPercent"]),
+				sFormat("= %.1f%% ^8(movement speed while casting)", output["MovementSpeedWhileUsingSkillPercent"]))
+		}
 	}
 	return quantityMultiplier
 }

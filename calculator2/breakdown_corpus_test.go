@@ -22,6 +22,13 @@ var (
 	dumpDigitRe    = regexp.MustCompile(`\^[0-9]`)
 )
 
+// poe2BreakdownMatchedFloor is the (build, stat) breakdowns from the Calcs tab calculation that agree with the dumps,
+// and poe2BreakdownExtraCeiling the ones we write that PoB does not, over the whole corpus.
+const (
+	poe2BreakdownMatchedFloor = 1336650
+	poe2BreakdownExtraCeiling = 0
+)
+
 // the generator functions the breakdown table also holds, which the dumper prints as "function: 0x..."
 var breakdownGenerators = map[string]bool{
 	"multiChain": true, "simple": true, "mod": true, "slot": true, "area": true, "effMult": true, "dot": true, "critDot": true, "leech": true,
@@ -61,11 +68,22 @@ func renderBreakdownDump(e *BreakdownEntry) []string {
 	return lines
 }
 
+func renderBreakdowns(env *Environment) map[string][]string {
+	out := map[string][]string{}
+	if bd := env.Player.Breakdown; bd != nil {
+		for k, e := range bd.Entries {
+			if lines := renderBreakdownDump(e); len(lines) > 0 {
+				out[k] = lines
+			}
+		}
+	}
+	return out
+}
+
 // TestCorpusPoE2BreakdownsVsDumps grades every player breakdown PoB-PoE2's CALCS pass writes, line for line as
-// the dumper renders it, against ours from the main calculation. Report only. BREAKDOWN_WORKLIST=<file> writes
-// the disagreeing (build, stat) pairs; LIMIT=<n> takes the first n builds. BREAKDOWN_DUMPS=<dir> reads the dumps
-// from there instead, such as the dumper's output with mainEnv's breakdown in place of calcsEnv's, which the main
-// calculation is graded against exactly.
+// the dumper renders it, against ours from the Calcs tab calculation, and prints the headline again for the main
+// calculation. Report only. BREAKDOWN_WORKLIST=<file> writes the disagreeing (build, stat) pairs; LIMIT=<n> takes the
+// first n builds. BREAKDOWN_DUMPS=<dir> reads the dumps from there instead.
 func TestCorpusPoE2BreakdownsVsDumps(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("CORPUS=true reads the local PoE2 corpus")
@@ -100,6 +118,7 @@ func TestCorpusPoE2BreakdownsVsDumps(t *testing.T) {
 		err  error
 		pob  map[string][]string
 		ours map[string][]string
+		main map[string][]string
 	}
 	results := make([]result, len(builds))
 	work := make(chan int)
@@ -133,7 +152,7 @@ func TestCorpusPoE2BreakdownsVsDumps(t *testing.T) {
 					if err != nil {
 						return result{err: err}
 					}
-					var env *Environment
+					var env, calcsEnv *Environment
 					func() {
 						defer func() {
 							if r := recover(); r != nil {
@@ -141,19 +160,16 @@ func TestCorpusPoE2BreakdownsVsDumps(t *testing.T) {
 							}
 						}()
 						env, err = BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+						if err == nil {
+							calcsEnv = BuildCalcsOutput(env, BuildOutputUsed(env))
+						}
 					}()
 					if err != nil {
 						res.err = err
 						return res
 					}
-					res.ours = map[string][]string{}
-					if bd := env.Player.Breakdown; bd != nil {
-						for k, e := range bd.Entries {
-							if lines := renderBreakdownDump(e); len(lines) > 0 {
-								res.ours[k] = lines
-							}
-						}
-					}
+					res.main = renderBreakdowns(env)
+					res.ours = renderBreakdowns(calcsEnv)
 					return res
 				}()
 			}
@@ -183,11 +199,22 @@ func TestCorpusPoE2BreakdownsVsDumps(t *testing.T) {
 		w = bufio.NewWriter(f)
 		defer w.Flush()
 	}
-	failed, matched, total, extra := 0, 0, 0, 0
+	failed, matched, total, extra, reordered := 0, 0, 0, 0, 0
+	mainMatched, mainExtra := 0, 0
 	for i, r := range results {
 		if r.err != nil {
 			failed++
 			continue
+		}
+		for k, want := range r.pob {
+			if got, ok := r.main[k]; ok && strings.Join(got, "\n") == strings.Join(want, "\n") {
+				mainMatched++
+			}
+		}
+		for k := range r.main {
+			if _, ok := r.pob[k]; !ok {
+				mainExtra++
+			}
 		}
 		for k, want := range r.pob {
 			s := get(k)
@@ -200,6 +227,8 @@ func TestCorpusPoE2BreakdownsVsDumps(t *testing.T) {
 			if ok && strings.Join(got, "\n") == strings.Join(want, "\n") {
 				s.ok++
 				matched++
+			} else if ok && sameLines(got, want) {
+				reordered++
 			} else if w != nil && ok {
 				fmt.Fprintf(w, "%s\t%s\n\tpob:  %q\n\tours: %q\n", builds[i], k, want, got)
 			}
@@ -216,7 +245,18 @@ func TestCorpusPoE2BreakdownsVsDumps(t *testing.T) {
 	}
 	t.Logf("=== CORPUS PoE2 0.5 player breakdowns vs DUMPS (skills on) ===")
 	t.Logf("%d builds, %d failed", len(builds), failed)
-	t.Logf("matched %d / %d (build, stat) pairs PoB writes; %d we write that PoB does not", matched, total, extra)
+	t.Logf("matched %d / %d (build, stat) pairs PoB writes; %d we write that PoB does not; %d more hold PoB's lines in another order", matched, total, extra, reordered)
+	t.Logf("main calculation: matched %d / %d; %d we write that PoB does not", mainMatched, total, mainExtra)
+	if limit, _ := strconv.Atoi(os.Getenv("LIMIT")); limit == 0 && os.Getenv("BREAKDOWN_DUMPS") == "" {
+		if matched < poe2BreakdownMatchedFloor {
+			t.Errorf("matched %d breakdowns, below floor %d", matched, poe2BreakdownMatchedFloor)
+		} else if matched > poe2BreakdownMatchedFloor {
+			fmt.Printf("matched %d is above the floor %d — raise poe2BreakdownMatchedFloor\n", matched, poe2BreakdownMatchedFloor)
+		}
+		if extra > poe2BreakdownExtraCeiling {
+			t.Errorf("%d breakdowns PoB does not write, above ceiling %d", extra, poe2BreakdownExtraCeiling)
+		}
+	}
 	keys := make([]string, 0, len(stats))
 	for k, s := range stats {
 		if s.ours > 0 || s.extra > 0 {
@@ -387,6 +427,25 @@ func TestCorpusPoE2ModSectionsVsLua(t *testing.T) {
 	for _, k := range keys {
 		t.Logf("  %-60s matched %d / %d", k, byEntry[k][0], byEntry[k][1])
 	}
+}
+
+// sameLines is got and want holding the same lines in any order: a row list built over pairs() follows LuaJIT's
+// table order.
+func sameLines(got, want []string) bool {
+	if len(got) != len(want) {
+		return false
+	}
+	seen := map[string]int{}
+	for _, l := range want {
+		seen[l]++
+	}
+	for _, l := range got {
+		if seen[l] == 0 {
+			return false
+		}
+		seen[l]--
+	}
+	return true
 }
 
 // sameRows is got and want holding the same rows in any order: table.sort leaves the rows its comparator ties in an

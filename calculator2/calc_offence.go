@@ -31,6 +31,42 @@ func calcRadius(baseRadius, areaMod, radiusMod float64) float64 {
 	return math.Floor(baseRadius * radiusPercent / 100)
 }
 
+// calcRadiusBreakpoints is nil where the radius is 0.
+//
+//pob2:src/Modules/CalcOffence.lua:267-293
+func calcRadiusBreakpoints(baseRadius, incArea, moreArea, radiusMod float64) *areaBreakpoints {
+	radius := calcRadius(baseRadius, calcAreaMod(incArea, moreArea), radiusMod)
+	if radius <= 0 {
+		return nil
+	}
+	bp := &areaBreakpoints{}
+	for {
+		bp.inc++
+		if calcRadius(baseRadius, calcAreaMod(incArea+bp.inc/100, moreArea), radiusMod) > radius {
+			break
+		}
+	}
+	for {
+		bp.red++
+		if calcRadius(baseRadius, calcAreaMod(incArea-bp.red/100, moreArea), radiusMod) < radius {
+			break
+		}
+	}
+	for {
+		bp.more++
+		if calcRadius(baseRadius, calcAreaMod(incArea, moreArea*(1+bp.more/100)), radiusMod) > radius {
+			break
+		}
+	}
+	for {
+		bp.less++
+		if calcRadius(baseRadius, calcAreaMod(incArea, moreArea*(1-bp.less/100)), radiusMod) < radius {
+			break
+		}
+	}
+	return bp
+}
+
 // calcMoltenStrikeTertiaryRadius calculates the tertiary radius for Molten Strike, correctly handling the deadzone.
 //
 //pob2:src/Modules/CalcOffence.lua:254-259
@@ -569,6 +605,19 @@ func offence(env *Environment, actor *Actor, activeSkill *ActiveSkill) {
 				mainSkill.SkillModList.AddMod(newMod("AreaOfEffect", mod.TypeIncrease, round(1/output["SealCooldown"]/totalCastSpeed*sealArea, 2), mod.Source(skillName)))
 			}
 		}
+		if breakdown := actor.Breakdown; breakdown != nil {
+			lines, _ := breakdown.multiChain(nil, multiChainSpec{
+				Label: "Gain frequency:",
+				Base:  &chainLink{Format: "%.2fs ^8(base cast time)", Value: &castTime},
+				Links: []chainLink{
+					link("%.2f ^8(increased/reduced gain frequency)", 1+skillModList.Sum(mod.TypeIncrease, skillCfg, "SealGainFrequency")/100),
+					link("%d%% ^8(of cast time)", skillModList.Sum(mod.TypeBase, skillCfg, "SealGainFrequency")),
+					link("%.2f ^8(increased/reduced cast speed)", 1/calcLibMod(skillModList, skillCfg, "Speed")),
+				},
+				Total: sFormat("= %.2fs ^8per Seal", output["SealCooldown"]),
+			})
+			breakdown.set("SealGainTime", lines...)
+		}
 	}
 	offenceRandomElement(env, activeSkill, skillFlags)
 
@@ -614,7 +663,8 @@ func offence(env *Environment, actor *Actor, activeSkill *ActiveSkill) {
 }
 
 //pob2:src/Modules/CalcOffence.lua:566-684
-func calcAreaOfEffect(actor *Actor, skillModList *moddb.ModList, skillCfg *moddb.ListCfg, skillData map[string]any, skillFlags map[string]bool, output map[string]float64) {
+func calcAreaOfEffect(actor *Actor, skillModList *moddb.ModList, skillCfg *moddb.ListCfg, skillData map[string]any, skillFlags map[string]bool, output map[string]float64, breakdown *Breakdown) {
+	label := func(key string) string { v, _ := skillData[key].(string); return v }
 	incArea, moreArea := calcLibMods(skillModList, skillCfg, "AreaOfEffect", "AreaOfEffectPrimary")
 	output["AreaOfEffectMod"] = calcAreaMod(incArea, moreArea)
 	radiusMod := calcLibMod(skillModList, skillCfg, "AreaOfEffectRadius")
@@ -634,6 +684,10 @@ func calcAreaOfEffect(actor *Actor, skillModList *moddb.ModList, skillCfg *moddb
 		baseRadius := radius + radiusExtra + skillModList.Sum(mod.TypeBase, skillCfg, "AreaOfEffect")
 		output["AreaOfEffectRadius"] = calcRadius(baseRadius, output["AreaOfEffectMod"], radiusMod)
 		output["AreaOfEffectRadiusMetres"] = output["AreaOfEffectRadius"] / 10
+		//pob2:block:src/Modules/CalcOffence.lua:585-588
+		if breakdown != nil {
+			breakdown.setEntry("AreaOfEffectRadius", breakdown.area(baseRadius, output["AreaOfEffectMod"], output["AreaOfEffectRadius"], calcRadiusBreakpoints(baseRadius, incArea, moreArea, radiusMod), label("radiusLabel"), radiusMod))
+		}
 		radiusSecondary, hasSecondary := sdNum(skillData, "radiusSecondary")
 		if hasSecondary {
 			incAreaSecondary, moreAreaSecondary := calcLibMods(skillModList, skillCfg, "AreaOfEffect", "AreaOfEffectSecondary")
@@ -641,6 +695,14 @@ func calcAreaOfEffect(actor *Actor, skillModList *moddb.ModList, skillCfg *moddb
 			baseRadius = radiusSecondary + radiusExtra
 			output["AreaOfEffectRadiusSecondary"] = calcRadius(baseRadius, output["AreaOfEffectModSecondary"], radiusMod)
 			output["AreaOfEffectRadiusSecondaryMetres"] = output["AreaOfEffectRadiusSecondary"] / 10
+			//pob2:block:src/Modules/CalcOffence.lua:595-601
+			if breakdown != nil {
+				var bp *areaBreakpoints
+				if !truthy(skillData["projectileSpeedAppliesToMSAreaOfEffect"]) {
+					bp = calcRadiusBreakpoints(baseRadius, incAreaSecondary, moreAreaSecondary, radiusMod)
+				}
+				breakdown.setEntry("AreaOfEffectRadiusSecondary", breakdown.area(baseRadius, output["AreaOfEffectModSecondary"], output["AreaOfEffectRadiusSecondary"], bp, label("radiusSecondaryLabel"), radiusMod))
+			}
 		}
 		if radiusTertiary, ok := sdNum(skillData, "radiusTertiary"); ok {
 			incAreaTertiary, moreAreaTertiary := calcLibMods(skillModList, skillCfg, "AreaOfEffect", "AreaOfEffectTertiary")
@@ -667,8 +729,26 @@ func calcAreaOfEffect(actor *Actor, skillModList *moddb.ModList, skillCfg *moddb
 				output["AreaOfEffectRadiusTertiary"] = sumOfRandomRadii / marginWidth
 			} else {
 				output["AreaOfEffectRadiusTertiary"] = calcRadius(baseRadius, output["AreaOfEffectModTertiary"], radiusMod)
+				//pob2:block:src/Modules/CalcOffence.lua:666-669
+				if breakdown != nil {
+					breakdown.setEntry("AreaOfEffectRadiusTertiary", breakdown.area(baseRadius, output["AreaOfEffectModTertiary"], output["AreaOfEffectRadiusTertiary"], calcRadiusBreakpoints(baseRadius, incAreaTertiary, moreAreaTertiary, radiusMod), label("radiusTertiaryLabel"), radiusMod))
+				}
 			}
 			output["AreaOfEffectRadiusTertiaryMetres"] = output["AreaOfEffectRadiusTertiary"] / 10
 		}
+	}
+	//pob2:block:src/Modules/CalcOffence.lua:674-683
+	if breakdown != nil {
+		e := &BreakdownEntry{}
+		if output["AreaOfEffectMod"] != 1 {
+			e.Lines, _ = breakdown.multiChain(e.Lines, multiChainSpec{
+				Links: []chainLink{
+					link("%.2f ^8(increased/reduced)", 1+skillModList.Sum(mod.TypeIncrease, skillCfg, "AreaOfEffect")/100),
+					link("%.2f ^8(more/less)", skillModList.More(skillCfg, "AreaOfEffect")),
+				},
+				Total: sFormat("= %.2f", output["AreaOfEffectMod"]),
+			})
+		}
+		breakdown.setEntry("AreaOfEffectMod", e)
 	}
 }

@@ -33,8 +33,26 @@ func (h *offenceHit) calcAncestralBoost(skillName string, moreDmg float64, uptim
 	} else {
 		globalOutput[skillNameVar+"UptimeRatio"] = math.Min((1/globalOutput["Speed"])/globalOutput[skillNameVar+"Cooldown"], 1) * 100
 	}
+	skillNameLabel := strings.ToLower(skillName)
+	globalBreakdown := h.actor.Breakdown
+	if globalBreakdown != nil {
+		cooldown := globalOutput[skillNameVar+"Cooldown"]
+		if hasUptimeOverride {
+			cooldown = 1 / globalOutput["Speed"] / (uptimeOverride / 100)
+		}
+		globalBreakdown.set(skillNameVar+"UptimeRatio",
+			sFormat("min( (1 / %.2f) ^8(second per attack)", globalOutput["Speed"]),
+			sFormat("/ %.2f, 1) ^8("+skillNameLabel+" cooldown)", cooldown),
+			sFormat("= %d%%", globalOutput[skillNameVar+"UptimeRatio"]))
+	}
 	globalOutput["Avg"+skillNameVar+"Damage"] = globalOutput[skillNameVar+"DamageMultiplier"]
 	globalOutput["Avg"+skillNameVar+"DamageEffect"] = 1 + float64(globalOutput["Avg"+skillNameVar+"Damage"]*(globalOutput[skillNameVar+"UptimeRatio"]/100))
+	if globalBreakdown != nil {
+		globalBreakdown.set("Avg"+skillNameVar+"DamageEffect",
+			sFormat("1 + (%.2f ^8("+skillNameLabel+" damage multiplier)", globalOutput[skillNameVar+"DamageMultiplier"]),
+			sFormat("x %.2f) ^8("+skillNameLabel+" uptime ratio)", globalOutput[skillNameVar+"UptimeRatio"]/100),
+			sFormat("= %.2f", globalOutput["Avg"+skillNameVar+"DamageEffect"]))
+	}
 	globalOutput["Max"+skillNameVar+"DamageEffect"] = 1 + globalOutput[skillNameVar+"DamageMultiplier"]
 	if h.activeSkill.SkillModList.Flag(nil, "Condition:WarcryMaxHit") {
 		globalOutput[skillNameVar+"DamageEffect"] = globalOutput["Max"+skillNameVar+"DamageEffect"]
@@ -62,8 +80,24 @@ func (h *offenceHit) calcCombinedAncestralBoost(skillName string, moreDmg float6
 
 	globalOutput[skillNameVar+"UptimeRatio"] = uptimeOverride
 	globalOutput[skillNameVar+"UptimeRatio"] = math.Min(globalOutput[skillNameVar+"UptimeRatio"]+globalOutput[additionalSkillNameVar+"UptimeRatio"], 100)
+	globalBreakdown := h.actor.Breakdown
+	if globalBreakdown != nil {
+		globalBreakdown.set(skillNameVar+"UptimeRatio",
+			sFormat("min( (1 / %.2f) ^8(second per attack)", globalOutput["Speed"]),
+			sFormat("/ %.2f, 1) ^8("+strings.ToLower(skillName)+" cooldown)", 1/globalOutput["Speed"]/(uptimeOverride/100)),
+			"+",
+			sFormat("min( (1 / %.2f) ^8(second per attack)", globalOutput["Speed"]),
+			sFormat("/ %.2f, 1) ^8("+strings.ToLower(additionalSkillName)+" cooldown)", globalOutput[additionalSkillNameVar+"Cooldown"]),
+			"capped at 100%",
+			sFormat("= %d%%", globalOutput[skillNameVar+"UptimeRatio"]))
+	}
 	globalOutput["Avg"+skillNameVar+"Damage"] = globalOutput[skillNameVar+"DamageMultiplier"]
 	globalOutput["Avg"+skillNameVar+"DamageEffect"] = 1 + float64(globalOutput["Avg"+skillNameVar+"Damage"]*(globalOutput[skillNameVar+"UptimeRatio"]/100))
+	if globalBreakdown != nil {
+		globalBreakdown.set("Avg"+skillNameVar+"DamageEffect",
+			sFormat("1 + (%.2f x %.2f) ^8(combined ancestral boost damage multiplier x uptime ratio)", globalOutput[skillNameVar+"DamageMultiplier"], globalOutput[skillNameVar+"UptimeRatio"]/100),
+			sFormat("= %.2f", globalOutput["Avg"+skillNameVar+"DamageEffect"]))
+	}
 	globalOutput["Max"+skillNameVar+"DamageEffect"] = 1 + globalOutput[skillNameVar+"DamageMultiplier"]
 	if h.activeSkill.SkillModList.Flag(nil, "Condition:WarcryMaxHit") {
 		globalOutput[skillNameVar+"DamageEffect"] = globalOutput["Max"+skillNameVar+"DamageEffect"]
@@ -89,7 +123,7 @@ type offenceHit struct {
 
 func (h *offenceHit) calcAreaOfEffect() {
 	as := h.activeSkill
-	calcAreaOfEffect(h.actor, as.SkillModList, as.SkillCfg, as.SkillData, h.skillFlags, h.actor.Output)
+	calcAreaOfEffect(h.actor, as.SkillModList, as.SkillCfg, as.SkillData, h.skillFlags, h.actor.Output, h.actor.Breakdown)
 }
 
 // Check if player is supposed to ignore a damage type, or if it's ignored on enemy side
@@ -150,6 +184,21 @@ func (h *offenceHit) offenceWarcryExerts(cfg *moddb.ListCfg) {
 		}
 		return math.Min(100, baseUptimeRatio*storedUses)
 	}
+	globalBreakdown := h.actor.Breakdown
+	// uptimeBreakdown is the exert uptime breakdown each cry writes; countLine and castLabel are the two places their
+	// texts differ.
+	uptimeBreakdown := func(key, prefix, countLine, countKey, castLabel string) {
+		if globalBreakdown == nil {
+			return
+		}
+		lines := []string{sFormat(countLine, globalOutput[countKey]), sFormat("/ %.2f) ^8(attacks per second)", globalOutput["Speed"])}
+		if globalOutput[prefix+"CastTime"] > 0 {
+			lines = append(lines, sFormat("/ (%.2f ^8(warcry cooldown)", globalOutput[prefix+"Cooldown"]), sFormat("+ %.2f) ^8(warcry "+castLabel+")", globalOutput[prefix+"CastTime"]))
+		} else {
+			lines = append(lines, sFormat("/ %.2f ^8(average warcry cooldown)", globalOutput[prefix+"Cooldown"]))
+		}
+		globalBreakdown.set(key, append(lines, sFormat("= %d%%", globalOutput[key]))...)
+	}
 	for _, value := range actor.ActiveSkillList {
 		if value == nil || value.ActiveEffect == nil || value.ActiveEffect.GrantedEffect == nil || value.SkillModList == nil {
 			continue
@@ -158,12 +207,14 @@ func (h *offenceHit) offenceWarcryExerts(cfg *moddb.ListCfg) {
 		case name == "Ancestral Cry" && st["MeleeSingleTarget"] && !calculated("AncestralCryCalculated"):
 			globalOutput["AncestralUpTimeRatio"] = warcryTimes(value, "AncestralCry", "AncestralExertsCount", "NumAncestralExerts")
 			globalOutput["GlobalWarcryUptimeRatio"] += globalOutput["AncestralUpTimeRatio"]
+			uptimeBreakdown("AncestralUpTimeRatio", "AncestralCry", "(%d ^8(number of exerts)", "AncestralExertsCount", "casttime")
 			h.calculated["AncestralCryCalculated"] = true
 			h.actor.setOutputFlag("AncestralCryCalculated", true)
 		case name == "Infernal Cry" && st["Melee"] && !calculated("InfernalCryCalculated"):
 			h.actor.setOutputFlag("CreateWarcryOffensiveCalcSection", true)
 			globalOutput["InfernalCryUptimeRatio"] = warcryTimes(value, "InfernalCry", "InfernalEmpoweredCount", "NumInfernalEmpowers")
 			globalOutput["GlobalWarcryUptimeRatio"] += globalOutput["InfernalCryUptimeRatio"]
+			uptimeBreakdown("InfernalCryUptimeRatio", "InfernalCry", "(%.2f ^8(number of empowered)", "InfernalEmpoweredCount", "cast time")
 			infernalGainAsFire := modDB.Sum(mod.TypeBase, nil, "InfernalExtraFireDamage")
 			if infernalGainAsFire > 0 {
 				infernalUptime := globalOutput["InfernalCryUptimeRatio"]
@@ -178,14 +229,28 @@ func (h *offenceHit) offenceWarcryExerts(cfg *moddb.ListCfg) {
 			h.actor.setOutputFlag("CreateWarcryOffensiveCalcSection", true)
 			globalOutput["IntimidatingUpTimeRatio"] = warcryTimes(value, "IntimidatingCry", "IntimidatingExertsCount", "NumIntimidatingExerts")
 			globalOutput["GlobalWarcryUptimeRatio"] += globalOutput["IntimidatingUpTimeRatio"]
+			uptimeBreakdown("IntimidatingUpTimeRatio", "IntimidatingCry", "(%d ^8(number of exerts)", "IntimidatingExertsCount", "casttime")
 			selfDouble := 0.0
 			if env.ModeEffective {
 				selfDouble = enemyDB.Sum(mod.TypeBase, cfg, "SelfDoubleDamageChance")
 			}
 			ddChance := math.Min(skillModList.Sum(mod.TypeBase, cfg, "DoubleDamageChance")+selfDouble+exertedDoubleDamage, 100)
 			globalOutput["IntimidatingAvgDmg"] = 2 * (1 - ddChance/100)
+			if globalBreakdown != nil {
+				globalBreakdown.set("IntimidatingAvgDmg",
+					"Average Intimidating Cry Damage:",
+					sFormat("%.2f%% ^8(base double damage increase to hit 100%%)", (1-ddChance/100)*100),
+					sFormat("x %d ^8(double damage multiplier)", 2.0),
+					sFormat("= %.2f", globalOutput["IntimidatingAvgDmg"]))
+			}
 			globalOutput["IntimidatingHitEffect"] = 1 + globalOutput["IntimidatingAvgDmg"]*globalOutput["IntimidatingUpTimeRatio"]/100
 			globalOutput["IntimidatingMaxHitEffect"] = 1 + globalOutput["IntimidatingAvgDmg"]
+			if globalBreakdown != nil {
+				globalBreakdown.set("IntimidatingHitEffect",
+					sFormat("1 + (%.2f ^8(average exerted damage)", globalOutput["IntimidatingAvgDmg"]),
+					sFormat("x %.2f) ^8(uptime %%)", globalOutput["IntimidatingUpTimeRatio"]/100),
+					sFormat("= %.2f", globalOutput["IntimidatingHitEffect"]))
+			}
 			globalOutput["TheoreticalOffensiveWarcryEffect"] *= globalOutput["IntimidatingHitEffect"]
 			globalOutput["TheoreticalMaxOffensiveWarcryEffect"] *= globalOutput["IntimidatingMaxHitEffect"]
 			h.calculated["IntimidatingCryCalculated"] = true
@@ -194,9 +259,23 @@ func (h *offenceHit) offenceWarcryExerts(cfg *moddb.ListCfg) {
 			h.actor.setOutputFlag("CreateWarcryOffensiveCalcSection", true)
 			globalOutput["RallyingUpTimeRatio"] = warcryTimes(value, "RallyingCry", "RallyingExertsCount", "NumRallyingExerts")
 			globalOutput["GlobalWarcryUptimeRatio"] += globalOutput["RallyingUpTimeRatio"]
+			uptimeBreakdown("RallyingUpTimeRatio", "RallyingCry", "(%d ^8(number of exerts)", "RallyingExertsCount", "casttime")
 			globalOutput["RallyingAvgDmg"] = math.Min(env.ModDB.Sum(mod.TypeBase, cfg, "Multiplier:NearbyAlly"), 5) * (env.ModDB.Sum(mod.TypeBase, nil, "RallyingExertMoreDamagePerAlly") / 100)
+			if globalBreakdown != nil {
+				globalBreakdown.set("RallyingAvgDmg",
+					"Average Rallying Cry Damage:",
+					sFormat("%.2f ^8(average damage multiplier per ally)", env.ModDB.Sum(mod.TypeBase, nil, "RallyingExertMoreDamagePerAlly")/100),
+					sFormat("x %d ^8(number of nearby allies (max=5))", math.Min(env.ModDB.Sum(mod.TypeBase, cfg, "Multiplier:NearbyAlly"), 5)),
+					sFormat("= %.2f", globalOutput["RallyingAvgDmg"]))
+			}
 			globalOutput["RallyingHitEffect"] = 1 + globalOutput["RallyingAvgDmg"]*globalOutput["RallyingUpTimeRatio"]/100
 			globalOutput["RallyingMaxHitEffect"] = 1 + globalOutput["RallyingAvgDmg"]
+			if globalBreakdown != nil {
+				globalBreakdown.set("RallyingHitEffect",
+					sFormat("1 + (%.2f ^8(average exerted damage)", globalOutput["RallyingAvgDmg"]),
+					sFormat("x %.2f) ^8(uptime %%)", globalOutput["RallyingUpTimeRatio"]/100),
+					sFormat("= %.2f", globalOutput["RallyingHitEffect"]))
+			}
 			globalOutput["OffensiveWarcryEffect"] *= globalOutput["RallyingHitEffect"]
 			globalOutput["MaxOffensiveWarcryEffect"] *= globalOutput["RallyingMaxHitEffect"]
 			globalOutput["TheoreticalOffensiveWarcryEffect"] *= globalOutput["RallyingHitEffect"]
@@ -214,12 +293,14 @@ func (h *offenceHit) offenceWarcryExerts(cfg *moddb.ListCfg) {
 				skillModList.NewMod("AreaOfEffect", mod.TypeMore, math.Floor(env.ModDB.Sum(mod.TypeBase, nil, "SeismicMoreAoE")/100*globalOutput["SeismicUpTimeRatio"]), "Avg Seismic Exert AoE")
 			}
 			h.calcAreaOfEffect()
+			uptimeBreakdown("SeismicUpTimeRatio", "SeismicCry", "(%d ^8(number of exerts)", "SeismicExertsCount", "casttime")
 			h.calculated["SeismicCryCalculated"] = true
 			h.actor.setOutputFlag("SeismicCryCalculated", true)
 		case name == "Battlemage's Cry" && !calculated("BattleMageCryCalculated"):
 			if st["Melee"] {
 				globalOutput["BattlemageUpTimeRatio"] = warcryTimes(value, "BattleMageCry", "BattleCryExertsCount", "NumBattlemageExerts")
 				globalOutput["GlobalWarcryUptimeRatio"] += globalOutput["BattlemageUpTimeRatio"]
+				uptimeBreakdown("BattlemageUpTimeRatio", "BattleMageCry", "(%d ^8(number of exerts)", "BattleCryExertsCount", "casttime")
 			} else {
 				warcryTimes(value, "BattleMageCry", "", "")
 			}
@@ -396,6 +477,13 @@ func (h *offenceHit) offenceAncestralBoosts(pass *offencePass) {
 		globalOutput["BoostedAttackAvgDmg"] = calcLibMod(skillModList, skillCfg, "AncestralBoostDamage")
 		globalOutput["BoostedAttackHitEffect"] = globalOutput["BoostedAttackAvgDmg"] * globalOutput["BoostedAttackUptimeRatio"] / 100
 		globalOutput["BoostedAttackMaxHitEffect"] = globalOutput["BoostedAttackAvgDmg"]
+		//pob2:block:src/Modules/CalcOffence.lua:3800-3806
+		if globalBreakdown != nil {
+			globalBreakdown.set("BoostedAttackHitEffect",
+				sFormat("(%.2f ^8(average Boosted damage)", globalOutput["BoostedAttackAvgDmg"]),
+				sFormat("x %.2f) ^8(uptime %%)", globalOutput["BoostedAttackUptimeRatio"]/100),
+				sFormat("= %.2f", globalOutput["BoostedAttackHitEffect"]))
+		}
 		h.calculated["BoostedAttackUptimeRatioCalculated"] = true
 		h.actor.setOutputFlag("BoostedAttackUptimeRatioCalculated", true)
 	}
@@ -637,6 +725,15 @@ func (h *offenceHit) offenceCrit(pass *offencePass) {
 				output["CritBifurcates"] = 1 + conditionalBifurcateChance
 				damageBonus := extraDamage
 				bifurcatedBonus := float64(conditionalBifurcateChance * extraDamage)
+				//pob2:block:src/Modules/CalcOffence.lua:4003-4011
+				if breakdown := pass.breakdown; breakdown != nil {
+					breakdown.set("CritBifurcates",
+						sFormat("%.2f%% ^8(pre-bifurcate crit chance)", critChancePercentage),
+						sFormat("x %.2f%%", critChancePercentage),
+						sFormat("= %.2f%% ^8(chance both crit rolls succeed)", bifurcateMultiChance),
+						sFormat("/ %.2f%% ^8(chance at least one crit roll succeeds)", effectiveCritChance),
+						sFormat("= %.2f ^8(crit Bifurcates effect)", 1+conditionalBifurcateChance))
+				}
 				extraDamage = damageBonus + bifurcatedBonus
 				skillModList.NewMod("CritMultiplier", mod.TypeMore, floorDec(conditionalBifurcateChance*100, 2), "Bifurcated Crit Damage Bonus")
 			}
@@ -645,12 +742,26 @@ func (h *offenceHit) offenceCrit(pass *offencePass) {
 				enemyInc := 1 + enemyDB.Sum(mod.TypeIncrease, nil, "SelfCritMultiplier")/100
 				extraDamage += enemyDB.Sum(mod.TypeBase, nil, "SelfCritMultiplier") / 100
 				extraDamage = round(extraDamage*enemyInc, 2)
+				//pob2:block:src/Modules/CalcOffence.lua:4020-4026
+				if breakdown := pass.breakdown; breakdown != nil && enemyInc != 1 {
+					breakdown.set("CritMultiplier",
+						sFormat("%d%% ^8(additional extra damage)", (enemyDB.Sum(mod.TypeBase, nil, "SelfCritMultiplier")+skillModList.Sum(mod.TypeBase, cfg, "CritMultiplier"))/100),
+						sFormat("x %.2f ^8(increased/reduced extra crit damage taken by enemy)", enemyInc),
+						sFormat("= %d%% ^8(extra crit damage)", extraDamage*100))
+				}
 			}
 			output["CritMultiplier"] = 1 + math.Max(0, extraDamage)
 		}
 		critChancePercentage := output["CritChance"] / 100
 		output["CritEffect"] = 1 - critChancePercentage + float64(critChancePercentage*output["CritMultiplier"])
 		output["BonusCritDotMultiplier"] = (skillModList.Sum(mod.TypeBase, cfg, "CritMultiplier") - 50) * skillModList.Sum(mod.TypeBase, cfg, "CritMultiplierAppliesToDegen") / 10000
+		//pob2:block:src/Modules/CalcOffence.lua:4033-4039
+		if breakdown := pass.breakdown; breakdown != nil && output["CritEffect"] != 1 {
+			breakdown.set("CritEffect",
+				sFormat("(1 - %.4f) ^8(portion of damage from non-crits)", critChancePercentage),
+				sFormat("+ [ (%.4f x %g) ^8(portion of damage from crits)", critChancePercentage, output["CritMultiplier"]),
+				sFormat("= %.3f", output["CritEffect"]))
+		}
 	}
 }
 
@@ -740,6 +851,24 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 	maxCullPercent := math.Max(criticalCull, regularCull) * incCullPercent
 	globalOutput["CullPercent"] = maxCullPercent
 	globalOutput["CullMultiplier"] = 100 / (100 - globalOutput["CullPercent"])
+	if globalBreakdown := h.actor.Breakdown; globalBreakdown != nil && maxCullPercent > 0 {
+		var lines []string
+		if o := skillModList.Override(cfg, "CullPercent"); o != nil && o.Float() > 0 {
+			lines = append(lines, sFormat("%d%% ^8(cull override)", regularCull))
+		} else {
+			lines = append(lines, sFormat("%d%% ^8(cull against %s enemy)", regularCull, strings.ToLower(enemyRarity)))
+		}
+		if criticalCull > 0 {
+			if o := skillModList.Override(cfg, "CriticalCullPercent"); o != nil && o.Float() > 0 {
+				lines = append(lines, sFormat("%d%% ^8(critical cull override)", criticalCull))
+			} else {
+				lines = append(lines, sFormat("%d ^8(critical cull against %s enemy)", criticalCull, enemyRarity))
+			}
+		}
+		globalBreakdown.set("CullingStrike", append(lines,
+			sFormat("x %.2f ^8(increased cull threshold)", incCullPercent),
+			sFormat("= %.2f%%", maxCullPercent))...)
+	}
 
 	//Calculate reservation DPS
 	globalOutput["ReservationDpsMultiplier"] = 100 / (100 - enemyDB.Sum(mod.TypeBase, nil, "LifeReservationPercent"))
@@ -1470,6 +1599,27 @@ func (h *offenceHit) offenceCombineDamage() {
 		for _, stat := range []string{"FiringRate", "ReloadTime", "EffectiveReloadTime", "ReloadRate", "BoltCount", "EffectiveBoltCount", "TotalFiringTime", "ChanceToNotConsumeAmmo", "ChanceToReloadInstantly"} {
 			combine(stat, "AVERAGE")
 		}
+		//pob2:block:src/Modules/CalcOffence.lua:4774-4790
+		if breakdown := h.actor.Breakdown; breakdown != nil {
+			if chance, ok := output["ChanceToNotConsumeAmmo"]; ok {
+				effective, ok := output["EffectiveBoltCount"]
+				if !ok {
+					effective = math.Inf(1)
+				}
+				breakdown.set("EffectiveBoltCount",
+					sFormat("%d ^8(bolt count)", output["BoltCount"]),
+					sFormat("/ (1 - %.2f) ^8(chance to not consume)", math.Min(chance/100, 1)),
+					"\n",
+					sFormat("= %.2f ^8(effective bolt count)", effective))
+			}
+			if chance, ok := output["ChanceToReloadInstantly"]; ok {
+				breakdown.set("EffectiveReloadTime",
+					sFormat("%.2f ^8(reload time)", output["ReloadTime"]),
+					sFormat("* (1 - %.2f) ^8(chance to reload instantly)", math.Min(chance/100, 1)),
+					"\n",
+					sFormat("= %.2f ^8(effective reload time)", output["EffectiveReloadTime"]))
+			}
+		}
 		// Game data specifies "base skill show average damage instead of dps" for many crossbow skills, where that doesn't make sense for PoB (e.g. Explosive Shot)
 		skillData["showAverage"] = false
 		skillFlags["showAverage"] = false
@@ -1624,6 +1774,19 @@ func (h *offenceHit) offenceLeechRates() {
 		output["LifeLeechGainRate"] = output["LifeLeechRate"] + output["LifeOnHitRate"]
 		output["EnergyShieldLeechGainRate"] = output["EnergyShieldLeechRate"] + output["EnergyShieldOnHitRate"]
 		output["ManaLeechGainRate"] = output["ManaLeechRate"] + output["ManaOnHitRate"]
+	}
+	//pob2:block:src/Modules/CalcOffence.lua:4949-4960
+	if breakdown := h.actor.Breakdown; breakdown != nil {
+		hitSpeed, ok := output["HitSpeed"]
+		if !ok {
+			hitSpeed = output["Speed"]
+		}
+		hitRate := output["HitChance"] / 100 * hitSpeed * output["DpsMultiplier"]
+		for _, l := range []struct{ flag, pool string }{{"leechLife", "Life"}, {"leechES", "EnergyShield"}, {"leechMana", "Mana"}} {
+			if skillFlags[l.flag] {
+				breakdown.setEntry(l.pool+"Leech", breakdown.leech(output[l.pool+"LeechInstant"], output[l.pool+"LeechInstantRate"], output[l.pool+"LeechInstances"], output[l.pool], l.pool+"LeechRate", output["Max"+l.pool+"LeechRate"], output[l.pool+"LeechDuration"], output[l.pool+"LeechInstantProportion"], hitRate))
+			}
+		}
 	}
 }
 

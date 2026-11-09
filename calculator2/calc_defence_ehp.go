@@ -555,7 +555,7 @@ func numberOfHitsToDie(output map[string]float64, actor *ehpActor, DamageIn *ehp
 	return math.Max(numHits, 0)
 }
 
-// buildDefenceEstimations writes no breakdowns. Its boolean outputs are Actor.OutputFlags, kept as
+// buildDefenceEstimations' boolean outputs are Actor.OutputFlags, kept as
 // locals too where the function reads them back.
 //
 //pob2:src/Modules/CalcDefence.lua:2222-4389
@@ -1377,8 +1377,10 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 		a.setOutputFlag("OnlySharedMindOverMatter", true)
 		sourcePool := math.Max(output["ManaUnreserved"], 0)
 		sourceHitPool := sourcePool
+		manatext := "unreserved mana"
 		esBypass := output["MinimumBypass"] / 100
 		if modDB.Flag(nil, "EnergyShieldProtectsMana") && esBypass < 1 {
+			manatext += " + non-bypassed energy shield"
 			if esBypass > 0 {
 				manaProtected := math.Min(sourcePool/esBypass-sourcePool, output["EnergyShieldRecoveryCap"])
 				sourcePool = math.Max(sourcePool-manaProtected, -output["LifeRecoverable"]) + math.Min(sourcePool+output["LifeRecoverable"], manaProtected)/esBypass
@@ -1391,11 +1393,21 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 		poolProtected := float64(sourcePool / (output["sharedMindOverMatter"] / 100) * (1 - output["sharedMindOverMatter"]/100))
 		hitPoolProtected := float64(sourceHitPool / (output["sharedMindOverMatter"] / 100) * (1 - output["sharedMindOverMatter"]/100))
 		if output["sharedMindOverMatter"] >= 100 {
+			poolProtected = math.Inf(1)
 			output["sharedManaEffectiveLife"] = output["LifeRecoverable"] + sourcePool
 			output["sharedMoMHitPool"] = output["LifeHitPool"] + sourceHitPool
 		} else {
 			output["sharedManaEffectiveLife"] = math.Max(output["LifeRecoverable"]-poolProtected, 0) + math.Min(output["LifeRecoverable"], poolProtected)/(1-output["sharedMindOverMatter"]/100)
 			output["sharedMoMHitPool"] = math.Max(output["LifeHitPool"]-hitPoolProtected, 0) + math.Min(output["LifeHitPool"], hitPoolProtected)/(1-output["sharedMindOverMatter"]/100)
+		}
+		if breakdown != nil {
+			breakdown.set("sharedMindOverMatter",
+				"Total life protected:",
+				sFormat("%d ^8(%s)", sourcePool, manatext),
+				sFormat("/ %.2f ^8(portion taken from mana)", output["sharedMindOverMatter"]/100),
+				sFormat("x %.2f ^8(portion taken from life)", 1-output["sharedMindOverMatter"]/100),
+				sFormat("= %d", poolProtected),
+				sFormat("Effective life: %d", output["sharedManaEffectiveLife"]))
 		}
 	} else {
 		output["sharedManaEffectiveLife"] = output["LifeRecoverable"]
@@ -1410,7 +1422,9 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			a.setOutputFlag("OnlySharedMindOverMatter", false)
 			sourcePool := math.Max(output["ManaUnreserved"], 0)
 			sourceHitPool := sourcePool
+			manatext := "unreserved mana"
 			if modDB.Flag(nil, "EnergyShieldProtectsMana") && output[damageType+"EnergyShieldBypass"] < 100 {
+				manatext += " + non-bypassed energy shield"
 				if output[damageType+"EnergyShieldBypass"] > 0 {
 					manaProtected := float64(output["EnergyShieldRecoveryCap"] / (1 - output[damageType+"EnergyShieldBypass"]/100) * (output[damageType+"EnergyShieldBypass"] / 100))
 					sourcePool = math.Max(sourcePool-manaProtected, -output["LifeRecoverable"]) + math.Min(sourcePool+output["LifeRecoverable"], manaProtected)/(output[damageType+"EnergyShieldBypass"]/100)
@@ -1423,11 +1437,21 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			poolProtected := float64(sourcePool / (MindOverMatter / 100) * (1 - MindOverMatter/100))
 			hitPoolProtected := float64(sourceHitPool / (MindOverMatter / 100) * (1 - MindOverMatter/100))
 			if MindOverMatter >= 100 {
+				poolProtected = math.Inf(1)
 				output[damageType+"ManaEffectiveLife"] = output["LifeRecoverable"] + sourcePool
 				output[damageType+"MoMHitPool"] = output["LifeHitPool"] + sourceHitPool
 			} else {
 				output[damageType+"ManaEffectiveLife"] = math.Max(output["LifeRecoverable"]-poolProtected, 0) + math.Min(output["LifeRecoverable"], poolProtected)/(1-MindOverMatter/100)
 				output[damageType+"MoMHitPool"] = math.Max(output["LifeHitPool"]-hitPoolProtected, 0) + math.Min(output["LifeHitPool"], hitPoolProtected)/(1-MindOverMatter/100)
+			}
+			if breakdown != nil {
+				breakdown.set(damageType+"MindOverMatter",
+					"Total life protected:",
+					sFormat("%d ^8(%s)", sourcePool, manatext),
+					sFormat("/ %.2f ^8(portion taken from mana)", MindOverMatter/100),
+					sFormat("x %.2f ^8(portion taken from life)", 1-MindOverMatter/100),
+					sFormat("= %d", poolProtected),
+					sFormat("Effective life: %d", output[damageType+"ManaEffectiveLife"]))
 			}
 		} else {
 			output[damageType+"ManaEffectiveLife"] = output["sharedManaEffectiveLife"]
@@ -1886,6 +1910,72 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 			}
 			output[recoupType+"RecoupRecoveryMax"] = output["Total"+recoupType+"RecoupRecovery"]/recoupTime + output["Total"+recoupType+"PseudoRecoup"]/PseudoRecoupDuration + extraMax
 			output[recoupType+"RecoupRecoveryAvg"] = output["Total"+recoupType+"RecoupRecovery"]/(output["EHPSurvivalTime"]+recoupTime) + output["Total"+recoupType+"PseudoRecoup"]/(output["EHPSurvivalTime"]+PseudoRecoupDuration) + extraAvg
+			//pob2:block:src/Modules/CalcDefence.lua:3478-3526
+			if breakdown != nil {
+				multipleTypes := 0
+				plus := func() string {
+					if multipleTypes > 0 {
+						return "+"
+					}
+					return ""
+				}
+				var lines []string
+				if output[recoupType+"Recoup"] > 0 {
+					lines = append(lines,
+						sFormat("%d ^8(total damage taken during ehp calcs)", totalDamage),
+						sFormat("* %.2f ^8(percent of damage recouped)", output[recoupType+"Recoup"]/100))
+					multipleTypes++
+				}
+				if output["Elemental"+recoupType+"Recoup"] > 0 && totalElementalDamage > 0 {
+					if multipleTypes > 0 {
+						lines = append(lines, "")
+					}
+					lines = append(lines,
+						sFormat("%s%d ^8(total elemental damage taken during ehp calcs)", plus(), totalDamage),
+						sFormat("* %.2f ^8(percent of damage recouped)", output["Elemental"+recoupType+"Recoup"]/100))
+					multipleTypes++
+				}
+				for _, damageType := range dmgTypeList {
+					if output[damageType+recoupType+"Recoup"] > 0 && output[damageType+"RecoupableDamageTaken"] > 0 {
+						if multipleTypes > 0 {
+							lines = append(lines, "")
+						}
+						lines = append(lines,
+							sFormat("%s%d ^8(total %s damage taken during ehp calcs)", plus(), totalDamage, damageType),
+							sFormat("* %.2f ^8(percent of damage recouped)", output[damageType+recoupType+"Recoup"]/100))
+						multipleTypes++
+					}
+				}
+				lines = append(lines, sFormat("= %d ^8(total damage recoup amount)", output["Total"+recoupType+"RecoupRecovery"]))
+				avg := append([]string(nil), lines...)
+				lines = append(lines, sFormat("/ %.2f ^8(over %d seconds)", recoupTime, recoupTime))
+				if output["Total"+recoupType+"PseudoRecoup"] > 0 {
+					lines = append(lines,
+						sFormat("+ %.2f ^8(total damage mitigated pseudo recoup amount)", output["Total"+recoupType+"PseudoRecoup"]),
+						sFormat("/ %.2f ^8(over %d seconds)", PseudoRecoupDuration, PseudoRecoupDuration))
+				}
+				extra, hasExtra := extraPseudoRecoup[recoupType]
+				if hasExtra {
+					lines = append(lines,
+						sFormat("+ %.2f ^8(total damage mitigated pseudo recoup amount)", extra.amount),
+						sFormat("/ %.2f ^8(over %d seconds)", extra.duration, extra.duration))
+				}
+				lines = append(lines, sFormat("= %.2f per second ^8", output[recoupType+"RecoupRecoveryMax"]))
+				avg = append(avg, sFormat("/ %.2f ^8(total time of the recoup (survival time + %d seconds))", output["EHPSurvivalTime"]+recoupTime, recoupTime))
+				if output["Total"+recoupType+"PseudoRecoup"] > 0 {
+					avg = append(avg,
+						sFormat("+ %.2f ^8(total damage mitigated pseudo recoup amount)", output["Total"+recoupType+"PseudoRecoup"]),
+						sFormat("/ %.2f ^8(total time of the recoup (survival time + %d seconds)", output["EHPSurvivalTime"]+PseudoRecoupDuration, PseudoRecoupDuration))
+				}
+				if hasExtra {
+					avg = append(avg,
+						sFormat("+ %.2f ^8(total damage mitigated pseudo recoup amount)", extra.amount),
+						sFormat("/ %.2f ^8(total time of the recoup (survival time + %d seconds)", output["EHPSurvivalTime"]+extra.duration, extra.duration))
+				}
+				avg = append(avg, sFormat("= %.2f per second ^8", output[recoupType+"RecoupRecoveryAvg"]))
+				breakdown.set(recoupType+"RecoupRecoveryMax", lines...)
+				breakdown.set(recoupType+"RecoupRecoveryAvg", avg...)
+			}
 		}
 	}
 
@@ -1897,6 +1987,30 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 		LifeLossLost := modDB.Sum(mod.TypeBase, nil, "LifeLossLost") / 100
 		output["LifeLossLostMax"] = (float64(output["LifeLossLostOverTime"]*LifeLossLost) + float64(output["LifeBelowHalfLossLostOverTime"]*LifeLossBelowHalfLost)) / 4
 		output["LifeLossLostAvg"] = (float64(output["LifeLossLostOverTime"]*LifeLossLost) + float64(output["LifeBelowHalfLossLostOverTime"]*LifeLossBelowHalfLost)) / (output["EHPSurvivalTime"] + 4)
+		if breakdown != nil {
+			var head []string
+			if output["LifeLossLostOverTime"] != 0 {
+				head = append(head, sFormat("( %d ^8(total damage prevented by Grasping Wounds / Sacrifice of Flesh)", output["LifeLossLostOverTime"]))
+				if LifeLossLost != 0 {
+					head = append(head, sFormat("* %.2f ^8(percent of damage taken from Sacrifice of Flesh)", LifeLossLost))
+				}
+			}
+			if output["LifeBelowHalfLossLostOverTime"] != 0 {
+				open := "("
+				if output["LifeLossLostOverTime"] != 0 {
+					open = "+"
+				}
+				head = append(head,
+					sFormat("%s %d ^8(total damage prevented by petrified blood)", open, output["LifeBelowHalfLossLostOverTime"]),
+					sFormat("* %.2f ^8(percent of damage taken from petrified blood)", LifeLossBelowHalfLost))
+			}
+			breakdown.set("LifeLossLostMax", append(append([]string(nil), head...),
+				sFormat(") / %.2f ^8(over 4 seconds)", 4.0),
+				sFormat("= %.2f per second", output["LifeLossLostMax"]))...)
+			breakdown.set("LifeLossLostAvg", append(head,
+				sFormat(") / %.2f ^8(total time of the degen (survival time + 4 seconds))", output["EHPSurvivalTime"]+4),
+				sFormat("= %.2f per second", output["LifeLossLostAvg"]))...)
+		}
 	}
 
 	//pob2:block:src/Modules/CalcDefence.lua:3567-3585
@@ -1905,6 +2019,16 @@ func buildDefenceEstimations(env *Environment, a *Actor) {
 		output["netLifeRecoupAndLossLostOverTimeAvg"] = output["LifeRecoupRecoveryAvg"] - output["LifeLossLostAvg"]
 		if output["LifeRecoupRecoveryAvg"] > 0 && output["preventedLifeLossTotal"] > 0 {
 			a.setOutputFlag("showNetRecoup", true)
+			if breakdown != nil {
+				breakdown.set("netLifeRecoupAndLossLostOverTimeMax",
+					sFormat("%.2f ^8(total life recouped per second)", output["LifeRecoupRecoveryMax"]),
+					sFormat("- %.2f ^8(total life taken over time per second)", output["LifeLossLostMax"]),
+					sFormat("= %.2f per second", output["netLifeRecoupAndLossLostOverTimeMax"]))
+				breakdown.set("netLifeRecoupAndLossLostOverTimeAvg",
+					sFormat("%.2f ^8(total life recouped per second)", output["LifeRecoupRecoveryAvg"]),
+					sFormat("- %.2f ^8(total life taken over time per second)", output["LifeLossLostAvg"]),
+					sFormat("= %.2f per second", output["netLifeRecoupAndLossLostOverTimeAvg"]))
+			}
 		}
 	}
 

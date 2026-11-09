@@ -1042,20 +1042,58 @@ func (h *offenceHit) offenceAilments() {
 		chanceToDouble := math.Min(skillModList.Sum(mod.TypeBase, cfg, "DoubleEnemyStunDurationChance")+enemyDB.Sum(mod.TypeBase, cfg, "SelfDoubleStunDurationChance"), 100)
 		incRecov := enemyDB.Sum(mod.TypeIncrease, nil, "StunRecovery")
 		minimumStunDuration := base * moreDur / (1 + incRecov/100)
+		maximumStunDuration := minimumStunDuration
 		output["EnemyStunDuration"] = minimumStunDuration
 		if incDurCrit != 0 && output["CritChance"] != 0 {
 			if output["CritChance"] == 100 {
 				minimumStunDuration *= 1 + (incDur+incDurCrit)/100
+				maximumStunDuration = minimumStunDuration
 				output["EnemyStunDuration"] = minimumStunDuration
 			} else {
+				minimumStunDuration *= 1 + incDur/100
+				maximumStunDuration *= 1 + (incDur+incDurCrit)/100
 				output["EnemyStunDuration"] *= 1 + (incDur+incDurCrit*output["CritChance"]/100)/100
 			}
 		} else {
 			minimumStunDuration *= 1 + incDur/100
+			maximumStunDuration = minimumStunDuration
 			output["EnemyStunDuration"] = minimumStunDuration
 		}
 		if chanceToDouble != 0 {
+			if chanceToDouble == 100 {
+				minimumStunDuration *= 2
+			}
+			maximumStunDuration *= 2
 			output["EnemyStunDuration"] *= 1 + chanceToDouble/100
+		}
+		//pob2:block:src/Modules/CalcOffence.lua:5856-5886
+		if breakdown != nil && output["EnemyStunDuration"] != base {
+			lines := []string{sFormat("%.2fs ^8(base duration)", base)}
+			if incDur != 0 || (incDurCrit != 0 && output["CritChance"] != 0) {
+				lines = append(lines, sFormat("x %.2f ^8(increased/reduced stun duration)", 1+(incDur+incDurCrit*output["CritChance"]/100)/100))
+			}
+			if moreDur != 1 {
+				lines = append(lines, sFormat("x %.2f ^8(more/less stun duration)", moreDur))
+			}
+			if chanceToDouble != 0 {
+				lines = append(lines, sFormat("x %.2f ^8(chance to double stun duration)", 1+chanceToDouble/100))
+			}
+			if incRecov != 0 {
+				lines = append(lines, sFormat("/ %.2f ^8(increased/reduced enemy stun recovery)", 1+incRecov/100))
+			}
+			lines = append(lines, sFormat("= %.2fs", output["EnemyStunDuration"]))
+			if minimumStunDuration != maximumStunDuration {
+				lines = append(lines, sFormat("(minimum: %.2fs, maximum: %.2fs)", minimumStunDuration, maximumStunDuration))
+			}
+			if enemyActionSpeed := actionSpeedMod(actor.Enemy); enemyActionSpeed != 1 {
+				lines = append(lines,
+					sFormat("/ %.2f ^8(enemy action speed)", enemyActionSpeed),
+					sFormat("= %.2fs (note that for effects that care about duration this is ignored)", output["EnemyStunDuration"]/enemyActionSpeed))
+				if minimumStunDuration != maximumStunDuration {
+					lines = append(lines, sFormat("(minimum: %.2fs, maximum: %.2fs)", minimumStunDuration/enemyActionSpeed, maximumStunDuration/enemyActionSpeed))
+				}
+			}
+			breakdown.set("EnemyStunDuration", lines...)
 		}
 
 		// Calculate impale chance and modifiers
@@ -1350,9 +1388,14 @@ func (h *offenceHit) offenceLinkCosts(hasCosts map[string]bool) {
 
 			repeats := outputDefault(output, "Repeats", 1)
 			var useSpeed float64
+			var timeType string
 			cooldown, cooldownOK := output["Cooldown"]
 			switch {
 			case skillFlags["trap"] || skillFlags["mine"]:
+				timeType = "mine laying"
+				if skillFlags["trap"] {
+					timeType = "trap throwing"
+				}
 				preSpeed := outputDefault(output, "TrapThrowingSpeed", output["MineLayingSpeed"])
 				if c, ok := output["TrapCooldown"]; ok {
 					cooldown, cooldownOK = c, true
@@ -1373,15 +1416,28 @@ func (h *offenceHit) offenceLinkCosts(hasCosts map[string]bool) {
 					useSpeed = output["TotemPlacementSpeed"]
 				}
 				useSpeed /= repeats
+				timeType = "totem placement"
 			case skillModList.Flag(nil, "HasSeals") && skillModList.Flag(nil, "DamageSeal") && skillModList.Flag(nil, "UseMaxUnleash"):
 				hitTimeOverride, _ := sdNum(env.Player.MainSkill.SkillData, "hitTimeOverride")
 				useSpeed = hitTimeOverride / repeats
+				timeType = "full unleash"
 			default:
 				if reload, ok := output["EffectiveReloadTime"]; ok { // Crossbows: Account for mana cost only happening on reload (once all bolts are fired)
 					if _, ok := output["EffectiveBoltCount"]; ok {
 						useSpeed = 1 / (output["TotalFiringTime"] + reload)
 					}
+					timeType = "effective reload"
 				} else {
+					switch {
+					case truthy(activeSkill.SkillData["triggered"]):
+						timeType = "trigger"
+					case skillFlags["totem"]:
+						timeType = "totem placement"
+					case skillFlags["attack"]:
+						timeType = "attack"
+					default:
+						timeType = "cast"
+					}
 					if cooldownOK && cooldown > 0 {
 						if output["Speed"] > 0 {
 							useSpeed = output["Speed"]
@@ -1398,6 +1454,14 @@ func (h *offenceHit) offenceLinkCosts(hasCosts map[string]bool) {
 			hasCosts[usedResource+"PerSecond"] = true
 			actor.setOutputFlag(usedResource+"PerSecondHasCost", true)
 			output[usedResource+"PerSecondCost"] += float64(output[resource+"Cost"] * useSpeed)
+
+			if breakdown := actor.Breakdown; breakdown != nil {
+				lines := append([]string(nil), breakdown.Entries[resource+"Cost"].Lines...)
+				lines = append(lines[:len(lines)-1],
+					sFormat("x %.2f ^8("+timeType+" speed)", useSpeed),
+					sFormat("= %.2f per second", output[usedResource+"PerSecondCost"]))
+				breakdown.set(usedResource+"PerSecondCost", lines...)
+			}
 		}
 	}
 }
@@ -1444,19 +1508,70 @@ func (h *offenceHit) offenceCombinedDPS() {
 	}
 	// Parry Stats
 	// NOTE: This section is mainly for skill-specific breakdowns. Actual application of damage modifier is handled in `CalcPerform`
+	breakdown := h.actor.Breakdown
 	parryDebuffMagnitudeMod := calcLibMod(skillModList, skillCfg, "ParryDebuffMagnitude")
 	if _, ok := skillData["parryDebuffBaseMagnitude"]; ok && parryDebuffMagnitudeMod != 1 {
 		output["ParryDebuffMagnitudeMod"] = parryDebuffMagnitudeMod
+		//pob2:block:src/Modules/CalcOffence.lua:6298-6314
+		if breakdown != nil {
+			baseMagnitude, _ := sdNum(skillData, "parryDebuffBaseMagnitude")
+			inc := skillModList.Sum(mod.TypeIncrease, skillCfg, "ParryDebuffMagnitude")
+			more := float64(skillModList.More(skillCfg, "ParryDebuffMagnitude") * calcLibMod(skillModList, skillCfg, "DebuffEffect"))
+			breakdown.set("ParryDebuffMagnitudeMod",
+				"Modifiers to Parry Debuff Magnitude:",
+				"",
+				sFormat("x %.2f ^8(increased magnitude)", 1+inc/100),
+				sFormat("x %.2f ^8(more magnitude)", more+1),
+				sFormat("= %.2f", parryDebuffMagnitudeMod),
+				"",
+				"Resulting Parry Debuff Magnitude:",
+				sFormat("%.2f%% more damage taken ^8(base magnitude)", baseMagnitude),
+				sFormat("x %.2f", parryDebuffMagnitudeMod),
+				sFormat("= %.2f%% more damage taken", baseMagnitude*parryDebuffMagnitudeMod),
+				"^8Note: Only the highest Parry Debuff magnitude will be counted")
+		}
 	}
 	if d, ok := sdNum(skillData, "parryDebuffDuration"); ok && d > 0 {
 		expirationMult := calcBuffExpirationMult(enemyDB, skillCfg)
 		output["ParryDebuffDuration"] = d * calcLibMod(skillModList, skillCfg, "ParryDebuffDuration") * expirationMult
+		//pob2:block:src/Modules/CalcOffence.lua:6320-6331
+		if breakdown != nil {
+			lines := []string{
+				"Duration of parry debuff on enemy:\n",
+				"",
+				sFormat("%.2fs ^8(base duration)", d),
+				sFormat("x %.2f ^8(modifier)", calcLibMod(skillModList, skillCfg, "ParryDebuffDuration")),
+			}
+			if expirationMult != 1 {
+				lines = append(lines, sFormat("x %.2f ^8(buff expiration multiplier)", expirationMult))
+			}
+			breakdown.set("ParryDebuffDuration", append(lines, sFormat("= %.2fs", output["ParryDebuffDuration"]))...)
+		}
 	}
 	nonProj, hasNonProj := sdNum(skillData, "parryRangeNonProj")
 	proj, hasProj := sdNum(skillData, "parryRangeProj")
 	if hasNonProj || hasProj {
 		output["ParryRangeNonProj"] = nonProj * calcLibMod(skillModList, skillCfg, "ParryRangeNonProj")
 		output["ParryRangeProj"] = proj * calcLibMod(skillModList, skillCfg, "ParryRangeProj")
+		//pob2:block:src/Modules/CalcOffence.lua:6336-6355
+		if breakdown != nil {
+			if output["ParryRangeNonProj"] > 0 {
+				breakdown.set("ParryRangeNonProj",
+					"Max Parry distance vs. non-projectiles:",
+					"",
+					sFormat("%.1f m ^8(base parry range for non-projectiles)", nonProj),
+					sFormat("x %.1f ^8(modifier)", calcLibMod(skillModList, skillCfg, "ParryRangeNonProj")),
+					sFormat("= %.1f m", output["ParryRangeNonProj"]))
+			}
+			if output["ParryRangeProj"] > 0 {
+				breakdown.set("ParryRangeProj",
+					"Max Parry distance vs. projectiles:\n",
+					"",
+					sFormat("%.1f m ^8(base parry range for projectiles)", proj),
+					sFormat("x %.1f ^8(modifier)", calcLibMod(skillModList, skillCfg, "ParryRangeProj")),
+					sFormat("= %.1f m", output["ParryRangeProj"]))
+			}
+		}
 	}
 	if skillFlags["impale"] {
 		if skillFlags["attack"] && truthy(skillData["combinesHitsWhenDualWielding"]) && skillFlags["bothWeaponAttack"] {
