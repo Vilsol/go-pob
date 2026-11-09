@@ -449,7 +449,7 @@ class PoB2Worker {
   // the calculation each kept state showed, for a step's stat changes
   private shown = new Map<string, Poe2Calc>();
 
-  boot(wasm: ArrayBuffer, engine: WasmEngine = 'go') {
+  boot(wasm: ArrayBuffer, engine: WasmEngine = 'go', preloadFailed?: (message: string) => void) {
     this.booted ??= useEngine(engine).then(async () => {
       if (engine === 'tinygo') {
         const go = new Go();
@@ -460,7 +460,13 @@ class PoB2Worker {
       config.InitLogging(false);
       await initializeStorage();
       // not awaited, so Open is not held behind it; a load error reaches Open through Calculate, which runs the same loads
-      void exposition.Preload().then(() => console.log('PoE2 game data preloaded'));
+      void exposition
+        .Preload()
+        .then((r) => r.unwrap())
+        .then(
+          () => console.log('PoE2 game data preloaded'),
+          (e: unknown) => preloadFailed?.(e instanceof Error ? e.message : String(e))
+        );
     });
     return this.booted;
   }

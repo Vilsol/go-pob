@@ -15,6 +15,7 @@
   import { currentBuildPath, buildChannel, devMode, markBackendAsLoaded, backendLoaded, engineBoot, poe2Enabled } from '$lib/global.js';
   import { engines, game, lastGame } from '$lib/go/engine';
   import { poe2Worker } from '$lib/go/engine_poe2.svelte';
+  import { dataErrorText, poe2DataError } from '$lib/go/data_error';
   import { setArtResolver } from '$lib/design/item_art';
   import { showTitlebarName, windowTitle } from '$lib/display/window_title';
   import { onTick } from '$lib/calc_state';
@@ -133,11 +134,13 @@
   const failData = (e: Error) => {
     logError(e);
     dataLoading = false;
-    dataError = `${navigator.onLine ? '' : 'This browser is offline and has not kept a copy of it. '}${e.message}`;
+    dataError = dataErrorText(e.message);
   };
 
   async function wasmBytes(path: string): Promise<ArrayBuffer> {
-    const res = await fetch(assets + path);
+    const res = await fetch(assets + path).catch((e: unknown) => {
+      throw new Error(`Failed to load wasm runtime: ${e instanceof Error ? e.message : String(e)} ${path}`);
+    });
     if (!res.ok) {
       throw new Error(`Failed to load wasm runtime: ${res.status} ${path}`);
     }
@@ -242,7 +245,9 @@
             })
             .catch((e: Error) => {
               logError(e);
-              fallBackToGo(`its wasm did not load (${e.message})`);
+              if (fallBackToGo(`its wasm did not load (${e.message})`)) return;
+              loadingMessage = e.message;
+              bootStuck = true;
             });
         })
         .catch(logError);
@@ -299,6 +304,11 @@
 {#if dataError}
   <Notice float kind="error" title="The game data could not be loaded" class="fixed right-2 bottom-2 left-2 ml-auto max-w-160">
     <span class="break-all">{dataError}</span>
+    {#snippet actions()}<Button onclick={() => location.reload()}>Retry</Button>{/snippet}
+  </Notice>
+{:else if $poe2DataError}
+  <Notice float kind="error" title="The PoE2 game data could not be loaded" class="fixed right-2 bottom-2 left-2 ml-auto max-w-160">
+    <span class="break-all">{$poe2DataError}</span>
     {#snippet actions()}<Button onclick={() => location.reload()}>Retry</Button>{/snippet}
   </Notice>
 {/if}

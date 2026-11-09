@@ -6,6 +6,7 @@ import { forwardWorkerLog } from '$lib/app_log';
 import { WASM2_FALLBACK, WASM2_FILE, engineFile } from './wasm_file';
 import { fallBackToGo, runningEngine, watchEngineCrash } from './engine_choice';
 import { DESKTOP } from '$lib/pwa/desktop';
+import { dataErrorText, poe2DataError } from './data_error';
 
 let worker2: Promise<Comlink.Remote<Worker2Type>> | undefined;
 
@@ -55,7 +56,11 @@ export const poe2Worker = () =>
     watchEngineCrash(w);
     const wrap = Comlink.wrap<Worker2Type>(w);
     const data = await wasm2Bytes(engineFile(WASM2_FILE, runningEngine));
-    await wrap.boot(Comlink.transfer(data, [data]), runningEngine);
+    await wrap.boot(
+      Comlink.transfer(data, [data]),
+      runningEngine,
+      Comlink.proxy((message: string) => poe2DataError.set(dataErrorText(message)))
+    );
     return wrap;
   })().catch((err: unknown) => {
     worker2 = undefined;

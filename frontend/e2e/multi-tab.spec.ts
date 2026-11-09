@@ -66,8 +66,16 @@ test('when the writing tab closes, another tab saves in its place', async ({ con
   await setLevel(appB, 42);
   await save(b, 'e2e-handover-second');
 
+  // a stalled open says what the third tab logged, the only trace of a boot that never reaches its first mark
   const c = await context.newPage();
-  const appC = await App.open(c, 'handover: third');
+  const logC: string[] = [];
+  c.on('console', (m) => logC.push(`${m.type()}: ${m.text().slice(0, 300)}`));
+  c.on('pageerror', (e) => logC.push(`pageerror: ${e.message.slice(0, 300)}`));
+  c.on('framenavigated', (f) => f === c.mainFrame() && logC.push(`navigated: ${f.url()}`));
+  c.on('requestfailed', (r) => logC.push(`request failed: ${r.url()} ${r.failure()?.errorText ?? ''}`));
+  const appC = await App.open(c, 'handover: third').catch((e: unknown) => {
+    throw new Error(`${String(e)}\nthe third tab logged:\n${logC.join('\n') || '(nothing)'}`);
+  });
   await toList(c);
   await expect(level(appC, 'e2e-handover-first')).toHaveText('21');
   await expect(level(appC, 'e2e-handover-second')).toHaveText('42');

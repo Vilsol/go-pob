@@ -111,6 +111,7 @@ func (v *TreeVersionData) RawTree() []byte {
 	treeCacheKey := assetcache.CacheKey(treeURL)
 
 	var compressedTree []byte
+	fetched := false
 	if storage.Get().ExistsInCache(treeCacheKey) {
 		var err error
 		compressedTree, err = storage.Get().GetCache(treeCacheKey)
@@ -126,14 +127,15 @@ func (v *TreeVersionData) RawTree() []byte {
 		}
 		defer response.Body.Close()
 
+		if response.StatusCode != http.StatusOK {
+			panic(fmt.Errorf("failed to fetch url: %s: %s", treeURL, response.Status))
+		}
+
 		compressedTree, err = io.ReadAll(response.Body)
 		if err != nil {
 			panic(fmt.Errorf("failed to read response body: %w", err))
 		}
-
-		defer func() {
-			_ = storage.Get().SetCache(treeCacheKey, compressedTree)
-		}()
+		fetched = true
 	}
 
 	unzipStream := brotli.NewReader(bytes.NewReader(compressedTree))
@@ -142,6 +144,9 @@ func (v *TreeVersionData) RawTree() []byte {
 	v.rawTree, err = io.ReadAll(unzipStream)
 	if err != nil {
 		panic(fmt.Errorf("failed to read unzipped data: %w", err))
+	}
+	if fetched {
+		_ = storage.Get().SetCache(treeCacheKey, compressedTree)
 	}
 	v.rawLoaded.Store(true)
 
