@@ -868,6 +868,17 @@ func perform(env *Environment) {
 		env.Minion.OutputMainHand, env.Minion.OutputOffHand = nil, nil
 		initMinionModDB(env, env.Player.MainSkill)
 	}
+	//pob2:block:src/Modules/CalcPerform.lua:1230-1233
+	if env.TalismanModList != nil {
+		// Accounting for "Necromantic Talisman"
+		delete(env.Player.ItemList, "Amulet")
+	}
+	//pob2:block:src/Modules/CalcPerform.lua:1234-1238
+	if modDB.Flag(nil, "AlchemistsGenius") {
+		effectMod := 1 + modDB.Sum(mod.TypeIncrease, nil, "BuffEffectOnSelf")/100
+		modDB.AddMod(newMod("FlaskEffect", mod.TypeIncrease, math.Floor(10*effectMod), "Alchemist's Genius"))
+		modDB.AddMod(newMod("FlaskChargesGained", mod.TypeIncrease, math.Floor(20*effectMod), "Alchemist's Genius"))
+	}
 
 	//pob2:block:src/Modules/CalcPerform.lua:1249-1256
 	if modDB.Flag(nil, "CryWolfMinimumPower") && modDB.Sum(mod.TypeBase, nil, "WarcryPower") < 10 {

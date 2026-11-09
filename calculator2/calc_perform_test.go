@@ -461,3 +461,32 @@ func TestPerformMinionItemSetFixture(t *testing.T) {
 		}
 	}
 }
+
+// The expected values are PoB-PoE2's for the same file, loaded headless: with Necromantic Talisman
+// allocated, the amulet's mods go to the Bone Construct instead of the player, and perform drops the
+// amulet from the player's item list.
+func TestPerformNecromanticTalismanFixture(t *testing.T) {
+	env := offenceFixtureEnv(t, "testdata/necromantic_talisman.xml")
+	testza.AssertNotNil(t, env.TalismanModList)
+	testza.AssertNotNil(t, env.Minion)
+	if _, ok := env.Player.ItemList["Amulet"]; ok {
+		t.Error("player item list keeps the Amulet; PoB-PoE2 drops it")
+	}
+	assertPoE2Outputs(t, env, map[string]float64{"Life": 825, "Str": 15})
+	for stat, want := range map[string]float64{"Life": 835, "Str": 12} {
+		if got := env.Minion.Output[stat]; math.Abs(got-want) > 1e-9 {
+			t.Errorf("minion %s: PoB-PoE2 %v, ours %v", stat, want, got)
+		}
+	}
+}
+
+// The expected values are PoB-PoE2's for the same file, loaded headless: Alchemist's Genius under 33%
+// increased Effect of Buffs on you grants floor(10 * 1.33) increased Flask Effect and floor(20 * 1.33)
+// increased Flask Charges gained.
+func TestPerformAlchemistsGeniusFixture(t *testing.T) {
+	env := offenceFixtureEnv(t, "testdata/alchemists_genius.xml")
+	assertPoE2Outputs(t, env, map[string]float64{"FlaskEffect": 13, "LifeFlaskRecovery": 920, "LifeFlask1MaxCharges": 75})
+	if got := env.ModDB.Sum(mod.TypeIncrease, nil, "FlaskChargesGained"); got != 26 {
+		t.Errorf("FlaskChargesGained INC: PoB-PoE2 26, ours %v", got)
+	}
+}

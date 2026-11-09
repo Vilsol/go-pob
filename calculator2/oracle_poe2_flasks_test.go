@@ -13,6 +13,10 @@ import (
 	"github.com/Vilsol/go-pob/pob2"
 )
 
+const poe2FlasksMatchedFloor = 738931
+
+const poe2FlasksNonzeroFloor = 386369
+
 type poe2FlaskBuild struct {
 	built                bool
 	err                  error
@@ -179,6 +183,16 @@ func TestCorpusPoE2FlasksVsOracle(t *testing.T) {
 
 	if dir := os.Getenv("WORKLIST"); dir != "" {
 		writePoE2FlaskWorklist(t, dir, recs, results, all)
+	}
+	if allMatched < poe2FlasksMatchedFloor {
+		t.Errorf("every-output matched %d, below floor %d — accuracy regressed by %d", allMatched, poe2FlasksMatchedFloor, poe2FlasksMatchedFloor-allMatched)
+	} else if allMatched > poe2FlasksMatchedFloor {
+		fmt.Printf("every-output matched %d is above the floor %d — raise poe2FlasksMatchedFloor\n", allMatched, poe2FlasksMatchedFloor)
+	}
+	if allNzOK < poe2FlasksNonzeroFloor {
+		t.Errorf("every-output nonzero matched %d, below floor %d — accuracy regressed by %d", allNzOK, poe2FlasksNonzeroFloor, poe2FlasksNonzeroFloor-allNzOK)
+	} else if allNzOK > poe2FlasksNonzeroFloor {
+		fmt.Printf("every-output nonzero matched %d is above the floor %d — raise poe2FlasksNonzeroFloor\n", allNzOK, poe2FlasksNonzeroFloor)
 	}
 	if failed > 0 {
 		t.Errorf("%d builds failed to calculate; the denominator moved (first: %s)", failed, firstErr)
