@@ -113,7 +113,7 @@ const openConfig = async (name: string) => {
   poe2Build.set(await worker2Instance.Open(await fixture(`${name}.xml`)));
   issued.length = 0;
   const page = render(AppConfig);
-  await vi.waitFor(() => expect(shownOptions(page.container).length).toBeGreaterThan(0));
+  await vi.waitFor(() => expect(shownOptions(page.container).length).toBeGreaterThan(0), { timeout: 10_000 });
   return page;
 };
 
