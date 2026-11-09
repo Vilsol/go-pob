@@ -2,6 +2,7 @@
   import type { Snippet } from 'svelte';
   import { game } from '$lib/go/engine';
   import { GAME_PAGES } from './game_pages';
+  import PageLoading from '$lib/design/PageLoading.svelte';
 
   let { route, children }: { route: string; children: Snippet } = $props();
 
@@ -12,7 +13,9 @@
 {#if body === 'route'}
   {@render children()}
 {:else if body}
-  {#await body() then page}
+  {#await body()}
+    <PageLoading label="Loading the {GAME_PAGES[route]?.label ?? route} page…" />
+  {:then page}
     <page.default {route} />
   {/await}
 {:else}

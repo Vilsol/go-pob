@@ -38,7 +38,7 @@ globalThis.ResizeObserver ??= class {
 const checkForUpdate = vi.hoisted(() => vi.fn(() => Promise.resolve()));
 vi.mock('$lib/pwa', async (orig) => ({ ...(await orig<typeof import('$lib/pwa')>()), checkForUpdate, startPwa: () => Promise.resolve() }));
 vi.mock('$lib/go/worker', () => ({ syncWrap: null, syncWorker: undefined }));
-vi.mock('$app/navigation', () => ({ goto: vi.fn(() => Promise.resolve()), pushState: vi.fn() }));
+vi.mock('$app/navigation', () => ({ goto: vi.fn(() => Promise.resolve()), pushState: vi.fn(), beforeNavigate: vi.fn() }));
 vi.mock('$app/state', () => ({ page: { state: {}, url: new URL('http://localhost/notes') } }));
 
 const TopBar = (await import('./TopBar.svelte')).default;

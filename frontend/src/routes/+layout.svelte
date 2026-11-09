@@ -31,13 +31,18 @@
   import Toasts from '$lib/design/Toasts.svelte';
   import GameVersionDialog from '$lib/design/GameVersionDialog.svelte';
   import { buildName } from '$lib/shell/build_name.svelte';
-  import { goto } from '$app/navigation';
+  import { beforeNavigate, goto } from '$app/navigation';
   import { importLanding, importParam, openImportLink } from '$lib/shell/link_import';
   import Dialog from '$lib/design/Dialog.svelte';
   import DialogActions from '$lib/design/DialogActions.svelte';
   import { phoneMedia, phonePage } from '$lib/design/mobile/mobile';
   import AppImportModal from '$lib/shell/AppImportModal.svelte';
   import { openImport } from '$lib/shell/import_modal.svelte';
+  import ActivityBar from '$lib/design/ActivityBar.svelte';
+  import ActivityIndicator from '$lib/design/ActivityIndicator.svelte';
+  import { startJob, track } from '$lib/activity/jobs';
+  import { followLongJobs } from '$lib/activity/job_toasts';
+  import { readBody } from '$lib/activity/read_body';
 
   let {
     children
@@ -50,7 +55,8 @@
   const phone = phoneMedia();
   const FRAMES = import.meta.glob<{ mainClass: string }>('./*/frame.ts', { eager: true });
   const MAIN_CLASS = Object.fromEntries(Object.entries(FRAMES).map(([path, m]) => [path.split('/')[1], m.mainClass]));
-  const route = $derived(page.url.pathname.slice(base.length).replace(/^\/+|\/+$/g, ''));
+  const routeOf = (url: URL) => url.pathname.slice(base.length).replace(/^\/+|\/+$/g, '');
+  const route = $derived(routeOf(page.url));
   const LABELS: Record<string, string> = {
     tree: 'Tree',
     skills: 'Skills',
@@ -60,6 +66,18 @@
     notes: 'Notes',
     party: 'Party'
   };
+
+  // a page's code loads before it opens
+  beforeNavigate((nav) => {
+    if (!nav.to || nav.willUnload || nav.to.url.pathname === nav.from?.url.pathname) return;
+    const to = routeOf(nav.to.url);
+    if (!LABELS[to]) return;
+    const job = startJob(`page:${to}`, `Opening ${LABELS[to]}`).phase('Loading the page');
+    nav.complete.then(
+      () => job.end(),
+      () => job.end('cancelled')
+    );
+  });
 
   // Import / Export is a dialog over the page; its old address opens it over the Tree, or over the build list
   $effect(() => {
@@ -111,13 +129,17 @@
   const linkImport = () => {
     const text = linkText;
     if (!text) return;
-    openImportLink(text)
+    track(openImportLink(text), 'import', 'Importing the linked build', { long: true })
       .then(() => goto(importLanding(new URL(location.href), base), { replaceState: true }))
       .catch((e: Error) => {
         logError(e);
         linkError = e.message;
       });
   };
+
+  const boot = browser ? startJob('boot', 'Starting the calculation engine', { long: true }).phase('Starting the worker') : undefined;
+  const dataJob = () => startJob('data', 'Loading game data', { long: true });
+  let dataLoad: ReturnType<typeof dataJob> | undefined;
 
   let wasmLoading = $state(true);
   let dataLoading = $state(false);
@@ -132,19 +154,21 @@
   // without its game data a PoE1 build opens empty, so the reason stays on screen with a retry
   let dataError = $state<string>();
   const failData = (e: Error) => {
+    dataLoad?.end('error', e);
     logError(e);
     dataLoading = false;
     dataError = dataErrorText(e.message);
   };
 
   async function wasmBytes(path: string): Promise<ArrayBuffer> {
+    boot?.phase('Downloading the engine');
     const res = await fetch(assets + path).catch((e: unknown) => {
       throw new Error(`Failed to load wasm runtime: ${e instanceof Error ? e.message : String(e)} ${path}`);
     });
     if (!res.ok) {
       throw new Error(`Failed to load wasm runtime: ${res.status} ${path}`);
     }
-    const data = await res.arrayBuffer();
+    const data = await readBody(res, (done, total) => boot?.progress(done, total, 'bytes'));
     performance.mark('pob:wasm-fetched');
     const head = new Uint8Array(data, 0, Math.min(4, data.byteLength));
     if (head[0] === 0x00 && head[1] === 0x61 && head[2] === 0x73 && head[3] === 0x6d) {
@@ -152,6 +176,7 @@
     }
     if (head[0] === 0x1f && head[1] === 0x8b) {
       loadingMessage = 'Decompressing wasm runtime...';
+      boot?.phase('Decompressing the engine');
       return new Response(new Response(data).body!.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
     }
     const fallback = engineFile(WASM_FALLBACK, runningEngine);
@@ -171,6 +196,7 @@
   };
 
   if (browser) {
+    followLongJobs();
     startPwa().catch(logError);
     const fellBack = takeFallbackNotice();
     if (fellBack) addToast(`Switched back to the Go engine\nThe TinyGo engine stopped: ${fellBack}.`);
@@ -182,6 +208,7 @@
     linkImport();
     if (!syncWrap || syncWrap === null) {
       loadingMessage = 'Failed to initialize worker';
+      boot?.end('error', 'Failed to initialize worker');
     } else {
       const worker = syncWrap;
       setArtResolver(async (queries) => {
@@ -196,10 +223,18 @@
         .then((booted) => {
           clearTimeout(silent);
           if (booted) {
+            boot?.end();
             wasmLoading = false;
+            dataLoad = dataJob();
             syncWrap
-              ?.loadData(proxy(async () => {}))
-              .then(() => get(markBackendAsLoaded)())
+              ?.loadData(
+                // eslint-disable-next-line @typescript-eslint/require-await
+                proxy(async (stage: string) => void dataLoad?.phase(stage))
+              )
+              .then(() => {
+                dataLoad?.end();
+                get(markBackendAsLoaded)();
+              })
               .catch(failData);
             return;
           }
@@ -210,6 +245,7 @@
               console.log('wasm runtime size:', data.byteLength);
 
               loadingMessage = 'Booting...';
+              boot?.phase('Booting the engine');
               const stuck = setTimeout(() => {
                 if (fallBackToGo(`it took over ${BOOT_STUCK_MS / 1000} s to boot`)) return;
                 loadingMessage = 'Booting is taking much longer than it should.';
@@ -224,16 +260,20 @@
                   console.log('worker booted');
                   performance.mark('pob:wasm-booted');
 
+                  boot?.end();
                   wasmLoading = false;
                   dataLoading = true;
+                  dataLoad = dataJob();
                   await syncWrap?.loadData(
                     // eslint-disable-next-line @typescript-eslint/require-await
                     proxy(async (stage: string) => {
                       loadingStage = stage;
+                      dataLoad?.phase(stage);
                     })
                   );
 
                   dataLoading = false;
+                  dataLoad?.end();
                   performance.mark('pob:data-loaded');
 
                   get(markBackendAsLoaded)();
@@ -243,6 +283,7 @@
                   logError(e);
                   if (!wasmLoading) return;
                   clearTimeout(stuck);
+                  boot?.end('error', e);
                   if (fallBackToGo(`it did not boot (${e.message})`)) return;
                   loadingMessage = `Booting failed: ${e.message}`;
                   bootStuck = true;
@@ -250,6 +291,7 @@
             })
             .catch((e: Error) => {
               logError(e);
+              boot?.end('error', e);
               if (fallBackToGo(`its wasm did not load (${e.message})`)) return;
               loadingMessage = e.message;
               bootStuck = true;
@@ -302,10 +344,6 @@
 
 {#if !wasmLoading}<AppImportModal />{/if}
 
-{#if dataLoading}
-  <Notice float class="fixed right-2 bottom-2">Loading game data{loadingStage ? `: ${loadingStage}` : '...'}</Notice>
-{/if}
-
 {#if dataError}
   <Notice float kind="error" title="The game data could not be loaded" class="fixed right-2 bottom-2 left-2 ml-auto max-w-160">
     <span class="break-all">{dataError}</span>
@@ -328,3 +366,5 @@
 <svelte:window onkeydown={updateKey} />
 <PwaStatus />
 <Toasts />
+<ActivityBar />
+{#if !($game && !wasmLoading) || phone.current}<ActivityIndicator floating />{/if}

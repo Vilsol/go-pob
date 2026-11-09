@@ -10,13 +10,39 @@ import type { calculator2 } from '$lib/types2';
 import type { CalcSection2 } from '$lib/calcs/calc_section_types2';
 import type { MainSkillField } from '$lib/shell/main_skill';
 import type { BuildEngine, CalcsTabView, MainGroupView, StatSetControls } from './engine';
+import { startJob } from '$lib/activity/jobs';
 import type { Poe2Calc, Poe2CalcsPage, Poe2Restore, Poe2SkillSelect, Poe2SocketGroup, Worker2Type } from './sync_worker2';
 
 // the PoE2 worker hands back a Poe2Calc; a view without its fields shows what it has
 type Calc = Partial<Poe2Calc> & Poe2View;
 
 let worker2: Promise<typeof import('$lib/go/worker2')> | undefined;
-export const poe2Worker = async () => (await (worker2 ??= import('$lib/go/worker2'))).poe2Worker();
+// the first boot is a job; once booted, a call is not
+let booting: Promise<Remote<Worker2Type>> | undefined;
+let booted = false;
+export const poe2Worker = async () => {
+  if (booted) return (await (worker2 ??= import('$lib/go/worker2'))).poe2Worker();
+  return (booting ??= (() => {
+    const j = startJob('poe2-boot', 'Starting the PoE2 engine', { long: true }).phase('Loading the engine code');
+    return (worker2 ??= import('$lib/go/worker2'))
+      .then((m) => {
+        j.phase('Booting the engine and its game data');
+        return m.poe2Worker();
+      })
+      .then(
+        (w) => {
+          booted = true;
+          j.end();
+          return w;
+        },
+        (err: unknown) => {
+          booting = undefined;
+          j.end('error', err);
+          throw err;
+        }
+      );
+  })());
+};
 
 // an edit in flight, and the last one's error
 export const poe2Busy = writable(false);
@@ -26,12 +52,17 @@ export const poe2Error = writable<string | undefined>();
 export const poe2Run = async <T>(op: (w: Remote<Worker2Type>) => Promise<T>, view: (r: T) => Poe2View | undefined = (r) => r as Poe2View | undefined) => {
   poe2Busy.set(true);
   poe2Error.set(undefined);
+  const job = startJob('calc2', 'Recalculating');
   try {
-    const r = await op(await poe2Worker());
+    const w = await poe2Worker();
+    job.phase('Calculating in the PoE2 engine');
+    const r = await op(w);
     const next = view(r);
     if (next) poe2Edited(next);
+    job.end();
     return r;
   } catch (err) {
+    job.end('error', err);
     poe2Error.set(err instanceof Error ? err.message : String(err));
     return undefined;
   } finally {

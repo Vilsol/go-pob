@@ -49,6 +49,7 @@
   import { colorHighlight, edgeSearchHighlight, hexColour } from '$lib/skill_tree/options';
   import { phoneMedia } from '$lib/design/mobile/mobile';
   import UndoToast from '$lib/design/mobile/UndoToast.svelte';
+  import PageLoading from '$lib/design/PageLoading.svelte';
 
   const POWER_SETTLE_MS = 1000;
   const CLASSES = ['Scion', 'Marauder', 'Ranger', 'Witch', 'Duelist', 'Templar', 'Shadow'];
@@ -1338,6 +1339,8 @@
             cluster={clusterNodes}
             {compareCluster} />
         {/key}
+      {:else}
+        <PageLoading label="Loading the tree…" class="absolute inset-0" />
       {/if}
     </div>
     {#if undoToast}

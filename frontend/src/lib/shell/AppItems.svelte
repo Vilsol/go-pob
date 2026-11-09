@@ -37,6 +37,8 @@
   import { nameUnnamedItem, type CraftApi } from '$lib/design/crafting';
   import BuySimilarDialog from '$lib/design/BuySimilarDialog.svelte';
   import { tradeDefences, type TradeDefence, type TradeItem } from '$lib/design/trade';
+  import PageLoading from '$lib/design/PageLoading.svelte';
+  import { track } from '$lib/activity/jobs';
 
   // ItemsTab.lua:1679-1703
   // ItemSlotControl.lua:33-38
@@ -724,14 +726,21 @@
     const mine = ++dbSeq;
     untrack(() => {
       dbBusy = true;
-      syncWrap
-        ?.GetItemDBRows(kind, filter, sort)
+      const read = syncWrap?.GetItemDBRows(kind, filter, sort);
+      if (!read) return;
+      track(read, 'itemdb', kind === 'UNIQUE' ? 'Loading the uniques' : 'Loading the rare templates')
         .then((rows) => {
           if (mine !== dbSeq) return;
           dbRows = rows;
           dbBusy = false;
         })
-        .catch(logError);
+        .catch((e: Error) => {
+          logError(e);
+          if (mine !== dbSeq) return;
+          dbRows = [];
+          dbBusy = false;
+          dbNote = `The item list could not be loaded: ${e.message}`;
+        });
     });
   });
 
@@ -1118,6 +1127,8 @@
         oncraft={(base: string) => (craftFrom = base)} />
     {/snippet}
   </ItemsPage>
+{:else}
+  <PageLoading label="Loading items…" />
 {/if}
 <BuySimilarDialog
   bind:open={buying}

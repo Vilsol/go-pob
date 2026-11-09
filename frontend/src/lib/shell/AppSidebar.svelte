@@ -9,6 +9,7 @@
   import { logError } from '$lib/utils';
   import type { MainSkillField } from './main_skill';
   import { statPins } from './stat_pins.svelte';
+  import PageLoading from '$lib/design/PageLoading.svelte';
 
   let { fill = false }: { fill?: boolean } = $props();
 
@@ -46,6 +47,8 @@
     onspectres={engine.spectres ? openSpectres : undefined}
     steps={engine.breakdownSteps}
     onbreakdown={() => void goto(`${base}/calcs`)} />
+{:else}
+  <div class={['box-border flex h-full shrink-0 bg-surface-1', fill ? 'w-full' : 'w-80 border-r border-line']}><PageLoading label="Calculating…" /></div>
 {/if}
 {#if engine.spectres}
   <SpectreLibrary bind:open={spectresOpen} {library} {spectres} onsave={(ids: string[]) => engine.spectres?.save(ids)?.catch(logError)} />

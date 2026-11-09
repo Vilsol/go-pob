@@ -10,6 +10,7 @@
   import { loadNotes } from '$lib/notes/load';
   import { countCodes, docToPlain, type DocNode } from '$lib/notes/pob_text';
   import NotesPage from '$lib/design/NotesPage.svelte';
+  import PageLoading from '$lib/design/PageLoading.svelte';
 
   // NotesTab.lua: the open build's notes, whichever game it is
   const engine = currentEngine().notes;
@@ -83,4 +84,6 @@
       ondismissimport={() => (importDismissed = importDismissedFor = loaded?.key)}
       oncopy={copy} />
   {/key}
+{:else if !loaded}
+  <PageLoading label="Loading notes…" />
 {/if}

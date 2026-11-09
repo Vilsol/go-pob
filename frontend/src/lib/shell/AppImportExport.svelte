@@ -34,6 +34,7 @@
   import { newBuild } from './build_list';
   import { compareLoaded, type ImportTab } from './import_modal.svelte';
   import AppImportExportPlanner from './AppImportExportPlanner.svelte';
+  import { startJob, track, type JobHandle } from '$lib/activity/jobs';
 
   // tab: the side the import dialog shows; focus: the code field takes focus (Build.lua:1160-1162); ondone: an
   // import that opened a build or the Compare page
@@ -159,7 +160,8 @@
 
   const importCode = (text: string, how: ImportMode, failed: (err: unknown) => void) => {
     if (how === 'compare') {
-      void (get(game) === 'poe2' ? loadCompare2(text) : syncWrap?.LoadCompareCode(text))
+      const load = get(game) === 'poe2' ? loadCompare2(text) : syncWrap?.LoadCompareCode(text);
+      void (load && track(load, 'compare', 'Loading the comparison', { long: true }))
         ?.then(() => {
           compareLoaded.seq++;
           ondone?.();
@@ -173,8 +175,13 @@
       const kept = opening.modFlag;
       opening.modFlag = true;
       const clear = () => syncWrap?.ClearBuild();
+      const job = startJob('import', 'Importing build', { long: true }).phase('Decoding the code');
       return openPoe2Code(text, clear)
-        .then((opened) => opened || syncWrap?.ImportCode(text).then((foreign) => openForeign(foreign, clear)))
+        .then((opened) => {
+          if (opened) return opened;
+          job.phase('Importing and calculating');
+          return syncWrap?.ImportCode(text).then((foreign) => openForeign(foreign, clear));
+        })
         .then(
           (opened) => {
             ondone?.();
@@ -185,11 +192,19 @@
             resetAccountSession();
             currentBuildPath.current = '';
             unsavedName.imported = true;
+            job.phase('Opening the Tree');
             return goto(`${base}/tree`);
           },
           (err: unknown) => {
             // a refused build leaves the open one as it was
             opening.modFlag = kept;
+            throw err;
+          }
+        )
+        .then(
+          () => job.end(),
+          (err: unknown) => {
+            job.end('error', err);
             throw err;
           }
         )
@@ -210,19 +225,31 @@
     const json = jsonVerdict(text);
     if (json?.game === 'poe2') return void (importError = $poe2Enabled ? POE2_CHARACTER : POE2_CHARACTER_DISABLED);
     if (json?.valid) {
+      // started once the open build's unsaved changes were answered, so a cancel leaves no job behind
+      let job: JobHandle | undefined;
       intoNewBuild(async () => {
+        job = startJob('import', 'Importing the character', { long: true }).phase('Importing items and skills');
         const items = await syncWrap?.ImportItemsAndSkills(text);
         if (!items?.ok) return void (importError = items?.text ?? null);
+        job.phase('Importing the passive tree and jewels');
         const tree = await syncWrap?.ImportPassiveTreeAndJewels(text);
         if (!tree?.ok) return void (importError = tree?.text ?? null);
         imported = `${items.text} ${tree.text}`;
-      }).catch(failed);
+      })
+        .then(
+          () => job?.end(importError === null ? 'ok' : 'error', importError ?? undefined),
+          (err: unknown) => {
+            job?.end('error', err);
+            throw err;
+          }
+        )
+        .catch(failed);
       return;
     }
     const link = downloadUrl(text);
     if (link) {
       fetching = true;
-      downloadBuild(text)
+      track(downloadBuild(text), 'download', 'Downloading the build', { long: true })
         .then((raw) => importCode(raw, how, failed))
         .catch(failed)
         .finally(() => (fetching = false));

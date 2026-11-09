@@ -81,6 +81,7 @@ const INVENTORY: Row[] = [
   { file: `${SH}AppTopBar.svelte`, keys: ['F1'], help: [`${ALL}: F1`] },
   { file: `${D}TopBar.svelte`, keys: ['s', 'i', 'z', 'y'], help: [`${ALL}: Ctrl+S`, `${ALL}: Ctrl+I`, `${ALL}: Ctrl+Z`, `${ALL}: Ctrl+Y or Ctrl+Shift+Z`] },
   { file: `${D}TopBar.svelte`, keys: ['Escape'], help: [`${ALL}: Esc`] },
+  { file: `${D}ActivityPanel.svelte`, keys: ['Escape'], help: [`${ALL}: Esc`] },
   { file: 'frontend/src/routes/+layout.svelte', keys: ['u'], help: [`${ALL}: Ctrl+U`] },
   { file: `${D}NavTabs.svelte`, evidence: /\(\?:Digit\|Numpad\)\(\[0-9\]\)/, help: [`${ALL}: 1 - 8`] },
   { file: `${D}Dialog.svelte`, keys: ['Escape'], help: [`${ALL}: Esc`] },

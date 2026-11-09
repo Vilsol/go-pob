@@ -14,6 +14,7 @@
   import AppPartyExport from './AppPartyExport.svelte';
   import { NOT_A_CODE, importFailure } from '$lib/design/share';
   import type { PartyMemberView, PartyView } from '$lib/go/party_view';
+  import PageLoading from '$lib/design/PageLoading.svelte';
 
   // PartyTab.lua: the open build's party tab, whichever game it is; both workers name their party calls alike
   type PartyApi = {
@@ -218,4 +219,6 @@
     {onremove}
     {onbuffer} />
   {#if poe2}<AppPartyExport />{/if}
+{:else if party.loading}
+  <PageLoading label="Loading the party…" />
 {/if}

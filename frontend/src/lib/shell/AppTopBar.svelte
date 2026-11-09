@@ -33,6 +33,8 @@
   import { statPins } from './stat_pins.svelte';
   import { editDelta } from '$lib/display/stat_delta';
   import { appLog, bugReport, logTime } from '$lib/app_log';
+  import ActivityIndicator from '$lib/design/ActivityIndicator.svelte';
+  import { startJob, track } from '$lib/activity/jobs';
 
   // phone: this bar becomes the phone frame around the page, with the sidebar in its stats sheet
   type Props = { phone?: boolean; label?: string; mainClass?: string; children?: Snippet };
@@ -223,10 +225,15 @@
       return;
     }
     saving = true;
+    const job = startJob('save', `Saving ${name}`).phase('Writing the build');
     engine
       .save(path)
-      .then(saved)
+      .then(() => {
+        job.end();
+        saved();
+      })
       .catch((e: Error) => {
+        job.end('error', e);
         logError(e);
         afterSave = undefined;
         saveError = saveErrorText(path, e);
@@ -310,44 +317,47 @@
     onloadout={chooseLoadout} />
   {#if engine.game === 'poe1'}<TimelessDialog bind:open={timelessOpen} />{/if}
 {:else}
-  <TopBar
-    {name}
-    {tabs}
-    current={page.url.pathname}
-    backHref="{base}/"
-    importHref="{base}/import"
-    {history}
-    undone={undo.undone}
-    historyMax={undo.max}
-    onundo={() => showUndo(engine.undo?.undo())}
-    onredo={() => showUndo(engine.undo?.redo())}
-    onhistory={(i: number) => showUndo(engine.undo?.undoTo(i))}
-    loadouts={loadoutOptions}
-    loadout={loadoutShown}
-    onloadout={chooseLoadout}
-    issues={$showWarnings ? ($sidebar?.warnings ?? []) : []}
-    {logs}
-    oncopylogs={copyLogs}
-    {dirty}
-    onnavigate={(t: { href: string }, e: Event) => {
-      if (e instanceof KeyboardEvent) void goto(t.href);
-    }}
-    onback={(e: MouseEvent) => {
-      e.preventDefault();
-      leave();
-    }}
-    {onsave}
-    onimport={() => openImport()}
-    onsaveas={currentBuildPath.current ? () => (saveAs = true) : undefined}
-    onsettings={() => (settings = true)}
-    onabout={() => {
-      aboutTab = 'about';
-      about = true;
-    }}
-    {version}
-    devMode={$devMode} />
+  <div class="flex w-full min-w-0 shrink-0">
+    <TopBar
+      {name}
+      {tabs}
+      current={page.url.pathname}
+      backHref="{base}/"
+      importHref="{base}/import"
+      {history}
+      undone={undo.undone}
+      historyMax={undo.max}
+      onundo={() => showUndo(engine.undo?.undo())}
+      onredo={() => showUndo(engine.undo?.redo())}
+      onhistory={(i: number) => showUndo(engine.undo?.undoTo(i))}
+      loadouts={loadoutOptions}
+      loadout={loadoutShown}
+      onloadout={chooseLoadout}
+      issues={$showWarnings ? ($sidebar?.warnings ?? []) : []}
+      {logs}
+      oncopylogs={copyLogs}
+      {dirty}
+      onnavigate={(t: { href: string }, e: Event) => {
+        if (e instanceof KeyboardEvent) void goto(t.href);
+      }}
+      onback={(e: MouseEvent) => {
+        e.preventDefault();
+        leave();
+      }}
+      {onsave}
+      onimport={() => openImport()}
+      onsaveas={currentBuildPath.current ? () => (saveAs = true) : undefined}
+      onsettings={() => (settings = true)}
+      onabout={() => {
+        aboutTab = 'about';
+        about = true;
+      }}
+      {version}
+      devMode={$devMode} />
+    <ActivityIndicator class="h-13 border-b border-line bg-surface-1 pr-5 max-wide:pr-3" />
+  </div>
 {/if}
-<SaveAsDialog bind:open={saveAs} onsaved={saved} save={(path: string) => engine.save(path)} />
+<SaveAsDialog bind:open={saveAs} onsaved={saved} save={(path: string) => track(engine.save(path), 'save', `Saving ${buildName(path)}`)} />
 <Dialog phone="centred" bind:open={savePrompt} title="Save Changes" size="sm">
   <div class="flex flex-col gap-3 text-13">
     <p class="m-0">This build has unsaved changes.<br />Do you want to save them now?</p>

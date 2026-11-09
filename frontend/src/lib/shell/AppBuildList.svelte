@@ -24,6 +24,7 @@
   import { BUILD_SORT_KEY, loadBuildSort, saveBuildSort } from '$lib/display/build_sort';
   import { followOtherTabs } from '$lib/storage/tabs';
   import { applyUpdate, checkForUpdate, updateAvailable, updateCheckRunning } from '$lib/pwa';
+  import { startJob } from '$lib/activity/jobs';
 
   let builds = $state<SavedBuild[]>([]);
   let folders = $state<string[]>([]);
@@ -163,18 +164,30 @@
     currentBuildPath.current = path;
     unsavedName.imported = false;
     unsavedName.predefined = undefined;
+    const job = startJob('open', `Opening ${b.name}`).phase('Reading and calculating');
     syncWrap
       .OpenBuild(path)
-      .then((foreign) =>
-        openForeign(foreign, () => syncWrap.ClearBuild()).then(resetAccountSession, (err: Error) => {
-          // a refused build leaves the open one as it was
-          currentBuildPath.current = kept.path;
-          Object.assign(unsavedName, kept.name);
-          opening.modFlag = kept.modFlag;
-          addToast(err.message);
-        })
-      )
-      .catch(logError);
+      .then((foreign) => {
+        if (foreign) job.phase('Opening in the PoE2 engine');
+        return openForeign(foreign, () => syncWrap.ClearBuild()).then(
+          () => {
+            job.end();
+            resetAccountSession();
+          },
+          (err: Error) => {
+            job.end('error', err);
+            // a refused build leaves the open one as it was
+            currentBuildPath.current = kept.path;
+            Object.assign(unsavedName, kept.name);
+            opening.modFlag = kept.modFlag;
+            addToast(err.message);
+          }
+        );
+      })
+      .catch((err: Error) => {
+        job.end('error', err);
+        logError(err);
+      });
   };
 
   // a listed PoE2 build's class is one of the PoE2 tree's, which only the PoE2 worker loads
