@@ -25,7 +25,7 @@ var (
 // poe2BreakdownMatchedFloor is the (build, stat) breakdowns from the Calcs tab calculation that agree with the dumps,
 // and poe2BreakdownExtraCeiling the ones we write that PoB does not, over the whole corpus.
 const (
-	poe2BreakdownMatchedFloor = 1336650
+	poe2BreakdownMatchedFloor = 1336651
 	poe2BreakdownExtraCeiling = 0
 )
 

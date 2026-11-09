@@ -264,7 +264,7 @@ func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSk
 		actualCooldown, _, _, _, _ := calcSkillCooldown(skillModList, skillCfg, skillData)
 		uptime := 1.0
 		if !env.ModDB.Flag(nil, "Condition:WarcryMaxHit") {
-			uptime = math.Min(fullDuration/actualCooldown, 1)
+			uptime = luaMin(fullDuration/actualCooldown, 1)
 		}
 		unscaledEffect := calcLibMod(skillModList, skillCfg, "WarcryEffect", "BuffEffect")
 		output["WarcryEffectMod"] = unscaledEffect * uptime
