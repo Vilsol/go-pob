@@ -10,7 +10,7 @@ import Toasts from './Toasts.svelte';
 import PageLoading from './PageLoading.svelte';
 import { addToast, clearToasts, toasts } from './toast';
 import { SHOW_AFTER_MS, activityPanelOpen, resetJobs, startJob } from '$lib/activity/jobs';
-import { DONE_TOAST_MS, followLongJobs } from '$lib/activity/job_toasts';
+import { followLongJobs } from '$lib/activity/job_toasts';
 import { forgetDurations } from '$lib/activity/durations';
 
 const pageErrors: string[] = [];
@@ -90,7 +90,7 @@ describe('the activity indicator', () => {
 });
 
 describe('progress toasts', () => {
-  it('follow a long job, then say how long it took and go', async () => {
+  it('follow a long job and go the moment it finishes', async () => {
     render(Toasts);
     const stop = followLongJobs();
     const j = startJob('boot', 'Starting the engine', { long: true });
@@ -103,9 +103,7 @@ describe('progress toasts', () => {
     await advance(1700);
     j.end();
     await tick();
-    expect(screen.getByRole('status', { name: 'Starting the engine' }).textContent).toContain('Done in 2.0 s');
-    await advance(DONE_TOAST_MS);
-    expect(get(toasts)).toEqual([]);
+    expect(get(toasts), 'a finished job leaves nothing over the page').toEqual([]);
     stop();
   });
 
@@ -134,7 +132,7 @@ describe('progress toasts', () => {
     const j = startJob('data', 'Loading game data', { long: true });
     await advance(SHOW_AFTER_MS);
     j.end('error', 'offline');
-    await advance(DONE_TOAST_MS * 2);
+    await advance(60_000);
     expect(screen.getByRole('status', { name: 'Loading game data failed' }).textContent).toContain('offline');
     stop();
   });

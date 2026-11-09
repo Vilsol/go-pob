@@ -1,19 +1,17 @@
 import { addToast, removeToast, toastExists, updateToast, type ToastOptions } from '$lib/design/toast';
-import { formatProgress, formatSeconds } from './format';
+import { formatProgress } from './format';
 import { activityPanelOpen, jobs, type Job } from './jobs';
-
-export const DONE_TOAST_MS = 4000;
 
 const text = (j: Job) => {
   if (j.state === 'error') return `${j.label} failed\n${j.error ?? ''}`;
-  if (j.state !== 'running') return `${j.label}\nDone in ${formatSeconds((j.end ?? j.start) - j.start)}`;
   const phase = j.phases.at(-1)?.name;
   const count = j.done !== undefined ? formatProgress(j.done, j.total, j.unit) : '';
   return [j.label, [phase, count].filter(Boolean).join(' · ')].filter(Boolean).join('\n');
 };
 
-// a long job (boot, import, data download) also shows as a toast while it runs, which stays up if it then fails; one
-// that fails before it is drawn says so where it was started; dismissing the toast, or Details, leaves the job in the
+// a long job (boot, import, data download) also shows as a toast while it runs, which goes when it finishes and stays
+// up if it fails, so nothing is left over the page after a success; one that fails before it is drawn says so where it
+// was started; dismissing the toast, or Details, leaves the job in the
 // activity panel alone
 export const followLongJobs = () => {
   const toastOf = new Map<string, string>();
@@ -41,12 +39,11 @@ export const followLongJobs = () => {
                 }
               }
             }
-          : j.state === 'ok'
-            ? { timeout: DONE_TOAST_MS }
-            : {};
+          : {};
       if (id === undefined) {
         if (j.state === 'running') toastOf.set(j.id, addToast(text(j), opts));
-      } else updateToast(id, text(j), opts);
+      } else if (j.state === 'running' || j.state === 'error') updateToast(id, text(j), opts);
+      else removeToast(id);
       if (j.state !== 'running') collapsed.add(j.id);
     }
   });
