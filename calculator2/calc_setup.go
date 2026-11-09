@@ -1,6 +1,7 @@
 package calculator2
 
 import (
+	"maps"
 	"math"
 	"regexp"
 	"sort"
@@ -568,40 +569,186 @@ func overrideAllocNodes(env *Environment, counts *allocatedCounts) map[int]*tree
 	return nodes
 }
 
-// initEnv is calcs.initEnv for a build's player and enemy databases, tree, config and skills.
-//
-//pob2:src/Modules/CalcSetup.lua:842-2604
-func initEnv(env *Environment) {
-	modDB := moddb.NewModDB()
-	modDB.Rules = kernelRules
-	env.ModDB = modDB
+// accelerate is calcs.initEnv's specEnv.accelerate: the blocks an env reused by wipeEnv keeps rather than rebuilds.
+type accelerate struct {
+	nodeAlloc, requirementsItems, requirementsGems, skills, everything bool
+}
+
+// specEnv is calcs.initEnv's specEnv: the base databases a previous call cached, and the env to reuse.
+type specEnv struct {
+	cachedPlayerDB, cachedEnemyDB, cachedMinionDB *moddb.ModDB
+	env                                           *Environment
+	accelerate                                    accelerate
+}
+
+// wipeModStore is wipeTable over a database's mods, conditions and multipliers, keeping the database.
+func wipeModStore(db *moddb.ModDB) {
+	db.Mods = map[string][]mod.Mod{}
+	db.Conditions = map[string]bool{}
+	db.Multipliers = map[string]float64{}
+}
+
+//pob2:src/Modules/CalcSetup.lua:466-541
+func wipeEnv(env *Environment, accelerate accelerate) {
+	// Always wipe the below as we will be pushing in the modifiers,
+	// multipliers and conditions for player and enemy DBs via `parent`
+	// extensions of those DBs later which allow us to do a table-pointer
+	// link and save time on having to do a copyTable() function.
+	wipeModStore(env.ModDB)
+	wipeModStore(env.EnemyDB)
+	if env.Minion != nil {
+		wipeModStore(env.Minion.ModDB)
+	}
+
+	if accelerate.everything {
+		return
+	}
+
+	// Passive tree node allocations
+	// Also in a further pass tracks Legion influenced mods
+	if !accelerate.nodeAlloc {
+		env.AllocNodes = map[int]*tree2.SpecNode{}
+		// Usually states: `Allocates <NAME>` (e.g., amulet anointment)
+		env.GrantedPassives = map[int]bool{}
+		env.grantedSkillsNodes = nil
+	}
+
+	if !accelerate.requirementsItems {
+		// Item-related tables
+		wipeModStore(env.ItemModDB)
+		env.radiusJewelList = nil
+		env.extraRadiusNodeList = nil
+		env.Player.ItemList = map[string]*Item{}
+		env.grantedSkillsItems = nil
+		env.Flasks = map[*Item]bool{}
+		env.Charms = map[*Item]bool{}
+
+		// Special / Unique Items that have their own ModDB()
+		env.TalismanModList = nil
+		env.TheIronMass = nil
+		env.WeaponModList1 = nil
+
+		// Requirements from Items (Str, Dex, Int)
+		env.requirementsTableItems = nil
+	}
+
+	// Requirements from Gems (Str, Dex, Int)
+	if !accelerate.requirementsGems {
+		env.requirementsTableGems = nil
+	}
+
+	if !accelerate.skills {
+		// Player Active Skills generation
+		env.Player.ActiveSkillList = nil
+		env.sourceGemPropertyInfo = nil
+
+		// Enhances Active Skills with skill ModFlags, KeywordFlags
+		// and modifiers that affect skill scaling (e.g., global buffs/effects)
+		env.AuxSkillList = nil
+	}
+}
+
+//pob2:src/Modules/Common.lua:542-561
+func specCopy(env *Environment) (*moddb.ModDB, *moddb.ModDB, *moddb.ModDB) {
+	copyDB := func(src *moddb.ModDB) *moddb.ModDB {
+		db := moddb.NewModDB()
+		db.Rules = kernelRules
+		db.AddDB(src)
+		db.Conditions = maps.Clone(src.Conditions)
+		db.Multipliers = maps.Clone(src.Multipliers)
+		return db
+	}
+	modDB := copyDB(env.ModDB)
 	enemyDB := moddb.NewModDB()
 	enemyDB.Rules = kernelRules
-	env.EnemyDB = enemyDB
-	env.ItemModDB = moddb.NewModDB()
-	env.ItemModDB.Rules = kernelRules
+	if env.EnemyDB != nil {
+		enemyDB = copyDB(env.EnemyDB)
+	}
+	var minionDB *moddb.ModDB
+	if env.Minion != nil {
+		minionDB = copyDB(env.Minion.ModDB)
+	}
+	return modDB, enemyDB, minionDB
+}
 
-	env.EnemyLevel = configEnemyLevel(env)
+// initEnv is calcs.initEnv for a build's player and enemy databases, tree, config and skills.
+func initEnv(env *Environment) {
+	initEnvSpec(env, nil)
+}
 
-	//pob2:block:src/Modules/CalcSetup.lua:877-891
-	env.Player = &Actor{ModDB: modDB, Level: env.Build.Build.Level, ItemList: map[string]*Item{}}
-	modDB.Actor = env.Player
-	env.Enemy = &Actor{ModDB: enemyDB, Level: env.EnemyLevel, ItemList: map[string]*Item{}}
-	enemyDB.Actor = env.Enemy
-	env.Player.Enemy = env.Enemy
-	env.Enemy.Enemy = env.Player
-	env.Enemy.Player = env.Player
-	env.Player.Player = env.Player
+// initEnvSpec is calcs.initEnv with a specEnv: with spec.env set, env is that env, wiped and rebuilt but for the
+// blocks spec.accelerate keeps. It returns the cached base databases, which only a call with a specEnv takes.
+//
+//pob2:src/Modules/CalcSetup.lua:842-2604
+func initEnvSpec(env *Environment, spec *specEnv) (*moddb.ModDB, *moddb.ModDB, *moddb.ModDB) {
+	// accelerator variables
+	var cachedPlayerDB, cachedEnemyDB, cachedMinionDB *moddb.ModDB
+	var accelerate accelerate
+	if spec != nil {
+		cachedPlayerDB, cachedEnemyDB, cachedMinionDB = spec.cachedPlayerDB, spec.cachedEnemyDB, spec.cachedMinionDB
+		accelerate = spec.accelerate
+	}
 
-	env.GrantedPassives = map[int]bool{}
-	env.Flasks = map[*Item]bool{}
-	env.Charms = map[*Item]bool{}
+	var modDB, enemyDB *moddb.ModDB
+	if spec == nil || spec.env == nil {
+		modDB = moddb.NewModDB()
+		modDB.Rules = kernelRules
+		env.ModDB = modDB
+		enemyDB = moddb.NewModDB()
+		enemyDB.Rules = kernelRules
+		env.EnemyDB = enemyDB
+		env.ItemModDB = moddb.NewModDB()
+		env.ItemModDB.Rules = kernelRules
+
+		env.EnemyLevel = configEnemyLevel(env)
+
+		//pob2:block:src/Modules/CalcSetup.lua:877-891
+		env.Player = &Actor{ModDB: modDB, Level: env.Build.Build.Level, ItemList: map[string]*Item{}}
+		modDB.Actor = env.Player
+		env.Enemy = &Actor{ModDB: enemyDB, Level: env.EnemyLevel, ItemList: map[string]*Item{}}
+		enemyDB.Actor = env.Enemy
+		env.Player.Enemy = env.Enemy
+		env.Enemy.Enemy = env.Player
+		env.Enemy.Player = env.Player
+		env.Player.Player = env.Player
+
+		env.GrantedPassives = map[int]bool{}
+		env.Flasks = map[*Item]bool{}
+		env.Charms = map[*Item]bool{}
+	} else {
+		wipeEnv(env, accelerate)
+		modDB = env.ModDB
+		enemyDB = env.EnemyDB
+	}
 
 	//pob2:block:src/Modules/CalcSetup.lua:928-951
 	env.ModeBuffs, env.ModeCombat, env.ModeEffective = true, true, true
 
 	classStats := env.Spec.Tree.Classes[env.ClassID]
 
+	if cachedPlayerDB == nil {
+		initBaseModDBs(env, classStats)
+		// Go must differ: only a caller with a specEnv takes the copy
+		if spec != nil {
+			cachedPlayerDB, cachedEnemyDB, cachedMinionDB = specCopy(env)
+		}
+	} else {
+		//pob2:block:src/Modules/CalcSetup.lua:1040-1046
+		modDB.Parent = cachedPlayerDB
+		enemyDB.Parent = cachedEnemyDB
+		if cachedMinionDB != nil && env.Minion != nil {
+			env.Minion.ModDB.Parent = cachedMinionDB
+		}
+	}
+
+	initEnvRest(env, accelerate)
+	return cachedPlayerDB, cachedEnemyDB, cachedMinionDB
+}
+
+// initBaseModDBs is the player and enemy base, config and party modifiers calcs.initEnv adds, and caches, when no
+// cached database is passed.
+func initBaseModDBs(env *Environment, classStats *tree2.Class) {
+	modDB, enemyDB := env.ModDB, env.EnemyDB
 	//pob2:block:src/Modules/CalcSetup.lua:956-1024
 	modDB.AddMod(newMod("Str", mod.TypeBase, float64(classStats.BaseStr), "Base"))
 	modDB.AddMod(newMod("Dex", mod.TypeBase, float64(classStats.BaseDex), "Base"))
@@ -686,7 +833,11 @@ func initEnv(env *Environment) {
 	buildConfigModList(env, configModList, configEnemyModList)
 	modDB.AddList(configModList)
 	enemyDB.AddList(configEnemyModList)
+}
 
+// initEnvRest is calcs.initEnv from the weapon set on.
+func initEnvRest(env *Environment, accelerate accelerate) {
+	modDB := env.ModDB
 	counts := countAllocated(env.Spec)
 
 	//pob2:block:src/Modules/CalcSetup.lua:1060-1076
@@ -705,7 +856,9 @@ func initEnv(env *Environment) {
 	env.WeaponSetEnvs = nil
 	env.WeaponSetValidationSkillList = nil
 
-	env.AllocNodes = overrideAllocNodes(env, &counts)
+	if !accelerate.nodeAlloc {
+		env.AllocNodes = overrideAllocNodes(env, &counts)
+	}
 
 	nodesModsList := buildModListForNodeList(env, env.AllocNodes, true)
 	canUseBonded := nodesModsList.Flag(nil, "CanUseBonded")
@@ -730,28 +883,32 @@ func initEnv(env *Environment) {
 	}
 	modDB.AddMod(newFlagMod("Condition:WeaponSet"+strconv.Itoa(env.WeaponSet), "Weapon Set"))
 
-	mergeItems(env, nodesModsList, canUseBonded)
+	if !accelerate.requirementsItems {
+		mergeItems(env, nodesModsList, canUseBonded)
+	}
 
 	//pob2:block:src/Modules/CalcSetup.lua:1756-1757
 	mergeDB(env.ModDB, env.ItemModDB)
 
 	//pob2:block:src/Modules/CalcSetup.lua:1759-1768
-	for _, passive := range env.ModDB.List(nil, "GrantedPassive") {
-		var gp tree2.GrantedPassive
-		switch v := passive.(type) {
-		case string:
-			gp = tree2.GrantedPassive{Name: v}
-		case LuaTable:
-			typ, _ := v["type"].(string)
-			count, _ := v["count"].(float64)
-			gp = tree2.GrantedPassive{Table: true, Type: typ, Count: int(count)}
-		default:
-			continue
-		}
-		for _, node := range env.Spec.ResolveGrantedPassiveNodes(gp) {
-			if node != nil && !env.override.RemoveNodeIDs[node.ID] {
-				env.AllocNodes[node.ID] = node
-				env.GrantedPassives[node.ID] = true
+	if !accelerate.nodeAlloc {
+		for _, passive := range env.ModDB.List(nil, "GrantedPassive") {
+			var gp tree2.GrantedPassive
+			switch v := passive.(type) {
+			case string:
+				gp = tree2.GrantedPassive{Name: v}
+			case LuaTable:
+				typ, _ := v["type"].(string)
+				count, _ := v["count"].(float64)
+				gp = tree2.GrantedPassive{Table: true, Type: typ, Count: int(count)}
+			default:
+				continue
+			}
+			for _, node := range env.Spec.ResolveGrantedPassiveNodes(gp) {
+				if node != nil && !env.override.RemoveNodeIDs[node.ID] {
+					env.AllocNodes[node.ID] = node
+					env.GrantedPassives[node.ID] = true
+				}
 			}
 		}
 	}
@@ -761,7 +918,7 @@ func initEnv(env *Environment) {
 
 	addSlotBonusEffects(env, canUseBonded)
 
-	if setupSkills(env) {
+	if setupSkills(env, accelerate) {
 		return
 	}
 	setupGemCounts(env)

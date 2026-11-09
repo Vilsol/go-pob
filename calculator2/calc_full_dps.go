@@ -3,6 +3,8 @@ package calculator2
 import (
 	"math"
 	"slices"
+
+	"github.com/Vilsol/go-pob/moddb"
 )
 
 // SkillDPS is one output.SkillDPS row: a skill's DPS and count, or a best ailment or full DoT total. "" is nil.
@@ -140,6 +142,17 @@ func initFullDPSEnv(main *Environment, mode string, override calcOverride) *Envi
 	return env
 }
 
+// initFullDPSEnvSpec is calcs.initEnv(build, mode, override, specEnv) over the build main calculated; a specEnv
+// that names an env rebuilds that env in place.
+func initFullDPSEnvSpec(main *Environment, mode string, override calcOverride, spec *specEnv) (*Environment, *moddb.ModDB, *moddb.ModDB, *moddb.ModDB) {
+	env := spec.env
+	if env == nil {
+		env = newWeaponSetEnv(main, mode, override)
+	}
+	cachedPlayerDB, cachedEnemyDB, cachedMinionDB := initEnvSpec(env, spec)
+	return env, cachedPlayerDB, cachedEnemyDB, cachedMinionDB
+}
+
 // calcFullDPS runs every skill of a group included in Full DPS as the main skill and sums their DPS. main is the
 // build: its socket group list, items and tree. The per-skill result cache (specEnv.fullDPSCache) and perform's
 // skipEHP are not ported; every skill is calculated, and with its EHP. The mirage branch is dropped, as calcs.mirages
@@ -153,7 +166,8 @@ func calcFullDPS(main *Environment, mode string, override calcOverride) *FullDPS
 	if !usesFullDPS(main) {
 		return fullDPS
 	}
-	fullEnv := initFullDPSEnv(main, mode, override)
+	// Go must differ: the first env caches its own base databases rather than taking the caller's
+	fullEnv, cachedPlayerDB, cachedEnemyDB, cachedMinionDB := initFullDPSEnvSpec(main, mode, override, &specEnv{})
 
 	sources := map[string]string{}
 	initialActiveSkillList := fullEnv.Player.ActiveSkillList
@@ -243,9 +257,16 @@ func calcFullDPS(main *Environment, mode string, override calcOverride) *FullDPS
 			if fullEnv.WeaponSetEnvs != nil || nextSkill.SocketGroup.UsingSkillSet != fullEnv.WeaponSet {
 				// Per-set databases cannot be reused across a set transition, and paired
 				// environments share auxiliary skill objects mutated by perform().
-				fullEnv = initFullDPSEnv(main, mode, getSocketGroupOverride(main, override, nextSkill.SocketGroup))
+				fullEnv, cachedPlayerDB, cachedEnemyDB, cachedMinionDB = initFullDPSEnvSpec(main, mode, getSocketGroupOverride(main, override, nextSkill.SocketGroup), &specEnv{})
 			} else {
-				fullEnv = initFullDPSEnv(main, mode, override)
+				accelerationTbl := accelerate{
+					nodeAlloc:         true,
+					requirementsItems: true,
+					requirementsGems:  true,
+					skills:            true,
+					everything:        true,
+				}
+				fullEnv, _, _, _ = initFullDPSEnvSpec(main, mode, override, &specEnv{cachedPlayerDB: cachedPlayerDB, cachedEnemyDB: cachedEnemyDB, cachedMinionDB: cachedMinionDB, env: fullEnv, accelerate: accelerationTbl})
 			}
 		}
 	}

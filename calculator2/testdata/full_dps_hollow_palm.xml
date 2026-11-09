@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding2>
+	<Build ascendClassName="None" characterLevelAutoMode="false" className="Warrior" level="60" mainSocketGroup="1" targetVersion="0_1" viewMode="TREE">
+	</Build>
+	<Config activeConfigSet="1">
+		<ConfigSet id="1" title="Default">
+			<CustomModifierBlock enabled="true" title="Default"></CustomModifierBlock>
+		</ConfigSet>
+	</Config>
+	<Items activeItemSet="1" useSecondWeaponSet="false">
+		<Item id="1">
+			Rarity: MAGIC
+Hermit Garb of the Fox
+Hermit Garb
+Item Level: 60
+Implicits: 0
++300 to Evasion Rating
++120 to maximum Energy Shield
+		</Item>
+		<ItemSet id="1" title="Default" useSecondWeaponSet="false">
+			<Slot itemId="1" name="Body Armour"/>
+		</ItemSet>
+	</Items>
+	<Skills activeSkillSet="1" defaultGemLevel="normalMaximum" defaultGemQuality="0">
+		<SkillSet id="1">
+			<Skill enabled="true" includeInFullDPS="true" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gems/SkillGemIceStrike" level="10" nameSpec="Ice Strike" quality="0" skillId="IceStrikePlayer" variantId="IceStrike"/>
+			</Skill>
+			<Skill enabled="true" includeInFullDPS="true" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gems/SkillGemFallingThunder" level="10" nameSpec="Falling Thunder" quality="0" skillId="FallingThunderPlayer" variantId="FallingThunder"/>
+			</Skill>
+		</SkillSet>
+	</Skills>
+	<Tree activeSpec="1">
+		<Spec ascendClassId="0" classId="6" masteryEffects="" nodes="10247,14340,16168,18882,21280,23570,25374,26598,26786,27875,28050,28370,28510,29517,30047,32123,32701,38646,41031,41877,45969,47175,49657,54176,54232,54678,55463,58109,60505,63526,64601,65009" secondaryAscendClassId="nil" treeVersion="0_5">
+		</Spec>
+	</Tree>
+</PathOfBuilding2>

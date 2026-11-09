@@ -1,6 +1,7 @@
 package calculator2
 
 import (
+	"maps"
 	"math"
 	"slices"
 	"sort"
@@ -580,7 +581,7 @@ func getCharacterMeleeSkillClass(item *Item) string {
 // skills and the main skill.
 //
 //pob2:block:src/Modules/CalcSetup.lua:1823-2462
-func setupSkills(env *Environment) bool {
+func setupSkills(env *Environment, accelerate accelerate) bool {
 	env.loadData()
 	if env.SocketGroupList == nil {
 		env.SocketGroupList = loadSocketGroups(env)
@@ -589,21 +590,28 @@ func setupSkills(env *Environment) bool {
 		env.fromItemEffects = map[*poe2skills.GrantedEffect]bool{}
 	}
 	build := env.Build
-	modDB := env.ModDB
 	characterLevel := float64(build.Build.Level)
 
 	// Find skills granted by tree nodes
-	for _, id := range sortedNodeIDs(env.AllocNodes) {
-		node := env.AllocNodes[id]
-		for _, skill := range nodeGrantedSkills(env, node) {
-			skill.SourceNode = node
-			env.grantedSkillsNodes = append(env.grantedSkillsNodes, skill)
+	if !accelerate.nodeAlloc {
+		for _, id := range sortedNodeIDs(env.AllocNodes) {
+			node := env.AllocNodes[id]
+			for _, skill := range nodeGrantedSkills(env, node) {
+				skill.SourceNode = node
+				env.grantedSkillsNodes = append(env.grantedSkillsNodes, skill)
+			}
 		}
 	}
 
 	// Merge Granted Skills Tables
 	grantedSkills := append(append([]*grantedSkill{}, env.grantedSkillsNodes...), env.grantedSkillsItems...)
 
+	if accelerate.skills {
+		//pob2:block:src/Modules/CalcSetup.lua:1839
+		resetSkillData(env)
+		setVirtuousMoteSkillCount(env, env.VirtuousMoteSkillCount)
+		return false
+	}
 	virtuousMoteSkillCount := map[string]float64{"Str": 3, "Dex": 3, "Int": 3}
 	virtuousMoteSkillCounted := map[*GemInstance]bool{}
 
@@ -1199,12 +1207,48 @@ func setupSkills(env *Environment) bool {
 		}
 	}
 
-	//pob2:block:src/Modules/CalcSetup.lua:2535-2538
-	env.VirtuousMoteSkillCount = virtuousMoteSkillCount
-	modDB.Multipliers["StrengthMoteSkillCount"] = virtuousMoteSkillCount["Str"]
-	modDB.Multipliers["DexterityMoteSkillCount"] = virtuousMoteSkillCount["Dex"]
-	modDB.Multipliers["IntelligenceMoteSkillCount"] = virtuousMoteSkillCount["Int"]
+	setVirtuousMoteSkillCount(env, virtuousMoteSkillCount)
 	return false
+}
+
+//pob2:block:src/Modules/CalcSetup.lua:2535-2538
+func setVirtuousMoteSkillCount(env *Environment, virtuousMoteSkillCount map[string]float64) {
+	env.VirtuousMoteSkillCount = virtuousMoteSkillCount
+	env.ModDB.Multipliers["StrengthMoteSkillCount"] = virtuousMoteSkillCount["Str"]
+	env.ModDB.Multipliers["DexterityMoteSkillCount"] = virtuousMoteSkillCount["Dex"]
+	env.ModDB.Multipliers["IntelligenceMoteSkillCount"] = virtuousMoteSkillCount["Int"]
+}
+
+// Wipe skillData and readd required data the rest of the data will be added by the rest of code this stops iterative calculations on skillData not being reset
+//
+//pob2:block:src/Modules/CalcSetup.lua:2510-2532
+func resetSkillData(env *Environment) {
+	for _, activeSkill := range env.Player.ActiveSkillList {
+		skillData := maps.Clone(activeSkill.SkillData)
+		activeSkill.SkillData = map[string]any{}
+		for _, list := range [][]any{env.ModDB.List(activeSkill.SkillCfg, "SkillData"), activeSkill.SkillModList.List(activeSkill.SkillCfg, "SkillData")} {
+			for _, v := range list {
+				var sd mod.SkillData
+				switch x := v.(type) {
+				case mod.SkillData:
+					sd = x
+				case *mod.SkillData:
+					sd = *x
+				default:
+					continue
+				}
+				activeSkill.SkillData[sd.Key] = sd.SetValue()
+			}
+		}
+		// These mods were modified with special expressions in buildActiveSkillModList() use old one to avoid more calculations
+		for _, key := range []string{"manaReservationPercent", "cooldown", "storedUses", "CritChance", "attackTime", "attackSpeedMultiplier", "soulPreventionDuration", "totemLevel", "damageEffectiveness"} {
+			if v, ok := skillData[key]; ok {
+				activeSkill.SkillData[key] = v
+			} else {
+				delete(activeSkill.SkillData, key)
+			}
+		}
+	}
 }
 
 // explodeSourceKey is explodeSource.modSource or explodeSource.id: an item's modSource, a node's id.

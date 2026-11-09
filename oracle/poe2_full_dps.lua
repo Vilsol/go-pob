@@ -21,6 +21,8 @@ for _, path in ipairs(paths) do
 	xml = xml:gsub(' includeInFullDPS="[^"]*"', ""):gsub("<Skill ", '<Skill includeInFullDPS="true" ')
 	local rec = { build = path:match("([^/\\]+)$") }
 	local ok, err = pcall(function()
+		-- a build loaded after another one otherwise reads the earlier build's GlobalCache entries
+		wipeGlobalCache()
 		loadBuildFromXML(xml)
 		runCallback("OnFrame")
 		local output = build.calcsTab.mainOutput
