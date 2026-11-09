@@ -658,12 +658,21 @@ trap 'rm -f {{config_root}}/.task-calc-sections2.ts' EXIT
 {% if usage.check %}diff -u "$out" "$gen"{% endif %}
 {% if not usage.check %}{{vars.NICE}} mise x --cd {{usage.pob2_dir}}/src -- luajit {{config_root}}/oracle/poe2_calcs.lua {{config_root}}/wasm2/exposition/testdata/sorceress_spark.xml {{config_root}}/testdata/oracle/poe2_calcs_sorceress_spark.json{% endif %}
 {% if not usage.check %}{{vars.NICE}} mise x --cd {{usage.pob2_dir}}/src -- luajit {{config_root}}/oracle/poe2_calcs.lua {{config_root}}/wasm2/exposition/testdata/warrior_dual_mace.xml {{config_root}}/testdata/oracle/poe2_calcs_warrior_dual_mace.json{% endif %}
+{% if not usage.check %}{{vars.NICE}} mise x --cd {{usage.pob2_dir}}/src -- luajit {{config_root}}/oracle/poe2_calcs.lua \
+  {{config_root}}/wasm2/exposition/testdata/sorceress_three_spells.xml \
+  {{config_root}}/testdata/oracle/poe2_calcs_sorceress_three_spells_arc_unbuffed.json skill_number=2 misc_buffMode=UNBUFFED{% endif %}
+{% if not usage.check %}{{vars.NICE}} mise x --cd {{usage.pob2_dir}}/src -- luajit {{config_root}}/oracle/poe2_calcs.lua \
+  {{config_root}}/wasm2/exposition/testdata/sorceress_three_spells.xml \
+  {{config_root}}/testdata/oracle/poe2_calcs_sorceress_three_spells_fireball_combat.json skill_number=1 mainActiveSkillCalcs=2 misc_buffMode=COMBAT{% endif %}
+{% if not usage.check %}{{vars.NICE}} mise x --cd {{usage.pob2_dir}}/src -- luajit {{config_root}}/oracle/poe2_calcs.lua \
+  {{config_root}}/wasm2/exposition/testdata/warrior_dual_mace.xml \
+  {{config_root}}/testdata/oracle/poe2_calcs_warrior_dual_mace_buffed.json misc_buffMode=BUFFED{% endif %}
 {% if not usage.check %}{{vars.NICE}} mise x --cd {{usage.pob2_dir}}/src -- luajit {{config_root}}/oracle/poe2_pages.lua {{config_root}}/wasm2/exposition/testdata/sorceress_items.xml {{config_root}}/testdata/oracle/poe2_pages_sorceress_items.json{% endif %}
 ''',
 ]
 
 [tasks.compare-power-poe2]
-description = "Record the pinned PoB-PoE2's compare power report for the Compare page's fixture pair"
+description = "Record the pinned PoB-PoE2's compare power report for the Compare page's fixture pair, and its Calcs header's buff and debuff panels"
 usage = '''
 flag "--pob2-dir <dir>" env="POB2_DIR" default="{{vars.POB2_DEFAULT}}"
 '''
@@ -674,6 +683,10 @@ fixtures={{config_root}}/wasm2/exposition/testdata
 {{vars.NICE}} mise x --cd {{usage.pob2_dir}}/src -- luajit {{config_root}}/oracle/poe2_compare_power.lua \
   "$fixtures/compare_power_primary.xml" "$fixtures/compare_power_compared.xml" \
   {{config_root}}/testdata/oracle/poe2_compare_power.json FullDPS TotalEHP Life Mana Speed
+{{vars.NICE}} mise x --cd {{usage.pob2_dir}}/src -- luajit {{config_root}}/oracle/poe2_compare_skill_breakdown.lua \
+  {{config_root}}/calculator2/testdata/skill_buffs.xml {{config_root}}/testdata/oracle/poe2_compare_skill_breakdown_skill_buffs.json
+{{vars.NICE}} mise x --cd {{usage.pob2_dir}}/src -- luajit {{config_root}}/oracle/poe2_compare_skill_breakdown.lua \
+  {{config_root}}/calculator2/testdata/minion_skill_debuffs.xml {{config_root}}/testdata/oracle/poe2_compare_skill_breakdown_minion_skill_debuffs.json
 ''',
 ]
 

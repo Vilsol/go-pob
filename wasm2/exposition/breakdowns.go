@@ -26,8 +26,23 @@ type CalcsBreakdown struct {
 	GearTable CalcsBreakdownTable
 }
 
-// CalcsBreakdowns is every breakdown the last calculation's player holds, by the name a Calcs cell gives.
+// CalcsBreakdowns is every breakdown the Calcs tab's calculation's player holds, by the name a Calcs cell gives.
 func (c *Calculator) CalcsBreakdowns() (map[string]CalcsBreakdown, error) {
+	env, err := c.calcs()
+	if err != nil {
+		return nil, err
+	}
+	views := env.Player.Breakdown.Views()
+	out := make(map[string]CalcsBreakdown, len(views))
+	for name, v := range views {
+		out[name] = calcsBreakdownOf(v)
+	}
+	return out, nil
+}
+
+// SidebarBreakdowns is every breakdown the last main calculation's player holds, which the sidebar's breakdown
+// control reads (Build.lua:533, PoB-PoE2).
+func (c *Calculator) SidebarBreakdowns() (map[string]CalcsBreakdown, error) {
 	if c.env == nil {
 		return nil, notCalculatedError{}
 	}
@@ -37,6 +52,14 @@ func (c *Calculator) CalcsBreakdowns() (map[string]CalcsBreakdown, error) {
 		out[name] = calcsBreakdownOf(v)
 	}
 	return out, nil
+}
+
+// SidebarModSection is the mod table a sidebar breakdown's cell entry shows over the last main calculation's player.
+func (c *Calculator) SidebarModSection(sd calculator2.ModSectionData) ([]calculator2.ModSectionRow, error) {
+	if c.env == nil {
+		return nil, notCalculatedError{}
+	}
+	return c.env.ModSection(sd), nil
 }
 
 func calcsBreakdownOf(v calculator2.BreakdownView) CalcsBreakdown {
@@ -58,21 +81,23 @@ func calcsBreakdownTableOf(t calculator2.BreakdownTable) CalcsBreakdownTable {
 	return CalcsBreakdownTable{Label: t.Label, Footer: t.Footer, Columns: cols, Rows: t.Rows}
 }
 
-// CalcsModSection is the mod table a Calcs cell entry shows over the last calculation's player.
+// CalcsModSection is the mod table a Calcs cell entry shows over the Calcs tab's calculation's player.
 func (c *Calculator) CalcsModSection(sd calculator2.ModSectionData) ([]calculator2.ModSectionRow, error) {
-	if c.env == nil {
-		return nil, notCalculatedError{}
+	env, err := c.calcs()
+	if err != nil {
+		return nil, err
 	}
-	return c.env.ModSection(sd), nil
+	return env.ModSection(sd), nil
 }
 
-// CalcsBreakdownModList is the mod table the Calcs tab's SkillBuffs or SkillDebuffs list shows over the last
+// CalcsBreakdownModList is the mod table the Calcs tab's SkillBuffs or SkillDebuffs list shows over the Calcs tab's
 // calculation's player, or its minion.
 func (c *Calculator) CalcsBreakdownModList(name string, minion bool) ([]calculator2.ModSectionRow, error) {
-	if c.env == nil {
-		return nil, notCalculatedError{}
+	env, err := c.calcs()
+	if err != nil {
+		return nil, err
 	}
-	return c.env.CalcsBreakdownModList(name, minion), nil
+	return env.CalcsBreakdownModList(name, minion), nil
 }
 
 // SidebarBreakdownRef is the breakdown a sidebar stat's line names, and the breakdown whose Calcs cell it shows:

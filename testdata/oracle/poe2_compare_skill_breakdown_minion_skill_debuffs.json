@@ -1,0 +1,24 @@
+{
+  "SkillBuffs":[],
+  "SkillDebuffs":[{
+      "Name":"Multiplier: Predators Mark Limit",
+      "Source":"Skill",
+      "SourceName":"Predator's Mark",
+      "Value":"+60 base"
+    },{
+      "Name":"Blind Effect",
+      "Source":"Skill",
+      "SourceName":"Blind II",
+      "Value":"20% increased"
+    },{
+      "Name":"Blind Effect",
+      "Source":"Skill",
+      "SourceName":"Blind II",
+      "Value":"20% increased"
+    },{
+      "Name":"Blind Effect",
+      "Source":"Skill",
+      "SourceName":"Blind II",
+      "Value":"20% increased"
+    }]
+}

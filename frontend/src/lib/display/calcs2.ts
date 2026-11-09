@@ -129,6 +129,10 @@ export const formatCalcStr2 = (str: string, actor: CalcsActor2, colData?: CalcSe
   return str;
 };
 
+// unpack(sectionData.modName): a table's sequence only, its keys left out as ipairs leaves them
+const modNames2 = (modName: CalcSectionEntry2['modName']): string[] =>
+  modName === undefined ? [] : typeof modName === 'string' ? [modName] : Array.isArray(modName) ? modName : elementsOf<string>(modName);
+
 /* CalcFormat.lua:39-60 (PoB-PoE2): the entries a {p:mod:n} cell combines, for the worker to evaluate */
 export const calcsModProps2 = (sections: CalcSection2[]): Record<string, CalcsModProps2> => {
   const out: Record<string, CalcsModProps2> = {};
@@ -142,7 +146,7 @@ export const calcsModProps2 = (sections: CalcSection2[]): Record<string, CalcsMo
               Cfg: e.cfg ?? '',
               ModSource: e.modSource ?? '',
               Enemy: !!e.enemy,
-              ModName: [e.modName].flat(),
+              ModName: modNames2(e.modName),
               ModType: e.modType,
               Actor: e.actor ?? ''
             };
@@ -155,7 +159,7 @@ export const calcsModProps2 = (sections: CalcSection2[]): Record<string, CalcsMo
 
 /* CalcBreakdownControl.lua:300-325 (PoB-PoE2): what AddModSection reads of an entry */
 export const modSectionData2 = (e: CalcSectionEntry2): CalcModSection['sd'] => ({
-  ModName: [e.modName ?? []].flat(),
+  ModName: modNames2(e.modName),
   Multi: typeof e.modName !== 'string',
   ModType: e.modType ?? '',
   Cfg: e.cfg ?? '',
@@ -165,8 +169,8 @@ export const modSectionData2 = (e: CalcSectionEntry2): CalcModSection['sd'] => (
 });
 
 const modLabel = (e: CalcSectionEntry2) => {
-  const all = [e.modName ?? []].flat();
-  return `${all.slice(0, 3).join(', ')}${all.length > 3 ? ` +${all.length - 3}` : ''} ${e.modType}${e.enemy ? ' (enemy)' : ''}`;
+  const all = modNames2(e.modName);
+  return `${all.slice(0, 3).join(', ')}${all.length > 3 ? ` +${all.length - 3}` : ''}${e.modType ? ` ${e.modType}` : ''}${e.enemy ? ' (enemy)' : ''}`;
 };
 
 /* CalcSectionControl.lua:113-160, 500-600 (PoB-PoE2) */

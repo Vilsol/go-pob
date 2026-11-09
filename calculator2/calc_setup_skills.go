@@ -646,6 +646,10 @@ func setupSkills(env *Environment, accelerate accelerate) bool {
 		if i := build.Build.MainSocketGroup; i >= 1 && i <= len(env.SocketGroupList) {
 			mainGroup = env.SocketGroupList[i-1]
 		}
+		var calcsGroup *SocketGroup
+		if i := readCalcsInputs(build).SkillNumber; i >= 1 && i <= len(env.SocketGroupList) {
+			calcsGroup = env.SocketGroupList[i-1]
+		}
 		mergedGroups := map[*SocketGroup]bool{}
 		legacySupportGroups := map[string][]*SocketGroup{}
 		for _, socketGroup := range env.SocketGroupList {
@@ -869,6 +873,9 @@ func setupSkills(env *Environment, accelerate accelerate) bool {
 			kept = append(kept, socketGroup)
 			if socketGroup == mainGroup {
 				build.Build.MainSocketGroup = len(kept)
+			}
+			if socketGroup == calcsGroup && readCalcsInputs(build).SkillNumber != len(kept) {
+				SetCalcsInputNumber(build, "skill_number", float64(len(kept)))
 			}
 		}
 		env.SocketGroupList = kept

@@ -127,11 +127,10 @@ class Poe2MainGroup implements MainGroupView {
   }
 }
 
-// CalcsTab.lua (PoB-PoE2) over the main calculation: calculator2 runs no CALCS pass, so the tab's skill number and
-// buff mode are the sidebar's. Its mod values are fetched again for every calculation while the page is open, and
-// the last shows meanwhile
+// CalcsTab.lua (PoB-PoE2) over the tab's own calculation (CalcsTab.lua:512-513), fetched again for every calculation
+// while the page is open; the last shows meanwhile
 const calcsTab2 = readable<CalcsTabView | undefined>(undefined, (set) => {
-  const code = Promise.all([import('$lib/display/calcs2'), import('$lib/calcs/calc_sections2')]);
+  const code = Promise.all([import('$lib/display/calcs2'), import('$lib/calcs/calc_sections2'), import('$lib/display/format_stat')]);
   let calc: Calc | undefined;
   let page: Poe2CalcsPage | undefined;
   // a view kept from the last time the page was open belongs to that build
@@ -139,24 +138,28 @@ const calcsTab2 = readable<CalcsTabView | undefined>(undefined, (set) => {
   const show = async () => {
     const at = calc;
     if (!at || !page) return;
-    const [{ calcsView2 }, { calcSections2 }] = await code;
+    const [{ calcsView2 }, { calcSections2 }, { formatNumSep }] = await code;
     if (at !== calc) return;
-    const output: Record<string, unknown> = { ...at.output, ...page.flags, ...page.strings };
+    const output: Record<string, unknown> = { ...page.output, ...page.flags, ...page.strings };
     if (page.mainHand) output.MainHand = page.mainHand;
     if (page.offHand) output.OffHand = page.offHand;
-    const group = mainGroupOf(at);
+    // CalcOffence.lua:4851-4857 (PoB-PoE2): formatNumSep follows the display settings
+    if (page.strings.DisplayDamage) output.DisplayDamage = formatNumSep(page.strings.DisplayDamage);
     set({
       sections: calcsView2(calcSections2, {
         output: output as never,
-        skillFlags: at.skillFlags ?? {},
-        skillData: at.skillData ?? {},
+        skillFlags: page.skillFlags,
+        skillData: page.skillData,
         mods: page.mods,
         breakdowns: page.breakdowns
       }),
       // CalcsTab.lua:177-180 (PoB-PoE2)
       lists: { BuffList: page.strings.BuffList, CombatList: page.strings.CombatList, CurseList: page.strings.CurseList },
+      // Build.lua:2078-2090 (PoB-PoE2): RefreshSkillSelectControls with the "Calcs" suffix
       controls:
-        group && group.skills.length > 0 ? ({ Skills: group.skills, MainActiveSkill: at.mainActiveSkill || 1 } as calculator.MainSkillControls) : undefined
+        page.skills.length > 0
+          ? ({ Skills: page.skills, SkillEnabled: page.skills.length > 1, MainActiveSkill: page.mainActiveSkill } as calculator.MainSkillControls)
+          : undefined
     });
   };
   return poe2Build.subscribe((v) => {
@@ -294,7 +297,22 @@ export const poe2Engine: BuildEngine = {
   tree: () => import('./engine_poe2_tree.svelte').then((m) => m.poe2TreeModel),
   calcs: {
     tab: calcsTab2,
-    setMainSkill: setMainSkill2,
+    // CalcsTab.lua:58-63 (PoB-PoE2)
+    setMainSkill: (field, value) => {
+      if (field === 'MainActiveSkill' && value !== undefined) void poe2Run((w) => w.SetMainActiveSkillCalcs(value));
+    },
+    // CalcsTab.lua:31-33, 43-46, 101-105, 163-168 (PoB-PoE2)
+    inputs: {
+      read: () =>
+        get(poe2Build)
+          ? poe2Worker()
+              .then((w) => w.CalcsInputs())
+              .then((i) => i ?? { skillNumber: 1, buffMode: 'EFFECTIVE', showMinion: false })
+          : undefined,
+      buffMode: (mode) => void poe2Run((w) => w.SetCalcsBuffMode(mode)),
+      showMinion: (show) => void poe2Run((w) => w.SetCalcsShowMinion(show)),
+      skillNumber: (n) => void poe2Run((w) => w.SetCalcsSkillNumber(n))
+    },
     // CalcBreakdownControl.lua:300-548 (PoB-PoE2)
     modrows: (sd) =>
       get(poe2Build) ? poe2Worker().then((w) => w.CalcsModSection(sd as calculator2.ModSectionData) as unknown as calculator.ModSectionRow[]) : undefined,

@@ -33,6 +33,9 @@ import { options2 } from '../display/configurations2';
 
 // only the data cache bucket; on the web it is its own IndexedDB database, since zenfs allocates inode ids per
 // instance and two instances writing the PoE1 worker's database overwrite each other's files
+// CalcsTab.lua:12-17 (PoB-PoE2)
+const CALCS_MODES2: Record<string, string> = { UNBUFFED: 'Unbuffed', BUFFED: 'Buffed', COMBAT: 'In Combat', EFFECTIVE: 'Effective DPS' };
+
 const disk = (bucket: string, key: string) => `/desktop/fs/${bucket}/${encodeURIComponent(key)}`;
 
 // every tab's PoE2 worker shares the database, so one of them writes it, as the PoE1 workers do theirs
@@ -218,13 +221,21 @@ export type Poe2SkillSets = { sets: { id: number; title: string }[]; active: num
 /* GemSelectControl.lua:104-133 (PoB-PoE2): what the gem list's filters and search read */
 export type Poe2Gem = { id: string; name: string; tags: string[]; support: boolean; isLineage: boolean; legacy: boolean; levelReq: number; color: number };
 
-// the Calcs page's {p:mod:n} values by cell entry id, the true and string outputs, and output.MainHand / output.OffHand
+// the Calcs tab's own calculation (CalcsTab.lua:512-513, PoB-PoE2): the page's {p:mod:n} values by cell entry id, the
+// number, true and string outputs, output.MainHand / output.OffHand, the main skill's flags and skill data, the tab's
+// inputs and the shown socket group's active skills
 export type Poe2CalcsPage = {
   mods: Record<string, number>;
+  output: Record<string, number>;
   flags: Record<string, boolean>;
   strings: Record<string, string>;
   mainHand?: Record<string, number>;
   offHand?: Record<string, number>;
+  skillFlags: Record<string, boolean>;
+  skillData: Record<string, boolean>;
+  inputs: { skillNumber: number; buffMode: string; showMinion: boolean };
+  skills: string[];
+  mainActiveSkill: number;
   /* CalcBreakdownControl.lua:147-297 (PoB-PoE2) */
   breakdowns: Record<string, CalcBreakdown>;
 };
@@ -589,6 +600,8 @@ class PoB2Worker {
     await this.booted;
     const calc = exposition.ParseBuild(xml).unwrap();
     if (!calc) throw new Error('the build did not parse');
+    // CompareEntry.lua:181 (PoB-PoE2)
+    calc.SyncCalcsSkillSelection();
     let view: Poe2Calc;
     try {
       view = await this.viewOf(calc);
@@ -665,6 +678,24 @@ class PoB2Worker {
     else if (kind === 'group') c.SetMainSocketGroup(index + 1);
     else c.SetMainActiveSkill(index + 1);
     return this.compareEdited(b);
+  }
+
+  /* CompareTab.lua:620-718 (PoB-PoE2): a Calcs header control of the compared build */
+  async SetCompareCalcsControl(field: 'group' | 'mode' | 'showMinion' | 'MainActiveSkill', value: number | string | boolean): Promise<CompareInfo> {
+    const b = this.compareB;
+    if (!b) return this.GetCompareInfo();
+    const c = b.calc;
+    if (field === 'group') c.SetCalcsSkillNumber(Number(value));
+    else if (field === 'mode') c.SetCalcsBuffMode(String(value));
+    else if (field === 'showMinion') c.SetCalcsShowMinion(!!value);
+    else c.SetMainActiveSkillCalcs(Number(value)).unwrap();
+    return this.compareEdited(b);
+  }
+
+  /* CompareCalcsHelpers.lua:370-409 (PoB-PoE2): a build's SkillBuffs or SkillDebuffs panel in the Calcs header */
+  CompareSkillBreakdown(side: 'a' | 'b', name: string): calculator2.CompareSkillBreakdownRow[] {
+    const calc = side === 'a' ? this.calc : this.compareB?.calc;
+    return calc ? [...(calc.CompareSkillBreakdown(name).unwrap() ?? [])] : [];
   }
 
   /* CompareTab.lua:1180-1224 (PoB-PoE2): one option of the open build takes the compared build's value */
@@ -924,6 +955,37 @@ class PoB2Worker {
     return this.changed('SetMainActiveSkill');
   }
 
+  /* CalcsTab.lua:31-33, 200-217 (PoB-PoE2) */
+  CalcsInputs(): Poe2CalcsPage['inputs'] | undefined {
+    const i = this.calc?.CalcsInputs().unwrap();
+    return i && { skillNumber: i.SkillNumber, buffMode: i.BuffMode, showMinion: i.ShowMinion };
+  }
+
+  /* CalcsTab.lua:43-46 (PoB-PoE2) */
+  async SetCalcsSkillNumber(n: number): Promise<Poe2Calc> {
+    this.calc?.SetCalcsSkillNumber(n);
+    return this.changed('SetCalcsSkillNumber', (v) => `Showed ${v.socketGroups[n - 1]?.label || `socket group ${n}`} in Calcs`);
+  }
+
+  /* CalcsTab.lua:163-168 (PoB-PoE2) */
+  async SetCalcsBuffMode(mode: string): Promise<Poe2Calc> {
+    this.calc?.SetCalcsBuffMode(mode);
+    return this.changed('SetCalcsBuffMode', `Set the Calcs mode to ${CALCS_MODES2[mode] ?? mode}`);
+  }
+
+  /* CalcsTab.lua:101-105 (PoB-PoE2) */
+  async SetCalcsShowMinion(show: boolean): Promise<Poe2Calc> {
+    this.calc?.SetCalcsShowMinion(show);
+    return this.changed('SetCalcsShowMinion', show ? 'Showed minion stats in Calcs' : 'Showed player stats in Calcs');
+  }
+
+  /* CalcsTab.lua:58-63 (PoB-PoE2) */
+  async SetMainActiveSkillCalcs(index: number): Promise<Poe2Calc> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    this.calc.SetMainActiveSkillCalcs(index).unwrap();
+    return this.changed('SetMainActiveSkillCalcs');
+  }
+
   /* Build.lua:209-216 (PoB-PoE2): the level box, which turns the automatic level off */
   async SetLevel(level: number): Promise<Poe2Calc> {
     this.calc?.SetLevel(level);
@@ -1092,10 +1154,16 @@ class PoB2Worker {
     const out = calc.CalcsOutputs().unwrap();
     return {
       mods,
+      output: { ...out?.Output },
       flags: { ...out?.Flags },
       strings: { ...out?.Strings },
       mainHand: out?.MainHand ? { ...out.MainHand } : undefined,
       offHand: out?.OffHand ? { ...out.OffHand } : undefined,
+      skillFlags: { ...out?.SkillFlags },
+      skillData: { ...out?.SkillData },
+      inputs: { skillNumber: out?.Inputs.SkillNumber ?? 1, buffMode: out?.Inputs.BuffMode ?? 'EFFECTIVE', showMinion: out?.Inputs.ShowMinion ?? false },
+      skills: [...(out?.Skills ?? [])],
+      mainActiveSkill: out?.MainActiveSkill ?? 1,
       breakdowns: calcsBreakdowns2(calc.CalcsBreakdowns().unwrap() ?? {})
     };
   }
@@ -1142,14 +1210,14 @@ class PoB2Worker {
   /* CalcBreakdownControl.lua:60-93 (PoB-PoE2): the sections a sidebar breakdown's cells show */
   SidebarBreakdownSections(cells: SidebarCell[]): BreakdownSection[] {
     if (!this.calc) throw new Error('no PoE2 build is open');
-    const bds = calcsBreakdowns2(this.calc.CalcsBreakdowns().unwrap() ?? {});
+    const bds = calcsBreakdowns2(this.calc.SidebarBreakdowns().unwrap() ?? {});
     return cells.flatMap((cell): BreakdownSection[] => {
       if (cell.breakdown !== undefined) {
         const bd = (cell.gearOnly && bds[`${cell.breakdown}#gearOnly`]) || bds[cell.breakdown];
         return bd ? [{ label: cell.label, bd }] : [];
       }
       if (!cell.modName) return [];
-      const rows = this.calc!.CalcsModSection(modSectionData2(cell as CalcSectionEntry2)).unwrap();
+      const rows = this.calc!.SidebarModSection(modSectionData2(cell as CalcSectionEntry2)).unwrap();
       return rows?.length ? [{ label: cell.label, mods: [...rows] as unknown as calculator.ModSectionRow[] }] : [];
     });
   }

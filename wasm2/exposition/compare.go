@@ -188,26 +188,34 @@ func (c *Calculator) CompareEquipItem(from *Calculator, slotName string) (*ItemC
 	return view, nil
 }
 
-// CompareModsEqual is, for each sectionData, whether its mod rows match between this build's last calculation and
-// from's.
+// CompareModsEqual is, for each sectionData, whether its mod rows match between this build's Calcs tab calculation
+// and from's.
 func (c *Calculator) CompareModsEqual(from *Calculator, sds []calculator2.ModSectionData) ([]bool, error) {
 	if from == nil {
 		return nil, errNoCompare
 	}
-	if c.env == nil || from.env == nil {
-		return nil, notCalculatedError{}
+	env, err := c.calcs()
+	if err != nil {
+		return nil, err
+	}
+	fromEnv, err := from.calcs()
+	if err != nil {
+		return nil, err
 	}
 	out := make([]bool, len(sds))
 	for i, sd := range sds {
-		out[i] = calculator2.CompareModRowsMatch(c.env, from.env, sd)
+		out[i] = calculator2.CompareModRowsMatch(env, fromEnv, sd)
 	}
 	return out, nil
 }
 
-// CalcsCompareModRows is the Calcs view tooltip's mod rows for sd over this build's last calculation.
+// CalcsCompareModRows is the Calcs view tooltip's mod rows for sd over this build's Calcs tab calculation.
+//
+//pob2:block:src/Classes/CompareCalcsHelpers.lua:181-188
 func (c *Calculator) CalcsCompareModRows(sd calculator2.ModSectionData) ([]calculator2.CompareModRow, error) {
-	if c.env == nil {
-		return nil, notCalculatedError{}
+	env, err := c.calcs()
+	if err != nil {
+		return nil, err
 	}
-	return c.env.CompareModRows(sd), nil
+	return env.CompareModRows(sd), nil
 }

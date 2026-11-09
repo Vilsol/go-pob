@@ -944,6 +944,10 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 					damageTypeHitMin *= effMult
 					damageTypeHitMax *= effMult
 					damageTypeHitAvg *= effMult
+					//pob2:block:src/Modules/CalcOffence.lua:4392-4394
+					if env.Mode == "CALCS" {
+						output[damageType+"EffMult"] = effMult
+					}
 					//pob2:block:src/Modules/CalcOffence.lua:4395-4402
 					breakdownResist := e.normalHitResist
 					if e.invertChance > 0 {
@@ -997,6 +1001,11 @@ func (h *offenceHit) offenceDamagePass(pass *offencePass, quantityMultiplier flo
 				totalCritMin += damageTypeHitMin
 				totalCritMax += damageTypeHitMax
 			} else {
+				//pob2:block:src/Modules/CalcOffence.lua:4448-4451
+				if env.Mode == "CALCS" {
+					output[damageType+"Min"] = damageTypeHitMin
+					output[damageType+"Max"] = damageTypeHitMax
+				}
 				output[damageType+"HitAverage"] = damageTypeHitAvg
 				totalHitAvg += damageTypeHitAvg
 				totalHitMin += damageTypeHitMin
@@ -1515,6 +1524,21 @@ func (h *offenceHit) offenceCombineDamage() {
 	}
 }
 
+// calcsDisplayDamage is output.DisplayDamage, which formatNumSep leaves to the page.
+//
+//pob2:block:src/Modules/CalcOffence.lua:4851-4857
+func (h *offenceHit) calcsDisplayDamage() {
+	if h.env.Mode != "CALCS" {
+		return
+	}
+	output := h.actor.Output
+	if truthy(h.activeSkill.SkillData["showAverage"]) {
+		h.actor.setOutputString("DisplayDamage", sFormat("%.1f", output["AverageDamage"])+" average damage")
+	} else {
+		h.actor.setOutputString("DisplayDamage", sFormat("%.1f", output["TotalDPS"])+" DPS")
+	}
+}
+
 //pob2:block:src/Modules/CalcOffence.lua:4858-4881
 func (h *offenceHit) totalDPSBreakdown() {
 	output := h.actor.Output
@@ -1617,6 +1641,7 @@ func offenceHitHalf(env *Environment, actor *Actor, activeSkill *ActiveSkill, sk
 		h.offenceDamagePass(pass, state.quantityMultiplier)
 	}
 	h.offenceCombineDamage()
+	h.calcsDisplayDamage()
 	if h.actor.Breakdown != nil {
 		h.totalDPSBreakdown()
 	}

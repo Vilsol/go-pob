@@ -1,0 +1,24 @@
+{
+  "SkillBuffs":[{
+      "Name":"Rage Regen",
+      "Source":"Skill",
+      "SourceName":"Eternal Rage",
+      "Value":"+4.5 base"
+    },{
+      "Name":"Fire Resist",
+      "Source":"Skill",
+      "SourceName":"Purity of Fire",
+      "Value":"+39 base"
+    },{
+      "Name":"Condition: Can Gain Rage",
+      "Source":"Skill",
+      "SourceName":"Eternal Rage",
+      "Value":"True"
+    }],
+  "SkillDebuffs":[{
+      "Name":"Elemental Resist",
+      "Source":"Skill",
+      "SourceName":"Elemental Weakness",
+      "Value":"-31 base"
+    }]
+}

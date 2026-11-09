@@ -722,7 +722,20 @@ func initEnvSpec(env *Environment, spec *specEnv) (*moddb.ModDB, *moddb.ModDB, *
 	}
 
 	//pob2:block:src/Modules/CalcSetup.lua:928-951
-	env.ModeBuffs, env.ModeCombat, env.ModeEffective = true, true, true
+	buffMode := "EFFECTIVE"
+	if env.Mode == "CALCS" {
+		buffMode = readCalcsInputs(env.Build).BuffMode
+	}
+	switch buffMode {
+	case "EFFECTIVE":
+		env.ModeBuffs, env.ModeCombat, env.ModeEffective = true, true, true
+	case "COMBAT":
+		env.ModeBuffs, env.ModeCombat, env.ModeEffective = true, true, false
+	case "BUFFED":
+		env.ModeBuffs, env.ModeCombat, env.ModeEffective = true, false, false
+	default:
+		env.ModeBuffs, env.ModeCombat, env.ModeEffective = false, false, false
+	}
 
 	classStats := env.Spec.Tree.Classes[env.ClassID]
 
@@ -844,7 +857,16 @@ func initEnvRest(env *Environment, accelerate accelerate) {
 	counts := countAllocated(env.Spec)
 
 	//pob2:block:src/Modules/CalcSetup.lua:1060-1076
-	if env.override.MainSocketGroup != 0 {
+	if env.Mode == "CALCS" {
+		mainSocketGroup := env.override.MainSocketGroup
+		if mainSocketGroup == 0 {
+			mainSocketGroup = readCalcsInputs(env.Build).SkillNumber
+		}
+		env.MainSocketGroup = min(max(len(env.SocketGroupList), 1), mainSocketGroup)
+		if env.override.MainSocketGroup == 0 && mainSocketGroup != env.MainSocketGroup {
+			SetCalcsInputNumber(env.Build, "skill_number", float64(env.MainSocketGroup))
+		}
+	} else if env.override.MainSocketGroup != 0 {
 		// The other weapon set's context runs on the socket group list the main pass left.
 		env.MainSocketGroup = min(max(len(env.SocketGroupList), 1), env.override.MainSocketGroup)
 	} else {

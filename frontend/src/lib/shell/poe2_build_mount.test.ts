@@ -516,12 +516,12 @@ describe('the PoE2 Calcs page', () => {
         extras: Record<string, string>;
         enabled: Record<string, boolean>;
       };
-      const calc = await worker2Instance.Open(await fixture(`${name}.xml`));
+      await worker2Instance.Open(await fixture(`${name}.xml`));
       const page = worker2Instance.CalcsPage();
-      const output: Record<string, unknown> = { ...calc.output, ...page.flags, ...page.strings };
+      const output: Record<string, unknown> = { ...page.output, ...page.flags, ...page.strings };
       if (page.mainHand) output.MainHand = page.mainHand;
       if (page.offHand) output.OffHand = page.offHand;
-      const actor = { output: output as never, skillFlags: calc.skillFlags, skillData: calc.skillData, mods: page.mods };
+      const actor = { output: output as never, skillFlags: page.skillFlags, skillData: page.skillData, mods: page.mods };
       const cells: Record<string, string> = {};
       const extras: Record<string, string> = {};
       const enabled: Record<string, boolean> = {};
@@ -563,31 +563,50 @@ describe('the PoE2 Calcs page', () => {
     // Bleed:0:6:0 and Bleed:0:7:0
     await vi.waitFor(() => expect(row('MH Source Physical')?.textContent).toContain('7 to 12'));
     expect(row('OH Source Physical')?.textContent).toContain('8 to 13');
-    expect(issued).toEqual(['CalcsPage()']);
+    expect(issued.toSorted()).toEqual(['CalcsInputs()', 'CalcsPage()']);
   }, 120_000);
 
-  // CalcsTab.lua (PoB-PoE2) has no calculation of its own: its socket group and active skill are the sidebar's
-  it("picks the main group and active skill the sidebar's way, without PoE1's calculation mode", async () => {
-    poe2Build.set(await worker2Instance.Open(await fixture('sorceress_three_spells.xml')));
+  // CalcsTab.lua:41-177, 512-513 (PoB-PoE2): the tab calculates its own socket group, active skill and mode, and the
+  // sidebar's stay; the values are PoB-PoE2's (oracle/poe2_calcs.lua with the same inputs)
+  it('picks its own socket group, active skill and calculation mode, apart from the sidebar', async () => {
+    const want = async (name: string) =>
+      (JSON.parse(await readFile(resolve(ORACLE, `poe2_calcs_${name}.json`), 'utf8')) as { output: Record<string, number> }).output;
+    const sidebar = await worker2Instance.Open(await fixture('sorceress_three_spells.xml'));
+    poe2Build.set(sidebar);
     issued.length = 0;
     const page = render(AppCalcs);
     await vi.waitFor(() => within(page.getByRole('region', { name: 'Calculations' })).getByRole('region', { name: 'Life' }), { timeout: 60_000 });
     const group = within(page.container).getByRole<HTMLSelectElement>('combobox', { name: 'Socket Group' });
     const skill = within(page.container).getByRole<HTMLSelectElement>('combobox', { name: 'Active Skill' });
+    const mode = within(page.container).getByRole<HTMLSelectElement>('combobox', { name: 'Calculation Mode' });
     expect([...group.options].map((o) => o.text)).toEqual(['Spark, Fireball', 'Arc']);
     expect([...skill.options].map((o) => o.text)).toEqual(['Spark', 'Fireball']);
-    expect(page.queryByRole('combobox', { name: 'Calculation Mode' })).toBeNull();
     expect(page.queryByRole('button', { name: 'Mod Debug' })).toBeNull();
 
+    // Fireball in combat
     skill.value = '2';
     await fireEvent.change(skill);
-    await vi.waitFor(() => expect(get(poe2Build)?.output.TotalDPS).toBe(32.76875));
+    mode.value = 'In Combat';
+    await fireEvent.change(mode);
+    const combat = await want('sorceress_three_spells_fireball_combat');
+    await vi.waitFor(() => expect(worker2Instance.CalcsPage().output.TotalDPS).toBe(combat.TotalDPS));
+    expect((get(poe2Build) as Poe2Calc | undefined)?.output.TotalDPS).toBe(sidebar.output.TotalDPS);
+
+    // Arc, unbuffed
     group.value = '1';
     await fireEvent.change(group);
-    await vi.waitFor(() => expect((get(poe2Build) as Poe2Calc | undefined)?.mainSocketGroup).toBe(2));
-    await vi.waitFor(() => expect(group.value).toBe('1'));
-    expect(issued.filter((c) => c !== 'CalcsPage()')).toEqual(['SetMainActiveSkill(2)', 'SetMainSocketGroup(2)']);
-    await vi.waitFor(() => expect(issued.filter((c) => c === 'CalcsPage()')).toHaveLength(3));
+    mode.value = 'Unbuffed';
+    await fireEvent.change(mode);
+    const unbuffed = await want('sorceress_three_spells_arc_unbuffed');
+    await vi.waitFor(() => expect(worker2Instance.CalcsPage().output.TotalDPS).toBe(unbuffed.TotalDPS));
+    await vi.waitFor(() => expect([...skill.options].map((o) => o.text)).toEqual(['Arc']));
+    expect((get(poe2Build) as Poe2Calc | undefined)?.mainSocketGroup).toBe(1);
+    expect(issued.filter((c) => c.startsWith('Set'))).toEqual([
+      'SetMainActiveSkillCalcs(2)',
+      'SetCalcsBuffMode("COMBAT")',
+      'SetCalcsSkillNumber(2)',
+      'SetCalcsBuffMode("UNBUFFED")'
+    ]);
   }, 120_000);
 
   it("shows PoB-PoE2's Life section cells and recalculates with the build", async () => {
@@ -607,12 +626,12 @@ describe('the PoE2 Calcs page', () => {
     expect(shown.length).toBeGreaterThan(5);
     expect(shown).toEqual(want);
     expect(cells(row('Base from Gear'))).toEqual(['90']);
-    expect(issued).toEqual(['CalcsPage()']);
+    expect(issued.toSorted()).toEqual(['CalcsInputs()', 'CalcsPage()']);
 
     // the mod cells follow a recalculation
     const set = await worker2Instance.SetConfigOption('resistancePenalty', 0);
     poe2Build.set(set);
-    await vi.waitFor(() => expect(issued).toEqual(['CalcsPage()', 'CalcsPage()']));
+    await vi.waitFor(() => expect(issued.filter((c) => c === 'CalcsPage()')).toEqual(['CalcsPage()', 'CalcsPage()']));
     const resists = within(page.getByRole('region', { name: 'Calculations' })).getByRole('region', { name: 'Resists' });
     await vi.waitFor(() => expect(resists.textContent).toContain('45%'));
     await worker2Instance.SetConfigOption('resistancePenalty', -60);

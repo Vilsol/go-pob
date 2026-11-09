@@ -51,7 +51,7 @@ func TestOutputFlagsVsPoBPoE2Sidebar(t *testing.T) {
 }
 
 // TestOutputStringsVsPoBPoE2Calcs compares the string outputs with the ones PoB-PoE2's Calcs tab oracle
-// recorded over the same builds' main calculation, and checks no string key is also a number.
+// recorded over the same builds' CALCS calculation, and checks no string key is also a number.
 func TestOutputStringsVsPoBPoE2Calcs(t *testing.T) {
 	for _, name := range []string{"sorceress_spark", "warrior_dual_mace"} {
 		raw, err := os.ReadFile(filepath.Join("..", "testdata", "oracle", "poe2_calcs_"+name+".json"))
@@ -74,8 +74,9 @@ func TestOutputStringsVsPoBPoE2Calcs(t *testing.T) {
 		build, err := pob2.ParseBuild(xml)
 		testza.AssertNoError(t, err)
 		tree := loadTestTree(t)
-		env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+		mainEnv, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
 		testza.AssertNoError(t, err)
+		env := BuildCalcsOutput(mainEnv, BuildOutputUsed(mainEnv))
 		got := map[string]string{}
 		for k, v := range env.Player.OutputStrings {
 			got[k] = v

@@ -23,6 +23,11 @@ export type Result<T> = (
   unwrapOr(fallback: T): T;
 };
 export declare namespace calculator2 {
+  interface CalcsInputs {
+    readonly SkillNumber: number;
+    readonly BuffMode: string;
+    readonly ShowMinion: boolean;
+  }
   interface CompareModRow {
     readonly Key: string;
     readonly Value: number;
@@ -55,6 +60,12 @@ export declare namespace calculator2 {
     readonly Rarity: string;
     readonly PathDist: number;
     readonly Impact?: Array<number>;
+  }
+  interface CompareSkillBreakdownRow {
+    readonly Value: string;
+    readonly Name: string;
+    readonly Source: string;
+    readonly SourceName: string;
   }
   interface ConfigRelevance {
     readonly Conds?: Array<string>;
@@ -244,10 +255,16 @@ export declare namespace exposition {
     readonly Entries?: Record<string, Readonly<exposition.CalcsModEntry>>;
   }
   interface CalcsOutputs {
+    readonly Output?: Record<string, number>;
     readonly Flags?: Record<string, boolean>;
     readonly Strings?: Record<string, string>;
     readonly MainHand?: Record<string, number>;
     readonly OffHand?: Record<string, number>;
+    readonly SkillFlags?: Record<string, boolean>;
+    readonly SkillData?: Record<string, boolean>;
+    readonly Inputs: calculator2.CalcsInputs;
+    readonly Skills?: Array<string>;
+    readonly MainActiveSkill: number;
   }
   interface Calculator {
     AddDBItem(kind: string, name: string, equip: boolean, second: boolean): Result<number>;
@@ -262,6 +279,7 @@ export declare namespace exposition {
     CalcsBreakdownModList(name: string, minion: boolean): Result<(Array<calculator2.ModSectionRow> | undefined)>;
     CalcsBreakdowns(): Result<(Record<string, Readonly<exposition.CalcsBreakdown>> | undefined)>;
     CalcsCompareModRows(sd: calculator2.ModSectionData): Result<(Array<calculator2.CompareModRow> | undefined)>;
+    CalcsInputs(): Result<calculator2.CalcsInputs>;
     CalcsModSection(sd: calculator2.ModSectionData): Result<(Array<calculator2.ModSectionRow> | undefined)>;
     CalcsMods(query: exposition.CalcsModQuery): Result<(Record<string, number> | undefined)>;
     CalcsOutputs(): Result<(exposition.CalcsOutputs | undefined)>;
@@ -276,6 +294,7 @@ export declare namespace exposition {
     CompareItemCards(from: exposition.Calculator | undefined, slotName: string): Result<(exposition.CompareItemCardsView | undefined)>;
     CompareItems(from: exposition.Calculator | undefined): Result<(exposition.CompareItemsView | undefined)>;
     CompareModsEqual(from: exposition.Calculator | undefined, sds: Array<calculator2.ModSectionData> | undefined): Result<(Array<boolean> | undefined)>;
+    CompareSkillBreakdown(name: string): Result<(Array<calculator2.CompareSkillBreakdownRow> | undefined)>;
     ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;
     ConfigSets(): exposition.ConfigSetsView;
     CopyCompareItem(from: exposition.Calculator | undefined, slotName: string, andUse: boolean): Result<boolean>;
@@ -356,6 +375,9 @@ export declare namespace exposition {
     SetActiveItemSet(id: number): Result<void>;
     SetActiveSkillSet(id: number): Result<void>;
     SetActiveTreeSpec(specID: number): void;
+    SetCalcsBuffMode(mode: string): void;
+    SetCalcsShowMinion(show: boolean): void;
+    SetCalcsSkillNumber(n: number): void;
     SetCharacterLevelAutoMode(auto: boolean): void;
     SetCharacterRune(slot: string, runeName: string): Result<void>;
     SetConfigInput(name: string, value: calculator2.ConfigValue, isDefault: boolean): void;
@@ -374,6 +396,7 @@ export declare namespace exposition {
     SetGemQuality(group: number, gem: number, quality: number): Result<void>;
     SetLevel(level: number): void;
     SetMainActiveSkill(index: number): void;
+    SetMainActiveSkillCalcs(index: number): Result<void>;
     SetMainSocketGroup(index: number): void;
     SetPartyBuffer(name: string, text: string): void;
     SetPartyMemberActive(i: number, active: boolean): void;
@@ -389,11 +412,14 @@ export declare namespace exposition {
     SetTreeNodeNote(nodeID: number, text: string): void;
     SetUseSecondWeaponSet(second: boolean): Result<void>;
     SidebarBreakdownKey(stat: string, childStat: string, breakdown: string, hasBreakdown: boolean, modNames: boolean): Result<exposition.SidebarBreakdownRef>;
+    SidebarBreakdowns(): Result<(Record<string, Readonly<exposition.CalcsBreakdown>> | undefined)>;
+    SidebarModSection(sd: calculator2.ModSectionData): Result<(Array<calculator2.ModSectionRow> | undefined)>;
     SkillGroups(): Result<(Array<exposition.SkillGroupView> | undefined)>;
     SkillSets(): exposition.SkillSetsView;
     SkillsUndo(redo: boolean): Result<boolean>;
     StartNodePower(stat: string, maxDepth: number): Promise<Result<(exposition.PowerProgress | undefined)>>;
     StepNodePower(n: number): Promise<Result<(exposition.PowerProgress | undefined)>>;
+    SyncCalcsSkillSelection(): void;
     TraceNode(trace: Array<number> | undefined, id: number): Result<(exposition.TraceView | undefined)>;
     TreeNodeNote(nodeID: number): string;
     TreeSpecAlloc(specID: number): Result<(Array<number> | undefined)>;

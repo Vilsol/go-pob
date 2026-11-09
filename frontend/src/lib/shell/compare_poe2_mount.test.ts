@@ -275,6 +275,46 @@ describe('the PoE2 Compare page', () => {
     expect(await rowCount(false)).toBeGreaterThan(await rowCount(true));
   });
 
+  // CompareTab.lua:490-718 (PoB-PoE2): each side's Calcs header sets that build's own Calcs tab inputs; the values are
+  // PoB-PoE2's CALCS calculation with the same inputs (oracle/poe2_calcs.lua)
+  it("sets each build's Calcs socket group, active skill and mode from the Calcs header", async () => {
+    const want = async (name: string) =>
+      (JSON.parse(await readFile(resolve(ORACLE, `poe2_calcs_${name}.json`), 'utf8')) as { output: Record<string, number> }).output;
+    const page = await open('sorceress_three_spells.xml');
+    await compareCode(page, encode(await fixture('warrior_dual_mace.xml')));
+    await page.findByRole('region', { name: 'Stat comparison' }, { timeout: 30_000 });
+    await fireEvent.click(page.getByRole('tab', { name: 'Calcs' }));
+    const header = await page.findByRole('group', { name: 'Calcs skill controls' }, { timeout: 10_000 });
+    const side = (i: number) => within(within(header).getAllByRole('group')[i]);
+    expect(side(0).getByRole<HTMLSelectElement>('combobox', { name: 'Socket Group' }).options.length).toBe(2);
+    expect([...side(0).getByRole<HTMLSelectElement>('combobox', { name: 'Active Skill' }).options].map((o) => o.text)).toEqual(['Spark', 'Fireball']);
+    expect([...side(1).getByRole<HTMLSelectElement>('combobox', { name: 'Active Skill' }).options].map((o) => o.text)).toEqual(['Boneshatter']);
+
+    const skill = side(0).getByRole<HTMLSelectElement>('combobox', { name: 'Active Skill' });
+    skill.value = '1';
+    await fireEvent.change(skill);
+    await waitFor(() => expect(issued).toContain('SetMainActiveSkillCalcs'));
+    const modeA = side(0).getByRole<HTMLSelectElement>('combobox', { name: 'Calc Mode' });
+    modeA.value = 'COMBAT';
+    await fireEvent.change(modeA);
+    const combat = await want('sorceress_three_spells_fireball_combat');
+    await waitFor(() => expect(worker2Instance.CompareCalcsPages()?.a.output.TotalDPS).toBe(combat.TotalDPS), { timeout: 10_000 });
+
+    const modeB = side(1).getByRole<HTMLSelectElement>('combobox', { name: 'Calc Mode' });
+    modeB.value = 'BUFFED';
+    await fireEvent.change(modeB);
+    const buffed = await want('warrior_dual_mace_buffed');
+    await waitFor(() => expect(worker2Instance.CompareCalcsPages()?.b.output.TotalDPS).toBe(buffed.TotalDPS), { timeout: 10_000 });
+    await waitFor(() => expect(side(1).getByRole<HTMLSelectElement>('combobox', { name: 'Calc Mode' }).value).toBe('BUFFED'));
+    // the open build's sidebar keeps its own main skill and mode
+    expect(view()?.output.TotalDPS).toBeCloseTo((await oracle('sorceress_three_spells')).output.TotalDPS, 8);
+    expect(issued.filter((c) => c.startsWith('SetCompareCalcs') || c.startsWith('SetCalcs') || c.startsWith('SetMainActiveSkillCalcs'))).toEqual([
+      'SetMainActiveSkillCalcs',
+      'SetCalcsBuffMode',
+      'SetCompareCalcsControl'
+    ]);
+  });
+
   // CompareTab.lua (PoB-PoE2) is created with each build: its view lasts while the build stays open
   it('keeps the view across an edit and starts afresh with another build', async () => {
     const page = await open('sorceress_spark.xml');
@@ -373,6 +413,17 @@ describe('the PoE2 Compare page', () => {
     const tip = document.getElementById('compare-item-tip')!.textContent!;
     expect(tip).toContain('7% increased Cast Speed');
     expect(tip).not.toContain('^x');
+
+    // CompareTab.lua:3827-3842 (PoB-PoE2): the socket's label shows the open build's tree around it
+    await fireEvent.mouseEnter(within(rowOf('Socket')!).getByRole('button', { name: 'Socket' }));
+    const around = await page.findByRole('img', { name: 'Passive tree around Socket' });
+    const socketNode = String(worker2Instance.CompareItemRows()!.jewels.find((j) => j.label === 'Socket')!.node);
+    expect(around.querySelector(`circle[data-node="${socketNode}"]`)?.getAttribute('r')).toBe('5');
+    const drawn = [...around.querySelectorAll<SVGCircleElement>('circle[data-node]')];
+    expect(drawn.length).toBeGreaterThan(5);
+    const alloc = new Set(view()!.tree.alloc.map(String));
+    expect(drawn.filter((c) => c.dataset.alloc).map((c) => c.dataset.node)).toEqual(drawn.map((c) => c.dataset.node).filter((id) => alloc.has(id!)));
+    expect(around.querySelectorAll('path[data-edge]').length).toBeGreaterThan(3);
 
     // CompareTab.lua:3494-3659 (PoB-PoE2): the expanded mode shows each side's lines, B's ring's mods marked as B's only
     const { pobPlain } = await import('$lib/design/pob_text');

@@ -519,8 +519,6 @@ func BuildOutputUsed(env *Environment) *UsedTables {
 			}
 		}
 	}
-	// Go must differ: there is no CALCS pass, so the Calcs tab's lists are the main env's
-	calcsBuffLists(env, u.MultipliersUsed)
 	return u
 }
 

@@ -37,6 +37,8 @@ func Exports(r bind.Registry) {
 	r.Type(CalcsModQuery{}, bind.Plain())
 	r.Type(CalcsModEntry{}, bind.Plain())
 	r.Type(CalcsOutputs{}, bind.Plain())
+	r.Type(calculator2.CalcsInputs{}, bind.Plain())
+	r.Type(calculator2.CompareSkillBreakdownRow{}, bind.Plain())
 	r.Type(SkillGroupView{}, bind.Plain())
 	r.Type(SkillGemView{}, bind.Plain())
 	r.Type(SkillSetsView{}, bind.Plain())

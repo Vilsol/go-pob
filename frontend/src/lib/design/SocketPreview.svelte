@@ -1,18 +1,60 @@
 <script lang="ts">
   import { ascendancyOffsets, groupCentre, nodeCentre, type Point } from '$lib/skill_tree/geometry';
   import type { Node, Tree } from '$lib/skill_tree/types';
+  import { buildScene2, type Scene2, type Tree2 } from '$lib/components/skill-tree/scene2';
   import { float, raise } from './floating';
 
   // ItemSlotControl.lua:132-149
   // ItemSlotControl.lua:139-146
   type Radius = { inner: number; outer: number; col: string; nodes: number[] };
-  type Props = { tree: Tree; node: number; radii: Radius[]; alloc: Set<number>; label: string; anchor?: HTMLElement };
+  // a PoE1 tree, or a PoE2 one (ItemSlotHelper.lua:10-41, PoB-PoE2)
+  type Props = { tree: Tree | Tree2; node: number; radii: Radius[]; alloc: Set<number>; label: string; anchor?: HTMLElement };
   let { tree, node, radii, alloc, label, anchor }: Props = $props();
 
   const W = 308;
   const H = 280;
   const colour = (code: string) => (/^\^x[0-9A-Fa-f]{6}$/.test(code) ? `#${code.slice(2)}` : 'var(--color-accent)');
+  const isTree2 = (t: Tree | Tree2): t is Tree2 => Array.isArray(t.nodes);
+  const scenes = new WeakMap<Tree2, Scene2>();
+  // ItemSlotHelper.lua:19-25 (PoB-PoE2): the viewer shows tree.size / 17 across, centred on the socket
+  const view2 = (tree: Tree2) => {
+    let scene = scenes.get(tree);
+    if (!scene) scenes.set(tree, (scene = buildScene2(tree)));
+    const centre = scene.byId.get(node);
+    if (!centre) return undefined;
+    const reach = Math.max(scene.size / 17 / 2, ...radii.map((r) => r.outer)) * 1.1;
+    const scale = Math.min(W, H) / 2 / reach;
+    const at = (x: number, y: number) => ({ x: W / 2 + (x - centre.x) * scale, y: H / 2 + (y - centre.y) * scale });
+    const inRadius = new Map<number, string>();
+    for (const r of radii) for (const id of r.nodes) if (!inRadius.has(id)) inRadius.set(id, colour(r.col));
+    const drawn = new Set<number>();
+    const dots = scene.nodes.flatMap(({ node: n }) => {
+      if (n.ascendancy || n.classesStart || Math.hypot(n.x - centre.x, n.y - centre.y) > reach) return [];
+      drawn.add(n.id);
+      const r = n.type === 'Keystone' ? 7 : n.type === 'Notable' || n.type === 'Socket' || n.containJewelSocket ? 5 : 3;
+      return [{ id: n.id, ...at(n.x, n.y), r, on: alloc.has(n.id), ring: inRadius.get(n.id) }];
+    });
+    const seen = new Set<string>();
+    const edges = scene.connectors.flatMap((c) => {
+      const joined = `${Math.min(c.a, c.b)}:${Math.max(c.a, c.b)}`;
+      if (!drawn.has(c.a) || !drawn.has(c.b) || seen.has(joined)) return [];
+      seen.add(joined);
+      const [g0, g1, g2, g3, g4] = c.geom;
+      let d: string;
+      if (c.kind === 0) {
+        const [p, q] = [at(g0, g1), at(g2, g3)];
+        d = `M${p.x.toFixed(1)},${p.y.toFixed(1)} L${q.x.toFixed(1)},${q.y.toFixed(1)}`;
+      } else {
+        const [p, q] = [at(g0 + g2 * Math.cos(g3), g1 + g2 * Math.sin(g3)), at(g0 + g2 * Math.cos(g3 + g4), g1 + g2 * Math.sin(g3 + g4))];
+        const r = (g2 * scale).toFixed(1);
+        d = `M${p.x.toFixed(1)},${p.y.toFixed(1)} A${r},${r} 0 0 1 ${q.x.toFixed(1)},${q.y.toFixed(1)}`;
+      }
+      return [{ key: `${c.a}-${c.b}`, d, on: alloc.has(c.a) && alloc.has(c.b) }];
+    });
+    return { dots, edges, rings: radii.map((r) => ({ outer: r.outer * scale, inner: r.inner * scale, col: colour(r.col) })) };
+  };
   const view = $derived.by(() => {
+    if (isTree2(tree)) return view2(tree);
     const offsets = ascendancyOffsets(tree);
     const nodes = Object.values(tree.nodes);
     const centre = nodes.find((n) => n.skill === node);

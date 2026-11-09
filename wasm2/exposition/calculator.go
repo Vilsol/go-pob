@@ -47,7 +47,9 @@ type Calculator struct {
 	build *pob2.PathOfBuilding2
 	env   *calculator2.Environment
 	used  *calculator2.UsedTables
-	items *calculator2.ItemsTab
+	// calcsEnv is calcsTab.calcsEnv over env, run when the Calcs page first reads it.
+	calcsEnv *calculator2.Environment
+	items    *calculator2.ItemsTab
 	// undo is the spec's undo handler, reset on the first calculation as PassiveSpec:Load resets it.
 	undo *tree2.UndoHandler
 	// skillsEdited is set once the Skills tab has edited the build.
@@ -181,7 +183,7 @@ func (c *Calculator) Calculate() (*Outputs, error) {
 	if err != nil {
 		return nil, err
 	}
-	c.env, c.used, c.items = env, calculator2.BuildOutputUsed(env), items
+	c.env, c.used, c.items, c.calcsEnv = env, calculator2.BuildOutputUsed(env), items, nil
 	// Go must differ: PoB sets the level after the pass and shows that pass's stats; this calculates again at it
 	//pob2:block:src/Modules/Build.lua:1038-1042
 	if c.build.Build.CharacterLevelAutoMode {
@@ -191,7 +193,7 @@ func (c *Calculator) Calculate() (*Outputs, error) {
 			if err != nil {
 				return nil, err
 			}
-			c.env, c.used = env, calculator2.BuildOutputUsed(env)
+			c.env, c.used, c.calcsEnv = env, calculator2.BuildOutputUsed(env), nil
 		}
 	}
 	if c.undo == nil {

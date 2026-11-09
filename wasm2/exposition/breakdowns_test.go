@@ -7,6 +7,8 @@ import (
 	"reflect"
 	"sort"
 	"testing"
+
+	"github.com/Vilsol/go-pob/calculator2"
 )
 
 type breakdownSectionOracle struct {
@@ -124,4 +126,35 @@ func compareBreakdown(t *testing.T, k string, oracle map[string][]breakdownSecti
 		w, _ := json.Marshal(want)
 		t.Errorf("%s:\n PoB-PoE2 %s\n ours     %s", k, w, g)
 	}
+}
+
+// The sidebar's breakdowns are its main calculation's (Build.lua:533, PoB-PoE2), not the Calcs tab's own.
+func TestSidebarBreakdownsAreTheMainCalculations(t *testing.T) {
+	_, calc := readCalcsInputFixture(t, calcsInputFixtures[0])
+	sidebar, err := calc.SidebarBreakdowns()
+	if err != nil {
+		t.Fatal(err)
+	}
+	calcs, err := calc.CalcsBreakdowns()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(sidebar["TotalDPS"].Lines, calcBreakdownLines(calc.env, "TotalDPS")) {
+		t.Errorf("sidebar TotalDPS %v, main %v", sidebar["TotalDPS"].Lines, calcBreakdownLines(calc.env, "TotalDPS"))
+	}
+	if reflect.DeepEqual(sidebar["TotalDPS"].Lines, calcs["TotalDPS"].Lines) {
+		t.Error("the fixture's Calcs tab shows the sidebar's skill; it tests nothing")
+	}
+	sd := calculator2.ModSectionData{ModName: []string{"Damage"}, ModType: "INC", Cfg: "skill"}
+	main, err := calc.SidebarModSection(sd)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(main, calc.env.ModSection(sd)) {
+		t.Error("the sidebar's mod table is not the main calculation's")
+	}
+}
+
+func calcBreakdownLines(env *calculator2.Environment, name string) []string {
+	return env.Player.Breakdown.Views()[name].Lines
 }

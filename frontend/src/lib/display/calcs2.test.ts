@@ -3,10 +3,10 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { calcSections2 } from '$lib/calcs/calc_sections2';
 import type { CalcSectionColumn2, CalcSectionRow2 } from '$lib/calcs/calc_section_types2';
-import { calcsModProps2, calcsView2, checkFlag2, formatCalcStr2, type CalcsActor2 } from './calcs2';
+import { calcsModProps2, calcsView2, checkFlag2, formatCalcStr2, modSectionData2, type CalcsActor2 } from './calcs2';
 import { cellId, elementsOf } from './calcs';
 
-// PoB-PoE2's Calcs tab over the wasm2 fixture builds' main calculation (oracle/poe2_calcs.lua, `mise run calc-sections-poe2`)
+// PoB-PoE2's Calcs tab over the wasm2 fixture builds' CALCS calculation (oracle/poe2_calcs.lua, `mise run calc-sections-poe2`)
 type Oracle = CalcsActor2 & {
   entries: Record<string, unknown>;
   cells: Record<string, string>;
@@ -75,5 +75,34 @@ describe.each(['sorceress_spark', 'warrior_dual_mace'])('the PoE2 Calcs page: %s
   it('hides a flag-gated section when the main skill lacks the flag', () => {
     const view = calcsView2(calcSections2, { ...actor, skillFlags: { ...actor.skillFlags, hit: false } });
     expect(view.sections.find((s) => s.id === 'HitDamage')?.applicable).toBe(false);
+  });
+});
+
+// CalcSections.lua:776-777, 1575 (PoB-PoE2): a modName table holding modType or cfg among its names; AddModSection
+// unpacks its sequence and reads modType and cfg from the entry, which has neither. The keys are the mod tables
+// oracle/poe2_mod_sections.lua records for the same entries.
+describe('a Calcs entry whose modName table holds keys', () => {
+  const recorded = Object.keys(
+    JSON.parse(readFileSync(fileURLToPath(new URL('../../../../testdata/oracle/poe2_mod_sections_sorceress_spark.json', import.meta.url)), 'utf8')) as object
+  );
+  const entries = calcSections2.flatMap(([, , , , subs]) =>
+    subs.flatMap((sub) =>
+      elementsOf<CalcSectionRow2>(sub.data).flatMap((row) =>
+        elementsOf<CalcSectionColumn2>(row).flatMap((col) =>
+          elementsOf<import('$lib/calcs/calc_section_types2').CalcSectionEntry2>(col).filter(
+            (e) => e.modName && typeof e.modName === 'object' && !Array.isArray(e.modName)
+          )
+        )
+      )
+    )
+  );
+
+  it('sends its names and the entry own modType and cfg, as PoB-PoE2 shows them', () => {
+    const sds = entries.map(modSectionData2);
+    expect(sds.map((sd) => sd.ModName)).toEqual([['CrossbowBoltCount'], ['ChanceToNotConsumeAmmo'], ['CullPercent', 'CriticalCullPercent']]);
+    for (const sd of sds) {
+      expect(sd.Multi).toBe(true);
+      expect(recorded).toContain(`${sd.ModName.join(',')}|${sd.ModType}|${sd.Cfg}|${sd.ModSource}|${sd.Enemy}|${sd.Actor}`);
+    }
   });
 });

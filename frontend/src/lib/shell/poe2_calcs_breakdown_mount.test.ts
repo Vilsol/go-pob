@@ -29,7 +29,7 @@ vi.mock('$lib/go/worker', () => ({ syncWrap, syncWorker: undefined }));
 vi.mock('$app/navigation', () => ({ goto: vi.fn(() => Promise.resolve()), pushState: vi.fn() }));
 vi.mock('$app/state', () => ({ page: { state: {}, url: new URL('http://localhost/calcs') } }));
 
-// PoB-PoE2's main calculation of the sorceress fixture (oracle/poe2_calcs.lua) and the sections its
+// PoB-PoE2's Calcs tab calculation of the sorceress fixture (oracle/poe2_calcs.lua) and the sections its
 // CalcBreakdownControl builds for each breakdown (oracle/poe2_breakdowns.lua)
 const oracle = (name: string) => JSON.parse(readFileSync(resolve(__dirname, `../../../../testdata/oracle/${name}.json`), 'utf8')) as Record<string, never>;
 type Calcs = {
@@ -57,8 +57,18 @@ const breakdowns = Object.fromEntries(
 );
 
 const numbers = Object.fromEntries(Object.entries(calcs.output).filter((e): e is [string, number] => typeof e[1] === 'number'));
+// the CalcsPage fields beside the cell values: the Calcs tab's calculation of the fixture, its inputs and main skill
+const calcsPart = {
+  output: numbers,
+  skillFlags: calcs.skillFlags,
+  skillData: calcs.skillData,
+  inputs: { skillNumber: 1, buffMode: 'EFFECTIVE', showMinion: false },
+  skills: ['Spark'],
+  mainActiveSkill: 1
+};
 const w2 = vi.hoisted(() => ({
   CalcsPage: vi.fn(),
+  CalcsInputs: vi.fn(() => Promise.resolve({ skillNumber: 1, buffMode: 'EFFECTIVE', showMinion: false })),
   CalcsModSection: vi.fn(),
   CalcsBreakdownModList: vi.fn(),
   SidebarBreakdownKey: vi.fn(),
@@ -96,6 +106,7 @@ const AppCalcs = (await import('./AppCalcs.svelte')).default;
 describe('a PoE2 Calcs cell with a breakdown', () => {
   it("shows PoB-PoE2's breakdown lines and sources table in the breakdown panel", async () => {
     w2.CalcsPage.mockResolvedValue({
+      ...calcsPart,
       mods: calcs.mods,
       flags: Object.fromEntries(Object.entries(calcs.output).filter((e) => e[1] === true)),
       strings: Object.fromEntries(Object.entries(calcs.output).filter((e) => typeof e[1] === 'string')),
@@ -149,6 +160,7 @@ describe('a PoE2 Calcs cell with a breakdown', () => {
 
   it("shows PoB-PoE2's mod table for a cell's mod name entry", async () => {
     w2.CalcsPage.mockResolvedValue({
+      ...calcsPart,
       mods: calcs.mods,
       flags: Object.fromEntries(Object.entries(calcs.output).filter((e) => e[1] === true)),
       strings: Object.fromEntries(Object.entries(calcs.output).filter((e) => typeof e[1] === 'string')),
@@ -217,6 +229,7 @@ describe('a PoE2 Calcs cell with a breakdown', () => {
       .find((r) => r.build === 'skill_buffs.xml')!;
     expect(want.BuffList && want.CurseList, 'PoB-PoE2 lists buffs and curses for the fixture').toBeTruthy();
     w2.CalcsPage.mockResolvedValue({
+      ...calcsPart,
       mods: calcs.mods,
       flags: {},
       strings: { BuffList: want.BuffList, CombatList: want.CombatList, CurseList: want.CurseList },

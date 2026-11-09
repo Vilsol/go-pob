@@ -268,12 +268,13 @@ export const compareFixture2 = (
   };
 };
 
-// one build's Calcs page values as calcs2 reads an actor, as the Calcs page builds it
-const calcsActor2 = (v: Poe2Calc, page: Poe2CalcsPage): CalcsActor2 => {
-  const output: CalcsActor2['output'] = { ...v.output, ...page.flags, ...page.strings };
+// one build's Calcs page values as calcs2 reads an actor, as the Calcs page builds it; CompareTab.lua:4584-4586
+// (PoB-PoE2) reads each build's calcsEnv
+const calcsActor2 = (page: Poe2CalcsPage): CalcsActor2 => {
+  const output: CalcsActor2['output'] = { ...page.output, ...page.flags, ...page.strings };
   if (page.mainHand) output.MainHand = page.mainHand;
   if (page.offHand) output.OffHand = page.offHand;
-  return { output, skillFlags: v.skillFlags ?? {}, skillData: v.skillData ?? {}, mods: page.mods, breakdowns: page.breakdowns };
+  return { output, skillFlags: page.skillFlags, skillData: page.skillData, mods: page.mods, breakdowns: page.breakdowns };
 };
 
 // src/Classes/CompareTab.lua:4538-4581, 4620-4652 (PoB-PoE2): each section A's flags show, with every row either
@@ -290,17 +291,13 @@ export const compareCalcs2 = async (
     import('$lib/calcs/calc_sections2'),
     import('$lib/display/calcs')
   ]);
-  const [pa, ca] = [calcsActor2(a.view, a.page), calcsActor2(b.view, b.page)];
+  const [pa, ca] = [calcsActor2(a.page), calcsActor2(b.page)];
   const lines = (actor: CalcsActor2, bd: string) => actor.breakdowns?.[bd]?.lines ?? [];
   const sameLines = (bd: string) => {
     const [x, y] = [lines(pa, bd), lines(ca, bd)];
     return x.length === y.length && x.every((l, i) => l === y[i]);
   };
-  // a modName table that also holds keys (CalcSections' modType or cfg inside it) is read by ipairs
-  const modSection = (e: CalcSectionEntry2) => ({
-    ...modSectionData2(e),
-    ModName: typeof e.modName === 'string' ? [e.modName] : elementsOf<string>(e.modName as unknown as Record<number, string>)
-  });
+  const modSection = modSectionData2;
   // CompareTab.lua:4545-4561: each mod entry's rows matched between the builds, asked once for the page
   const sds = onlyDifferences
     ? calcSections2.flatMap(([, , , , subs]) =>

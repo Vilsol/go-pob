@@ -16,7 +16,8 @@ export type FlagGated2 = {
 /* CalcSections.lua:52-63 (PoB-PoE2) */
 export type CalcSectionEntry2 = FlagGated2 & {
   breakdown?: string;
-  modName?: string | string[];
+  // a table that also holds keys (CalcSections.lua:776-777, 1575) comes as an object, its sequence under "0", "1", ...
+  modName?: string | string[] | { [n: number]: string; modType?: string; cfg?: string };
   modType?: 'BASE' | 'INC' | 'MORE' | 'OVERRIDE' | 'FLAG' | 'LIST';
   cfg?: string;
   enemy?: boolean;

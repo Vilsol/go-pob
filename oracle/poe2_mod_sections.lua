@@ -1,6 +1,6 @@
 -- usage (from PoB-PoE2's src/): luajit poe2_mod_sections.lua <out dir> <build.xml>...
 -- Records, for every distinct CalcSections.lua modName entry, the mod table CalcBreakdownControl:AddModSection builds
--- for it over the main calculation's player: each row's drawn cells and its source tooltip's lines. Writes
+-- for it over the Calcs tab calculation's player: each row's drawn cells and its source tooltip's lines. Writes
 -- <out dir>/<build>.json, keyed by modName list|modType|cfg|modSource|enemy|actor; multi is a table modName, and an
 -- entry with no rows holds none.
 local selfPath, outDir = arg[0], arg[1]
@@ -44,7 +44,7 @@ for i = 1, #paths do
 	loadBuildFromXML(xmlText, paths[i])
 	runCallback("OnFrame")
 	local control = build.calcsTab.controls.breakdown
-	control.envName = "mainEnv"
+	control.envName = "calcsEnv"
 	local out = {}
 	for _, entry in ipairs(entries) do
 		local modName = type(entry.modName) == "table" and entry.modName or { entry.modName }

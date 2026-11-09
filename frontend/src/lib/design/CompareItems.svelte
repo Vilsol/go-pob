@@ -12,10 +12,11 @@
   import type { StatCompareSection } from '$lib/skill_tree/stat_compare';
   import type { CompareItemSide } from './fixtures';
   import type { Tree } from '$lib/skill_tree/types';
+  import type { Tree2 } from '$lib/components/skill-tree/scene2';
 
   type Row = { slot: string; a: CompareItemSide; b: CompareItemSide; impact?: StatCompareSection[] };
   type JewelRow = Row & { label: string; node: number; aWarn: boolean; bWarn: boolean };
-  type SocketView = { tree: Tree; radii: { inner: number; outer: number; col: string; nodes: number[] }[]; alloc: Set<number> };
+  type SocketView = { tree: Tree | Tree2; radii: { inner: number; outer: number; col: string; nodes: number[] }[]; alloc: Set<number> };
   // CompareTab.lua:1439-1459, 3788-3856
   // CompareTab.lua:3954-3963
   // CompareTab.lua:3466-3637

@@ -372,11 +372,14 @@
       const b = { view: mm.sides.b.view, page: pages.b };
       const w = await poe2Worker();
       const modsEqual = (sds: calculator2.ModSectionData[]) => w.CompareModsEqual(sds);
-      return swapped ? compareCalcs2(b, a, only, modsEqual, [mm.sides.bName, aName]) : compareCalcs2(a, b, only, modsEqual, [aName, mm.sides.bName]);
+      const sections = await (swapped
+        ? compareCalcs2(b, a, only, modsEqual, [mm.sides.bName, aName])
+        : compareCalcs2(a, b, only, modsEqual, [aName, mm.sides.bName]));
+      return { sections, a, b };
     }
   );
   const calcsShown = $derived.by(() => {
-    if (poe2) return ui.view === 'calcs' ? calcs2.current : undefined;
+    if (poe2) return ui.view === 'calcs' ? calcs2.current?.sections : undefined;
     const c = calcs.current;
     if (!c || ui.view !== 'calcs') return undefined;
     const bName = m?.sides.bName ?? 'Compare Build';
@@ -384,8 +387,48 @@
       ? compareCalcsView(calcSections, c.b, c.a, calcsOnlyDifferences, bName, aName, modsEqual)
       : compareCalcsView(calcSections, c.a, c.b, calcsOnlyDifferences, aName, bName, modsEqual);
   });
+  // CompareTab.lua:490-718, 4480-4608 (PoB-PoE2): each build's Calcs tab inputs over its own calculation
+  const calcsHeader2 = $derived.by(() => {
+    const c = calcs2.current;
+    const mm = model2.current;
+    if (!poe2 || !c || !mm) return undefined;
+    const side = (k: 'a' | 'b'): CalcsHeaderSide => {
+      const { view, page } = c[k];
+      return {
+        name: k === 'a' ? aName : mm.sides.bName,
+        groups: (view.socketGroups ?? []).map((g) => g.label),
+        skillNumber: page.inputs.skillNumber,
+        buffMode: page.inputs.buffMode,
+        controls: page.skills.length
+          ? ({ Skills: page.skills, SkillEnabled: page.skills.length > 1, MainActiveSkill: page.mainActiveSkill } as calculator.MainSkillControls)
+          : undefined,
+        info: [
+          { label: 'Aura/Buff Skills', text: page.strings.BuffList ?? '' },
+          { label: 'Combat Buffs', text: page.strings.CombatList ?? '' },
+          { label: 'Curses/Debuffs', text: page.strings.CurseList ?? '' }
+        ]
+      };
+    };
+    const order: ['a', 'b'] | ['b', 'a'] = ui.swapped ? ['b', 'a'] : ['a', 'b'];
+    return {
+      sides: [side(order[0]), side(order[1])] as [CalcsHeaderSide, CalcsHeaderSide],
+      oncontrol: (shown: 0 | 1, field: CalcsHeaderField, value: number | string | boolean | undefined) => {
+        if (value === undefined || (field !== 'group' && field !== 'mode' && field !== 'MainActiveSkill')) return;
+        if (order[shown] === 'b')
+          void poe2Worker()
+            .then((w) => w.SetCompareCalcsControl(field, value))
+            .then((i) => (info = i))
+            .catch(logError);
+        else if (field === 'group') void poe2Run((w) => w.SetCalcsSkillNumber(Number(value)));
+        else if (field === 'mode') void poe2Run((w) => w.SetCalcsBuffMode(String(value)));
+        else void poe2Run((w) => w.SetMainActiveSkillCalcs(Number(value)));
+      },
+      breakdown: async (shown: 0 | 1, name: string) => (await poe2Worker()).CompareSkillBreakdown(order[shown], name)
+    };
+  });
   // CompareTab.lua:490-718, 4480-4608
   const calcsHeader = $derived.by(() => {
+    if (poe2) return calcsHeader2;
     const c = calcs.current;
     if (!c || !m) return undefined;
     const bName = m.sides.bName ?? 'Compare Build';
@@ -742,7 +785,11 @@
           return (await syncWrap?.CompareItemCards(ui.swapped ? r : l, ui.swapped ? l : r)) ?? [[], []];
         }}
     socketview={poe2
-      ? undefined
+      ? // CompareTab.lua:3827-3842 (PoB-PoE2): the open build's tree around the socket
+        async () => {
+          const aView = get(poe2Build) as Poe2Calc | undefined;
+          return tree2 && aView ? { tree: tree2, radii: [], alloc: new Set(aView.tree.alloc) } : undefined;
+        }
       : async (node: number) => {
           if (!m) return undefined;
           const radii = (await syncWrap?.GetTreeSocketRadii(node)) ?? [];

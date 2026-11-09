@@ -1,5 +1,7 @@
--- usage (from PoB-PoE2's src/): luajit poe2_calcs.lua <build.xml> <out.json>
--- Records the Calcs tab PoB-PoE2 draws for a build over its main calculation: the actor's number, true and string outputs
+-- usage (from PoB-PoE2's src/): luajit poe2_calcs.lua <build.xml> <out.json> [skill_number=<n>] [misc_buffMode=<mode>]
+--   [mainActiveSkillCalcs=<n>]
+-- Records the Calcs tab PoB-PoE2 draws for a build over its CALCS calculation, after setting the tab's inputs and the
+-- shown socket group's active skill the arguments name: the actor's number, true and string outputs
 -- (and its MainHand and OffHand tables'),
 -- skill flags and truthy skill data, every {p:mod:n} entry with its combined value, each
 -- section's enabled flag, and the text of every shown cell and subsection extra. Keys are the 0-based
@@ -20,7 +22,27 @@ loadBuildFromXML(xml)
 runCallback("OnFrame")
 
 local calcsTab = build.calcsTab
-local actor = calcsTab.mainEnv.player
+local set = {}
+for i = 3, #arg do
+	local k, v = arg[i]:match("^([%w_]+)=(.*)$")
+	assert(k, "bad argument " .. arg[i])
+	set[k] = v
+end
+if next(set) then
+	-- CalcsTab.lua:43-46, 58-63, 165-168
+	if set.skill_number then
+		calcsTab.input.skill_number = tonumber(set.skill_number)
+	end
+	if set.misc_buffMode then
+		calcsTab.input.misc_buffMode = set.misc_buffMode
+	end
+	if set.mainActiveSkillCalcs then
+		build.skillsTab.socketGroupList[calcsTab.input.skill_number].mainActiveSkillCalcs = tonumber(set.mainActiveSkillCalcs)
+	end
+	build.buildFlag = true
+	runCallback("OnFrame")
+end
+local actor = calcsTab.calcsEnv.player
 local sections = LoadModule("Modules/CalcSections")
 
 -- dkjson writes tostring's 14 digits; the frontend rounds the value itself, so it gets all 17
@@ -112,6 +134,6 @@ for _, s in ipairs(sections) do
 end
 
 local o = assert(io.open(outPath, "w"))
-o:write(json.encode(stable({ output = output, skillFlags = flags, skillData = skillData, mods = mods, entries = entries, cells = cells, extras = extras, enabled = enabled }), { indent = true }))
+o:write(json.encode(stable({ mainSkill = actor.mainSkill.activeEffect.grantedEffect.name, output = output, skillFlags = flags, skillData = skillData, mods = mods, entries = entries, cells = cells, extras = extras, enabled = enabled }), { indent = true }))
 o:write("\n")
 o:close()

@@ -1,5 +1,5 @@
 -- usage (from PoB-PoE2's src/): luajit poe2_breakdowns.lua <build.xml> <out.json>
--- Records, for every breakdown the main calculation's player holds, the sections CalcBreakdownControl builds for
+-- Records, for every breakdown the Calcs tab calculation's player holds, the sections CalcBreakdownControl builds for
 -- it: TEXT lines, TABLE label, footer, columns and rows (each drawn cell as tostring gives it) and RADIUS. A mod list
 -- section is recorded as MODS with its row count only. A breakdown with slots is recorded again under
 -- "<name>#gearOnly" as a gearOnly cell shows it; an attack pass's own breakdown is "MainHand.<name>" or
@@ -21,8 +21,8 @@ runCallback("OnFrame")
 
 local calcsTab = build.calcsTab
 local control = calcsTab.controls.breakdown
-control.envName = "mainEnv"
-local actor = calcsTab.mainEnv.player
+control.envName = "calcsEnv"
+local actor = calcsTab.calcsEnv.player
 
 local function record(name, gearOnly)
 	control:SetBreakdownData({ { breakdown = name, gearOnly = gearOnly } })

@@ -3,6 +3,7 @@ package calculator2
 import (
 	"math"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -183,6 +184,71 @@ func (env *Environment) CompareModRows(sd ModSectionData) []CompareModRow {
 			out.ModName = "  " + formatModName(row.Mod.Name())
 		}
 		rows = append(rows, out)
+	}
+	return rows
+}
+
+// CompareSkillBreakdownRow is one row of the Calcs view header's SkillBuffs or SkillDebuffs panel.
+type CompareSkillBreakdownRow struct {
+	Value      string
+	Name       string
+	Source     string
+	SourceName string
+}
+
+//pob2:src/Classes/CompareCalcsHelpers.lua:332-366
+func (env *Environment) resolveModSource(source string) (string, string) {
+	if source == "" {
+		return "?", ""
+	}
+	sourceType, rest, _ := strings.Cut(source, ":")
+	switch sourceType {
+	case "Item", "Skill":
+		_, name, _, _ := env.modSourceName(source)
+		return sourceType, name
+	case "Tree":
+		if m := treeSourceRe.FindStringSubmatch(source); m != nil && env.Spec != nil {
+			id, _ := strconv.Atoi(m[1])
+			if node := env.Spec.Nodes[id]; node != nil {
+				return sourceType, node.Dn
+			}
+			if env.Spec.Tree != nil {
+				if node := env.Spec.Tree.Nodes[id]; node != nil {
+					return sourceType, node.Dn
+				}
+			}
+		}
+	case "Pantheon", "Spectre":
+		return sourceType, rest
+	}
+	return sourceType, ""
+}
+
+// CompareSkillBreakdown is the panel DrawSkillBreakdownPanel draws for the player's SkillBuffs or SkillDebuffs
+// breakdown: its mods by name, then value, descending.
+//
+//pob2:block:src/Classes/CompareCalcsHelpers.lua:370-409
+func (env *Environment) CompareSkillBreakdown(breakdownKey string) []CompareSkillBreakdownRow {
+	if env == nil || env.Player == nil || env.Player.Breakdown == nil {
+		return nil
+	}
+	breakdown := env.Player.Breakdown.Entries[breakdownKey]
+	if breakdown == nil || len(breakdown.ModList) == 0 {
+		return nil
+	}
+	rowList := slices.Clone(breakdown.ModList)
+	isNumber := func(e BreakdownMod) bool { return e.List == nil && e.Mod.Type() != mod.TypeFlag }
+	luaSort(rowList, func(a, b BreakdownMod) bool {
+		return a.Mod.Name() > b.Mod.Name() || (a.Mod.Name() == b.Mod.Name() && isNumber(a) && isNumber(b) && a.Value > b.Value)
+	})
+	rows := make([]CompareSkillBreakdownRow, 0, len(rowList))
+	for _, entry := range rowList {
+		row := CompareSkillBreakdownRow{
+			Value: formatCalcModValue(moddb.ModResult{Value: entry.Value, Mod: entry.Mod}),
+			Name:  formatModName(entry.Mod.Name()),
+		}
+		row.Source, row.SourceName = env.resolveModSource(string(entry.Mod.GetSource()))
+		rows = append(rows, row)
 	}
 	return rows
 }

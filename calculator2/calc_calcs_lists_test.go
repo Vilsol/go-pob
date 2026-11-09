@@ -61,9 +61,6 @@ func TestCalcsBuffListsMatchPoB(t *testing.T) {
 			if row.Error != "" {
 				t.Fatalf("PoB-PoE2 failed: %s", row.Error)
 			}
-			if row.MainSkill != row.CalcsSkill {
-				t.Skipf("PoB-PoE2's Calcs tab shows %s, its main calculation %s", row.CalcsSkill, row.MainSkill)
-			}
 			path := fullDPSFixturePath(row.Build)
 			if path == "" {
 				t.Fatalf("no fixture %s", row.Build)
@@ -76,11 +73,16 @@ func TestCalcsBuffListsMatchPoB(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+			mainEnv, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
 			if err != nil {
 				t.Fatal(err)
 			}
-			BuildOutputUsed(env)
+			env := BuildCalcsOutput(mainEnv, BuildOutputUsed(mainEnv))
+			// PoB-PoE2 names a skill by its granted effect, which a companion's renames for every instance
+			main, calcs := getActiveSkillDisplayName(mainEnv.Player.MainSkill), getActiveSkillDisplayName(env.Player.MainSkill)
+			if (main == calcs) != (row.MainSkill == row.CalcsSkill) {
+				t.Errorf("Calcs tab skill %s, main %s; PoB %s, %s", calcs, main, row.CalcsSkill, row.MainSkill)
+			}
 			check := func(who string, got map[string]string, want calcsListsRow, minion bool) {
 				for key, w := range map[string]string{"BuffList": want.BuffList, "CombatList": want.CombatList, "CurseList": want.CurseList} {
 					if got[key] != w {
