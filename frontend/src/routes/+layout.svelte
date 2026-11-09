@@ -128,6 +128,14 @@
   const BOOT_STUCK_MS = 30_000;
   let bootStuck = $state(false);
 
+  // without its game data a PoE1 build opens empty, so the reason stays on screen with a retry
+  let dataError = $state<string>();
+  const failData = (e: Error) => {
+    logError(e);
+    dataLoading = false;
+    dataError = `${navigator.onLine ? '' : 'This browser is offline and has not kept a copy of it. '}${e.message}`;
+  };
+
   async function wasmBytes(path: string): Promise<ArrayBuffer> {
     const res = await fetch(assets + path);
     if (!res.ok) {
@@ -184,7 +192,7 @@
             syncWrap
               ?.loadData(proxy(async () => {}))
               .then(() => get(markBackendAsLoaded)())
-              .catch(logError);
+              .catch(failData);
             return;
           }
 
@@ -223,6 +231,7 @@
                   get(markBackendAsLoaded)();
                 })
                 .catch((e: Error) => {
+                  if (dataLoading) return failData(e);
                   logError(e);
                   if (!wasmLoading) return;
                   clearTimeout(stuck);
@@ -285,6 +294,13 @@
 
 {#if dataLoading}
   <Notice float class="fixed right-2 bottom-2">Loading game data{loadingStage ? `: ${loadingStage}` : '...'}</Notice>
+{/if}
+
+{#if dataError}
+  <Notice float kind="error" title="The game data could not be loaded" class="fixed right-2 bottom-2 left-2 ml-auto max-w-160">
+    <span class="break-all">{dataError}</span>
+    {#snippet actions()}<Button onclick={() => location.reload()}>Retry</Button>{/snippet}
+  </Notice>
 {/if}
 
 <Dialog open={!!linkError} title="Build import" size="md" onclose={() => (linkError = undefined)}>

@@ -1,6 +1,7 @@
 package calculator2
 
 import (
+	"errors"
 	"regexp"
 	"regexp/syntax"
 	"slices"
@@ -282,3 +283,6 @@ func anchoredAtStart(re *syntax.Regexp) bool {
 		return false
 	}
 }
+
+// the indices are built by the game data's post-load hook
+var errModParserBeforeData = errors.New("mod parser called before the game data finished loading")

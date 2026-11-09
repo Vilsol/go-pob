@@ -180,10 +180,8 @@ class PoBWorker {
       performance.mark(`pob:data:${stage}`);
       return updates(stage);
     });
+    if (!result.ok) throw result.error;
     logInfo('data', `game data ${raw.GameDataVersion()} loaded in ${Date.now() - start} ms`);
-    if (!result.ok) {
-      console.error(result.error);
-    }
   }
 
   private foreignGame(xml: string): ForeignBuild | undefined {

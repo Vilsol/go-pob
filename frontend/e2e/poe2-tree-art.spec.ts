@@ -193,26 +193,8 @@ test('the PoE2 tree zooms with PageUp and PageDown and draws a compared tree', a
   expect(errors).toEqual([]);
 });
 
-// the Canvas 2D renderer draws a tree that fits once into a layer and pans by moving it; the layer matches the tree drawn
-// straight to the canvas
-test('the PoE2 Canvas 2D tree draws the same through its layer as straight to the canvas', async ({ page }) => {
-  await open(page, 'canvas', []);
-  const shot = async () => (await page.getByRole('img', { name: 'Passive skill tree' }).screenshot()).toString('base64');
-  const redraw = async () => {
-    for (const key of ['PageUp', 'PageDown']) {
-      const n = await page.evaluate(() => (globalThis as unknown as Win).__tree2Probe.frames.length);
-      await page.keyboard.press(key);
-      await expect.poll(async () => page.evaluate(() => (globalThis as unknown as Win).__tree2Probe.frames.length)).toBeGreaterThan(n);
-    }
-    await page.waitForTimeout(300);
-  };
-  await page.mouse.move(5, 5);
-  await redraw();
-  const layered = await shot();
-  await page.evaluate(() => ((globalThis as unknown as { __tree2Probe: { layer?: boolean } }).__tree2Probe.layer = false));
-  await redraw();
-  const direct = await shot();
-  const diff = await page.evaluate(
+const pixelDiff = (page: Page, first: string, second: string) =>
+  page.evaluate(
     async ({ a, b }) => {
       const pixels = async (b64: string) => {
         const img = new Image();
@@ -233,9 +215,79 @@ test('the PoE2 Canvas 2D tree draws the same through its layer as straight to th
       }
       return { mean: sum / ((x.length / 4) * 3), lit: lit / (x.length / 4) };
     },
-    { a: layered, b: direct }
+    { a: first, b: second }
   );
+
+// the Canvas 2D renderer draws a tree that fits once into a layer and pans by moving it; the layer matches the tree drawn
+// straight to the canvas
+test('the PoE2 Canvas 2D tree draws the same through its layer as straight to the canvas', async ({ page }) => {
+  await open(page, 'canvas', []);
+  const shot = async () => (await page.getByRole('img', { name: 'Passive skill tree' }).screenshot()).toString('base64');
+  const redraw = async () => {
+    for (const key of ['PageUp', 'PageDown']) {
+      const n = await page.evaluate(() => (globalThis as unknown as Win).__tree2Probe.frames.length);
+      await page.keyboard.press(key);
+      await expect.poll(async () => page.evaluate(() => (globalThis as unknown as Win).__tree2Probe.frames.length)).toBeGreaterThan(n);
+    }
+    await page.waitForTimeout(300);
+  };
+  await page.mouse.move(5, 5);
+  await redraw();
+  const layered = await shot();
+  await page.evaluate(() => ((globalThis as unknown as { __tree2Probe: { layer?: boolean } }).__tree2Probe.layer = false));
+  await redraw();
+  const direct = await shot();
+  const diff = await pixelDiff(page, layered, direct);
   // the tree covers the canvas, and the two differ by little more than the layer's rounding to whole pixels
   expect(diff.lit).toBeGreaterThan(0.05);
   expect(diff.mean).toBeLessThan(3);
+});
+
+// a tree too big for a layer pans by shifting the canvas it last drew and drawing only the strips the pan uncovers; that
+// matches the same view drawn whole
+test('the PoE2 Canvas 2D tree panned at a close zoom draws the same as the view drawn whole', async ({ page }) => {
+  await open(page, 'canvas', []);
+  const shot = async () => (await page.getByRole('img', { name: 'Passive skill tree' }).screenshot()).toString('base64');
+  const frameCount = () => page.evaluate(() => (globalThis as unknown as Win).__tree2Probe.frames.length);
+  const box = (await page.getByRole('img', { name: 'Passive skill tree' }).boundingBox())!;
+  const [cx, cy] = [box.x + box.width / 2, box.y + box.height / 2];
+  await page.mouse.move(cx, cy);
+  for (let i = 0; i < 10; i++) await page.mouse.wheel(0, -100);
+  await page.waitForTimeout(300);
+  // one pointer move per animation frame, each a few pixels in both directions, so every frame shifts and fills strips
+  const n = await frameCount();
+  await page.evaluate(
+    ({ x, y }) =>
+      new Promise<void>((done) => {
+        const canvas = document.querySelector('canvas')!;
+        const ev = (type: string, px: number, py: number) => new PointerEvent(type, { clientX: px, clientY: py, button: 0, bubbles: true, pointerId: 1 });
+        canvas.dispatchEvent(ev('pointerdown', x, y));
+        let i = 0;
+        const tick = () => {
+          if (++i > 40) {
+            window.dispatchEvent(ev('pointerup', x + 7 * 40, y - 5 * 40));
+            requestAnimationFrame(() => done());
+            return;
+          }
+          canvas.dispatchEvent(ev('pointermove', x + 7 * i, y - 5 * (i % 20 < 10 ? i : 40 - i)));
+          queueMicrotask(() => requestAnimationFrame(tick));
+        };
+        requestAnimationFrame(tick);
+      }),
+    { x: cx, y: cy }
+  );
+  expect(await frameCount(), 'the pan drew too few frames to shift the canvas').toBeGreaterThan(n + 20);
+  await page.waitForTimeout(300);
+  const panned = await shot();
+  await page.mouse.move(5, 5);
+  for (const key of ['PageUp', 'PageDown']) {
+    const m = await frameCount();
+    await page.keyboard.press(key);
+    await expect.poll(frameCount).toBeGreaterThan(m);
+  }
+  await page.waitForTimeout(300);
+  const whole = await shot();
+  const diff = await pixelDiff(page, panned, whole);
+  expect(diff.lit).toBeGreaterThan(0.05);
+  expect(diff.mean).toBeLessThan(0.05);
 });

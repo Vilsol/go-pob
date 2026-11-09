@@ -425,6 +425,8 @@ export class GlTree2Renderer implements Tree2Renderer {
   }
 }
 
+type Rect = [number, number, number, number];
+
 const css = (r: number, g: number, b: number, a: number) => `rgba(${Math.round(r * 255)},${Math.round(g * 255)},${Math.round(b * 255)},${a})`;
 
 // the largest drawn-tree layer the Canvas 2D renderer keeps, in device pixels (about 32 MB)
@@ -447,6 +449,9 @@ export class CanvasTree2Renderer implements Tree2Renderer {
   private layer?: { canvas: HTMLCanvasElement; k: number; x: number; y: number };
   private bounds?: [number, number, number, number];
   private spare?: HTMLCanvasElement;
+  // a tree too big for a layer: the canvas as last drawn at offset (x, y), which a drag shifts, drawing only what it uncovers
+  private scroll?: { a: HTMLCanvasElement; b: HTMLCanvasElement; k: number; x: number; y: number };
+  private settle?: ReturnType<typeof setTimeout>;
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -469,6 +474,7 @@ export class CanvasTree2Renderer implements Tree2Renderer {
 
   destroy() {
     cancelAnimationFrame(this.frame);
+    clearTimeout(this.settle);
     this.frame = -1;
   }
 
@@ -532,12 +538,17 @@ export class CanvasTree2Renderer implements Tree2Renderer {
     return [c, 0, 0];
   }
 
-  private strokes(ctx: CanvasRenderingContext2D, from: number, to: number, s: number) {
+  private strokes(ctx: CanvasRenderingContext2D, from: number, to: number, s: number, [vx0, vy0, vx1, vy1]: Rect) {
     const st = this.scene.strokes;
     for (let i = from; i < to; i++) {
       const o = i * STROKE2_FLOATS;
+      const line = st[o + 5] < 0.5;
+      const pad = Math.max(st[o + 6], 1.5 / s) + (line ? 0 : st[o + 2]);
+      const [ax, ay] = [st[o], st[o + 1]];
+      const [bx, by] = line ? [st[o + 2], st[o + 3]] : [ax, ay];
+      if (Math.max(ax, bx) + pad < vx0 || Math.min(ax, bx) - pad > vx1 || Math.max(ay, by) + pad < vy0 || Math.min(ay, by) - pad > vy1) continue;
       ctx.beginPath();
-      if (st[o + 5] < 0.5) {
+      if (line) {
         ctx.moveTo(st[o], st[o + 1]);
         ctx.lineTo(st[o + 2], st[o + 3]);
       } else {
@@ -549,12 +560,13 @@ export class CanvasTree2Renderer implements Tree2Renderer {
     }
   }
 
-  private discs(ctx: CanvasRenderingContext2D, s: number) {
+  private discs(ctx: CanvasRenderingContext2D, s: number, [vx0, vy0, vx1, vy1]: Rect) {
     const { scene } = this;
     const d = scene.discs;
     for (let i = 0; i < scene.counts.discs; i++) {
       const o = i * DISC_FLOATS;
       const r = Math.max(d[o + 2], 1.5 / s);
+      if (d[o] + r < vx0 || d[o] - r > vx1 || d[o + 1] + r < vy0 || d[o + 1] - r > vy1) continue;
       const ring = (d[o + 3] * r) / d[o + 2];
       ctx.beginPath();
       ctx.arc(d[o], d[o + 1], r - ring / 2, 0, Math.PI * 2);
@@ -566,18 +578,17 @@ export class CanvasTree2Renderer implements Tree2Renderer {
     }
   }
 
-  // T is the tree-to-device scale k and offset (tx, ty); an image wholly off the canvas is skipped
-  private sprites(ctx: CanvasRenderingContext2D, buf: Float32Array, count: number, k: number, tx: number, ty: number) {
-    const [W, H] = [ctx.canvas.width, ctx.canvas.height];
+  // T is the tree-to-device scale k and offset (tx, ty); an image wholly outside the device rect [X0, Y0, X1, Y1] is skipped
+  private sprites(ctx: CanvasRenderingContext2D, buf: Float32Array, count: number, k: number, tx: number, ty: number, [X0, Y0, X1, Y1]: Rect) {
     for (let i = 0; i < count; i++) {
       const o = i * SPRITE2_FLOATS;
       const [a, b, c, d] = [k * buf[o + 2], k * buf[o + 3], k * buf[o + 4], k * buf[o + 5]];
       const [e, f] = [k * buf[o] + tx, k * buf[o + 1] + ty];
       if (
-        Math.max(e, e + a, e + c, e + a + c) < 0 ||
-        Math.min(e, e + a, e + c, e + a + c) > W ||
-        Math.max(f, f + b, f + d, f + b + d) < 0 ||
-        Math.min(f, f + b, f + d, f + b + d) > H
+        Math.max(e, e + a, e + c, e + a + c) < X0 ||
+        Math.min(e, e + a, e + c, e + a + c) > X1 ||
+        Math.max(f, f + b, f + d, f + b + d) < Y0 ||
+        Math.min(f, f + b, f + d, f + b + d) > Y1
       )
         continue;
       const [sw, sh, clip, repeat, inner] = [buf[o + 8], buf[o + 9], buf[o + 15], buf[o + 16], buf[o + 17]];
@@ -644,21 +655,22 @@ export class CanvasTree2Renderer implements Tree2Renderer {
     return [x0, y0, x1, y1];
   }
 
-  // the scene's layers at scale k and offset (tx, ty), in device pixels
-  private paint(ctx: CanvasRenderingContext2D, s: number, k: number, tx: number, ty: number) {
+  // the scene's layers at scale k and offset (tx, ty), in device pixels, of what reaches the device rect r
+  private paint(ctx: CanvasRenderingContext2D, s: number, k: number, tx: number, ty: number, r: Rect = [0, 0, ctx.canvas.width, ctx.canvas.height]) {
     const { scene } = this;
     const { counts } = scene;
     ctx.setTransform(k, 0, 0, k, tx, ty);
+    const v: Rect = [(r[0] - tx) / k, (r[1] - ty) / k, (r[2] - tx) / k, (r[3] - ty) / k];
     if (scene.art) {
-      this.sprites(ctx, scene.under, counts.under, k, tx, ty);
-      this.sprites(ctx, scene.lines, counts.lines, k, tx, ty);
-      this.strokes(ctx, 0, counts.connectorStrokes, s);
-      this.discs(ctx, s);
-      this.sprites(ctx, scene.over, counts.over, k, tx, ty);
-      this.strokes(ctx, counts.connectorStrokes, counts.strokes, s);
+      this.sprites(ctx, scene.under, counts.under, k, tx, ty, r);
+      this.sprites(ctx, scene.lines, counts.lines, k, tx, ty, r);
+      this.strokes(ctx, 0, counts.connectorStrokes, s, v);
+      this.discs(ctx, s, v);
+      this.sprites(ctx, scene.over, counts.over, k, tx, ty, r);
+      this.strokes(ctx, counts.connectorStrokes, counts.strokes, s, v);
     } else {
-      this.strokes(ctx, 0, counts.strokes, s);
-      this.discs(ctx, s);
+      this.strokes(ctx, 0, counts.strokes, s, v);
+      this.discs(ctx, s, v);
     }
   }
 
@@ -676,6 +688,7 @@ export class CanvasTree2Renderer implements Tree2Renderer {
       this.spare = this.layer?.canvas ?? this.spare;
       this.layer = undefined;
       this.bounds = undefined;
+      if (this.scroll) this.scroll.k = NaN;
     }
     const s = scaleOf(scene, view);
     ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
@@ -704,9 +717,58 @@ export class CanvasTree2Renderer implements Tree2Renderer {
     } else {
       this.spare = this.layer?.canvas ?? this.spare;
       this.layer = undefined;
-      this.paint(ctx, s, k, tx, ty);
+      if (layered) {
+        const scroll = this.scrolled(s, k, tx, ty, w, h);
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.drawImage(scroll, 0, 0);
+      } else this.paint(ctx, s, k, tx, ty);
     }
     this.afterDraw(performance.now() - t0);
+  }
+
+  private scrolled(s: number, k: number, x: number, y: number, w: number, h: number) {
+    let sc = this.scroll;
+    if (!sc || sc.a.width !== w || sc.a.height !== h) {
+      const canvas = () => Object.assign(document.createElement('canvas'), { width: w, height: h });
+      sc = this.scroll = { a: canvas(), b: canvas(), k: NaN, x, y };
+    }
+    const [dx, dy] = [Math.round(x - sc.x), Math.round(y - sc.y)];
+    if (sc.k !== k || Math.abs(dx) >= w || Math.abs(dy) >= h) {
+      this.repaint(sc.a, s, k, x, y, [0, 0, w, h]);
+      Object.assign(sc, { k, x, y });
+    } else if (dx || dy) {
+      // the shift is whole pixels, so the canvas keeps its own offset, within half a pixel of the view's
+      const [sx, sy] = [sc.x + dx, sc.y + dy];
+      const bc = sc.b.getContext('2d')!;
+      bc.setTransform(1, 0, 0, 1, 0, 0);
+      bc.drawImage(sc.a, dx, dy);
+      if (dx) this.repaint(sc.b, s, k, sx, sy, dx > 0 ? [0, 0, dx, h] : [w + dx, 0, w, h]);
+      if (dy) this.repaint(sc.b, s, k, sx, sy, dy > 0 ? [0, 0, w, dy] : [0, h + dy, w, h]);
+      [sc.a, sc.b] = [sc.b, sc.a];
+      Object.assign(sc, { x: sx, y: sy });
+    }
+    // once the view stops moving, it is drawn at its exact offset
+    clearTimeout(this.settle);
+    if (sc.x !== x || sc.y !== y)
+      this.settle = setTimeout(() => {
+        if (this.scroll) this.scroll.k = NaN;
+        this.request();
+      }, 150);
+    return sc.a;
+  }
+
+  // the device rect r of canvas c drawn anew
+  private repaint(c: HTMLCanvasElement, s: number, k: number, x: number, y: number, r: Rect) {
+    const ctx = c.getContext('2d')!;
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.beginPath();
+    ctx.rect(r[0], r[1], r[2] - r[0], r[3] - r[1]);
+    ctx.clip();
+    ctx.fillStyle = '#080c11';
+    ctx.fillRect(r[0], r[1], r[2] - r[0], r[3] - r[1]);
+    this.paint(ctx, s, k, x, y, r);
+    ctx.restore();
   }
 }
 

@@ -10722,6 +10722,9 @@ func toLowerASCII(s string) string {
 
 //pob:src/Modules/ModParser.lua:4018-4266
 func parseMod(line string, order int) ([]mod.Mod, string) {
+	if specialModIndex == nil {
+		panic(errModParserBeforeData)
+	}
 	lineLower := strings.ToLower(line)
 
 	if jewelFunc := parseJewelFunc(lineLower); jewelFunc != nil {
