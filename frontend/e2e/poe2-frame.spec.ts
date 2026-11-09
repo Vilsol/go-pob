@@ -47,7 +47,8 @@ const activeSkill = (page: Page) => page.getByRole('complementary', { name: 'Mai
 test('a PoE2 build runs in the app frame: every PoE2 page from the top bar, the main skill from the sidebar, saved and reopened', async ({ page }) => {
   const errors = await open(page);
   const tabs = page.locator('nav a.tab');
-  await expect(tabs).toHaveCount(PAGES.length + 1);
+  // with Notes and Compare
+  await expect(tabs).toHaveCount(PAGES.length + 2);
   for (const [label, route] of PAGES) {
     await poe2Nav(page, label).click();
     await expect.poll(() => routeOf(page)).toBe(route);
@@ -85,7 +86,7 @@ test('a PoE2 build runs in the app frame: every PoE2 page from the top bar, the 
 
 test.describe('390px wide', () => {
   test.use(PHONE);
-  test('a PoE2 build on a phone: the bottom bar reaches every PoE2 page and More lists only Notes and Import/Export', async ({ page }) => {
+  test('a PoE2 build on a phone: the bottom bar reaches every PoE2 page and More lists only Notes, Compare and Import/Export', async ({ page }) => {
     const errors = await open(page);
     await expect(bar(page).getByRole('link')).toHaveText(PAGES.map(([label]) => label));
     for (const [label, route] of PAGES) {
@@ -94,7 +95,7 @@ test.describe('390px wide', () => {
       await expect(poe2Page(page)).toBeVisible();
     }
     const more = await openMore(page);
-    await expect(more.getByRole('navigation', { name: 'More pages' }).getByRole('link')).toHaveText(['Notes', 'Import/Export']);
+    await expect(more.getByRole('navigation', { name: 'More pages' }).getByRole('link')).toHaveText(['Notes', 'Compare', 'Import/Export']);
     await expect(more.getByRole('menuitem', { name: 'Settings' })).toBeVisible();
     expect(errors).toEqual([]);
   });

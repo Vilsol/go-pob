@@ -336,6 +336,7 @@ wasm/exposition/mod_debug.go        PORT       src/Modules/Calcs.lua,src/Classes
 wasm/main.go                        GO-NATIVE  WASM entry point
 wasm2/exposition/breakdowns.go      GO-NATIVE  crystalline binding surface for the Calcs page's breakdown panel; flattens calculator2's breakdown views for JS
 wasm2/exposition/calcs.go           GO-NATIVE  crystalline binding surface for the PoE2 Calcs page's mod cells (CalcFormat.lua's per-entry Combine)
+wasm2/exposition/compare.go         GO-NATIVE  crystalline binding surface for the PoE2 Compare page's copies from the compared build into this one (CompareTab.lua's CopyCompareSpecToPrimary and CopyCompareItemToPrimary)
 wasm2/exposition/config.go          GO-NATIVE  crystalline binding surface for the PoE2 Config page's custom modifier blocks and their lines' verdicts (ConfigTab.lua's BuildModList)
 wasm2/exposition/calculator.go      GO-NATIVE  crystalline binding surface for the PoE2 frontend
 wasm2/exposition/crystalline_gen.go GENERATED  [unverifiable: emitted by `go tool crystalline`, pinned in go.mod, not a script in this repo]

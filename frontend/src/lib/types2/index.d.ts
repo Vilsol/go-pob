@@ -211,6 +211,8 @@ export declare namespace exposition {
     CloseDisplayItem(): Result<void>;
     ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;
     ConfigSets(): exposition.ConfigSetsView;
+    CopyCompareItem(from: exposition.Calculator | undefined, slotName: string, andUse: boolean): Result<boolean>;
+    CopyCompareSpec(from: exposition.Calculator | undefined, andUse: boolean): Result<void>;
     CopyConfigSet(id: number, title: string): number;
     CopyItemSet(id: number, title: string): Result<void>;
     CopySkillSet(id: number, title: string): Result<number>;

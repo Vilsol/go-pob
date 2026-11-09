@@ -638,6 +638,7 @@ trap 'rm -f {{config_root}}/.task-config-options2.ts' EXIT
 {% if usage.check %}diff -u "$out" "$gen"{% endif %}
 {% if not usage.check %}{{vars.NICE}} mise x --cd {{usage.pob2_dir}}/src -- luajit {{config_root}}/oracle/poe2_sidebar.lua {{config_root}}/wasm2/exposition/testdata/sorceress_spark.xml {{config_root}}/testdata/oracle/poe2_sidebar_sorceress_spark.json{% endif %}
 {% if not usage.check %}{{vars.NICE}} mise x --cd {{usage.pob2_dir}}/src -- luajit {{config_root}}/oracle/poe2_sidebar.lua {{config_root}}/wasm2/exposition/testdata/sorceress_three_spells.xml {{config_root}}/testdata/oracle/poe2_sidebar_sorceress_three_spells.json{% endif %}
+{% if not usage.check %}{{vars.NICE}} mise x --cd {{usage.pob2_dir}}/src -- luajit {{config_root}}/oracle/poe2_sidebar.lua {{config_root}}/wasm2/exposition/testdata/warrior_dual_mace.xml {{config_root}}/testdata/oracle/poe2_sidebar_warrior_dual_mace.json{% endif %}
 ''',
 ]
 

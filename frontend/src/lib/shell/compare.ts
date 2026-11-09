@@ -57,10 +57,18 @@ const diffText = (s: Stat, pv: number, cv: number, scale: number) => {
   return pv !== 0 ? `${str} (${luaFormat('+.1f%%', (cv / pv) * 100 - 100)})` : str;
 };
 
+// a game's sidebar stat lists; a PoE2 label-only row carries its condition as labelCondFunc
+type StatLists = { player: Stat[]; minion: Stat[] };
+type LabelRow = Stat & { labelCondFunc?: (o: StatOutput) => boolean; val?: string };
+
 // src/Classes/CompareTab.lua:3133-3189, src/Classes/CompareTab.lua:3280-3369
-export const summaryStats = (a: SideOutputs | undefined, b: SideOutputs | undefined) => {
+export const summaryStats = (
+  a: SideOutputs | undefined,
+  b: SideOutputs | undefined,
+  lists: StatLists = { player: displayStats, minion: minionDisplayStats }
+) => {
   const useMinion = !!a?.Minion?.Output || !!b?.Minion?.Output;
-  const list = useMinion ? minionDisplayStats : displayStats;
+  const list = useMinion ? lists.minion : lists.player;
   const actor = useMinion ? 'Minion' : 'Player';
   const pOut: StatOutput = (a?.Minion?.Output ?? a?.Output ?? {}) as StatOutput;
   const cOut: StatOutput = (b?.Minion?.Output ?? b?.Output ?? {}) as StatOutput;
@@ -93,11 +101,11 @@ export const summaryStats = (a: SideOutputs | undefined, b: SideOutputs | undefi
       const base = { key, label, lower: !!s.lowerIsBetter, pc: !!(s.pc || s.mod), diff: diffText(s, pv, cv, scale) };
       ga.push({ ...base, v: pv * scale, text: fmtValue(s, pv) });
       gb.push({ ...base, v: cv * scale, text: fmtValue(s, cv) });
-    } else if (s.condFunc) {
-      const cond = s.condFunc as unknown as (o: StatOutput) => boolean;
+    } else if (s.condFunc || (s as LabelRow).labelCondFunc) {
+      const cond = (s as LabelRow).labelCondFunc ?? (s.condFunc as unknown as (o: StatOutput) => boolean);
       const [ps, cs] = [cond(pOut), cond(cOut)];
       if (!ps && !cs) return;
-      const val = (s as Stat & { val?: string }).val ?? '';
+      const val = (s as LabelRow).val ?? '';
       const base = { key, label, lower: false, pc: false };
       ga.push({ ...base, v: ps ? 1 : 0, text: ps ? val : '-' });
       gb.push({ ...base, v: cs ? 1 : 0, text: cs ? val : '-' });

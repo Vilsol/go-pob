@@ -1,5 +1,7 @@
 import type { Outputs } from '$lib/custom_types';
 
+// a PoE2 build is compared against PoE2 builds only, as PoE1's Compare page refuses a PoE2 build
+export const COMPARE_MIXED_POE1 = 'A Path of Exile 1 build cannot be compared with a Path of Exile 2 build.';
 export type CompareInfo = { name: string; seq: number; names: string[]; active: number };
 export type CompareGem = { gemId: string; nameSpec: string; skillId: string; level: number; quality: number; enabled: boolean; count: number };
 export type CompareGroup = { label: string; slot: string; enabled: boolean; inFull: boolean; count: number; imbued?: string; gems: CompareGem[] };

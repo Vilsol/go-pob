@@ -1216,6 +1216,11 @@ class PoBWorker {
     (await storage.NewFolder(name)).unwrap();
   }
 
+  // a saved build's text, opened by nothing, for the PoE2 engine to read
+  async ReadBuild(path: string): Promise<string> {
+    return (await storage.GetBuild(path)).unwrap();
+  }
+
   async Copy(from: string, to: string) {
     const build = (await storage.GetBuild(from)).unwrap();
     if (!build) {

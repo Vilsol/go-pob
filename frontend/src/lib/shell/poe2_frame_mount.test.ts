@@ -119,11 +119,12 @@ describe('a PoE2 build in the app frame', () => {
       ['Items', '/items'],
       ['Calcs', '/calcs'],
       ['Config', '/configuration'],
-      ['Notes', '/notes']
+      ['Notes', '/notes'],
+      ['Compare', '/compare']
     ]);
   });
 
-  // the Notes page and the Import / Export dialog serve a PoE2 build; Party, Compare and Timeless do not yet
+  // the Notes page, the Compare page and the Import / Export dialog serve a PoE2 build; Party and Timeless do not yet
   it("the phone frame's More lists the pages PoE2 has", async () => {
     poe2Build.set(calc());
     const bar = render(AppTopBar, { props: { phone: true } });
@@ -133,7 +134,7 @@ describe('a PoE2 build in the app frame', () => {
       within(more)
         .getAllByRole('link')
         .map((l) => l.textContent?.trim())
-    ).toEqual(['Notes', 'Import/Export']);
+    ).toEqual(['Notes', 'Compare', 'Import/Export']);
   });
 
   it('a route PoE2 has no page for says so', async () => {

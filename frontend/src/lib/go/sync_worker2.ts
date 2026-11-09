@@ -24,6 +24,7 @@ import type { ItemDBFilterInput, ItemDBKind, ItemDBLists, ItemDBRowPlain } from 
 import { addStatCompares2 } from '../display/stat_compare2';
 import type { StatCompareSection } from '../skill_tree/stat_compare';
 import type { ConfigSetEdit } from './engine';
+import type { CompareInfo } from '../shell/compare_types';
 import type { SpecOp } from '../design/tree';
 import { DIFF_LABELS, UNRECORDED, UndoHistory, stepLabel, unrecordedLabel, type LabelOf, type Snapshot, type UndoView } from './undo';
 import { activeSpecNodes, configChangeLabel, itemTextName, skillsChangeLabel, treeChangeLabel, type StepDelta, type TreeNodeInfo } from './step_labels';
@@ -363,6 +364,79 @@ const SKILLS_SOURCES: Partial<Record<Poe2SkillsEdit['op'], string>> = {
 export type Poe2Restore = { history: UndoView; calc?: Poe2Calc };
 
 // PassiveTree.lua node types (PoB-PoE2) ranked as nodeRank ranks PoE1's, for a step's name
+const configSetsOf = (calc: exposition.Calculator | undefined): { sets: { id: number; title: string }[]; active: number } => {
+  const v = calc?.ConfigSets();
+  return { sets: (v?.Sets ?? []).map((s) => ({ id: s.ID, title: s.Title })), active: v?.Active ?? 1 };
+};
+
+const customBlocksOf = (calc: exposition.Calculator | undefined): { Title: string; Enabled: string; Text: string }[] =>
+  (calc?.CustomModifierBlocks() ?? []).map((b) => ({ Title: b.Title, Enabled: String(b.Enabled), Text: b.Text }));
+
+const treeSpecsOf = (calc: exposition.Calculator | undefined): { labels: string[]; active: number } => {
+  const v = calc?.TreeSpecs();
+  return { labels: [...(v?.Labels ?? [])], active: v?.Active ?? 1 };
+};
+
+const skillGroupsOf = (calc: exposition.Calculator): Poe2SkillGroup[] =>
+  (calc.SkillGroups().unwrap() ?? []).map((g) => ({
+    label: g.Label,
+    userLabel: g.UserLabel,
+    groupCount: g.GroupCount,
+    slot: g.Slot,
+    source: g.Source,
+    enabled: g.Enabled,
+    includeInFullDPS: g.IncludeInFullDPS,
+    set1: g.Set1,
+    set2: g.Set2,
+    weaponSetLocked: g.WeaponSetLocked,
+    weaponSetValid: [g.Set1Valid, g.Set2Valid],
+    weaponSetEnabled: [g.Set1Enabled, g.Set2Enabled],
+    forcedBoth: g.ForcedBoth,
+    gems: (g.Gems ?? []).map((gem) => ({
+      id: gem.ID,
+      name: gem.Name,
+      level: gem.Level,
+      quality: gem.Quality,
+      count: gem.Count,
+      enabled: gem.Enabled,
+      support: gem.Support,
+      color: gem.Color,
+      generated: gem.Generated,
+      countShown: gem.CountShown,
+      corruptShown: gem.CorruptShown,
+      corruptIndex: gem.CorruptIndex,
+      error: gem.Error
+    }))
+  }));
+
+const skillSetsOf = (calc: exposition.Calculator): Poe2SkillSets => {
+  const v = calc.SkillSets();
+  return { sets: (v.Sets ?? []).map((s) => ({ id: s.ID, title: s.Title })), active: v.Active };
+};
+
+/* CompareTab.lua (PoB-PoE2): what the Compare page reads of one build besides its calculation */
+export type Poe2CompareParts = {
+  groups: Poe2SkillGroup[];
+  skillSets: Poe2SkillSets;
+  items: { slot: string; name: string[]; rarity: string; lines: string[][] }[];
+  itemSets: { sets: { id: number; title: string }[]; active: number };
+  // the active spec's tree version
+  treeVersion: string;
+};
+
+const compareParts = (calc: exposition.Calculator): Poe2CompareParts => {
+  const page = calc.ItemsPage().unwrap();
+  return {
+    groups: skillGroupsOf(calc),
+    skillSets: skillSetsOf(calc),
+    items: (calc.EquippedItems().unwrap()?.Items ?? []).map((i) => ({ slot: i.Slot, ...item2(i) })),
+    itemSets: { sets: (page?.Sets ?? []).map((s) => ({ id: s.ID, title: s.Title })), active: page?.ActiveItemSet ?? 1 },
+    treeVersion: (calc.TreeSpecRows().unwrap() ?? [])[treeSpecsOf(calc).active - 1]?.Version ?? ''
+  };
+};
+
+export type Poe2CompareSetKind = 'tree' | 'skill' | 'item' | 'config' | 'group' | 'skills';
+
 const NODE_RANK2: Record<string, number> = { Keystone: 5, Notable: 3, Mastery: 2, Socket: 1 };
 
 class PoB2Worker {
@@ -394,6 +468,10 @@ class PoB2Worker {
   private async view(): Promise<Poe2Calc> {
     const calc = this.calc;
     if (!calc) throw new Error('no PoE2 build is open');
+    return this.viewOf(calc);
+  }
+
+  private async viewOf(calc: exposition.Calculator): Promise<Poe2Calc> {
     const out = (await calc.Calculate()).unwrap();
     if (!out) throw new Error('the PoE2 build did not calculate');
     const inputs: Record<string, ConfigValue2> = {};
@@ -424,9 +502,9 @@ class PoB2Worker {
       mainSocketGroup: out.MainSocketGroup,
       mainActiveSkill: out.MainActiveSkill,
       configInputs: inputs,
-      configSets: this.ConfigSets(),
-      treeSpecs: this.TreeSpecs(),
-      customBlocks: this.CustomModifierBlocks(),
+      configSets: configSetsOf(calc),
+      treeSpecs: treeSpecsOf(calc),
+      customBlocks: customBlocksOf(calc),
       relevance: Object.fromEntries(Object.entries(rel).map(([k, v]) => [k, [...((v as string[] | undefined) ?? [])]])) as calculator2.ConfigRelevance,
       tree: {
         alloc: [...(st.Alloc ?? [])],
@@ -463,6 +541,8 @@ class PoB2Worker {
     if (!calc) throw new Error('the PoE2 build did not parse');
     this.calc?.release();
     this.calc = calc;
+    // CompareTab.lua (PoB-PoE2) is created with each build
+    this.clearCompare();
     let view: Poe2Calc;
     try {
       view = await this.view();
@@ -479,6 +559,126 @@ class PoB2Worker {
       this.remember(saved.xml, view);
     } else this.history.clear();
     return view;
+  }
+
+  private compareList: { calc: exposition.Calculator; name: string; seq: number; view: Poe2Calc }[] = [];
+  private compareB?: (typeof this.compareList)[number];
+  private compareSeq = 0;
+
+  /* CompareTab.lua:1312-1325 (PoB-PoE2) */
+  async LoadCompare(xml: string, name: string): Promise<CompareInfo> {
+    await this.booted;
+    const calc = exposition.ParseBuild(xml).unwrap();
+    if (!calc) throw new Error('the build did not parse');
+    let view: Poe2Calc;
+    try {
+      view = await this.viewOf(calc);
+    } catch (err) {
+      calc.release();
+      throw err;
+    }
+    this.compareB = { calc, name, seq: ++this.compareSeq, view };
+    this.compareList.push(this.compareB);
+    return this.GetCompareInfo();
+  }
+
+  /* CompareTab.lua:229-234 (PoB-PoE2) */
+  SetActiveCompare(index: number): CompareInfo {
+    this.compareB = this.compareList[index] ?? this.compareB;
+    return this.GetCompareInfo();
+  }
+
+  /* CompareTab.lua:1340-1351 (PoB-PoE2) */
+  RemoveCompare(): CompareInfo {
+    const i = this.compareB ? this.compareList.indexOf(this.compareB) : -1;
+    if (i < 0) return this.GetCompareInfo();
+    const [old] = this.compareList.splice(i, 1);
+    this.compareB = this.compareList[Math.min(i, this.compareList.length - 1)];
+    old.calc.release();
+    return this.GetCompareInfo();
+  }
+
+  private clearCompare() {
+    for (const e of this.compareList) e.calc.release();
+    this.compareList = [];
+    this.compareB = undefined;
+  }
+
+  GetCompareInfo(): CompareInfo {
+    const names = this.compareList.map((e) => e.name);
+    return this.compareB
+      ? { name: this.compareB.name, seq: this.compareB.seq, names, active: this.compareList.indexOf(this.compareB) }
+      : { name: '', seq: 0, names, active: -1 };
+  }
+
+  // the open build's parts, and the compared build's with its calculation
+  CompareSides(): { a: Poe2CompareParts; b: Poe2CompareParts & { view: Poe2Calc }; bName: string; seq: number } | undefined {
+    const b = this.compareB;
+    if (!b || !this.calc) return undefined;
+    return { a: compareParts(this.calc), b: { ...compareParts(b.calc), view: b.view }, bName: b.name, seq: b.seq };
+  }
+
+  // the compared build changes, so it calculates again and takes a new seq, which the page reads anew
+  private async compareEdited(b: NonNullable<typeof this.compareB>): Promise<CompareInfo> {
+    b.view = await this.viewOf(b.calc);
+    b.seq = ++this.compareSeq;
+    return this.GetCompareInfo();
+  }
+
+  /* CompareTab.lua:1180-1224 (PoB-PoE2): a config control of the compared build */
+  async SetCompareConfigOption(name: string, value: ConfigValue2 | undefined): Promise<CompareInfo> {
+    const b = this.compareB;
+    if (!b) return this.GetCompareInfo();
+    b.calc.SetConfigInput(name, fromValue(value), value === undefined || value === defaultStateOf(name, value));
+    return this.compareEdited(b);
+  }
+
+  /* CompareTab.lua:279-389 (PoB-PoE2): the compared build's tree, skill, item and config sets and main skill, by
+     index in their lists */
+  async SetCompareSet(kind: Poe2CompareSetKind, index: number): Promise<CompareInfo> {
+    const b = this.compareB;
+    if (!b) return this.GetCompareInfo();
+    const c = b.calc;
+    if (kind === 'tree') c.SetActiveTreeSpec(index + 1);
+    else if (kind === 'skill') c.SetActiveSkillSet(skillSetsOf(c).sets[index]?.id ?? 0).unwrap();
+    else if (kind === 'item') c.SetActiveItemSet(compareParts(c).itemSets.sets[index]?.id ?? 0).unwrap();
+    else if (kind === 'config') c.SetActiveConfigSet(configSetsOf(c).sets[index]?.id ?? 1);
+    else if (kind === 'group') c.SetMainSocketGroup(index + 1);
+    else c.SetMainActiveSkill(index + 1);
+    return this.compareEdited(b);
+  }
+
+  /* CompareTab.lua:1180-1224 (PoB-PoE2): one option of the open build takes the compared build's value */
+  async UseCompareConfig(name: string): Promise<Poe2Calc> {
+    const b = this.compareB;
+    if (!b || !this.calc) return this.view();
+    const value = b.view.configInputs[name];
+    this.calc.SetConfigInput(name, fromValue(value), value === undefined || value === defaultStateOf(name, value));
+    return this.changed('UseCompareConfig', `Used ${(options2[name]?.label ?? name).replace(/:$/, '')} from ${b.name}`);
+  }
+
+  /* CompareTab.lua:1298-1309 (PoB-PoE2) */
+  async CopyCompareConfig(): Promise<Poe2Calc> {
+    const b = this.compareB;
+    if (!b || !this.calc) return this.view();
+    for (const [k, v] of Object.entries(b.view.configInputs)) this.calc.SetConfigInput(k, fromValue(v), false);
+    return this.changed('CopyCompareConfig', `Copied the config of ${b.name}`);
+  }
+
+  /* CompareTab.lua:1386-1423 (PoB-PoE2) */
+  async CopyCompareSpec(andUse: boolean): Promise<Poe2Calc> {
+    const b = this.compareB;
+    if (!b || !this.calc) return this.view();
+    this.calc.CopyCompareSpec(b.calc, andUse).unwrap();
+    return this.changed('CopyCompareSpec', `Copied the passive tree of ${b.name}`);
+  }
+
+  /* CompareTab.lua:1494-1514 (PoB-PoE2) */
+  async CopyCompareItem(slot: string, andUse: boolean): Promise<Poe2Calc> {
+    const b = this.compareB;
+    if (!b || !this.calc) return this.view();
+    this.calc.CopyCompareItem(b.calc, slot, andUse).unwrap();
+    return this.changed('CopyCompareItem', `Copied the ${slot} item of ${b.name}`);
   }
 
   private saved(): { xml: string; snap: Snapshot } | undefined {
@@ -581,13 +781,12 @@ class PoB2Worker {
 
   /* ConfigTab.lua:152-178, ConfigSetListControl.lua:93-99 (PoB-PoE2) */
   ConfigSets(): { sets: { id: number; title: string }[]; active: number } {
-    const v = this.calc?.ConfigSets();
-    return { sets: (v?.Sets ?? []).map((s) => ({ id: s.ID, title: s.Title })), active: v?.Active ?? 1 };
+    return configSetsOf(this.calc);
   }
 
   /* ConfigTab.lua:24-98, 1200-1223 (PoB-PoE2): the active config set's custom modifier blocks */
   CustomModifierBlocks(): { Title: string; Enabled: string; Text: string }[] {
-    return (this.calc?.CustomModifierBlocks() ?? []).map((b) => ({ Title: b.Title, Enabled: String(b.Enabled), Text: b.Text }));
+    return customBlocksOf(this.calc);
   }
 
   async SetCustomModifierBlocks(blocks: { Title?: string; Enabled?: string; Text: string }[]): Promise<Poe2Calc> {
@@ -710,8 +909,7 @@ class PoB2Worker {
 
   /* TreeTab.lua:485-491 (PoB-PoE2) */
   TreeSpecs(): { labels: string[]; active: number } {
-    const v = this.calc?.TreeSpecs();
-    return { labels: [...(v?.Labels ?? [])], active: v?.Active ?? 1 };
+    return treeSpecsOf(this.calc);
   }
 
   private activeSpecTitle() {
@@ -795,17 +993,28 @@ class PoB2Worker {
      Calcs page reads beside the sidebar's */
   CalcsPage(): Poe2CalcsPage {
     if (!this.calc) throw new Error('no PoE2 build is open');
+    return this.calcsPageOf(this.calc);
+  }
+
+  private calcsPageOf(calc: exposition.Calculator): Poe2CalcsPage {
     this.calcsQuery ??= { Entries: calcsModProps2(calcSections2) };
-    const mods = { ...this.calc.CalcsMods(this.calcsQuery).unwrap() };
-    const out = this.calc.CalcsOutputs().unwrap();
+    const mods = { ...calc.CalcsMods(this.calcsQuery).unwrap() };
+    const out = calc.CalcsOutputs().unwrap();
     return {
       mods,
       flags: { ...out?.Flags },
       strings: { ...out?.Strings },
       mainHand: out?.MainHand ? { ...out.MainHand } : undefined,
       offHand: out?.OffHand ? { ...out.OffHand } : undefined,
-      breakdowns: calcsBreakdowns2(this.calc.CalcsBreakdowns().unwrap() ?? {})
+      breakdowns: calcsBreakdowns2(calc.CalcsBreakdowns().unwrap() ?? {})
     };
+  }
+
+  /* CompareTab.lua:4583-4652 (PoB-PoE2): both builds' Calcs page values */
+  CompareCalcsPages(): { a: Poe2CalcsPage; b: Poe2CalcsPage } | undefined {
+    const b = this.compareB;
+    if (!b || !this.calc) return undefined;
+    return { a: this.calcsPageOf(this.calc), b: this.calcsPageOf(b.calc) };
   }
 
   /* CalcBreakdownControl.lua:300-548 (PoB-PoE2): a cell entry's mod table over the last calculation */
@@ -838,42 +1047,12 @@ class PoB2Worker {
 
   SkillGroups(): Poe2SkillGroup[] {
     if (!this.calc) throw new Error('no PoE2 build is open');
-    return (this.calc.SkillGroups().unwrap() ?? []).map((g) => ({
-      label: g.Label,
-      userLabel: g.UserLabel,
-      groupCount: g.GroupCount,
-      slot: g.Slot,
-      source: g.Source,
-      enabled: g.Enabled,
-      includeInFullDPS: g.IncludeInFullDPS,
-      set1: g.Set1,
-      set2: g.Set2,
-      weaponSetLocked: g.WeaponSetLocked,
-      weaponSetValid: [g.Set1Valid, g.Set2Valid],
-      weaponSetEnabled: [g.Set1Enabled, g.Set2Enabled],
-      forcedBoth: g.ForcedBoth,
-      gems: (g.Gems ?? []).map((gem) => ({
-        id: gem.ID,
-        name: gem.Name,
-        level: gem.Level,
-        quality: gem.Quality,
-        count: gem.Count,
-        enabled: gem.Enabled,
-        support: gem.Support,
-        color: gem.Color,
-        generated: gem.Generated,
-        countShown: gem.CountShown,
-        corruptShown: gem.CorruptShown,
-        corruptIndex: gem.CorruptIndex,
-        error: gem.Error
-      }))
-    }));
+    return skillGroupsOf(this.calc);
   }
 
   SkillSets(): Poe2SkillSets {
     if (!this.calc) throw new Error('no PoE2 build is open');
-    const v = this.calc.SkillSets();
-    return { sets: (v.Sets ?? []).map((s) => ({ id: s.ID, title: s.Title })), active: v.Active };
+    return skillSetsOf(this.calc);
   }
 
   /* SkillsTab.lua:639-657 (PoB-PoE2): the text Ctrl+C copies for a group; "" for a group a source creates */
