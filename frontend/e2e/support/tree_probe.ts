@@ -51,10 +51,19 @@ const probeInit = (withRecorder: boolean) => {
     return [m.a, m.b, m.c, m.d, m.e, m.f];
   };
   const bitmapSrc = new WeakMap<object, string>();
+  // the renderers fetch a sheet and decode the blob into a bitmap: the blob carries its response's URL
+  const blobSrc = new WeakMap<object, string>();
+  const blob = Object.getOwnPropertyDescriptor(Response.prototype, 'blob')!.value as (this: Response) => Promise<Blob>;
+  Response.prototype.blob = async function (this: Response) {
+    const b = await blob.call(this);
+    blobSrc.set(b, this.url);
+    return b;
+  };
   const createBitmap = globalThis.createImageBitmap;
   globalThis.createImageBitmap = (async (source: ImageBitmapSource, ...rest: unknown[]) => {
     const bmp = await (createBitmap as (...a: unknown[]) => Promise<ImageBitmap>)(source, ...rest);
-    if (source instanceof HTMLImageElement) bitmapSrc.set(bmp, source.src);
+    const src = source instanceof HTMLImageElement ? source.src : (blobSrc.get(source) ?? bitmapSrc.get(source));
+    if (src) bitmapSrc.set(bmp, src);
     return bmp;
   }) as typeof createImageBitmap;
   const srcOf = (img: unknown): string => (img instanceof HTMLImageElement ? img.src : img instanceof ImageBitmap ? (bitmapSrc.get(img) ?? '') : '');
@@ -66,7 +75,7 @@ const probeInit = (withRecorder: boolean) => {
       if (isTree(this)) {
         const ok = !(a[0] instanceof HTMLImageElement) || (a[0].complete && a[0].naturalWidth > 0);
         P.calls.push({ op: 'img', src: srcOf(a[0]), ok, s: n.slice(0, 4), d: n.slice(4), t: tf(this), crop: crops.get(a[0] as object) });
-      } else if (a[0] instanceof HTMLImageElement) {
+      } else if (a[0] instanceof HTMLImageElement || a[0] instanceof ImageBitmap) {
         crops.set(this.canvas, { src: srcOf(a[0]), s: n.slice(0, 4), filter: this.filter });
       }
     }

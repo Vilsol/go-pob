@@ -61,6 +61,21 @@
   ]);
   const fmt = (v: number) => (Number.isFinite(v) ? (Math.abs(v) >= 100 ? Math.round(v).toLocaleString('en-US') : String(Math.round(v * 100) / 100)) : '—');
   const hovered = $derived(rows.find((r) => r.name === hover));
+
+  // a database lists over a thousand rows: they are drawn a slice per task, so the page is never held while it fills
+  const SLICE = 100;
+  let shown = $state(SLICE);
+  $effect(() => {
+    const total = rows.length;
+    shown = SLICE;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const grow = () => {
+      shown += SLICE;
+      if (shown < total) timer = setTimeout(grow);
+    };
+    if (total > SLICE) timer = setTimeout(grow);
+    return () => clearTimeout(timer);
+  });
 </script>
 
 <div class="flex min-h-0 grow flex-col gap-2.5 max-phone:shrink-0">
@@ -139,12 +154,12 @@
             class="col-span-3 text-right">{sort ? 'STAT' : 'REQ.'}</span
           ><span role="columnheader" class="col-span-7"><span class="sr-only">Actions</span></span>
         </div>
-        {#each rows as r, i (i)}
+        {#each rows.slice(0, shown) as r, i (i)}
           <div
             role="row"
             tabindex="-1"
             class={[
-              'data-row grid-cols-24 py-1 max-phone:grid-cols-[minmax(0,1fr)_auto] max-phone:gap-y-0.5',
+              'data-row grid-cols-24 py-1 [contain-intrinsic-size:auto_28px] [content-visibility:auto] max-phone:grid-cols-[minmax(0,1fr)_auto] max-phone:gap-y-0.5',
               hover === r.name ? 'bg-surface-3' : i % 2 && 'bg-alt'
             ]}
             onmouseenter={() => (hover = r.name)}

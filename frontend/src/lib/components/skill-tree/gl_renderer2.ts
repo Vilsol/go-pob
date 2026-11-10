@@ -1,6 +1,7 @@
 import { hardwareWebGL2 } from './webgl';
 import { DISC_FLOATS, SPRITE2_FLOATS, STROKE2_FLOATS, fillScene2, scaleOf, type Scene2, type Scene2State, type View2 } from './scene2';
 import { sheetPath2 } from '$lib/skill_tree/tree2_art';
+import { loadBitmap } from './sheet_bitmap';
 
 export interface Tree2Renderer {
   readonly kind: 'webgl' | 'canvas';
@@ -120,6 +121,8 @@ void main() {
 }`;
 
 const MAX_SHEETS = 16;
+const UPLOAD_ROWS = 512;
+const ARRIVAL_MS = 200;
 
 const SPRITE_VS = `${HEAD}
 layout(location=1) in vec2 a_o;
@@ -296,22 +299,29 @@ export class GlTree2Renderer implements Tree2Renderer {
     return t.ready;
   };
 
+  // a sheet goes up in bands of rows, a task each: a whole sheet in one call holds the main thread for about 100 ms
   private load(t: Tex, url: string, unit: number) {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      if (this.frame === -1) return;
-      const { gl } = this;
-      gl.activeTexture(gl.TEXTURE0 + unit);
-      gl.bindTexture(gl.TEXTURE_2D, t.tex);
-      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-      gl.generateMipmap(gl.TEXTURE_2D);
-      [t.w, t.h, t.ready] = [img.naturalWidth, img.naturalHeight, true];
-      this.dirty = true;
-      this.request();
-    };
-    img.src = url;
+    void loadBitmap(url)
+      .then(async (bmp) => {
+        const { gl } = this;
+        const [w, h] = [bmp.width, bmp.height];
+        for (let y = 0; y < h; y += UPLOAD_ROWS) {
+          if (y) await new Promise((r) => setTimeout(r));
+          if (this.frame === -1) return bmp.close();
+          gl.activeTexture(gl.TEXTURE0 + unit);
+          gl.bindTexture(gl.TEXTURE_2D, t.tex);
+          if (!y) gl.texStorage2D(gl.TEXTURE_2D, Math.floor(Math.log2(Math.max(w, h))) + 1, gl.RGBA8, w, h);
+          gl.pixelStorei(gl.UNPACK_SKIP_ROWS, y);
+          gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, y, w, Math.min(UPLOAD_ROWS, h - y), gl.RGBA, gl.UNSIGNED_BYTE, bmp);
+          gl.pixelStorei(gl.UNPACK_SKIP_ROWS, 0);
+        }
+        gl.generateMipmap(gl.TEXTURE_2D);
+        [t.w, t.h, t.ready] = [w, h, true];
+        bmp.close();
+        this.dirty = true;
+        this.request();
+      })
+      .catch(() => undefined);
   }
 
   private texture(unit: number) {
@@ -442,8 +452,9 @@ export class CanvasTree2Renderer implements Tree2Renderer {
   private state?: Scene2State;
   private dirty = true;
   private frame = 0;
-  private sheets: (HTMLImageElement | undefined)[] = [];
-  private ready: boolean[] = [];
+  private sheets: (ImageBitmap | undefined)[] = [];
+  private requested: boolean[] = [];
+  private arrival?: ReturnType<typeof setTimeout>;
   private tinted = new Map<string, HTMLCanvasElement>();
   // the drawn tree at one scale, which a pan only moves; dropped when the scene or the scale changes
   private layer?: { canvas: HTMLCanvasElement; k: number; x: number; y: number };
@@ -475,6 +486,7 @@ export class CanvasTree2Renderer implements Tree2Renderer {
   destroy() {
     cancelAnimationFrame(this.frame);
     clearTimeout(this.settle);
+    clearTimeout(this.arrival);
     this.frame = -1;
   }
 
@@ -485,19 +497,31 @@ export class CanvasTree2Renderer implements Tree2Renderer {
   private sheetReady = (i: number) => {
     const art = this.scene.art;
     if (!art) return false;
-    if (!this.sheets[i]) {
-      const img = (this.sheets[i] = new Image());
-      img.crossOrigin = 'anonymous';
-      img.onload = () => {
-        if (this.frame === -1) return;
-        this.ready[i] = true;
+    if (!this.requested[i]) {
+      this.requested[i] = true;
+      void loadBitmap(`${art.base}/${sheetPath2(art.atlas.sheets[i])}`)
+        .then((bmp) => {
+          if (this.frame === -1) return bmp.close();
+          this.sheets[i] = bmp;
+          this.arrived();
+        })
+        .catch(() => undefined);
+    }
+    return !!this.sheets[i];
+  };
+
+  // each repaint of the whole tree takes hundreds of milliseconds, so sheets that arrive close together repaint it once
+  private arrived() {
+    clearTimeout(this.arrival);
+    const all = this.requested.every((r, i) => !r || this.sheets[i]);
+    this.arrival = setTimeout(
+      () => {
         this.dirty = true;
         this.request();
-      };
-      img.src = `${art.base}/${sheetPath2(art.atlas.sheets[i])}`;
-    }
-    return !!this.ready[i];
-  };
+      },
+      all ? 0 : ARRIVAL_MS
+    );
+  }
 
   // the source rect multiplied by an opaque tint, as SetDrawColor does, with an arc's inner radius cut away
   private source(
@@ -659,6 +683,8 @@ export class CanvasTree2Renderer implements Tree2Renderer {
   private paint(ctx: CanvasRenderingContext2D, s: number, k: number, tx: number, ty: number, r: Rect = [0, 0, ctx.canvas.width, ctx.canvas.height]) {
     const { scene } = this;
     const { counts } = scene;
+    // a decoded bitmap scales with plain bilinear filtering at 'low', where an <img> was scaled from mipmaps
+    ctx.imageSmoothingQuality = 'medium';
     ctx.setTransform(k, 0, 0, k, tx, ty);
     const v: Rect = [(r[0] - tx) / k, (r[1] - ty) / k, (r[2] - tx) / k, (r[3] - ty) / k];
     if (scene.art) {

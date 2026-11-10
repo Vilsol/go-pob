@@ -1,5 +1,6 @@
 import { fillScene, SPRITE_FLOATS, STROKE_FLOATS, STYLE_COLOURS, STYLE_WIDTHS, classArt, type Scene, type SceneState } from './scene';
 import type { TreeRenderer, View } from './renderer';
+import { loadBitmap } from './sheet_bitmap';
 
 const MAX_SHEETS = 16;
 
@@ -436,35 +437,37 @@ export class GlTreeRenderer implements TreeRenderer {
   }
 
   private load(t: Tex, url: string, unit: number) {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = async () => {
-      if (this.frame === -1 || this.lost) return;
-      const { gl } = this;
-      const max = gl.getParameter(gl.MAX_TEXTURE_SIZE) as number;
-      const fit = Math.min(1, max / img.naturalWidth, max / img.naturalHeight);
-      const src =
-        fit < 1
-          ? await createImageBitmap(img, {
-              resizeWidth: Math.floor(img.naturalWidth * fit),
-              resizeHeight: Math.floor(img.naturalHeight * fit),
-              resizeQuality: 'high',
-              premultiplyAlpha: 'premultiply'
-            })
-          : img;
-      if (this.frame === -1 || this.lost) return;
-      gl.activeTexture(gl.TEXTURE0 + unit);
-      gl.bindTexture(gl.TEXTURE_2D, t.tex);
-      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
-      gl.generateMipmap(gl.TEXTURE_2D);
-      t.w = img.naturalWidth;
-      t.h = img.naturalHeight;
-      t.ready = true;
-      this.stateDirty = true;
-      this.request();
-    };
-    img.src = url;
+    void loadBitmap(url)
+      .then(async (bmp) => {
+        if (this.frame === -1 || this.lost) return bmp.close();
+        const { gl } = this;
+        const [w, h] = [bmp.width, bmp.height];
+        const max = gl.getParameter(gl.MAX_TEXTURE_SIZE) as number;
+        const fit = Math.min(1, max / w, max / h);
+        const src =
+          fit < 1
+            ? await createImageBitmap(bmp, {
+                resizeWidth: Math.floor(w * fit),
+                resizeHeight: Math.floor(h * fit),
+                resizeQuality: 'high',
+                premultiplyAlpha: 'premultiply'
+              })
+            : bmp;
+        if (src !== bmp) bmp.close();
+        if (this.frame === -1 || this.lost) return src.close();
+        gl.activeTexture(gl.TEXTURE0 + unit);
+        gl.bindTexture(gl.TEXTURE_2D, t.tex);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        src.close();
+        t.w = w;
+        t.h = h;
+        t.ready = true;
+        this.stateDirty = true;
+        this.request();
+      })
+      .catch(() => undefined);
   }
 
   private texture(unit: number) {

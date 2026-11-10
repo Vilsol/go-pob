@@ -7,12 +7,16 @@
   const uid = $props.id();
 </script>
 
+<!-- on a phone the page fills the screen, so a toast sits over the top bar and lets taps through to it, except on its own buttons -->
 {#if $toasts.length}
   <div
-    class="pointer-events-none fixed bottom-3 left-3 z-toast flex max-phone:bottom-[calc(3.5rem+env(safe-area-inset-bottom)+0.75rem)] w-80 max-w-[calc(100vw-24px)] flex-col gap-2">
+    class="pointer-events-none fixed bottom-3 left-3 z-toast flex w-80 max-w-[calc(100vw-24px)] flex-col gap-2 max-phone:top-[calc(env(safe-area-inset-top)+0.25rem)] max-phone:right-3 max-phone:bottom-auto max-phone:w-auto">
     {#each $toasts as t, i (t.id)}
       {@const [title, ...body] = t.message.split('\n')}
-      <div role="status" aria-labelledby="{uid}-{i}" class="panel pointer-events-auto flex flex-col gap-1 px-3 py-2.5 text-12 shadow-pop">
+      <div
+        role="status"
+        aria-labelledby="{uid}-{i}"
+        class="panel pointer-events-auto flex flex-col gap-1 px-3 py-2.5 text-12 shadow-pop max-phone:pointer-events-none">
         <span class="flex items-center gap-2">
           {#if t.spinner}<Spinner />{/if}
           <span id="{uid}-{i}" class="text-13 font-semibold">{title}</span>
@@ -29,7 +33,7 @@
             <div class="h-full bg-accent" style:width="{Math.min(1, Math.max(0, t.progress)) * 100}%"></div>
           </div>
         {/if}
-        <span class="flex justify-end gap-1">
+        <span class="pointer-events-auto flex gap-1 self-end">
           {#if t.action}{@const action = t.action}<Button size="sm" variant="ghost" onclick={() => action.run()}>{action.label}</Button>{/if}
           <Button size="sm" variant="ghost" onclick={() => dismissToast(t.id)}>Dismiss</Button>
         </span>

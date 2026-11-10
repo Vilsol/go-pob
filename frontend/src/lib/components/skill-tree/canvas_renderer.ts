@@ -1,7 +1,8 @@
 import { SPRITE_FLOATS, STROKE_FLOATS, STYLE_COLOURS, STYLE_WIDTHS, classArt, fillScene, unpackTint, type Scene, type SceneState } from './scene';
 import type { TreeRenderer, View } from './renderer';
+import { loadBitmap } from './sheet_bitmap';
 
-type Sheet = { img: HTMLImageElement; ready: boolean; requested: boolean; bmp?: ImageBitmap };
+type Sheet = { ready: boolean; requested: boolean; bmp?: ImageBitmap };
 
 export class CanvasTreeRenderer implements TreeRenderer {
   readonly kind = 'canvas';
@@ -16,7 +17,7 @@ export class CanvasTreeRenderer implements TreeRenderer {
   private pathsScaling = NaN;
   private frame = 0;
   private artPath: string | undefined;
-  private artImg: HTMLImageElement | undefined;
+  private artImg: ImageBitmap | undefined;
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -27,7 +28,7 @@ export class CanvasTreeRenderer implements TreeRenderer {
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('Canvas 2D is not available');
     this.ctx = ctx;
-    this.sheets = scene.sheets.map(() => ({ img: new Image(), ready: false, requested: false }));
+    this.sheets = scene.sheets.map(() => ({ ready: false, requested: false }));
   }
 
   setView(view: View) {
@@ -148,8 +149,8 @@ export class CanvasTreeRenderer implements TreeRenderer {
   }
 
   private source(sheet: number, variant: number, sx: number, sy: number, sw: number, sh: number): CanvasImageSource {
-    const img = sheet >= this.sheets.length ? this.artImg! : this.sheets[sheet].img;
-    if (variant === 0) return (sheet < this.sheets.length && this.sheets[sheet].bmp) || img;
+    const img = sheet >= this.sheets.length ? this.artImg! : this.sheets[sheet].bmp!;
+    if (variant === 0) return img;
     const key = `${sheet}:${sx},${sy},${sw},${sh}:${variant}`;
     let c = this.crops.get(key);
     if (!c) {
@@ -177,13 +178,13 @@ export class CanvasTreeRenderer implements TreeRenderer {
     if (art) {
       let s = this.art.get(art.image);
       if (!s) {
-        s = { img: new Image(), ready: false, requested: true };
+        s = { ready: false, requested: true };
         this.art.set(art.image, s);
         this.load(s, `${this.cdnBase}/raw/${art.image}`);
       }
       if (s.ready) {
-        this.artImg = s.img;
-        artInfo = { sheet: this.sheets.length, w: s.img.naturalWidth, h: s.img.naturalHeight };
+        this.artImg = s.bmp!;
+        artInfo = { sheet: this.sheets.length, w: s.bmp!.width, h: s.bmp!.height };
         this.artPath = `raw/${art.image}`;
       }
     }
@@ -226,13 +227,14 @@ export class CanvasTreeRenderer implements TreeRenderer {
   }
 
   private load(s: Sheet, url: string) {
-    s.img.onload = async () => {
-      if (this.frame === -1) return;
-      s.bmp = await createImageBitmap(s.img);
-      s.ready = true;
-      this.stateDirty = true;
-      this.request();
-    };
-    s.img.src = url;
+    void loadBitmap(url)
+      .then((bmp) => {
+        if (this.frame === -1) return bmp.close();
+        s.bmp = bmp;
+        s.ready = true;
+        this.stateDirty = true;
+        this.request();
+      })
+      .catch(() => undefined);
   }
 }
