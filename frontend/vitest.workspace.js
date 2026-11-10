@@ -25,6 +25,11 @@ const linkedModules = {
 export default defineWorkspace([
   'vite.config.js',
   {
+    // a cold dependency cache (a new checkout, or another checkout sharing node_modules) otherwise finds these mid-run,
+    // and the reload that follows fails the story files then loading
+    optimizeDeps: {
+      include: ['storybook/theming', '@floating-ui/dom', '@tiptap/core', '@tiptap/extension-list', '@tiptap/starter-kit', 'fast-printf', 'runed', 'comlink']
+    },
     plugins: [tailwindcss(), sveltekit(), storybookTest({ configDir: '.storybook' }), linkedModules],
     test: {
       name: 'storybook',

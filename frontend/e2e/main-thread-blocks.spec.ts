@@ -1,7 +1,9 @@
 // Main-thread blocks over a walk through the app: long tasks per phase, and a CPU profile and a trace per phase written
 // to .results/main-thread/<phase>.{cpuprofile,trace.json}. A profiling run, not a check:
 //   E2E_MAIN_THREAD=1 E2E_SLOW=1 E2E_PERF=1 npx playwright test -c e2e/playwright.config.ts e2e/main-thread-blocks.spec.ts
-// (E2E_GPU=1 for the WebGL renderers).
+// (E2E_GPU=1 for the WebGL renderers). Headless Chromium composites in software even then: each WebGL frame is read back
+// inside the main thread's Commit, which first waits for every queued GPU command, so a long Commit after a texture
+// upload is the harness's cost, not one a GPU-composited page pays.
 import { test, expect, type CDPSession, type Page } from '@playwright/test';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -134,9 +136,17 @@ test('PoE2: open a build, every page, the tree', { tag: '@slow' }, async ({ page
   await page.goto(`/calcs?import=${encodeURIComponent(code(FIXTURE))}`);
   await expect(poe2Page(page)).toBeVisible({ timeout: 180_000 });
   await p.end('boot-open');
-  for (const link of ['Tree', 'Items', 'Skills', 'Config', 'Calcs', 'Tree']) {
+  // the second Tree visit is named apart, so its files do not overwrite the first visit's
+  for (const [link, phase] of [
+    ['Tree', 'Tree'],
+    ['Items', 'Items'],
+    ['Skills', 'Skills'],
+    ['Config', 'Config'],
+    ['Calcs', 'Calcs'],
+    ['Tree', 'Tree-again']
+  ]) {
     await poe2Nav(page, link).click();
-    await p.end(`page-${link}`);
+    await p.end(`page-${phase}`);
   }
   await p.finish();
 });

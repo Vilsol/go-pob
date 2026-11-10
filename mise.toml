@@ -579,6 +579,15 @@ description = "Lint frontend"
 dir = "frontend"
 run = '{{vars.NICE}} pnpm run lint'
 
+[tasks.lint-frontend-ci]
+description = "What CI's Lint Frontend job runs: prettier, svelte-check --fail-on-warnings, then eslint"
+dir = "frontend"
+run = [
+  '{{vars.NICE}} pnpm run lint',
+  '{{vars.NICE}} pnpm run check --fail-on-warnings',
+  '{{vars.NICE}} pnpm run lint:eslint',
+]
+
 [tasks.lint]
 description = "Lint everything"
 run = [
