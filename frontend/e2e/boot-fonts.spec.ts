@@ -1,11 +1,13 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { deflateSync } from 'node:zlib';
 
 import { DATA_HOST, cachedAsset } from './support/data_cache';
 import { routeTreeAssets } from './support/tree_assets';
+import { poe2Page } from './support/poe2';
 
-// a system font on the first page (a control on the browser's default font, or a glyph the web fonts lack) costs
-// Chromium on Linux a blocking font-config query per font and size inside the first layout
-test('the build list draws every element and glyph with the web fonts, none with a system font', async ({ page }) => {
+const routeAssets = async (page: Page) => {
   await page.context().route(`${DATA_HOST}**`, async (route) => {
     const asset = cachedAsset(route.request().url());
     return route.fulfill({
@@ -15,9 +17,9 @@ test('the build list draws every element and glyph with the web fonts, none with
     });
   });
   await routeTreeAssets(page);
-  await page.goto('/');
-  await page.getByRole('button', { name: 'New build', exact: true }).waitFor({ timeout: 120_000 });
+};
 
+const expectWebFontsOnly = async (page: Page) => {
   const failed = await page.evaluate(async () => {
     await document.fonts.ready;
     return [...document.fonts].filter((f) => f.status === 'error').map((f) => `${f.family} ${f.weight}`);
@@ -46,4 +48,26 @@ test('the build list draws every element and glyph with the web fonts, none with
   };
   await walk(root as Node);
   expect(system, 'glyphs drawn with a system font').toEqual([]);
+};
+
+// a system font on the first page (a control on the browser's default font, or a glyph the web fonts lack) costs
+// Chromium on Linux a blocking font-config query per font and size inside the first layout
+test('the build list draws every element and glyph with the web fonts, none with a system font', async ({ page }) => {
+  await routeAssets(page);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'New build', exact: true }).waitFor({ timeout: 120_000 });
+  await expectWebFontsOnly(page);
+});
+
+const FIXTURE = resolve(import.meta.dirname, '../../wasm2/exposition/testdata/sorceress_items.xml');
+const code = (path: string) => deflateSync(readFileSync(path)).toString('base64').replaceAll('+', '-').replaceAll('/', '_');
+
+test('a PoE2 build opened on its Calcs page draws every element and glyph with the web fonts', async ({ page }) => {
+  test.setTimeout(240_000);
+  await page.addInitScript(() => localStorage.setItem('options:poe2', 'true'));
+  await routeAssets(page);
+  await page.goto(`/calcs?import=${encodeURIComponent(code(FIXTURE))}`);
+  await expect(poe2Page(page)).toBeVisible({ timeout: 180_000 });
+  await expect(page.getByRole('region', { name: 'Calculations' }).locator('section').first()).toBeVisible();
+  await expectWebFontsOnly(page);
 });

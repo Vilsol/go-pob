@@ -11,6 +11,7 @@
   import PobText from './PobText.svelte';
   import TooltipLines from './TooltipLines.svelte';
   import Button from './Button.svelte';
+  import Icon from './Icon.svelte';
   import CalcsBreakdown, { type BreakdownPart, type ModRow, type ModTable } from './CalcsBreakdown.svelte';
   import { tone as toneClass } from './tone';
   import { pobPlain } from './pob_text';
@@ -285,8 +286,8 @@
   <section
     aria-label={pobPlain(s.title)}
     class={['rounded border bg-surface-1', 'border-[color-mix(in_oklab,var(--tone)_45%,var(--color-line))]', toneClass(sectionTone(s))]}>
-    <h2 class={['toned block border-b border-(--tone) px-2 py-0.75 text-11 font-bold tracking-caps uppercase', toneClass(sectionTone(s))]}>
-      ▾ {s.title}
+    <h2 class={['toned flex items-center gap-1 border-b border-(--tone) px-2 py-0.75 text-11 font-bold tracking-caps uppercase', toneClass(sectionTone(s))]}>
+      <Icon name="chevron-down" size={12} />{s.title}
     </h2>
     <div data-calcs-wide class="overflow-x-auto">
       {#each s.blocks ?? [] as b, j (j)}

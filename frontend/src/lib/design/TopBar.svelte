@@ -314,7 +314,7 @@
       aria-haspopup="dialog"
       aria-expanded={panel === 'issues'}
       aria-label="{issues.length} build issues"
-      title="Build issues: problems the calculation found in this build"><span aria-hidden="true">⚠</span>{issues.length}</button>
+      title="Build issues: problems the calculation found in this build"><Icon name="warn" size={14} />{issues.length}</button>
     <Button
       bind:ref={logsBtn}
       class="px-3 max-narrow:px-2"

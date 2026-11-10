@@ -11,7 +11,7 @@
   import { assets, base } from '$app/paths';
   import { browser } from '$app/environment';
   import { syncWrap } from '$lib/go/worker';
-  import { proxy, transfer } from 'comlink';
+  import { proxy } from 'comlink';
   import { currentBuildPath, buildChannel, devMode, markBackendAsLoaded, backendLoaded, engineBoot, poe2Enabled } from '$lib/global.js';
   import { engines, game, lastGame } from '$lib/go/engine';
   import { poe2Worker } from '$lib/go/engine_poe2.svelte';
@@ -43,7 +43,7 @@
   import { startJob, track } from '$lib/activity/jobs';
   import { stageReporter } from '$lib/activity/worker_jobs';
   import { followLongJobs } from '$lib/activity/job_toasts';
-  import { readBody } from '$lib/activity/read_body';
+  import type { WasmReport } from '$lib/activity/read_body';
 
   let {
     children
@@ -168,33 +168,19 @@
     dataError = dataErrorText(e.message);
   };
 
-  async function wasmBytes(path: string): Promise<ArrayBuffer> {
-    boot?.phase('Downloading the engine');
-    const res = await fetch(assets + path).catch((e: unknown) => {
-      throw new Error(`Failed to load wasm runtime: ${e instanceof Error ? e.message : String(e)} ${path}`);
-    });
-    if (!res.ok) {
-      throw new Error(`Failed to load wasm runtime: ${res.status} ${path}`);
-    }
-    const data = await readBody(res, (done, total) => boot?.progress(done, total, 'bytes'));
-    performance.mark('pob:wasm-fetched');
-    const head = new Uint8Array(data, 0, Math.min(4, data.byteLength));
-    if (head[0] === 0x00 && head[1] === 0x61 && head[2] === 0x73 && head[3] === 0x6d) {
-      return data;
-    }
-    if (head[0] === 0x1f && head[1] === 0x8b) {
-      loadingMessage = 'Decompressing wasm runtime...';
-      boot?.phase('Decompressing the engine');
-      return new Response(new Response(data).body!.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
-    }
-    const fallback = engineFile(WASM_FALLBACK, runningEngine);
-    if (path !== fallback) {
-      console.warn(`${path} arrived still encoded; falling back to ${fallback}`);
-      return wasmBytes(fallback);
-    }
-    loadingMessage = 'Failed to load wasm runtime';
-    throw new Error('Failed to load wasm runtime: not a wasm module');
-  }
+  // the worker downloads the wasm itself, so the page never holds or copies it; the boot job follows the download
+  // a handle the job calls return cannot cross back to the worker, so these return nothing
+  const wasmReport: WasmReport = {
+    phase: (name) => {
+      boot?.phase(name);
+      if (name === 'Decompressing the engine') loadingMessage = 'Decompressing wasm runtime...';
+    },
+    bytes: (done, total) => {
+      boot?.progress(done, total, 'bytes');
+    },
+    fetched: () => {}
+  };
+  const assetUrl = (path: string) => new URL(assets + path, location.href).href;
 
   // Launch.lua:158-161
   const updateKey = (e: KeyboardEvent) => {
@@ -247,10 +233,10 @@
             return;
           }
 
-          wasmBytes(engineFile(WASM_FILE, runningEngine))
-            .then((data) => {
-              performance.mark('pob:wasm-decoded');
-              console.log('wasm runtime size:', data.byteLength);
+          syncWrap
+            .fetchWasm(assetUrl(engineFile(WASM_FILE, runningEngine)), assetUrl(engineFile(WASM_FALLBACK, runningEngine)), proxy(wasmReport))
+            .then((size) => {
+              console.log('wasm runtime size:', size);
 
               loadingMessage = 'Booting...';
               boot?.phase('Booting the engine');
@@ -261,7 +247,7 @@
               }, BOOT_STUCK_MS);
 
               syncWrap
-                ?.boot(transfer(data, [data]), proxy(onTick), proxy(buildChannel), runningEngine)
+                ?.bootFetched(proxy(onTick), proxy(buildChannel), runningEngine)
                 .then(async () => {
                   clearTimeout(stuck);
                   bootStuck = false;

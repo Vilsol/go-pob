@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 vi.unmock('@zenfs/core');
 vi.unmock('@zenfs/dom');
 
-const remote = vi.hoisted(() => ({ boot: vi.fn(() => Promise.resolve()), ClearDataCache: vi.fn(() => Promise.resolve(4)) }));
+const remote = vi.hoisted(() => ({ bootFrom: vi.fn(() => Promise.resolve()), ClearDataCache: vi.fn(() => Promise.resolve(4)) }));
 vi.mock('comlink', () => ({ wrap: () => remote, transfer: (d: unknown) => d, proxy: (f: unknown) => f, expose: () => {} }));
 vi.mock('./sync_worker2?worker', () => ({ default: class extends EventTarget {} }));
 vi.mock('$lib/app_log', async (orig) => ({ ...(await orig<object>()), forwardWorkerLog: () => {} }));
@@ -38,7 +38,7 @@ describe('Clear cached data on the PoE2 cache', () => {
   });
 
   it('asks a running PoE2 worker to clear through its own mount', async () => {
-    vi.stubGlobal('fetch', () => Promise.resolve(new Response(new Uint8Array([0x00, 0x61, 0x73, 0x6d]))));
+    vi.stubGlobal('location', new URL('https://pob.test/'));
     const { clearPoe2DataCache, poe2Worker } = await import('./worker2');
     vi.spyOn(console, 'log').mockImplementation(() => {});
     await poe2Worker();

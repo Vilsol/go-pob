@@ -1,6 +1,7 @@
 import { expose, proxy } from 'comlink';
 import '$lib/console_hook';
 import { useEngine, watchTraps } from './wasm_engine';
+import { fetchWasm, type WasmReport } from '$lib/activity/read_body';
 import type { WasmEngine } from './wasm_file';
 import { initializeCrystalline, storage, raw, config, pob, builds, calculator, exposition } from '../types';
 import type { Outputs, TickCallback, TickMeta, TickWarnings } from '../custom_types';
@@ -135,6 +136,22 @@ class PoBWorker {
     const published = proxy(this._currentBuild) as unknown as ProxiedRemote<pob.PathOfBuilding>;
     if (restored) this.currentBuildStore.restore(published);
     else this.currentBuildStore.set(published);
+  }
+
+  private fetchedWasm?: ArrayBuffer;
+
+  // the page never holds the wasm: this worker downloads it and keeps it for bootFetched; resolves to its size
+  async fetchWasm(url: string, fallback: string, report: WasmReport): Promise<number> {
+    this.fetchedWasm = await fetchWasm(url, fallback, 'wasm runtime', report);
+    performance.mark('pob:wasm-decoded');
+    return this.fetchedWasm.byteLength;
+  }
+
+  bootFetched(callback: TickCallback, currentBuildStore: BuildChannel, engine: WasmEngine = 'go') {
+    const wasm = this.fetchedWasm;
+    this.fetchedWasm = undefined;
+    if (!wasm) return Promise.reject(new Error('Booting needs the wasm runtime fetched first'));
+    return this.boot(wasm, callback, currentBuildStore, engine);
   }
 
   boot(wasm: ArrayBuffer, callback: TickCallback, currentBuildStore: BuildChannel, engine: WasmEngine = 'go') {

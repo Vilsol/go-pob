@@ -3,6 +3,7 @@ import { configure, fs } from '@zenfs/core';
 import { IndexedDB } from '@zenfs/dom';
 import '$lib/console_hook';
 import { useEngine, watchTraps } from './wasm_engine';
+import { fetchWasm, type WasmReport } from '$lib/activity/read_body';
 import type { WasmEngine } from './wasm_file';
 import { boot, config, exposition, initializeCrystalline, storage, type calculator2 } from '../types2';
 import type { Poe2View } from '../global';
@@ -537,6 +538,13 @@ class PoB2Worker {
   private history = new UndoHistory();
   // the calculation each kept state showed, for a step's stat changes
   private shown = new Map<string, Poe2Calc>();
+
+  // the page never holds the wasm: this worker downloads it, then boots from it
+  async bootFrom(url: string, fallback: string, report: WasmReport, engine: WasmEngine = 'go', preloadFailed?: (message: string) => void) {
+    const wasm = await fetchWasm(url, fallback, 'the PoE2 wasm runtime', report);
+    report.phase('Booting the engine');
+    return this.boot(wasm, engine, preloadFailed);
+  }
 
   boot(wasm: ArrayBuffer, engine: WasmEngine = 'go', preloadFailed?: (message: string) => void) {
     this.booted ??= useEngine(engine).then(async () => {
