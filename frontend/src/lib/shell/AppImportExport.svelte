@@ -5,6 +5,7 @@
 
 <script lang="ts">
   import { resource } from 'runed';
+  import { proxy } from 'comlink';
   import { goto } from '$app/navigation';
   import { base } from '$app/paths';
   import { get } from 'svelte/store';
@@ -180,7 +181,12 @@
         .then((opened) => {
           if (opened) return opened;
           job.phase('Importing and calculating');
-          return syncWrap?.ImportCode(text).then((foreign) => openForeign(foreign, clear));
+          return syncWrap
+            ?.ImportCode(
+              text,
+              proxy((name: string) => void job.phase(name))
+            )
+            .then((foreign) => openForeign(foreign, clear));
         })
         .then(
           (opened) => {

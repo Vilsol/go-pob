@@ -16,7 +16,9 @@ var MainOnlyOutputs = []string{"ExtraPoints", "Spec:LifeInc", "Spec:ManaInc", "S
 
 //pob:src/Modules/Calcs.lua:309-441
 func BuildOutputWithCache(c *Calculator, mode OutputMode, cache *EnvironmentCache) *Environment {
+	c.enterPhase("Setting up the items, tree and skills")
 	env, cachedPlayerDB, cachedEnemyDB, cachedMinionDB := initEnvWith(c.PoB, cache, mode, c.AlignCalcsSkillToMain, nil)
+	c.enterPhase("Calculating the main skill")
 	PerformCalc(env)
 	env.CalcProps = FinalizeCalcTab(env)
 
@@ -49,6 +51,7 @@ func BuildOutputWithCache(c *Calculator, mode OutputMode, cache *EnvironmentCach
 		collectUsedTables(env)
 	}
 
+	c.enterPhase("Calculating Full DPS")
 	fullDPS, fullDotDPS, skillDPS := calcFullDPS(c, env, OutputModeCalculator, cache, nil, &calcSpecEnv{cachedPlayerDB: cachedPlayerDB, cachedEnemyDB: cachedEnemyDB, cachedMinionDB: cachedMinionDB})
 	env.Player.SkillDPS = skillDPS
 	env.Player.Output["FullDPS"] = fullDPS

@@ -156,7 +156,7 @@ describe('the Import / Export dialog', () => {
     await fireEvent.click(go);
     await vi.waitFor(() => expect(serialize(workerInstance.currentBuild)).toBe(other.xml));
     expect(within(document.body).queryByRole('dialog', { name: 'Build Import' }), 'no overwrite confirm').toBeNull();
-    expect(tick).toHaveBeenCalledWith('ImportCode');
+    expect(tick).toHaveBeenCalledWith('ImportCode', undefined, expect.any(Function));
     await bar.findByRole('button', { name: 'Save (unsaved changes)' });
     await vi.waitFor(() => expect(currentBuildPath.current, 'the new build still saves over the old one').toBe(''));
     const { unsavedName } = await import('$lib/shell/build_name.svelte');
@@ -273,7 +273,7 @@ describe('the Import / Export dialog', () => {
       expect(busy.disabled).toBe(true);
       answer(new Response(`${other.code}\n`, { status: 200 }));
       await vi.waitFor(() => expect(serialize(workerInstance.currentBuild)).toBe(other.xml));
-      expect(tick).toHaveBeenCalledWith('ImportCode');
+      expect(tick).toHaveBeenCalledWith('ImportCode', undefined, expect.any(Function));
     });
 
     it('says the site could not be read (CORS or offline), and leaves the build alone', async () => {

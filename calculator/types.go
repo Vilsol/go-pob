@@ -18,6 +18,19 @@ type Calculator struct {
 	AlignCalcsSkillToMain bool
 
 	main *Environment
+
+	phase func(name string)
+}
+
+// OnPhase has BuildOutput name each part of the calculation as it starts.
+func (c *Calculator) OnPhase(phase func(name string)) {
+	c.phase = phase
+}
+
+func (c *Calculator) enterPhase(name string) {
+	if c.phase != nil {
+		c.phase(name)
+	}
 }
 
 func NewCalculator(build pob.PathOfBuilding) *Calculator {

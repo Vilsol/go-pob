@@ -12142,7 +12142,7 @@ func crystallineMarshalCalculatorCalculator(v *calculator.Calculator) any {
 					})(value)
 				}
 			},
-			[]string{"BuildOutput"},
+			[]string{"BuildOutput", "OnPhase"},
 			func(v *calculator.Calculator, method int, args []js.Value) any {
 				switch method {
 				case 0:
@@ -12159,6 +12159,20 @@ func crystallineMarshalCalculatorCalculator(v *calculator.Calculator) any {
 						r0 := v.BuildOutput(a0)
 
 						return crystallineMarshalCalculatorEnvironment(r0)
+					})
+				case 1:
+					if len(args) != 1 {
+						return crystallineFail("OnPhase: expected 1 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					return crystallinePromise(func() any {
+						a0 := func(p0 string) {
+							crystallineAwait(args[0].Invoke(string(p0)))
+						}
+
+						v.OnPhase(a0)
+
+						return nil
 					})
 				}
 

@@ -302,6 +302,7 @@ export declare namespace calculator {
     PoB?: pob.PathOfBuilding;
     AlignCalcsSkillToMain: boolean;
     BuildOutput(mode: calculator.OutputMode): Promise<(calculator.Environment | undefined)>;
+    OnPhase(phase: (name: string) => void): Promise<void>;
     /** Releases the Go resources behind this wrapper. */
     release(): void;
     [Symbol.dispose](): void;

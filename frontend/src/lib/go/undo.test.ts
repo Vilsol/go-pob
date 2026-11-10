@@ -208,6 +208,6 @@ describe('STEP_LABELS', () => {
   it('records every worker write through the labelled path', () => {
     const worker = files().find((f) => f.file.endsWith('go/sync_worker.ts'))!.text;
     const ticks = [...worker.matchAll(/this\.Tick\(([^)]*)\)/g)].map((m) => m[1]);
-    expect(ticks.sort()).toEqual(["'EstimatePlayerProgress'", "'setCalcTabElements'", 'source', 'source', 'source, xml']);
+    expect(ticks.sort()).toEqual(["'EstimatePlayerProgress'", "'setCalcTabElements'", 'source', 'source, undefined, phase', 'source, xml']);
   });
 });

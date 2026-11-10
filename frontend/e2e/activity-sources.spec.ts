@@ -6,6 +6,7 @@ import { deflateSync } from 'node:zlib';
 import { DATA_HOST, cachedAsset } from './support/data_cache';
 import { routeTreeAssets } from './support/tree_assets';
 import { poe2Stat } from './support/poe2';
+import { buildXml } from './support/builds';
 
 test.use({ serviceWorkers: 'block' });
 
@@ -90,5 +91,48 @@ test('a PoE2 link boots the PoE2 engine as a job with its download in bytes, and
         ]
       ]
     ]);
+  expect(errors).toEqual([]);
+});
+
+test('a saved PoE2 build in the build list boots the PoE2 engine as a job', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.addInitScript(() => localStorage.setItem('options:poe2', 'true'));
+  // with PoE1 last, startup does not boot the PoE2 engine itself
+  await page.addInitScript(() => localStorage.setItem('lastGame', 'poe1'));
+  await routeData(page);
+  const xml = readFileSync(resolve(import.meta.dirname, '../../wasm2/exposition/testdata/sorceress_spark.xml'));
+  const code = deflateSync(xml).toString('base64').replaceAll('+', '-').replaceAll('/', '_');
+  await page.goto(`/?import=${encodeURIComponent(code)}`);
+  await expect(poe2Stat(page, 'Life')).toHaveText('683', { timeout: 180_000 });
+  await page.getByRole('button', { name: /^Save \(/ }).click();
+  const dialog = page.getByRole('dialog', { name: 'Save build as' });
+  await dialog.getByRole('textbox', { name: 'Build name' }).fill('Spark');
+  await dialog.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(dialog).toBeHidden();
+
+  // a fresh page with no build open: only the list's class names need the PoE2 engine
+  await page.goto('/');
+  await expect(page.getByRole('link', { name: 'Spark', exact: true })).toBeVisible({ timeout: 60_000 });
+  await expect
+    .poll(async () => (await finished(page, 'poe2-boot')).map((j) => [j.state, j.phases.at(-1)?.name]), { timeout: 120_000 })
+    .toEqual([['ok', 'Booting the engine']]);
+  expect(errors).toEqual([]);
+});
+
+test('the tree counts its sprite sheets and art as they arrive', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await routeData(page);
+  const code = deflateSync(buildXml('0280-elementalist-fireball')).toString('base64').replaceAll('+', '-').replaceAll('/', '_');
+  await page.goto(`/tree?import=${encodeURIComponent(code)}`);
+  await expect
+    .poll(
+      async () => (await finished(page, 'tree-images')).map((j) => [j.state, j.phases.length, j.phases[0].done === j.phases[0].total, j.phases[0].total! > 1]),
+      {
+        timeout: 120_000
+      }
+    )
+    .toEqual([['ok', 1, true, true]]);
   expect(errors).toEqual([]);
 });

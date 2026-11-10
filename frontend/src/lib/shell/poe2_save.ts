@@ -64,7 +64,7 @@ export const savedStats2 = (calc: Pick<Poe2Calc, 'output' | 'skillFlags' | 'mini
 
 // the PoE2 worker serializes; the PoE1 worker owns the build storage
 export const savePoe2Build = async (path: string) => {
-  const { poe2Worker } = await import('$lib/go/worker2');
+  const { poe2Worker } = await import('$lib/go/engine_poe2.svelte');
   const view = get(poe2Build) as Poe2Calc | undefined;
   const xml = await (await poe2Worker()).Serialize(view?.skillFlags ? savedStats2(view) : undefined);
   await syncWrap.SaveForeignBuild(path, xml);

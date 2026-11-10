@@ -196,7 +196,7 @@
   $effect(() => {
     if (poe2ClassesAsked || !$poe2Enabled || !builds.some((b) => b.game === 'poe2')) return;
     poe2ClassesAsked = true;
-    import('$lib/go/worker2')
+    import('$lib/go/engine_poe2.svelte')
       .then(({ poe2Worker }) => poe2Worker())
       .then((w) => w.TreeClasses())
       .then((c) => (poe2Classes = c))

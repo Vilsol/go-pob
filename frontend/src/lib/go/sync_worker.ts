@@ -60,6 +60,9 @@ const storageConfigurationPromise = DESKTOP
     }, configureStorage);
 
 type WarningsEnv = { out: calculator.Environment; calc: calculator.Calculator };
+// a part of a calculation as it starts
+export type CalcPhase = (name: string) => unknown;
+
 // a game-data load stage; with a total, done of total within it
 export type DataStage = (stage: string, done: number, total: number) => Promise<void>;
 
@@ -94,13 +97,13 @@ class PoBWorker {
     this.updateStore();
   }
 
-  private openBuild(build: pob.PathOfBuilding | undefined, source: string) {
+  private openBuild(build: pob.PathOfBuilding | undefined, source: string, phase?: CalcPhase) {
     this.ClearCompare();
     this.currentBuild = build;
     this.lastOutputs = undefined;
     this.history.clear();
     this.forgetTicks();
-    void this.Tick(source);
+    return this.Tick(source, undefined, phase);
   }
 
   booted = false;
@@ -200,7 +203,8 @@ class PoBWorker {
     return undefined;
   }
 
-  async ImportCode(code: string): Promise<ForeignBuild | undefined> {
+  // phase, when given, hears each part of the build's first calculation, which the import then waits for
+  async ImportCode(code: string, phase?: CalcPhase): Promise<ForeignBuild | undefined> {
     if (this.dataReady) await this.dataReady;
     const start = performance.now();
     const xml = pob.DecodeDecompress(code).unwrap();
@@ -208,7 +212,9 @@ class PoBWorker {
     if (foreign) return foreign;
     const build = builds.ParseBuildStr(xml).unwrap();
     logInfo('import', `imported a build code (${Math.round(xml.length / 1024)} KB of XML) in ${Math.round(performance.now() - start)} ms`);
-    this.openBuild(build, 'ImportCode');
+    const calculated = this.openBuild(build, 'ImportCode', phase);
+    // a calculation that fails leaves the build open, as it does without a phase
+    if (phase) await calculated.catch((e: unknown) => console.error('the imported build did not calculate', e));
   }
 
   ExportCode(): string {
@@ -239,7 +245,7 @@ class PoBWorker {
     while (this.ticksInFlight > 0) await this.ticksSettled;
   }
 
-  async Tick(source: string, restored?: string) {
+  async Tick(source: string, restored?: string, phase?: CalcPhase) {
     const meta: TickMeta = { seq: 0, pending: 0, source, startedAt: epochNow(), calcMs: 0, dumpMs: 0, sentAt: 0 };
     const undoTicket = this.undoTicket(source);
     const started = ++this.ticksStarted;
@@ -248,7 +254,7 @@ class PoBWorker {
     let payload: Outputs | undefined;
     const cached = restored !== undefined && !this.calcDetail ? this.tickCache.get(restored) : undefined;
     try {
-      payload = cached?.warnings ? this.fromCache(cached) : await this.computeOutputs(source, meta);
+      payload = cached?.warnings ? this.fromCache(cached) : await this.computeOutputs(source, meta, phase);
     } finally {
       if (--this.ticksInFlight === 0) this.settleTicks?.();
       meta.seq = ++this.tickSeq;
@@ -647,7 +653,7 @@ class PoBWorker {
     });
   }
 
-  private async computeOutputs(source: string, meta: TickMeta): Promise<Outputs | undefined> {
+  private async computeOutputs(source: string, meta: TickMeta, phase?: CalcPhase): Promise<Outputs | undefined> {
     const started = this.ticksStarted;
     this.releaseWarningsEnv();
     this.warnings = undefined;
@@ -659,6 +665,8 @@ class PoBWorker {
     if (!calc) {
       return;
     }
+    // the page's callback is not waited for: Go goes on calculating while the page hears it
+    if (phase) await calc.OnPhase((name) => void phase(name));
 
     console.log('TICK from', source);
     const calcStart = performance.now();
@@ -1252,7 +1260,7 @@ class PoBWorker {
     const build = builds.EmptyBuild();
     if (defaults) build?.ApplyNewBuildDefaults(defaults.level, defaults.gemQuality);
     logInfo('build', 'started a new build');
-    this.openBuild(build, 'NewBuild');
+    void this.openBuild(build, 'NewBuild');
   }
 
   /* Build.lua:1014-1061 */
@@ -1314,7 +1322,7 @@ class PoBWorker {
     if (foreign) return foreign;
     const build = builds.ParseBuildStr(result.value).unwrap();
     logInfo('load', `loaded ${path} in ${Math.round(performance.now() - start)} ms`);
-    this.openBuild(build, 'OpenBuild');
+    void this.openBuild(build, 'OpenBuild');
   }
 
   ClearBuild() {

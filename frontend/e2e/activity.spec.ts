@@ -68,7 +68,22 @@ test('a build link that downloads slowly shows a progress toast, then the import
   expect(await finished(page, 'download')).toEqual([{ kind: 'download', label: 'Downloading the build', state: 'ok', phases: [] }]);
   await expect
     .poll(() => finished(page, 'import'))
-    .toEqual([{ kind: 'import', label: 'Importing build', state: 'ok', phases: ['Decoding the code', 'Importing and calculating', 'Opening the Tree'] }]);
+    .toEqual([
+      {
+        kind: 'import',
+        label: 'Importing build',
+        state: 'ok',
+        // the calculation's own parts, named by the engine as it reaches them
+        phases: [
+          'Decoding the code',
+          'Importing and calculating',
+          'Setting up the items, tree and skills',
+          'Calculating the main skill',
+          'Calculating Full DPS',
+          'Opening the Tree'
+        ]
+      }
+    ]);
   app.assertNoErrors();
 });
 
