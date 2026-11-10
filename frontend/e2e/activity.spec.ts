@@ -39,8 +39,7 @@ test.describe(() => {
     await expect(page.getByRole('progressbar', { name: 'Activity' })).toBeHidden();
     expect(held).toBeGreaterThan(0);
     expect(await finished(page, 'page:items')).toEqual([{ kind: 'page:items', label: 'Opening Items', state: 'ok', phases: ['Loading the page'] }]);
-    // with the service worker blocked the update check reads a registration that is not there
-    expect(app.errors.filter((e) => !e.includes("reading 'waiting'"))).toEqual([]);
+    expect(app.errors).toEqual([]);
   });
 });
 

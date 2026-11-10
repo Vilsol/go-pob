@@ -26,7 +26,8 @@ func gameDataVersion(getenv func(string) string) string {
 	return DefaultVersion
 }
 
-type UpdateFunc func(data string)
+// UpdateFunc reports a loading stage; with a total, done of total within it.
+type UpdateFunc func(stage string, done, total int)
 
 func CacheKey(url string) string {
 	return assetcache.CacheKey(url)
@@ -99,22 +100,22 @@ func DataContext(ctx context.Context) context.Context {
 func initializeAll(version string, updateFunc UpdateFunc) error {
 	ctx := DataContext(context.Background())
 	cache := assetcache.AssetLoaderWrapper{Storage: storage.Get()}
-	if updateFunc != nil {
-		updateFunc("Downloading")
-	}
-	cache.Prefetched = prefetch(ctx, cache, prefetchURLs(ctx, version))
-
-	for _, t := range tables {
+	update := func(stage string, done, total int) {
 		if updateFunc != nil {
-			updateFunc(t.Name)
+			updateFunc(stage, done, total)
 		}
+	}
+	urls := prefetchURLs(ctx, version)
+	update("Downloading", 0, len(urls))
+	cache.Prefetched = prefetch(ctx, cache, urls, func(done, total int) { update("Downloading", done, total) })
+
+	for i, t := range tables {
+		update(t.Name, i, len(tables))
 		if err := t.Load(ctx, version, cache); err != nil {
 			return fmt.Errorf("failed to initialize: %s: %w", t.Name, err)
 		}
 	}
-	if updateFunc != nil {
-		updateFunc("Indexing")
-	}
+	update("Indexing", 0, 0)
 	for _, hook := range utils.RegisteredHooks {
 		hook()
 	}

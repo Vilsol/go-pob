@@ -60,6 +60,8 @@ const storageConfigurationPromise = DESKTOP
     }, configureStorage);
 
 type WarningsEnv = { out: calculator.Environment; calc: calculator.Calculator };
+// a game-data load stage; with a total, done of total within it
+export type DataStage = (stage: string, done: number, total: number) => Promise<void>;
 
 const WARNINGS_QUIET_MS = 300;
 // only calculations slower than this reach the log
@@ -169,16 +171,23 @@ class PoBWorker {
 
   private dataReady?: Promise<void>;
 
-  loadData(updates: (data: string) => Promise<void>) {
+  loadData(updates: DataStage) {
     this.dataReady ??= this.initializeData(updates);
     return this.dataReady;
   }
 
-  private async initializeData(updates: (data: string) => Promise<void>) {
+  private async initializeData(updates: DataStage) {
     const start = Date.now();
-    const result = await raw.InitializeAll(raw.GameDataVersion(), (stage: string) => {
+    let current: string | undefined;
+    const result = await raw.InitializeAll(raw.GameDataVersion(), (stage, done, total) => {
+      if (stage === current) {
+        // a count within the stage: Go goes on without waiting for the page
+        updates(stage, done, total).catch(() => {});
+        return;
+      }
+      current = stage;
       performance.mark(`pob:data:${stage}`);
-      return updates(stage);
+      return updates(stage, done, total);
     });
     if (!result.ok) throw result.error;
     logInfo('data', `game data ${raw.GameDataVersion()} loaded in ${Date.now() - start} ms`);

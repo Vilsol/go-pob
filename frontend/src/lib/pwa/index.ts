@@ -199,10 +199,14 @@ export const startPwa = async () => {
     // empty
   }
 
-  registration = await navigator.serviceWorker.register(`${base}/service-worker.js`, { scope: `${base}/`, updateViaCache: 'none' });
-  watch(registration);
+  // a browser that blocks service workers resolves with no registration
+  const reg = (await navigator.serviceWorker.register(`${base}/service-worker.js`, { scope: `${base}/`, updateViaCache: 'none' })) as
+    | ServiceWorkerRegistration
+    | undefined;
+  if (!reg) return;
+  registration = reg;
+  watch(reg);
 
-  const reg = registration;
   const update = () => void reg.update().catch(() => undefined);
   setInterval(update, UPDATE_INTERVAL_MS);
   document.addEventListener('visibilitychange', () => {

@@ -1098,12 +1098,16 @@ func crystallineFnExpositionParseModLines(this js.Value, args []js.Value) (resul
 func crystallineFnExpositionPreload(this js.Value, args []js.Value) (result any) {
 	defer crystallineRecover(&result)
 
-	if len(args) != 0 {
-		return crystallineFail("Preload: expected 0 arguments, got " + strconv.Itoa(len(args)))
+	if len(args) != 1 {
+		return crystallineFail("Preload: expected 1 arguments, got " + strconv.Itoa(len(args)))
 	}
 
 	return crystallinePromise(func() any {
-		r0 := Preload()
+		a0 := func(p0 string, p1 int, p2 int) {
+			crystallineAwait(args[0].Invoke(string(p0), float64(p1), float64(p2)))
+		}
+
+		r0 := Preload(a0)
 
 		if r0 != nil {
 			return crystallineErr(r0)

@@ -821,7 +821,7 @@ export declare namespace exposition {
   function ParseModLines(lines: Array<string> | undefined): (Array<exposition.ModLine> | undefined);
   function PassiveTreeJSON(): Promise<Result<string>>;
   function PowerStats(): (Array<exposition.PowerStatView> | undefined);
-  function Preload(): Promise<Result<void>>;
+  function Preload(step: (stage: string, done: number, total: number) => void): Promise<Result<void>>;
   function TreeClassList(): Promise<Result<(Array<exposition.TreeClassRow> | undefined)>>;
   function TreeClasses(): Promise<Result<(Array<string> | undefined)>>;
   const TreeVersion: string;

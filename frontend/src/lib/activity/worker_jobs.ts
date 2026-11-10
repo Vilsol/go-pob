@@ -60,3 +60,17 @@ export const forwardWorkerJobs = (worker: Pick<Worker, 'addEventListener'>, sour
   worker.addEventListener('message', (e: MessageEvent<unknown>) => {
     if (isJobPost(e.data)) applyJobMessage(e.data.pobJob, source);
   });
+
+// a load's stage callback onto a job: a new stage enters a phase; a total reports done of total within it
+export const stageReporter = (job: () => JobHandle | undefined) => {
+  let seen: { job: JobHandle; stage: string } | undefined;
+  return (stage: string, done = 0, total = 0) => {
+    const j = job();
+    if (!j) return;
+    if (seen?.job !== j || seen.stage !== stage) {
+      seen = { job: j, stage };
+      j.phase(stage);
+    }
+    if (total > 0) j.progress(done, total);
+  };
+};

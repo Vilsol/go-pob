@@ -25,10 +25,7 @@ export const poe2Worker = async () => {
   return (booting ??= (() => {
     const j = startJob('poe2-boot', 'Starting the PoE2 engine', { long: true }).phase('Loading the engine code');
     return (worker2 ??= import('$lib/go/worker2'))
-      .then((m) => {
-        j.phase('Booting the engine and its game data');
-        return m.poe2Worker();
-      })
+      .then((m) => m.poe2Worker(j))
       .then(
         (w) => {
           booted = true;

@@ -4,10 +4,12 @@ import (
 	"bufio"
 	"compress/gzip"
 	"encoding/json"
+	"fmt"
 	"math"
 	"os"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 
@@ -177,9 +179,20 @@ func TestMainSkillSelectionRecalculates(t *testing.T) {
 }
 
 func TestPreloadThenCalculateMatchesPoB(t *testing.T) {
-	if err := Preload(); err != nil {
+	if err := Preload(nil); err != nil {
 		t.Fatal(err)
 	}
 	out := calculateFile(t, filepath.Join("testdata", "sorceress_spark.xml"))
 	assertClose(t, "sorceress_spark.xml", "Life", out.Output["Life"], 683)
+}
+
+func TestPreloadReportsEachLoad(t *testing.T) {
+	var got []string
+	if err := Preload(func(stage string, done, total int) { got = append(got, fmt.Sprintf("%s %d/%d", stage, done, total)) }); err != nil {
+		t.Fatal(err)
+	}
+	want := []string{"Passive tree 0/0", "Item tables 0/5", "Mod parser 1/5", "Gems 2/5", "Skill data 3/5", "Cost divisors 4/5"}
+	if !slices.Equal(got, want) {
+		t.Fatalf("stages %q, want %q", got, want)
+	}
 }

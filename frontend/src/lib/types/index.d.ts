@@ -4055,7 +4055,7 @@ export declare namespace raw {
     readonly TagSpeed: "Speed";
   };
   function GameDataVersion(): string;
-  function InitializeAll(version: string, updateFunc: (data: string) => void): Promise<Result<void>>;
+  function InitializeAll(version: string, updateFunc: (stage: string, done: number, total: number) => void): Promise<Result<void>>;
   function LoadDeferred(): Promise<Result<void>>;
 }
 export declare namespace storage {

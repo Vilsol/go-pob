@@ -41,18 +41,25 @@ func prefetchURLs(ctx context.Context, version string) []string {
 	return append(urls, TreeURL(version))
 }
 
-func prefetch(ctx context.Context, cache assetcache.AssetLoaderWrapper, urls []string) map[string][]byte {
+// prefetch fetches every url at once; fetched reports each finished url, counted, in finishing order.
+func prefetch(ctx context.Context, cache assetcache.AssetLoaderWrapper, urls []string, fetched func(done, total int)) map[string][]byte {
 	out := make(map[string][]byte, len(urls))
 	var mu sync.Mutex
 	var wg sync.WaitGroup
+	done := 0
 	for _, url := range urls {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			if b := prefetchOne(ctx, cache, url); len(b) > 0 {
-				mu.Lock()
+			b := prefetchOne(ctx, cache, url)
+			mu.Lock()
+			defer mu.Unlock()
+			if len(b) > 0 {
 				out[url] = b
-				mu.Unlock()
+			}
+			done++
+			if fetched != nil {
+				fetched(done, len(urls))
 			}
 		}()
 	}

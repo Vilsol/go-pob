@@ -41,6 +41,7 @@
   import ActivityBar from '$lib/design/ActivityBar.svelte';
   import ActivityIndicator from '$lib/design/ActivityIndicator.svelte';
   import { startJob, track } from '$lib/activity/jobs';
+  import { stageReporter } from '$lib/activity/worker_jobs';
   import { followLongJobs } from '$lib/activity/job_toasts';
   import { readBody } from '$lib/activity/read_body';
 
@@ -140,6 +141,7 @@
   const boot = browser ? startJob('boot', 'Starting the calculation engine', { long: true }).phase('Starting the worker') : undefined;
   const dataJob = () => startJob('data', 'Loading game data', { long: true });
   let dataLoad: ReturnType<typeof dataJob> | undefined;
+  const dataStage = stageReporter(() => dataLoad);
 
   let wasmLoading = $state(true);
   let dataLoading = $state(false);
@@ -229,7 +231,7 @@
             syncWrap
               ?.loadData(
                 // eslint-disable-next-line @typescript-eslint/require-await
-                proxy(async (stage: string) => void dataLoad?.phase(stage))
+                proxy(async (stage: string, done: number, total: number) => dataStage(stage, done, total))
               )
               .then(() => {
                 dataLoad?.end();
@@ -266,9 +268,9 @@
                   dataLoad = dataJob();
                   await syncWrap?.loadData(
                     // eslint-disable-next-line @typescript-eslint/require-await
-                    proxy(async (stage: string) => {
+                    proxy(async (stage: string, done: number, total: number) => {
                       loadingStage = stage;
-                      dataLoad?.phase(stage);
+                      dataStage(stage, done, total);
                     })
                   );
 

@@ -9,6 +9,7 @@ import type { Poe2View } from '../global';
 import type { SkillDPSEntry } from '../display/stat_list';
 import { defaultStateOf, relevanceQuery2, type ConfigValue2 } from '../display/configurations2';
 import { DESKTOP } from '$lib/pwa/desktop';
+import { postJob } from '$lib/activity/worker_jobs';
 import type { Tree2 } from '../components/skill-tree/scene2';
 import { TabStorage, type StorageWrite } from '$lib/storage/tabs';
 import { remountStore } from './storage_config';
@@ -507,12 +508,20 @@ class PoB2Worker {
       config.InitLogging(false);
       await initializeStorage();
       // not awaited, so Open is not held behind it; a load error reaches Open through Calculate, which runs the same loads
+      postJob({ id: 'preload', kind: 'poe2-data', label: 'Loading PoE2 game data', long: true });
       void exposition
-        .Preload()
+        .Preload((stage, done, total) => postJob(total ? { id: 'preload', phase: stage, done, total } : { id: 'preload', phase: stage }))
         .then((r) => r.unwrap())
         .then(
-          () => console.log('PoE2 game data preloaded'),
-          (e: unknown) => preloadFailed?.(e instanceof Error ? e.message : String(e))
+          () => {
+            postJob({ id: 'preload', end: 'ok' });
+            console.log('PoE2 game data preloaded');
+          },
+          (e: unknown) => {
+            const message = e instanceof Error ? e.message : String(e);
+            postJob({ id: 'preload', end: 'error', error: message });
+            preloadFailed?.(message);
+          }
         );
     });
     return this.booted;

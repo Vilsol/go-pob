@@ -4456,8 +4456,8 @@ func crystallineFnRawInitializeAll(this js.Value, args []js.Value) (result any) 
 			return crystallineFail(err.Error())
 		}
 
-		a1 := func(p0 string) {
-			crystallineAwait(args[1].Invoke(string(p0)))
+		a1 := func(p0 string, p1 int, p2 int) {
+			crystallineAwait(args[1].Invoke(string(p0), float64(p1), float64(p2)))
 		}
 
 		r0 := raw.InitializeAll(a0, a1)

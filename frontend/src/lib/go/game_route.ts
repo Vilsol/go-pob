@@ -15,7 +15,8 @@ export const openForeign = async (foreign: ForeignBuild | undefined, clearPoE1: 
   if (!foreign) return false;
   if (foreign.game === 'poe2-legacy') throw new Error(POE2_LEGACY);
   if (!get(poe2Enabled)) throw new Error(POE2_DISABLED);
-  const { poe2Worker } = await import('./worker2');
+  // through the engine's boot, which runs as a job
+  const { poe2Worker } = await import('./engine_poe2.svelte');
   const view = await (await poe2Worker()).Open(foreign.xml);
   // with no PoE1 build open the clear is not waited for: the PoE1 worker may still be loading its game data
   const cleared = Promise.resolve(clearPoE1());
