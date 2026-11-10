@@ -27,19 +27,129 @@
         "label":"Armour",
         "min":"928"
       }],
+    "modSearch":{
+      "base":"https://www.pathofexile.com/trade2/search/poe2/Standard",
+      "query":{
+        "filters":{
+          "type_filters":{
+            "filters":{
+              "category":{
+                "option":"armour.chest"
+              }
+            }
+          }
+        },
+        "stats":[{
+            "filters":[{
+                "id":"explicit.stat_3299347043",
+                "value":{
+                  "max":999,
+                  "min":90
+                }
+              },{
+                "id":"explicit.stat_4220027924",
+                "value":{
+                  "min":18
+                }
+              },{
+                "id":"explicit.stat_3372524247",
+                "value":{
+                  "max":999,
+                  "min":35
+                }
+              }],
+            "type":"and"
+          },{
+            "filters":[{
+                "id":"explicit.stat_1062208444",
+                "value":{
+                  "max":999,
+                  "min":85
+                }
+              },{
+                "id":"explicit.stat_2866361420",
+                "value":{
+                  "max":999,
+                  "min":85
+                }
+              }],
+            "type":"count",
+            "value":{
+              "min":1
+            }
+          },{
+            "filters":[{
+                "id":"explicit.stat_3484657501",
+                "value":{
+                  "min":120
+                }
+              },{
+                "id":"explicit.stat_809229260",
+                "value":{
+                  "min":120
+                }
+              }],
+            "type":"count",
+            "value":{
+              "min":1
+            }
+          }],
+        "status":{
+          "option":"securable"
+        }
+      }
+    },
+    "mods":[{
+        "canSearch":true,
+        "invert":false,
+        "isOption":false,
+        "label":"^xA2916085% increased Armour",
+        "min":"85",
+        "tradeIds":["explicit.stat_1062208444","explicit.stat_2866361420"],
+        "type":"explicit",
+        "value":85
+      },{
+        "canSearch":true,
+        "invert":false,
+        "isOption":false,
+        "label":"^x8888FF+120 to Armour",
+        "min":"120",
+        "tradeIds":["explicit.stat_3484657501","explicit.stat_809229260"],
+        "type":"explicit",
+        "value":120
+      },{
+        "canSearch":true,
+        "invert":false,
+        "isOption":false,
+        "label":"^x8888FF+90 to maximum Life",
+        "min":"90",
+        "tradeIds":["explicit.stat_3299347043"],
+        "type":"explicit",
+        "value":90
+      },{
+        "canSearch":true,
+        "invert":false,
+        "isOption":false,
+        "label":"^x8888FF+18% to Cold Resistance",
+        "min":"18",
+        "tradeIds":["explicit.stat_4220027924"],
+        "type":"explicit",
+        "value":18
+      },{
+        "canSearch":true,
+        "invert":false,
+        "isOption":false,
+        "label":"^xB8DAF1+35% to Fire Resistance",
+        "min":"35",
+        "tradeIds":["explicit.stat_3372524247"],
+        "type":"explicit",
+        "value":35
+      }],
     "name":"Storm Shell, Vaal Cuirass",
     "set":{
       "base":"https://www.pathofexile.com/trade2/search/poe2/Rise%20of%20the%20Abyssal",
       "query":{
         "filters":{
-          "misc_filters":{
-            "filters":{
-              "ilvl":{
-                "max":85,
-                "min":70
-              }
-            }
-          },
           "equipment_filters":{
             "filters":{
               "ar":{
@@ -52,6 +162,14 @@
             "filters":{
               "category":{
                 "option":"armour.chest"
+              }
+            }
+          },
+          "misc_filters":{
+            "filters":{
+              "ilvl":{
+                "max":85,
+                "min":70
               }
             }
           }
@@ -99,19 +217,100 @@
         "label":"Energy Shield",
         "min":"28"
       }],
+    "modSearch":{
+      "base":"https://www.pathofexile.com/trade2/search/poe2/Standard",
+      "query":{
+        "filters":{
+          "type_filters":{
+            "filters":{
+              "category":{
+                "option":"armour.gloves"
+              }
+            }
+          }
+        },
+        "stats":[{
+            "filters":[{
+                "id":"explicit.stat_4220027924",
+                "value":{
+                  "max":999,
+                  "min":25
+                }
+              }],
+            "type":"and"
+          },{
+            "filters":[{
+                "id":"explicit.stat_53045048",
+                "value":{
+                  "max":999,
+                  "min":30
+                }
+              },{
+                "id":"explicit.stat_2144192055",
+                "value":{
+                  "max":999,
+                  "min":30
+                }
+              }],
+            "type":"count",
+            "value":{
+              "min":1
+            }
+          },{
+            "filters":[{
+                "id":"explicit.stat_4052037485",
+                "value":{
+                  "min":15
+                }
+              },{
+                "id":"explicit.stat_3489782002",
+                "value":{
+                  "min":15
+                }
+              }],
+            "type":"count",
+            "value":{
+              "min":1
+            }
+          }],
+        "status":{
+          "option":"securable"
+        }
+      }
+    },
+    "mods":[{
+        "canSearch":true,
+        "invert":false,
+        "isOption":false,
+        "label":"^x8888FF+30 to Evasion Rating",
+        "min":"30",
+        "tradeIds":["explicit.stat_53045048","explicit.stat_2144192055"],
+        "type":"explicit",
+        "value":30
+      },{
+        "canSearch":true,
+        "invert":false,
+        "isOption":false,
+        "label":"^x8888FF+15 to maximum Energy Shield",
+        "min":"15",
+        "tradeIds":["explicit.stat_4052037485","explicit.stat_3489782002"],
+        "type":"explicit",
+        "value":15
+      },{
+        "canSearch":true,
+        "invert":false,
+        "isOption":false,
+        "label":"^x8888FF+25% to Cold Resistance",
+        "min":"25",
+        "tradeIds":["explicit.stat_4220027924"],
+        "type":"explicit",
+        "value":25
+      }],
     "name":"Grim Grip, Linen Wraps",
     "set":{
       "base":"https://www.pathofexile.com/trade2/search/poe2/Rise%20of%20the%20Abyssal",
       "query":{
         "filters":{
-          "misc_filters":{
-            "filters":{
-              "ilvl":{
-                "max":85,
-                "min":70
-              }
-            }
-          },
           "equipment_filters":{
             "filters":{
               "es":{
@@ -127,6 +326,14 @@
             "filters":{
               "category":{
                 "option":"armour.gloves"
+              }
+            }
+          },
+          "misc_filters":{
+            "filters":{
+              "ilvl":{
+                "max":85,
+                "min":70
               }
             }
           }
@@ -161,6 +368,106 @@
       }
     },
     "defences":[],
+    "modSearch":{
+      "base":"https://www.pathofexile.com/trade2/search/poe2/Standard",
+      "query":{
+        "name":"Black Sun Crest",
+        "stats":[{
+            "type":"and",
+            "filters":[{
+                "id":"explicit.stat_734614379",
+                "value":{
+                  "min":10
+                }
+              },{
+                "id":"explicit.stat_4139681126",
+                "value":{
+                  "max":999,
+                  "min":10
+                }
+              },{
+                "id":"explicit.stat_656461285",
+                "value":{
+                  "min":10
+                }
+              },{
+                "id":"explicit.stat_1263695895",
+                "value":{
+                  "max":-20,
+                  "min":-999
+                }
+              }]
+          },{
+            "type":"count",
+            "filters":[{
+                "id":"explicit.stat_1062208444",
+                "value":{
+                  "max":999,
+                  "min":65
+                }
+              },{
+                "id":"explicit.stat_2866361420",
+                "value":{
+                  "max":999,
+                  "min":65
+                }
+              }],
+            "value":{
+              "min":1
+            }
+          }],
+        "status":{
+          "option":"securable"
+        },
+        "type":"Wrapped Greathelm"
+      }
+    },
+    "mods":[{
+        "canSearch":true,
+        "invert":false,
+        "isOption":false,
+        "label":"^x8888FF65% increased Armour",
+        "min":"65",
+        "tradeIds":["explicit.stat_1062208444","explicit.stat_2866361420"],
+        "type":"explicit",
+        "value":65
+      },{
+        "canSearch":true,
+        "invert":false,
+        "isOption":false,
+        "label":"^x8888FF10% increased Strength",
+        "min":"10",
+        "tradeIds":["explicit.stat_734614379"],
+        "type":"explicit",
+        "value":10
+      },{
+        "canSearch":true,
+        "invert":false,
+        "isOption":false,
+        "label":"^x8888FF10% increased Dexterity",
+        "min":"10",
+        "tradeIds":["explicit.stat_4139681126"],
+        "type":"explicit",
+        "value":10
+      },{
+        "canSearch":true,
+        "invert":false,
+        "isOption":false,
+        "label":"^x8888FF10% increased Intelligence",
+        "min":"10",
+        "tradeIds":["explicit.stat_656461285"],
+        "type":"explicit",
+        "value":10
+      },{
+        "canSearch":true,
+        "invert":true,
+        "isOption":false,
+        "label":"^x8888FF20% reduced Light Radius",
+        "min":"20",
+        "tradeIds":["explicit.stat_1263695895"],
+        "type":"explicit",
+        "value":20
+      }],
     "name":"Black Sun Crest, Wrapped Greathelm",
     "set":{
       "base":"https://www.pathofexile.com/trade2/search/poe2/Rise%20of%20the%20Abyssal",
@@ -203,23 +510,89 @@
       }
     },
     "defences":[],
+    "modSearch":{
+      "base":"https://www.pathofexile.com/trade2/search/poe2/Standard",
+      "query":{
+        "filters":{
+          "type_filters":{
+            "filters":{
+              "category":{
+                "option":"accessory.ring"
+              }
+            }
+          }
+        },
+        "stats":[{
+            "filters":[{
+                "id":"enchant.stat_2901986750",
+                "value":{
+                  "max":999,
+                  "min":5
+                }
+              },{
+                "id":"explicit.stat_1050105434",
+                "value":{
+                  "min":40
+                }
+              },{
+                "id":"explicit.stat_1671376347",
+                "value":{
+                  "max":999,
+                  "min":20
+                }
+              }],
+            "type":"and"
+          }],
+        "status":{
+          "option":"securable"
+        }
+      }
+    },
+    "mods":[{
+        "canSearch":true,
+        "invert":false,
+        "isOption":false,
+        "label":"^xB8DAF1+5% to all Elemental Resistances",
+        "min":"5",
+        "tradeIds":["enchant.stat_2901986750"],
+        "type":"enchant",
+        "value":5
+      },{
+        "canSearch":true,
+        "invert":false,
+        "isOption":false,
+        "label":"^x8888FF+40 to maximum Mana",
+        "min":"40",
+        "tradeIds":["explicit.stat_1050105434"],
+        "type":"explicit",
+        "value":40
+      },{
+        "canSearch":true,
+        "invert":false,
+        "isOption":false,
+        "label":"^x8888FF+20% to Lightning Resistance",
+        "min":"20",
+        "tradeIds":["explicit.stat_1671376347"],
+        "type":"explicit",
+        "value":20
+      }],
     "name":"Gloom Loop, Iron Ring",
     "set":{
       "base":"https://www.pathofexile.com/trade2/search/poe2/Rise%20of%20the%20Abyssal",
       "query":{
         "filters":{
+          "type_filters":{
+            "filters":{
+              "category":{
+                "option":"accessory.ring"
+              }
+            }
+          },
           "misc_filters":{
             "filters":{
               "ilvl":{
                 "max":85,
                 "min":70
-              }
-            }
-          },
-          "type_filters":{
-            "filters":{
-              "category":{
-                "option":"accessory.ring"
               }
             }
           }
@@ -261,23 +634,60 @@
       }
     },
     "defences":[],
+    "modSearch":{
+      "base":"https://www.pathofexile.com/trade2/search/poe2/Standard",
+      "query":{
+        "filters":{
+          "type_filters":{
+            "filters":{
+              "category":{
+                "option":"weapon.wand"
+              }
+            }
+          }
+        },
+        "stats":[{
+            "filters":[{
+                "id":"explicit.stat_1545858329",
+                "value":{
+                  "max":999,
+                  "min":1
+                }
+              }],
+            "type":"and"
+          }],
+        "status":{
+          "option":"securable"
+        }
+      }
+    },
+    "mods":[{
+        "canSearch":true,
+        "invert":false,
+        "isOption":false,
+        "label":"^x8888FF+1 to Level of all Lightning Spell Skills",
+        "min":"1",
+        "tradeIds":["explicit.stat_1545858329"],
+        "type":"explicit",
+        "value":1
+      }],
     "name":"Withered Wand of the Spark",
     "set":{
       "base":"https://www.pathofexile.com/trade2/search/poe2/Rise%20of%20the%20Abyssal",
       "query":{
         "filters":{
+          "type_filters":{
+            "filters":{
+              "category":{
+                "option":"weapon.wand"
+              }
+            }
+          },
           "misc_filters":{
             "filters":{
               "ilvl":{
                 "max":85,
                 "min":70
-              }
-            }
-          },
-          "type_filters":{
-            "filters":{
-              "category":{
-                "option":"weapon.wand"
               }
             }
           }
@@ -319,23 +729,72 @@
       }
     },
     "defences":[],
+    "modSearch":{
+      "base":"https://www.pathofexile.com/trade2/search/poe2/Standard",
+      "query":{
+        "filters":{
+          "type_filters":{
+            "filters":{
+              "category":{
+                "option":"weapon.warstaff"
+              }
+            }
+          }
+        },
+        "stats":[{
+            "filters":[],
+            "type":"and"
+          },{
+            "filters":[{
+                "id":"explicit.stat_210067635",
+                "value":{
+                  "max":999,
+                  "min":8
+                }
+              },{
+                "id":"explicit.stat_681332047",
+                "value":{
+                  "max":999,
+                  "min":8
+                }
+              }],
+            "type":"count",
+            "value":{
+              "min":1
+            }
+          }],
+        "status":{
+          "option":"securable"
+        }
+      }
+    },
+    "mods":[{
+        "canSearch":true,
+        "invert":false,
+        "isOption":false,
+        "label":"^x8888FF8% increased Attack Speed",
+        "min":"8",
+        "tradeIds":["explicit.stat_210067635","explicit.stat_681332047"],
+        "type":"explicit",
+        "value":8
+      }],
     "name":"Wrapped Quarterstaff of Skill",
     "set":{
       "base":"https://www.pathofexile.com/trade2/search/poe2/Rise%20of%20the%20Abyssal",
       "query":{
         "filters":{
+          "type_filters":{
+            "filters":{
+              "category":{
+                "option":"weapon.warstaff"
+              }
+            }
+          },
           "misc_filters":{
             "filters":{
               "ilvl":{
                 "max":85,
                 "min":70
-              }
-            }
-          },
-          "type_filters":{
-            "filters":{
-              "category":{
-                "option":"weapon.warstaff"
               }
             }
           }
@@ -380,19 +839,33 @@
         "label":"Energy Shield",
         "min":"12"
       }],
+    "modSearch":{
+      "base":"https://www.pathofexile.com/trade2/search/poe2/Standard",
+      "query":{
+        "filters":{
+          "type_filters":{
+            "filters":{
+              "category":{
+                "option":"armour.focus"
+              }
+            }
+          }
+        },
+        "stats":[{
+            "filters":[],
+            "type":"and"
+          }],
+        "status":{
+          "option":"securable"
+        }
+      }
+    },
+    "mods":[],
     "name":"Twig Focus",
     "set":{
       "base":"https://www.pathofexile.com/trade2/search/poe2/Rise%20of%20the%20Abyssal",
       "query":{
         "filters":{
-          "misc_filters":{
-            "filters":{
-              "ilvl":{
-                "max":85,
-                "min":70
-              }
-            }
-          },
           "equipment_filters":{
             "filters":{
               "es":{
@@ -405,6 +878,14 @@
             "filters":{
               "category":{
                 "option":"armour.focus"
+              }
+            }
+          },
+          "misc_filters":{
+            "filters":{
+              "ilvl":{
+                "max":85,
+                "min":70
               }
             }
           }

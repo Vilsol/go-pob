@@ -5,26 +5,34 @@
   import Select from './Select.svelte';
   import Checkbox from './Checkbox.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
-  import { LISTED, REALMS, isTradeUnique, tradeSearchUrl, type TradeDefence, type TradeItem, type TradeOptions } from './trade';
+  import { LISTED, REALMS, isTradeUnique, tradeModLine, tradeSearchUrl, type TradeDefence, type TradeItem, type TradeMod, type TradeOptions } from './trade';
 
   // CompareBuySimilar.lua:281-520
   // CompareBuySimilar.lua:436-444
   // realms: the Realm dropdown's choices, which a single choice locks (CompareBuySimilar.lua:385-396, PoB-PoE2); url: the
-  // game's own URL builder in place of PoE1's
+  // game's own URL builder in place of PoE1's; mods: the mod rows (CompareBuySimilar.lua:459-516, PoB-PoE2)
   type Props = {
     open?: boolean;
     item?: TradeItem;
     slot?: string;
     defences?: TradeDefence[];
     realms?: [string, string][];
+    mods?: TradeMod[];
     url?: (o: TradeOptions) => Promise<string | undefined>;
     onsearch: (url: string) => void;
   };
-  let { open = $bindable(false), item, slot, defences = [], realms = REALMS, url, onsearch }: Props = $props();
+  let { open = $bindable(false), item, slot, defences = [], realms = REALMS, mods = [], url, onsearch }: Props = $props();
   let defenceRows = $state<{ on: boolean; min: string; max: string }[]>([]);
   $effect(() => {
     defenceRows = defences.map((d) => ({ on: false, min: String(Math.floor(d.value)), max: '' }));
   });
+  let modRows = $state<{ on: boolean; min: string; max: string }[]>([]);
+  $effect(() => {
+    modRows = mods.map((m) => ({ on: false, min: m.min, max: '' }));
+  });
+  const modLabel = (m: TradeMod) => m.lines.map((l) => tradeModLine(l).text).join(' ');
+  // a mod row's boxes take decimals and negatives, as tonumber reads them
+  const dec = (s: string) => (/^-?\d+(\.\d*)?$|^-?\.\d+$/.test(s.trim()) ? Number(s) : undefined);
 
   let realm = $state(realms[0]?.[1] ?? 'pc');
   let league = $state('Standard');
@@ -65,6 +73,42 @@
           {/if}
         {/each}
       {/if}
+      {#if mods.length}
+        <div class="flex flex-col gap-1" role="group" aria-label="Mods">
+          {#each mods as m, i (i)}
+            {#if modRows[i]}
+              <div class="flex items-center gap-2" class:mt-3={i > 0 && mods[i - 1].type !== m.type}>
+                <span class="grow">
+                  <Checkbox compact disabled={!m.canSearch} bind:checked={modRows[i].on}>
+                    <span class="flex flex-col">
+                      {#each m.lines as line, j (j)}
+                        {@const l = tradeModLine(line)}
+                        <span style:color={l.color}>{l.text}</span>
+                      {/each}
+                    </span>
+                  </Checkbox>
+                </span>
+                {#if m.hasBoxes}
+                  <Input
+                    class="w-20"
+                    aria-label="{modLabel(m)} min"
+                    placeholder="Min"
+                    inputmode="decimal"
+                    disabled={!m.canSearch}
+                    bind:value={modRows[i].min} />
+                  <Input
+                    class="w-20"
+                    aria-label="{modLabel(m)} max"
+                    placeholder="Max"
+                    inputmode="decimal"
+                    disabled={!m.canSearch}
+                    bind:value={modRows[i].max} />
+                {/if}
+              </div>
+            {/if}
+          {/each}
+        </div>
+      {/if}
     </div>
   {/if}
   {#snippet actions()}
@@ -77,7 +121,16 @@
         const ticked = defences.flatMap((d, i) =>
           defenceRows[i]?.on ? [[d.tradeKey, { min: num(defenceRows[i].min), max: num(defenceRows[i].max) }] as const] : []
         );
-        const o: TradeOptions = { realm, league, listed, baseType, ilvlMin: num(ilvlMin), ilvlMax: num(ilvlMax), defences: Object.fromEntries(ticked) };
+        const o: TradeOptions = {
+          realm,
+          league,
+          listed,
+          baseType,
+          ilvlMin: num(ilvlMin),
+          ilvlMax: num(ilvlMax),
+          defences: Object.fromEntries(ticked),
+          mods: mods.map((m, i) => ({ checked: m.canSearch && !!modRows[i]?.on, min: dec(modRows[i]?.min ?? ''), max: dec(modRows[i]?.max ?? '') }))
+        };
         if (!url) {
           onsearch(tradeSearchUrl(item, slot, o));
           open = false;

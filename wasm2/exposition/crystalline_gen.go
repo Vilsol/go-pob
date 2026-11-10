@@ -1604,6 +1604,32 @@ func crystallineMarshalCalculator2BuySimilarDefenceFilter(v *calculator2.BuySimi
 	return out
 }
 
+func crystallineMarshalCalculator2BuySimilarModFilter(v *calculator2.BuySimilarModFilter) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Min", func() any {
+		if v.Min == nil {
+			return nil
+		}
+
+		return float64((*v.Min))
+	}())
+	out.Set("Max", func() any {
+		if v.Max == nil {
+			return nil
+		}
+
+		return float64((*v.Max))
+	}())
+	out.Set("Checked", bool(v.Checked))
+
+	return out
+}
+
 func crystallineMarshalCalculator2BuySimilarOptions(v *calculator2.BuySimilarOptions) any {
 	if v == nil {
 		return nil
@@ -1654,6 +1680,37 @@ func crystallineMarshalCalculator2BuySimilarOptions(v *calculator2.BuySimilarOpt
 			out := make([]any, 0, len(items))
 			for i := range items {
 				out = append(out, crystallineMarshalCalculator2BuySimilarDefenceFilter(&items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("Mods", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Mods; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendCalculator2BuySimilarModFilter(b, &items0[i0], ok)
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Mods
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, crystallineMarshalCalculator2BuySimilarModFilter(&items[i]))
 			}
 
 			return out
@@ -3457,6 +3514,52 @@ func crystallineMarshalExpositionBuildPlannerSets(v *BuildPlannerSets) any {
 	return out
 }
 
+func crystallineMarshalExpositionBuySimilarMod(v *BuySimilarMod) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("Type", string(v.Type))
+	out.Set("Min", string(v.Min))
+	out.Set("Lines", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Lines; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendString(b, string(items0[i0]))
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Lines
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, string(items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("CanSearch", bool(v.CanSearch))
+	out.Set("HasBoxes", bool(v.HasBoxes))
+
+	return out
+}
+
 func crystallineMarshalExpositionBuySimilarView(v *BuySimilarView) any {
 	if v == nil {
 		return nil
@@ -3493,6 +3596,37 @@ func crystallineMarshalExpositionBuySimilarView(v *BuySimilarView) any {
 			out := make([]any, 0, len(items))
 			for i := range items {
 				out = append(out, crystallineMarshalCalculator2BuySimilarDefence(&items[i]))
+			}
+
+			return out
+		}()
+	}))
+	out.Set("Mods", crystallineJSON(func(b []byte, ok *bool) []byte {
+		if items0 := v.Mods; items0 == nil {
+			b = append(b, "null"...)
+		} else {
+			b = append(b, '[')
+			for i0 := range items0 {
+				if i0 > 0 {
+					b = append(b, ',')
+				}
+
+				b = crystallineAppendExpositionBuySimilarMod(b, &items0[i0], ok)
+			}
+
+			b = append(b, ']')
+		}
+		return b
+	}, func() any {
+		return func() any {
+			items := v.Mods
+			if items == nil {
+				return nil
+			}
+
+			out := make([]any, 0, len(items))
+			for i := range items {
+				out = append(out, crystallineMarshalExpositionBuySimilarMod(&items[i]))
 			}
 
 			return out
@@ -4362,45 +4496,49 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 						return crystallineFail("BuySimilar: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
 
-					a0, err := crystallineToString(args[0])
-					if err != nil {
-						return crystallineFail(err.Error())
-					}
+					return crystallinePromise(func() any {
+						a0, err := crystallineToString(args[0])
+						if err != nil {
+							return crystallineFail(err.Error())
+						}
 
-					r0, r1 := v.BuySimilar(a0)
+						r0, r1 := v.BuySimilar(a0)
 
-					if r1 != nil {
-						return crystallineErr(r1)
-					}
+						if r1 != nil {
+							return crystallineErr(r1)
+						}
 
-					return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
-						b = crystallineAppendExpositionBuySimilarView(b, r0, ok)
-						return b
-					}, func() any {
-						return crystallineMarshalExpositionBuySimilarView(r0)
-					}))
+						return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
+							b = crystallineAppendExpositionBuySimilarView(b, r0, ok)
+							return b
+						}, func() any {
+							return crystallineMarshalExpositionBuySimilarView(r0)
+						}))
+					})
 				case 12:
 					if len(args) != 2 {
 						return crystallineFail("BuySimilarURL: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
 
-					a0, err := crystallineToString(args[0])
-					if err != nil {
-						return crystallineFail(err.Error())
-					}
+					return crystallinePromise(func() any {
+						a0, err := crystallineToString(args[0])
+						if err != nil {
+							return crystallineFail(err.Error())
+						}
 
-					a1, err := crystallineToCalculator2BuySimilarOptions(args[1])
-					if err != nil {
-						return crystallineFail(err.Error())
-					}
+						a1, err := crystallineToCalculator2BuySimilarOptions(args[1])
+						if err != nil {
+							return crystallineFail(err.Error())
+						}
 
-					r0, r1 := v.BuySimilarURL(a0, a1)
+						r0, r1 := v.BuySimilarURL(a0, a1)
 
-					if r1 != nil {
-						return crystallineErr(r1)
-					}
+						if r1 != nil {
+							return crystallineErr(r1)
+						}
 
-					return crystallineOk(string(r0))
+						return crystallineOk(string(r0))
+					})
 				case 13:
 					if len(args) != 2 {
 						return crystallineFail("CalcsBreakdownModList: expected 2 arguments, got " + strconv.Itoa(len(args)))
@@ -10845,6 +10983,29 @@ func crystallineAppendCalculator2BuySimilarDefenceFilter(b []byte, v *calculator
 	return append(b, '}')
 }
 
+func crystallineAppendCalculator2BuySimilarModFilter(b []byte, v *calculator2.BuySimilarModFilter, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Min\":"...)
+	if v.Min == nil {
+		b = append(b, "null"...)
+	} else {
+		b = crystallineAppendNumber(b, float64((*v.Min)), ok)
+	}
+	b = append(b, ",\"Max\":"...)
+	if v.Max == nil {
+		b = append(b, "null"...)
+	} else {
+		b = crystallineAppendNumber(b, float64((*v.Max)), ok)
+	}
+	b = append(b, ",\"Checked\":"...)
+	b = strconv.AppendBool(b, bool(v.Checked))
+
+	return append(b, '}')
+}
+
 func crystallineAppendCalculator2CalcsInputs(b []byte, v *calculator2.CalcsInputs, ok *bool) []byte {
 	if v == nil {
 		return append(b, "null"...)
@@ -11773,6 +11934,38 @@ func crystallineAppendExpositionBuildPlannerSets(b []byte, v *BuildPlannerSets, 
 	return append(b, '}')
 }
 
+func crystallineAppendExpositionBuySimilarMod(b []byte, v *BuySimilarMod, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"Type\":"...)
+	b = crystallineAppendString(b, string(v.Type))
+	b = append(b, ",\"Min\":"...)
+	b = crystallineAppendString(b, string(v.Min))
+	b = append(b, ",\"Lines\":"...)
+	if items0 := v.Lines; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendString(b, string(items0[i0]))
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"CanSearch\":"...)
+	b = strconv.AppendBool(b, bool(v.CanSearch))
+	b = append(b, ",\"HasBoxes\":"...)
+	b = strconv.AppendBool(b, bool(v.HasBoxes))
+
+	return append(b, '}')
+}
+
 func crystallineAppendExpositionBuySimilarView(b []byte, v *BuySimilarView, ok *bool) []byte {
 	if v == nil {
 		return append(b, "null"...)
@@ -11795,6 +11988,21 @@ func crystallineAppendExpositionBuySimilarView(b []byte, v *BuySimilarView, ok *
 			}
 
 			b = crystallineAppendCalculator2BuySimilarDefence(b, &items0[i0], ok)
+		}
+
+		b = append(b, ']')
+	}
+	b = append(b, ",\"Mods\":"...)
+	if items0 := v.Mods; items0 == nil {
+		b = append(b, "null"...)
+	} else {
+		b = append(b, '[')
+		for i0 := range items0 {
+			if i0 > 0 {
+				b = append(b, ',')
+			}
+
+			b = crystallineAppendExpositionBuySimilarMod(b, &items0[i0], ok)
 		}
 
 		b = append(b, ']')
@@ -14046,7 +14254,68 @@ func crystallineToCalculator2BuySimilarDefenceFilter(value js.Value) (calculator
 	return out, nil
 }
 
-var crystallineKnownCalculator2BuySimilarOptions = map[string]bool{"League": true, "Listed": true, "BaseType": true, "IlvlMin": true, "IlvlMax": true, "Defences": true}
+var crystallineKnownCalculator2BuySimilarModFilter = map[string]bool{"Min": true, "Max": true, "Checked": true}
+
+func crystallineToCalculator2BuySimilarModFilter(value js.Value) (calculator2.BuySimilarModFilter, error) {
+	var out calculator2.BuySimilarModFilter
+
+	if value.IsUndefined() || value.IsNull() {
+		return out, errors.New("calculator2.BuySimilarModFilter: expected an object, got null")
+	}
+
+	if handle, ok := crystallineHandleOf(value); ok {
+		resolved, found := crystallineResolve(handle)
+		if !found {
+			return out, errors.New("calculator2.BuySimilarModFilter: the value behind this handle has been released")
+		}
+
+		typed, ok := resolved.(*calculator2.BuySimilarModFilter)
+		if !ok {
+			return out, errors.New("calculator2.BuySimilarModFilter: handle refers to a different type")
+		}
+
+		return *typed, nil
+	}
+
+	if value.Type() != js.TypeObject {
+		return out, errors.New("calculator2.BuySimilarModFilter: expected an object")
+	}
+
+	if err := crystallineUnknownProperty(value, "calculator2.BuySimilarModFilter", crystallineKnownCalculator2BuySimilarModFilter); err != nil {
+		return out, err
+	}
+
+	if property := value.Get("Min"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToPtrFloat64(property)
+		if err != nil {
+			return out, errors.New("calculator2.BuySimilarModFilter.Min: " + err.Error())
+		}
+
+		out.Min = converted
+	}
+
+	if property := value.Get("Max"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToPtrFloat64(property)
+		if err != nil {
+			return out, errors.New("calculator2.BuySimilarModFilter.Max: " + err.Error())
+		}
+
+		out.Max = converted
+	}
+
+	if property := value.Get("Checked"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToBool(property)
+		if err != nil {
+			return out, errors.New("calculator2.BuySimilarModFilter.Checked: " + err.Error())
+		}
+
+		out.Checked = converted
+	}
+
+	return out, nil
+}
+
+var crystallineKnownCalculator2BuySimilarOptions = map[string]bool{"League": true, "Listed": true, "BaseType": true, "IlvlMin": true, "IlvlMax": true, "Defences": true, "Mods": true}
 
 func crystallineToCalculator2BuySimilarOptions(value js.Value) (calculator2.BuySimilarOptions, error) {
 	var out calculator2.BuySimilarOptions
@@ -14129,6 +14398,15 @@ func crystallineToCalculator2BuySimilarOptions(value js.Value) (calculator2.BuyS
 		}
 
 		out.Defences = converted
+	}
+
+	if property := value.Get("Mods"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToSliceOfCalculator2BuySimilarModFilter(property)
+		if err != nil {
+			return out, errors.New("calculator2.BuySimilarOptions.Mods: " + err.Error())
+		}
+
+		out.Mods = converted
 	}
 
 	return out, nil
@@ -15324,6 +15602,19 @@ func crystallineToPtrExpositionCalculator(value js.Value) (*Calculator, error) {
 	return &built, nil
 }
 
+func crystallineToPtrFloat64(value js.Value) (*float64, error) {
+	if value.IsUndefined() || value.IsNull() {
+		return nil, nil
+	}
+
+	converted, err := crystallineToFloat64(value)
+	if err != nil {
+		return nil, err
+	}
+
+	return &converted, nil
+}
+
 func crystallineToPtrInt(value js.Value) (*int, error) {
 	if value.IsUndefined() || value.IsNull() {
 		return nil, nil
@@ -15350,6 +15641,29 @@ func crystallineToSliceOfCalculator2BuySimilarDefenceFilter(value js.Value) ([]c
 
 	for i := 0; i < value.Length(); i++ {
 		item, err := crystallineToCalculator2BuySimilarDefenceFilter(value.Index(i))
+		if err != nil {
+			return nil, errors.New("[" + strconv.Itoa(i) + "]: " + err.Error())
+		}
+
+		out = append(out, item)
+	}
+
+	return out, nil
+}
+
+func crystallineToSliceOfCalculator2BuySimilarModFilter(value js.Value) ([]calculator2.BuySimilarModFilter, error) {
+	if value.IsUndefined() || value.IsNull() {
+		return nil, nil
+	}
+
+	if !js.Global().Get("Array").Call("isArray", value).Bool() {
+		return nil, errors.New("expected an array")
+	}
+
+	out := make([]calculator2.BuySimilarModFilter, 0, value.Length())
+
+	for i := 0; i < value.Length(); i++ {
+		item, err := crystallineToCalculator2BuySimilarModFilter(value.Index(i))
 		if err != nil {
 			return nil, errors.New("[" + strconv.Itoa(i) + "]: " + err.Error())
 		}

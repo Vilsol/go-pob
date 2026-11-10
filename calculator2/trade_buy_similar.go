@@ -7,7 +7,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"regexp"
+	"slices"
 	"strings"
+	"sync"
 )
 
 // BuySimilarListed is LISTED_STATUS_OPTIONS: the Listed dropdown's labels and the status each searches.
@@ -181,11 +183,19 @@ type BuySimilarOptions struct {
 	IlvlMin  *int
 	IlvlMax  *int
 	Defences []BuySimilarDefenceFilter
+	Mods     []BuySimilarModFilter
 }
 
 type BuySimilarDefenceFilter struct {
 	Min     *int
 	Max     *int
+	Checked bool
+}
+
+// BuySimilarModFilter is a mod row's box and its Min and Max boxes, one per mod entry.
+type BuySimilarModFilter struct {
+	Min     *float64
+	Max     *float64
 	Checked bool
 }
 
@@ -200,13 +210,12 @@ func B64GzipEncode(str string) string {
 	return strings.NewReplacer("+", "-", "/", "_").Replace(base64.StdEncoding.EncodeToString(buf.Bytes()))
 }
 
-// BuySimilarURL is the trade search URL for the popup's selections, without its mod rows. The realm is PoE2's, which
+// BuySimilarURL is the trade search URL for the popup's selections over its mod entries. The realm is PoE2's, which
 // the popup does not let change.
 //
-//pob2:block:src/Classes/CompareBuySimilar.lua:44-133
-//pob2:block:src/Classes/CompareBuySimilar.lua:177-195
+//pob2:block:src/Classes/CompareBuySimilar.lua:44-195
 //pob2:block:src/Classes/CompareBuySimilar.lua:385-396
-func BuySimilarURL(item *Item, slotName string, o BuySimilarOptions) string {
+func BuySimilarURL(item *Item, slotName string, modEntries []*BuySimilarModEntry, o BuySimilarOptions) string {
 	isUnique := item.Rarity == "UNIQUE" || item.Rarity == "RELIC"
 	realm := "poe2"
 	league := o.League
@@ -273,6 +282,66 @@ func BuySimilarURL(item *Item, slotName string, o BuySimilarOptions) string {
 		}
 	}
 
+	// Mod filters
+	for i, entry := range modEntries {
+		var row BuySimilarModFilter
+		if i < len(o.Mods) {
+			row = o.Mods[i]
+		}
+		getFilter := func(tradeID string) map[string]any {
+			filter := map[string]any{"id": tradeID}
+			switch {
+			case entry.IsOption:
+				// an empty Lua table encodes as an array
+				value := map[string]any{}
+				if entry.Value != nil {
+					value["min"], value["max"] = *entry.Value, *entry.Value
+					filter["value"] = value
+				} else {
+					filter["value"] = []any{}
+				}
+			case entry.Value != nil:
+				minVal, maxVal := row.Min, row.Max
+				if entry.Invert != nil && *entry.Invert {
+					minVal, maxVal = maxVal, minVal
+					if minVal != nil {
+						minVal = floatp(-*minVal)
+					}
+					if maxVal != nil {
+						maxVal = floatp(-*maxVal)
+					}
+				}
+				value := map[string]any{}
+				if minVal != nil {
+					value["min"] = *minVal
+				}
+				if maxVal != nil {
+					value["max"] = *maxVal
+				}
+				if len(value) > 0 {
+					filter["value"] = value
+				}
+			}
+			return filter
+		}
+		if !row.Checked {
+			continue
+		}
+		stats := queryTable["stats"].([]any)
+		if len(entry.TradeIDs) == 1 {
+			// 1 id entries are added to the stat filters section
+			first := stats[0].(map[string]any)
+			first["filters"] = append(first["filters"].([]any), getFilter(entry.TradeIDs[0]))
+		} else if len(entry.TradeIDs) > 1 {
+			// ambiguous entries are added as a separate count filter
+			countFilter := map[string]any{"type": "count", "value": map[string]any{"min": 1}, "filters": []any{}}
+			for _, tradeID := range entry.TradeIDs {
+				countFilter["filters"] = append(countFilter["filters"].([]any), getFilter(tradeID))
+			}
+			queryTable["stats"] = append(stats, countFilter)
+		}
+	}
+
 	if len(queryFilters) > 0 {
 		queryTable["filters"] = queryFilters
 	}
@@ -299,4 +368,141 @@ var foulbornPrefix = regexp.MustCompile(`^Foulborn\s+`)
 
 func isAlnum(c byte) bool {
 	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
+}
+
+// BuySimilarModEntry is one mod row of the popup: the formatted lines of the mods it sums, their source type, the trade
+// ids it searches (more than one when the line is ambiguous), whether the trade site has an option for it, whether
+// the site wants its value negated (nil when no stat description said), and its value.
+type BuySimilarModEntry struct {
+	Value          *float64
+	Invert         *bool
+	FormattedLines []string
+	TradeIDs       []string
+	Type           string
+	IsOption       bool
+}
+
+// existingStats is every trade id the site has and its text, lowered; a repeated id keeps its last text.
+//
+//pob2:block:src/Classes/CompareBuySimilar.lua:12-18
+var existingStats = sync.OnceValue(func() map[string]string {
+	existing := map[string]string{}
+	for _, cat := range tradeStats() {
+		for _, entry := range cat.Entries {
+			existing[entry.ID] = asciiLower(entry.Text)
+		}
+	}
+	return existing
+})
+
+// BuySimilarAddModEntries is the popup's mod rows for item's enchant, implicit and explicit lines; formatModLine is
+// itemLib.formatModLine outside dbMode.
+//
+//pob2:src/Classes/CompareBuySimilar.lua:200-281
+//pob2:block:src/Classes/CompareBuySimilar.lua:301-308
+func BuySimilarAddModEntries(item *Item, formatModLine func(*ModLine) (string, bool)) []*BuySimilarModEntry {
+	var modEntries []*BuySimilarModEntry
+	// this adds a single aggregated entry for matching stats (e.g. transformed flat dmg mods) which
+	// avoids issues with confusing results. mods with different types are not summed as e.g.
+	// implicit and explicit mods are separate in the search. options are also avoided as they don't
+	// represent values that can be added combined
+	insertOrAddToExisting := func(entry *BuySimilarModEntry) {
+		for _, existingFilter := range modEntries {
+			// check if all result trade ids are equal
+			sameHashes := len(entry.TradeIDs) > 0 && slices.Equal(entry.TradeIDs, existingFilter.TradeIDs)
+			if sameHashes && existingFilter.Type == entry.Type {
+				if entry.Value != nil {
+					value := *entry.Value
+					if !sameLuaBool(entry.Invert, existingFilter.Invert) {
+						value = -value
+					}
+					existing := 0.0
+					if existingFilter.Value != nil {
+						existing = *existingFilter.Value
+					}
+					existingFilter.Value = floatp(existing + value)
+				}
+				existingFilter.FormattedLines = append(existingFilter.FormattedLines, entry.FormattedLines[0])
+				return
+			}
+		}
+		modEntries = append(modEntries, entry)
+	}
+	modTypeSources := []struct {
+		list []*ModLine
+		typ  string
+	}{
+		{item.EnchantModLines, "enchant"},
+		{item.ImplicitModLines, "implicit"},
+		{item.ExplicitModLines, "explicit"},
+	}
+	for _, source := range modTypeSources {
+		for _, modLine := range source.list {
+			if !item.CheckModLineVariant(modLine) {
+				continue
+			}
+			// remove unsupported data. the formatting of unsupported
+			// mods is confusing here
+			copied := *modLine
+			copied.Extra = ""
+			formatted, ok := formatModLine(&copied)
+			if !ok {
+				continue
+			}
+			// Use range-resolved text for matching
+			resolvedLine := copied.Line
+			if copied.Range != nil {
+				resolvedLine = applyRange(copied.Line, *copied.Range, nil, copied.ValueScalar, nil, item.modSource)
+			}
+			// check option first, because even if we match a line via the descriptors, the trade id formatting is different for options. e.g.: explicit.stat_345345|33
+			tradeID, value := findTradeIDOption(resolvedLine, source.typ)
+			entry := &BuySimilarModEntry{
+				// this array will always start with one line, but if multiple mods are
+				// aggregated together it will contain the original mod lines for each
+				FormattedLines: []string{formatted},
+				Type:           source.typ,
+				IsOption:       tradeID != "",
+				Invert:         new(false),
+				Value:          value,
+			}
+			if tradeID != "" {
+				entry.TradeIDs = []string{tradeID}
+			} else {
+				resultHashes, value, invert := findTradeHash(resolvedLine)
+				// convert hashes to string ids
+				var resultIDs []string
+				exactMatch := false
+				tradeLine := asciiLower(strings.ReplaceAll(resolvedLine, "\n", " "))
+				existing := existingStats()
+				for _, hash := range resultHashes {
+					id := fmt.Sprintf("%s.stat_%d", source.typ, hash)
+					text, ok := existing[id]
+					if ok && text == tradeLine {
+						// Prefer literal trade text over alternate numeric forms, e.g. Instant Recovery.
+						if !exactMatch {
+							resultIDs = nil
+							value, invert = nil, new(false)
+							exactMatch = true
+						}
+						resultIDs = append(resultIDs, id)
+					} else if ok && !exactMatch {
+						resultIDs = append(resultIDs, id)
+					}
+				}
+				entry.TradeIDs = resultIDs
+				entry.Value = value
+				entry.Invert = invert
+			}
+			insertOrAddToExisting(entry)
+		}
+	}
+	return modEntries
+}
+
+// sameLuaBool is a == b over Lua's nil, false and true.
+func sameLuaBool(a, b *bool) bool {
+	if a == nil || b == nil {
+		return a == nil && b == nil
+	}
+	return *a == *b
 }

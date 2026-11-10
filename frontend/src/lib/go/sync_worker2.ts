@@ -1319,17 +1319,27 @@ class PoB2Worker {
     return { a: this.calcsPageOf(this.calc), b: this.calcsPageOf(b.calc) };
   }
 
-  /* CompareBuySimilar.lua:284-329, 421-434 (PoB-PoE2): the Buy Similar popup for the compared build's item in a slot */
-  CompareBuySimilar(slot: string): exposition.BuySimilarView | undefined {
+  /* CompareBuySimilar.lua:284-329, 421-434, 459-516 (PoB-PoE2): the Buy Similar popup for the compared build's item in a slot */
+  async CompareBuySimilar(slot: string): Promise<exposition.BuySimilarView | undefined> {
     const b = this.compareB;
     if (!b) return undefined;
-    const v = b.calc.BuySimilar(slot).unwrap();
-    return v && { ...v, Defences: [...(v.Defences ?? [])].map((d) => ({ ...d })), Listed: [...(v.Listed ?? [])] };
+    // async: the mod rows load the trade site's stats list and the stat descriptions on first use
+    const v = (await b.calc.BuySimilar(slot)).unwrap();
+    return (
+      v && {
+        ...v,
+        Defences: [...(v.Defences ?? [])].map((d) => ({ ...d })),
+        Mods: [...(v.Mods ?? [])].map((m) => ({ ...m, Lines: [...(m.Lines ?? [])] })),
+        Listed: [...(v.Listed ?? [])]
+      }
+    );
   }
 
   /* CompareBuySimilar.lua:44-195 (PoB-PoE2): the Open URL button's trade search */
-  CompareBuySimilarURL(slot: string, o: calculator2.BuySimilarOptions): string | undefined {
-    return this.compareB?.calc.BuySimilarURL(slot, o).unwrap();
+  async CompareBuySimilarURL(slot: string, o: calculator2.BuySimilarOptions): Promise<string | undefined> {
+    const b = this.compareB;
+    if (!b) return undefined;
+    return (await b.calc.BuySimilarURL(slot, o)).unwrap();
   }
 
   /* CompareTab.lua:4545-4561 (PoB-PoE2): whether each entry's mod rows match between the open build and the compared */

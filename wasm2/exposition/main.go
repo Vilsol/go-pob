@@ -17,7 +17,7 @@ import (
 //crystalline:exports
 func Exports(r bind.Registry) {
 	r.Type(Calculator{}, bind.AsPromise("Calculate", "GemSortDPS", "DisplayItemCompare", "BuildItemCompare", "DBItemCompare", "CraftItemCompare",
-		"NodeCompare", "StartNodePower", "StepNodePower", "PartyImpact", "CompareEquipItem"))
+		"NodeCompare", "StartNodePower", "StepNodePower", "PartyImpact", "CompareEquipItem", "BuySimilar", "BuySimilarURL"))
 	r.Type(Outputs{}, bind.Plain())
 	r.Type(PartyMember{}, bind.Plain())
 	r.Type(PartyImpactRow{}, bind.Plain())

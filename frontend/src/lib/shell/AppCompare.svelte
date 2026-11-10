@@ -53,7 +53,7 @@
   import type { SavedBuild } from '$lib/design/fixtures/app';
   import { BUILD_SORT_KEY, loadBuildSort, saveBuildSort } from '$lib/display/build_sort';
   import { followOtherTabs } from '$lib/storage/tabs';
-  import { LISTED, tradeDefences, type TradeDefence, type TradeItem, type TradeOptions } from '$lib/design/trade';
+  import { LISTED, tradeDefences, type TradeDefence, type TradeItem, type TradeMod, type TradeOptions } from '$lib/design/trade';
   import type { CompareFixture, PowerRow } from '$lib/design/fixtures';
   import type { Tree } from '$lib/skill_tree/types';
   import { calculateAllocationPath } from '$lib/components/skill-tree/paths';
@@ -235,7 +235,13 @@
     return [m?.items.a.find((i) => i.slot === slot)?.text ?? '', m?.items.b.find((i) => i.slot === slot)?.text ?? ''];
   };
   // CompareTab.lua:3806-3809, 3950-3952, CompareBuySimilar.lua:281-531
-  let buying = $state<{ item: TradeItem; slot?: string; defences: TradeDefence[]; url?: (o: TradeOptions) => Promise<string | undefined> }>();
+  let buying = $state<{
+    item: TradeItem;
+    slot?: string;
+    defences: TradeDefence[];
+    mods?: TradeMod[];
+    url?: (o: TradeOptions) => Promise<string | undefined>;
+  }>();
 
   type Power = { receiver: 'a' | 'b'; rows: ComparePowerRow[]; configBack: Record<string, number[]> };
   const power = resource(
@@ -813,6 +819,7 @@
           if (!v) return;
           const defences = (v.Defences ?? []).map((d) => ({ label: d.Label, value: d.Value, tradeKey: d.TradeKey }));
           const item = { rarity: v.Unique ? 'UNIQUE' : 'RARE', title: '', name: v.Name, baseName: v.BaseName, type: v.Category };
+          const mods = (v.Mods ?? []).map((r) => ({ type: r.Type, lines: [...(r.Lines ?? [])], canSearch: r.CanSearch, hasBoxes: r.HasBoxes, min: r.Min }));
           const url = async (o: TradeOptions) =>
             w.CompareBuySimilarURL(slot, {
               League: o.league,
@@ -820,9 +827,10 @@
               BaseType: o.baseType,
               IlvlMin: o.ilvlMin,
               IlvlMax: o.ilvlMax,
-              Defences: defences.map((d) => ({ Checked: !!o.defences?.[d.tradeKey], Min: o.defences?.[d.tradeKey]?.min, Max: o.defences?.[d.tradeKey]?.max }))
+              Defences: defences.map((d) => ({ Checked: !!o.defences?.[d.tradeKey], Min: o.defences?.[d.tradeKey]?.min, Max: o.defences?.[d.tradeKey]?.max })),
+              Mods: (o.mods ?? []).map((r) => ({ Checked: r.checked, Min: r.min, Max: r.max }))
             });
-          buying = { item, slot, defences, url };
+          buying = { item, slot, defences, mods, url };
         }
       : async (slot: string) => {
           const text = sideTexts(slot)[1];
@@ -836,6 +844,7 @@
     item={buying?.item}
     slot={buying?.slot}
     defences={buying?.defences}
+    mods={buying?.mods}
     realms={poe2 ? [['PoE2', 'poe2']] : undefined}
     url={buying?.url}
     onsearch={(url: string) => window.open(url, '_blank', 'noopener')} />

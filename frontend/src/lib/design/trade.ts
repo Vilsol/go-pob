@@ -68,7 +68,19 @@ export type TradeOptions = {
   ilvlMin?: number;
   ilvlMax?: number;
   defences?: Record<string, { min?: number; max?: number }>;
+  mods?: { checked: boolean; min?: number; max?: number }[];
 };
+// a Buy Similar mod row (CompareBuySimilar.lua:459-516, PoB-PoE2): its label lines with their colour codes
+export type TradeMod = { type: string; lines: string[]; canSearch: boolean; hasBoxes: boolean; min: string };
+
+const SINGLE_DIGIT_COLORS: Record<string, string> = { '7': '#FFFFFF', '8': '#B2B2B2', '9': '#666666' };
+
+/* a label line's colour and text: the first colour code colours the line, and every code is dropped from the text */
+export function tradeModLine(line: string): { color?: string; text: string } {
+  const m = /\^x([0-9A-Fa-f]{6})|\^(\d)/.exec(line);
+  const color = m ? (m[1] ? `#${m[1]}` : SINGLE_DIGIT_COLORS[m[2]]) : undefined;
+  return { color, text: line.replace(/\^x[0-9A-Fa-f]{6}|\^[0-9A-Fa-f]/g, '') };
+}
 
 export const isTradeUnique = (item: TradeItem) => item.rarity === 'UNIQUE' || item.rarity === 'RELIC';
 

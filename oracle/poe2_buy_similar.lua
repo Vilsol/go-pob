@@ -1,7 +1,8 @@
 -- usage (from PoB-PoE2's src/): luajit poe2_buy_similar.lua <build.xml> <out.json>
 -- Records CompareBuySimilar.openPopup's popup for every item the build equips, as the Compare tab opens it for a compared
 -- item: whether it is unique, its category label, base name and defence rows, and the trade URL the Open URL button
--- copies with the popup as it opens and with every box set, its query decoded.
+-- copies with the popup as it opens, with every box set, and with every searchable mod row checked, its query decoded,
+-- and its mod rows.
 local selfPath, path, outPath = arg[0], arg[1], arg[2]
 assert(path and outPath, "usage: poe2_buy_similar.lua <build.xml> <out.json>")
 
@@ -18,6 +19,12 @@ loadBuildFromXML(xml)
 runCallback("OnFrame")
 
 local buySimilar = LoadModule("Classes/CompareBuySimilar")
+-- the popup's mod entries, which it keeps local
+local addModEntries = buySimilar.addModEntries
+buySimilar.addModEntries = function(...)
+	buySimilar.lastModEntries = addModEntries(...)
+	return buySimilar.lastModEntries
+end
 local tradeHelpers = LoadModule("Classes/TradeHelpers")
 
 -- the league list is not fetched: TradeQueryRequests:FetchLeagues falls back to Standard
@@ -77,6 +84,37 @@ for slotName, slot in pairs(build.itemsTab.slots) do
 			end
 		end
 		rec.set = search()
+		-- every searchable mod row checked, the odd rows with a Max, over the popup as it opens
+		popup.leagueDrop:SetList({ "Standard" })
+		popup.listedDrop:SetSel(1)
+		if not isUnique then
+			popup.baseTypeCheck.state = false
+			popup.ilvlMin:SetText("")
+			popup.ilvlMax:SetText("")
+			for j = 1, i - 1 do
+				popup["def" .. j .. "Check"].state = false
+			end
+		end
+		rec.mods = {}
+		local m = 1
+		while popup["mod" .. m .. "Check"] do
+			local entry = buySimilar.lastModEntries[m]
+			local check = popup["mod" .. m .. "Check"]
+			local row = { label = popup["mod" .. m .. "Label"].label, type = entry.type, isOption = entry.isOption, invert = entry.invert,
+				tradeIds = entry.tradeIds, value = entry.value, canSearch = check:IsEnabled() }
+			if popup["mod" .. m .. "Min"] then
+				row.min = popup["mod" .. m .. "Min"].buf
+			end
+			if row.canSearch then
+				check.state = true
+				if m % 2 == 1 and popup["mod" .. m .. "Max"] then
+					popup["mod" .. m .. "Max"]:SetText("999")
+				end
+			end
+			table.insert(rec.mods, row)
+			m = m + 1
+		end
+		rec.modSearch = search()
 		out[slotName] = rec
 	end
 end

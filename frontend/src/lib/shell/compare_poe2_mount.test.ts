@@ -9,6 +9,9 @@ import { resolve } from 'node:path';
 import { deflateSync, gunzipSync } from 'node:zlib';
 import { get } from 'svelte/store';
 import type { Poe2Calc } from '$lib/go/sync_worker2';
+import { cachedAsset } from '../../../e2e/support/data_cache';
+
+const TRADE_STATS = /\/files\/api\/trade2\/data\/stats\.json\.br$/;
 
 afterEach(cleanup);
 
@@ -104,6 +107,30 @@ beforeAll(async () => {
   if (!existsSync(WASM2)) throw new Error(`REFUSING: the PoE2 wasm module is missing — run \`mise run build-go2\`\n  missing: ${WASM2}`);
   const nodeFetch = globalThis.fetch;
   vi.stubGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
+    // the trade site's stats list comes from the Go bundle cache when a Go test cached it, ahead of go-pob-data publishing it
+    const href = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+    if (TRADE_STATS.test(href)) {
+      const cached = (() => {
+        try {
+          return cachedAsset(href);
+        } catch {
+          return undefined;
+        }
+      })();
+      if (cached?.status === 200) {
+        const body = new Uint8Array(cached.body).buffer;
+        return {
+          ok: true,
+          status: 200,
+          statusText: 'OK',
+          headers: new Headers(),
+          url: href,
+          redirected: false,
+          body: undefined,
+          arrayBuffer: () => Promise.resolve(body)
+        };
+      }
+    }
     const res = await nodeFetch(input, { ...init, signal: undefined });
     const body = await res.arrayBuffer();
     return {
@@ -538,6 +565,65 @@ describe('the PoE2 Compare page', () => {
     await fireEvent.click(dialog.getByRole('button', { name: 'Search' }));
     await waitFor(() => expect(opened).toHaveLength(2));
     expect(decode(opened[1])).toEqual(pob.Gloves.set);
+    spy.mockRestore();
+  });
+
+  // CompareBuySimilar.lua:134-175, 200-281, 459-516 (PoB-PoE2): the compared item's mod rows and their trade filters;
+  // skipped while go-pob-data does not publish the trade site's stats list
+  it("lists B's item's mods and searches the checked ones as PoB-PoE2 does", async (ctx) => {
+    type Search = { base: string; query: unknown };
+    const pob = JSON.parse(await readFile(resolve(ORACLE, 'poe2_buy_similar.json'), 'utf8')) as Record<
+      string,
+      { mods: { label: string; min?: string; canSearch: boolean }[]; modSearch: Search }
+    >;
+    const opened: string[] = [];
+    const spy = vi.spyOn(window, 'open').mockImplementation((url) => {
+      opened.push(String(url));
+      return null;
+    });
+    const page = await open('sorceress_spark.xml');
+    await compareCode(page, encode(await fixture('buy_similar.xml')));
+    await page.findByRole('region', { name: 'Stat comparison' }, { timeout: 30_000 });
+    await fireEvent.click(page.getByRole('tab', { name: 'Items' }));
+    const region = await page.findByRole('region', { name: 'Item differences' });
+    const rowOf = (label: string) =>
+      [...region.querySelectorAll<HTMLElement>('[role="row"]')].find((r) => r.querySelector('[role="cell"]')?.textContent?.trim() === label);
+    await waitFor(() => expect(rowOf('Body Armour')).toBeTruthy());
+    await fireEvent.click(within(rowOf('Body Armour')!).getByRole('button', { name: 'Buy' }));
+    const dialog = within(await page.findByRole('dialog', { name: 'Buy Similar' }));
+    const group = dialog.queryByRole('group', { name: 'Mods' });
+    if (!group) {
+      spy.mockRestore();
+      // a skipped test does not run the afterEach cleanup
+      cleanup();
+      ctx.skip();
+      return;
+    }
+    const want = pob['Body Armour'];
+    const boxes = within(group).getAllByRole<HTMLInputElement>('checkbox');
+    const plain = (label: string) => label.replace(/\^x[0-9A-Fa-f]{6}|\^[0-9A-Fa-f]/g, '');
+    expect(boxes.map((b) => b.parentElement?.textContent?.trim())).toEqual(want.mods.map((m) => plain(m.label).replaceAll('\n', '')));
+    for (const [i, m] of want.mods.entries()) {
+      const name = plain(m.label).replaceAll('\n', ' ');
+      if (m.min !== undefined) expect(within(group).getByRole<HTMLInputElement>('textbox', { name: `${name} min` }).value).toBe(m.min);
+      if (m.canSearch) await fireEvent.click(boxes[i]);
+      if (m.canSearch && m.min !== undefined && i % 2 === 0)
+        await fireEvent.input(within(group).getByRole('textbox', { name: `${name} max` }), { target: { value: '999' } });
+    }
+    await fireEvent.click(dialog.getByRole('button', { name: 'Search' }));
+    await waitFor(() => expect(opened).toHaveLength(1));
+    const url = opened[0];
+    const i = url.lastIndexOf('/');
+    const text = gunzipSync(
+      Buffer.from(
+        url
+          .slice(i + 1)
+          .replaceAll('-', '+')
+          .replaceAll('_', '/'),
+        'base64'
+      )
+    ).toString('utf8');
+    expect({ base: url.slice(0, i), query: JSON.parse(text) as unknown }).toEqual(want.modSearch);
     spy.mockRestore();
   });
 

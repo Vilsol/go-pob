@@ -148,6 +148,8 @@ data/poe2/lookup.go                 GO-NATIVE  binary searches over the generate
 data/poe2/modcache.go               GO-NATIVE  Go struct declarations and a binary search over the generated ModCache and QuestRewards tables, standing in for PoB-PoE2's modLib.parseModCache[line] lookup; each cites the Lua it replaces
 data/poe2/modcache_generated.go     GENERATED  scripts/gopob/regendata_poe2_modcache.go
 data/poe2/quests_generated.go       GENERATED  scripts/gopob/regendata_poe2_modcache.go
+data/poe2/trade_stats.go           PORT       src/Classes/TradeQueryGenerator.lua,src/Modules/Utils.lua
+data/poe2/stat_descriptions.go     PORT       src/Export/Scripts/statdesc.lua,src/Modules/Common.lua
 data/poe2/runes_generated.go        GENERATED  scripts/gopob/regendata_poe2.go
 data/poe2/runeforging_generated.go GENERATED  scripts/gopob/regendata_poe2_items.go
 data/poe2/item_mods_generated.go   GENERATED  scripts/gopob/regendata_poe2_items.go
@@ -620,6 +622,7 @@ calculator2/item_db.go              PORT       src/Modules/ItemTools.lua,src/Mod
 calculator2/compare_calcs.go        PORT       src/Classes/CompareCalcsHelpers.lua,src/Classes/CompareTab.lua
 calculator2/compare_items.go        PORT       src/Classes/CompareTab.lua
 calculator2/trade_buy_similar.go    PORT       src/Classes/CompareBuySimilar.lua,src/Classes/TradeHelpers.lua
+calculator2/trade_helpers.go        PORT       src/Classes/TradeHelpers.lua,src/Modules/Common.lua
 calculator2/compare_power.go        PORT       src/Classes/CompareTab.lua,src/Classes/CalcsTab.lua,src/Classes/ItemsTab.lua
 calculator2/item_compare.go         PORT       src/Modules/Calcs.lua,src/Classes/ItemsTab.lua
 calculator2/node_compare.go         PORT       src/Classes/PassiveTreeView.lua

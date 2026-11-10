@@ -33,6 +33,11 @@ export declare namespace calculator2 {
     readonly Max?: number;
     readonly Checked: boolean;
   }
+  interface BuySimilarModFilter {
+    readonly Min?: number;
+    readonly Max?: number;
+    readonly Checked: boolean;
+  }
   interface BuySimilarOptions {
     readonly League: string;
     readonly Listed: number;
@@ -40,6 +45,7 @@ export declare namespace calculator2 {
     readonly IlvlMin?: number;
     readonly IlvlMax?: number;
     readonly Defences?: Array<calculator2.BuySimilarDefenceFilter>;
+    readonly Mods?: Array<calculator2.BuySimilarModFilter>;
   }
   interface CalcsInputs {
     readonly SkillNumber: number;
@@ -290,11 +296,19 @@ export declare namespace exposition {
     readonly SkillSets?: Array<exposition.BuildPlannerSet>;
     readonly ItemSets?: Array<exposition.BuildPlannerSet>;
   }
+  interface BuySimilarMod {
+    readonly Type: string;
+    readonly Min: string;
+    readonly Lines?: Array<string>;
+    readonly CanSearch: boolean;
+    readonly HasBoxes: boolean;
+  }
   interface BuySimilarView {
     readonly Name: string;
     readonly BaseName: string;
     readonly Category: string;
     readonly Defences?: Array<calculator2.BuySimilarDefence>;
+    readonly Mods?: Array<exposition.BuySimilarMod>;
     readonly Listed?: Array<string>;
     readonly Unique: boolean;
   }
@@ -350,8 +364,8 @@ export declare namespace exposition {
     BuildPlannerExportAll(meta: exposition.BuildPlannerMeta, specIndex: number): Result<exposition.BuildPlannerExportAll>;
     BuildPlannerLoadouts(): (Array<exposition.BuildPlannerLoadout> | undefined);
     BuildPlannerSets(): exposition.BuildPlannerSets;
-    BuySimilar(slotName: string): Result<(exposition.BuySimilarView | undefined)>;
-    BuySimilarURL(slotName: string, o: calculator2.BuySimilarOptions): Result<string>;
+    BuySimilar(slotName: string): Promise<Result<(exposition.BuySimilarView | undefined)>>;
+    BuySimilarURL(slotName: string, o: calculator2.BuySimilarOptions): Promise<Result<string>>;
     CalcsBreakdownModList(name: string, minion: boolean): Result<(Array<calculator2.ModSectionRow> | undefined)>;
     CalcsBreakdowns(): Result<(Record<string, Readonly<exposition.CalcsBreakdown>> | undefined)>;
     CalcsCompareModRows(sd: calculator2.ModSectionData): Result<(Array<calculator2.CompareModRow> | undefined)>;
