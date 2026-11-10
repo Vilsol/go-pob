@@ -36,7 +36,7 @@
   import type { ItemStatDiffBlock } from '$lib/components/items/item_diff';
   import { nameUnnamedItem, type CraftApi } from '$lib/design/crafting';
   import BuySimilarDialog from '$lib/design/BuySimilarDialog.svelte';
-  import { tradeDefences, type TradeDefence, type TradeItem } from '$lib/design/trade';
+  import { tradeDefences, tradeQueryOptions, tradeView, type TradeDefence, type TradeItem, type TradeMod, type TradeOptions } from '$lib/design/trade';
   import PageLoading from '$lib/design/PageLoading.svelte';
   import { track } from '$lib/activity/jobs';
 
@@ -404,8 +404,28 @@
   let customFor: string | undefined;
   let customRequest = $state(false);
   // ItemsTab.lua:342-350
-  let pasteTrade = $state<{ item: TradeItem; slot?: string; defences: TradeDefence[] }>();
+  let pasteTrade = $state<{
+    source: string;
+    item: TradeItem;
+    slot?: string;
+    defences: TradeDefence[];
+    mods?: TradeMod[];
+    url?: (o: TradeOptions) => Promise<string | undefined>;
+  }>();
   let buying = $state(false);
+  // ItemsTab.lua:354-358, CompareBuySimilar.lua:285-536: the popup's rows and its search, read as the build reads the item
+  const openBuySimilar = async () => {
+    const t = pasteTrade;
+    if (!t) return;
+    const slot = t.slot ?? '';
+    const v = await syncWrap?.BuySimilar(t.source, slot);
+    if (pasteTrade !== t) return;
+    if (v) {
+      const { item, defences, mods } = tradeView(v);
+      pasteTrade = { ...t, item, defences, mods, url: async (o: TradeOptions) => syncWrap?.BuySimilarURL(t.source, slot, tradeQueryOptions(defences, o)) };
+    }
+    buying = true;
+  };
   let seq = 0;
   let running = false;
   let dirty = false;
@@ -429,7 +449,7 @@
     }
     paste = { item: summary(p.item), name: p.item.Name, pending: true, blocks: [] };
     const tradeItem = { rarity: p.item.Rarity, title: p.item.Title, name: p.item.Name, baseName: p.item.BaseName, type: p.item.Type };
-    pasteTrade = { item: tradeItem, slot: p.item.FitSlots?.[0], defences: tradeDefences(tradeItem, p.item.ArmourData) };
+    pasteTrade = { source: text, item: tradeItem, slot: p.item.FitSlots?.[0], defences: tradeDefences(tradeItem, p.item.ArmourData) };
     const [d, c, affixes, extras, bases] = await Promise.all([
       syncWrap?.GetDisplayItem(text),
       syncWrap?.GetDisplayItemCraft(text),
@@ -1029,7 +1049,7 @@
     {onclone}
     bind:customRequest
     {oncancelpaste}
-    onbuysimilar={pasteTrade && (() => (buying = true))}
+    onbuysimilar={pasteTrade && (() => void openBuySimilar())}
     {ondelete}
     {onjewel}
     {display}
@@ -1138,4 +1158,6 @@
   item={pasteTrade?.item}
   slot={pasteTrade?.slot}
   defences={pasteTrade?.defences}
+  mods={pasteTrade?.mods}
+  url={pasteTrade?.url}
   onsearch={(url: string) => window.open(url, '_blank', 'noopener')} />

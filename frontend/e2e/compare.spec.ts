@@ -387,15 +387,33 @@ test('Items: Expanded mode cards and the Jewels section are the model’s', { ta
     await expect(helmet.getByRole('list').nth(i).getByRole('listitem')).toHaveText(card.map((l) => pobPlain(l)));
   }
 
-  // CompareTab.lua:3806-3809, 3950-3952
+  // CompareTab.lua:3806-3809, 3950-3952 and CompareBuySimilar.lua:47-206, 458-511: B's helmet's mod rows, and the
+  // search with its first searchable row checked
+  const view = (await m.exposition.BuySimilar(bModel, bHelm, 'Helmet')).unwrap()!;
+  const rows = view.Mods ?? [];
+  const first = rows.findIndex((r) => r.CanSearch);
+  expect(first, "the model finds no mod of B's helmet the trade site searches").toBeGreaterThanOrEqual(0);
   await page.evaluate(() => {
     window.open = ((u: string) => ((window as unknown as { opened: string }).opened = u)) as typeof window.open;
   });
   await helmet.getByRole('button', { name: 'Buy' }).click();
   const dialog = page.getByRole('dialog', { name: 'Buy Similar' });
+  const mods = dialog.getByRole('group', { name: 'Mods' }).getByRole('checkbox');
+  await expect(mods).toHaveCount(rows.length, { timeout: 60_000 });
+  await mods.nth(first).check();
   await dialog.getByRole('button', { name: 'Search' }).click();
-  const opened = await page.evaluate(() => (window as unknown as { opened?: string }).opened ?? '');
-  expect(opened).toMatch(/^https:\/\/www\.pathofexile\.com\/trade\/search\/Standard\?q=/);
+  const search = (
+    await m.exposition.BuySimilarURL(bModel, bHelm, 'Helmet', {
+      Realm: 'pc',
+      League: 'Standard',
+      Listed: 1,
+      BaseType: false,
+      Defences: (view.Defences ?? []).map(() => ({ Checked: false })),
+      Mods: rows.map((r, i) => ({ Checked: i === first, Min: r.Min === '' ? undefined : Number(r.Min) }))
+    })
+  ).unwrap();
+  expect(search).toMatch(/^https:\/\/www\.pathofexile\.com\/trade\/search\/Standard\?q=.*%22id%22/);
+  await expect.poll(() => page.evaluate(() => (window as unknown as { opened?: string }).opened ?? '')).toBe(search);
   expect(app.errors).toEqual([]);
 });
 

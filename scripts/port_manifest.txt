@@ -307,6 +307,7 @@ utils/math.go                       GO-NATIVE  math helpers
 utils/slice.go                      GO-NATIVE  slice helpers
 utils/strings.go                    GO-NATIVE  string helpers
 
+wasm/exposition/buy_similar.go      PORT       src/Classes/CompareBuySimilar.lua
 wasm/exposition/calcs.go            GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/config.go           GO-NATIVE  crystalline binding surface for the frontend
 wasm/exposition/crystalline_gen.go  GENERATED  [unverifiable: emitted by `go tool crystalline`, pinned in go.mod, not a script in this repo]
@@ -529,6 +530,11 @@ wasm/exposition/party.go            GO-NATIVE  crystalline binding surface for t
 calculator/calcs_buff_lists.go      PORT       src/Modules/Calcs.lua
 calculator/timeless_search.go       PORT       src/Classes/TreeTab.lua,src/Modules/Data.lua,src/Export/Scripts/legionPassives.lua
 calculator/timeless_trade.go        PORT       src/Classes/TreeTab.lua,src/Classes/TimelessJewelListControl.lua,src/Data/TimelessJewelData/LegionTradeIds.lua
+calculator/trade_helpers.go         PORT       src/Classes/TradeHelpers.lua,src/Modules/Common.lua
+calculator/trade_buy_similar.go     PORT       src/Classes/CompareBuySimilar.lua,src/Classes/TradeHelpers.lua,src/Modules/Common.lua
+calculator/trade_luapattern.go      GO-NATIVE  compiles the Lua patterns TradeHelpers.lua builds at runtime from the trade site's and the stat descriptions' text into Go regexps; Lua's pattern engine itself is C, not Lua
+data/raw/trade_stats.go             PORT       src/Classes/TradeQueryGenerator.lua,src/Modules/Utils.lua
+data/raw/item_stat_descriptions.go  PORT       src/Export/Scripts/statdesc.lua,src/Modules/Common.lua
 data/tree_position.go               PORT       src/Classes/PassiveTree.lua
 pob/timeless_data.go                PORT       src/Modules/Build.lua
 wasm/exposition/tree_timeless.go    GO-NATIVE  crystalline binding surface for the frontend

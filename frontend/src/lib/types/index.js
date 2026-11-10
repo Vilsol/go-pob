@@ -85,6 +85,8 @@ export const initializeCrystalline = () => {
     AffixEditText: wrap('exposition.AffixEditText', globalThis['go']['go-pob']['exposition']['AffixEditText']),
     AffixRollTooltip: wrap('exposition.AffixRollTooltip', globalThis['go']['go-pob']['exposition']['AffixRollTooltip']),
     AnointNotables: wrap('exposition.AnointNotables', globalThis['go']['go-pob']['exposition']['AnointNotables']),
+    BuySimilar: wrap('exposition.BuySimilar', globalThis['go']['go-pob']['exposition']['BuySimilar']),
+    BuySimilarURL: wrap('exposition.BuySimilarURL', globalThis['go']['go-pob']['exposition']['BuySimilarURL']),
     CalcConfigStats: wrap('exposition.CalcConfigStats', globalThis['go']['go-pob']['exposition']['CalcConfigStats']),
     CalcCustomModGroupStats: wrap('exposition.CalcCustomModGroupStats', globalThis['go']['go-pob']['exposition']['CalcCustomModGroupStats']),
     CalcGemStats: wrap('exposition.CalcGemStats', globalThis['go']['go-pob']['exposition']['CalcGemStats']),

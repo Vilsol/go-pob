@@ -4095,6 +4095,24 @@ class PoBWorker {
     return [[...((await calculator.CompareItemExpanded(a, b)) ?? [])], [...((await calculator.CompareItemExpanded(b, a)) ?? [])]];
   }
 
+  /* CompareBuySimilar.lua:285-333, 418-431, 458-511: the Buy Similar popup for an item text, read as the open build or
+     the compared one reads it */
+  async BuySimilar(text: string, slot: string, compared = false): Promise<exposition.BuySimilarView | undefined> {
+    const build = compared ? this.compareB?.build : this.currentBuild;
+    if (!build) return undefined;
+    // async: the mod rows load the trade site's stats list and the stat descriptions on first use
+    const r = await exposition.BuySimilar(build, text, slot);
+    return r.ok ? r.value : undefined;
+  }
+
+  /* CompareBuySimilar.lua:47-206: the Open URL button's trade search */
+  async BuySimilarURL(text: string, slot: string, o: calculator.BuySimilarOptions, compared = false): Promise<string | undefined> {
+    const build = compared ? this.compareB?.build : this.currentBuild;
+    if (!build) return undefined;
+    const r = await exposition.BuySimilarURL(build, text, slot, o);
+    return r.ok ? r.value : undefined;
+  }
+
   /* CompareCalcsHelpers.lua:355-394 */
   CompareSkillBreakdown(side: 0 | 1, name: string): calculator.CompareSkillBreakdownRow[] {
     return [...(this.compareCalcsEnvs[side]?.CompareSkillBreakdown(name) ?? [])];

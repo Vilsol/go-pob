@@ -298,6 +298,38 @@ export declare namespace calculator {
     release(): void;
     [Symbol.dispose](): void;
   }
+  interface BuySimilarDefence {
+    readonly Label: string;
+    readonly TradeKey: string;
+    readonly Value: number;
+  }
+  interface BuySimilarDefenceFilter {
+    readonly Min?: number;
+    readonly Max?: number;
+    readonly Checked: boolean;
+  }
+  interface BuySimilarModFilter {
+    readonly Min?: number;
+    readonly Max?: number;
+    readonly Checked: boolean;
+  }
+  interface BuySimilarModRow {
+    readonly Type: string;
+    readonly Min: string;
+    readonly Lines?: Array<string>;
+    readonly CanSearch: boolean;
+    readonly HasBoxes: boolean;
+  }
+  interface BuySimilarOptions {
+    readonly Realm: string;
+    readonly League: string;
+    readonly Listed: number;
+    readonly BaseType: boolean;
+    readonly IlvlMin?: number;
+    readonly IlvlMax?: number;
+    readonly Defences?: Array<calculator.BuySimilarDefenceFilter>;
+    readonly Mods?: Array<calculator.BuySimilarModFilter>;
+  }
   interface Calculator {
     PoB?: pob.PathOfBuilding;
     AlignCalcsSkillToMain: boolean;
@@ -2021,6 +2053,14 @@ export declare namespace exposition {
     readonly Unique: boolean;
     readonly Gem: boolean;
   }
+  interface BuySimilarView {
+    readonly Name: string;
+    readonly BaseName: string;
+    readonly Category: string;
+    readonly Defences?: Array<calculator.BuySimilarDefence>;
+    readonly Mods?: Array<calculator.BuySimilarModRow>;
+    readonly Unique: boolean;
+  }
   interface ElementWrapper {
     readonly Elements?: Record<string, Readonly<calculator.ColProps>>;
   }
@@ -2279,6 +2319,8 @@ export declare namespace exposition {
   function AffixEditText(text: string, slot: number, series: number, slider: number): Promise<[string, boolean]>;
   function AffixRollTooltip(text: string, slot: number, slider: number): Promise<(Array<string> | undefined)>;
   function AnointNotables(): Promise<(Array<calculator.AnointNotable> | undefined)>;
+  function BuySimilar(build: pob.PathOfBuilding | undefined, text: string, slotName: string): Promise<Result<(exposition.BuySimilarView | undefined)>>;
+  function BuySimilarURL(build: pob.PathOfBuilding | undefined, text: string, slotName: string, o: calculator.BuySimilarOptions): Promise<Result<string>>;
   function CalcConfigStats(m: exposition.MiscCalculator | undefined, input: pob.Input, remove: boolean): Promise<exposition.StatOutputs>;
   function CalcCustomModGroupStats(m: exposition.MiscCalculator | undefined, i: number): Promise<exposition.StatOutputs>;
   function CalcGemStats(m: exposition.MiscCalculator | undefined, socketGroup: number, gemIndex: number, gem: pob.Gem): Promise<exposition.StatOutputs>;

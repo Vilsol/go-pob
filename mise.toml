@@ -719,6 +719,23 @@ run = [
 ''',
 ]
 
+[tasks.buy-similar]
+description = "Record the pinned PoB's Buy Similar popup and trade URLs for every item two fixture builds equip"
+usage = '''
+flag "--pob-dir <dir>" env="POB_DIR" default="{{vars.POB_DEFAULT}}"
+'''
+run = [
+  { task = "pob-pin" },
+  '{{vars.GOPOB}} require-det-luajit buy-similar',
+  '''
+{{vars.NICE}} env \
+LUA_CPATH="{{usage.pob_dir}}/.luarocks/lib/lua/5.1/?.so;;" \
+LUA_PATH="{{usage.pob_dir}}/runtime/lua/?.lua;{{usage.pob_dir}}/runtime/lua/?/init.lua;{{usage.pob_dir}}/.luarocks/share/lua/5.1/?.lua;{{usage.pob_dir}}/.luarocks/share/lua/5.1/?/init.lua;;" \
+setarch "$(uname -m)" -R sh -c \
+"cd '{{usage.pob_dir}}/src' && exec '{{vars.MAIN}}/.luajit-det/bin/luajit' '{{config_root}}/oracle/buy_similar.lua' '{{config_root}}/testdata/oracle/buy_similar.json' '{{config_root}}/testdata/many-builds/7.xml' '{{config_root}}/testdata/builds/Fireball-full.xml'"
+''',
+]
+
 [tasks.buy-similar-poe2]
 description = "Record the pinned PoB-PoE2's Buy Similar popup and trade URLs for the Compare page's items fixture"
 usage = '''

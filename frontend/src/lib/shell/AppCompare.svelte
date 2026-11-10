@@ -53,7 +53,7 @@
   import type { SavedBuild } from '$lib/design/fixtures/app';
   import { BUILD_SORT_KEY, loadBuildSort, saveBuildSort } from '$lib/display/build_sort';
   import { followOtherTabs } from '$lib/storage/tabs';
-  import { LISTED, tradeDefences, type TradeDefence, type TradeItem, type TradeMod, type TradeOptions } from '$lib/design/trade';
+  import { LISTED, tradeQueryOptions, tradeView, type TradeDefence, type TradeItem, type TradeMod, type TradeOptions } from '$lib/design/trade';
   import type { CompareFixture, PowerRow } from '$lib/design/fixtures';
   import type { Tree } from '$lib/skill_tree/types';
   import { calculateAllocationPath } from '$lib/components/skill-tree/paths';
@@ -832,12 +832,14 @@
             });
           buying = { item, slot, defences, mods, url };
         }
-      : async (slot: string) => {
+      : // CompareTab.lua:3836-3837, 3979-3980 and CompareBuySimilar.lua:285-536: the compared build's item
+        async (slot: string) => {
           const text = sideTexts(slot)[1];
-          const p = text ? await syncWrap?.ParseItem(text) : undefined;
-          if (!p?.item) return;
-          const item = { rarity: p.item.Rarity, title: p.item.Title, name: p.item.Name, baseName: p.item.BaseName, type: p.item.Type };
-          buying = { item, slot: slot.startsWith('Jewel ') ? undefined : slot, defences: tradeDefences(item, p.item.ArmourData) };
+          const v = text ? await syncWrap?.BuySimilar(text, slot, true) : undefined;
+          if (!v) return;
+          const { item, defences, mods } = tradeView(v);
+          const url = async (o: TradeOptions) => syncWrap?.BuySimilarURL(text, slot, tradeQueryOptions(defences, o), true);
+          buying = { item, slot, defences, mods, url };
         }} />
   <BuySimilarDialog
     bind:open={() => !!buying, (v) => !v && (buying = undefined)}

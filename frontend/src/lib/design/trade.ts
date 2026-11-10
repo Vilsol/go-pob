@@ -73,6 +73,37 @@ export type TradeOptions = {
 // a Buy Similar mod row (CompareBuySimilar.lua:459-516, PoB-PoE2): its label lines with their colour codes
 export type TradeMod = { type: string; lines: string[]; canSearch: boolean; hasBoxes: boolean; min: string };
 
+// the popup as Go lays it out (CompareBuySimilar.lua:285-333, 458-511)
+export type TradeView = {
+  Unique: boolean;
+  Name: string;
+  BaseName: string;
+  Category: string;
+  Defences?: readonly { Label: string; Value: number; TradeKey: string }[];
+  Mods?: readonly { Type: string; Lines?: readonly string[]; CanSearch: boolean; HasBoxes: boolean; Min: string }[];
+};
+
+/* the dialog's item, defence rows and mod rows for a popup Go laid out */
+export function tradeView(v: TradeView): { item: TradeItem; defences: TradeDefence[]; mods: TradeMod[] } {
+  return {
+    item: { rarity: v.Unique ? 'UNIQUE' : 'RARE', title: '', name: v.Name, baseName: v.BaseName, type: v.Category },
+    defences: (v.Defences ?? []).map((d) => ({ label: d.Label, value: d.Value, tradeKey: d.TradeKey })),
+    mods: (v.Mods ?? []).map((r) => ({ type: r.Type, lines: [...(r.Lines ?? [])], canSearch: r.CanSearch, hasBoxes: r.HasBoxes, min: r.Min }))
+  };
+}
+
+/* the dialog's selections as Go's BuySimilarOptions: the Listed index is 1-based, a defence row per defence */
+export const tradeQueryOptions = (defences: TradeDefence[], o: TradeOptions) => ({
+  Realm: o.realm,
+  League: o.league,
+  Listed: LISTED.findIndex(([, value]) => value === o.listed) + 1,
+  BaseType: o.baseType,
+  IlvlMin: o.ilvlMin,
+  IlvlMax: o.ilvlMax,
+  Defences: defences.map((d) => ({ Checked: !!o.defences?.[d.tradeKey], Min: o.defences?.[d.tradeKey]?.min, Max: o.defences?.[d.tradeKey]?.max })),
+  Mods: (o.mods ?? []).map((r) => ({ Checked: r.checked, Min: r.min, Max: r.max }))
+});
+
 const SINGLE_DIGIT_COLORS: Record<string, string> = { '7': '#FFFFFF', '8': '#B2B2B2', '9': '#666666' };
 
 /* a label line's colour and text: the first colour code colours the line, and every code is dropped from the text */
