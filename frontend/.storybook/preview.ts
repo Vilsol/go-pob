@@ -1,6 +1,7 @@
 import type { Preview } from '@storybook/sveltekit';
 import { themes } from 'storybook/theming';
 import '../src/lib/design/styles/spec.css';
+import '../static/fonts/fonts.css';
 
 const preview: Preview = {
   tags: ['autodocs'],

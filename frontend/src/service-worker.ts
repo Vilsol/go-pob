@@ -38,20 +38,6 @@ const usableWasm = async (res: Response | undefined) => {
   return (value[0] === 0x00 && value[1] === 0x61 && value[2] === 0x73 && value[3] === 0x6d) || (value[0] === 0x1f && value[1] === 0x8b);
 };
 
-const FONT_CSS = ['https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap'];
-
-const cacheFonts = async () => {
-  const cache = await caches.open(CDN);
-  for (const href of FONT_CSS) {
-    const res = await fetch(href, { mode: 'cors' });
-    if (!res.ok) continue;
-    const css = await res.clone().text();
-    await cache.put(href, res);
-    const fonts = [...css.matchAll(/url\((https:\/\/fonts\.gstatic\.com\/[^)]+)\)/g)].map((m) => m[1]);
-    await Promise.all(fonts.map(async (f) => (await cache.match(f)) ?? cache.add(new Request(f, { mode: 'cors' }))));
-  }
-};
-
 const IMMUTABLE = `${base}/_app/immutable/`;
 const cacheWorkerChunks = async (cache: Cache) => {
   const found = new Set<string>();
@@ -94,7 +80,6 @@ sw.addEventListener('install', (event) => {
         }
       }
       if (WASM !== FALLBACK && !(await usableWasm(await cache.match(WASM)))) await cache.add(new Request(FALLBACK, { cache: 'reload' }));
-      await cacheFonts().catch((e: unknown) => console.warn('service worker: fonts not cached', e));
     })()
   );
 });

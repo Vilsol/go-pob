@@ -9,9 +9,6 @@ export const TREE_ASSET_PATTERN = '^https://data\\.pob\\.gg/data/[^/]+/(tree/ass
 export const isTreeAsset = (url: string) => new RegExp(TREE_ASSET_PATTERN).test(url);
 const DIR = resolve(RESULTS_DIR, 'tree-assets');
 
-export const FONT_ASSET_PATTERN = '^https://fonts\\.(googleapis|gstatic)\\.com/';
-const isFontAsset = (url: string) => new RegExp(FONT_ASSET_PATTERN).test(url);
-
 const ITEM_ART_PATTERN = /^https:\/\/web\.poecdn\.com\//;
 // a 1×1 transparent PNG: item and gem icons load without reaching the CDN
 const ITEM_ART = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64');
@@ -51,15 +48,6 @@ export const routeTreeAssets = async (page: Page) => {
       return route.abort();
     }
     return route.fulfill({ status: 200, body: readFileSync(copy.file), headers: { 'access-control-allow-origin': '*', 'content-type': type } });
-  });
-  await page.context().route(isFontAsset, async (route) => {
-    const url = route.request().url();
-    const copy = await localCopy(url);
-    if (typeof copy === 'string') {
-      failed.set(url, copy);
-      return route.abort();
-    }
-    return route.fulfill({ status: 200, body: readFileSync(copy.file), headers: { 'access-control-allow-origin': '*', 'content-type': copy.type } });
   });
 };
 

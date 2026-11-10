@@ -24,9 +24,6 @@ var dist embed.FS
 //go:embed icon.png
 var icon []byte
 
-//go:embed fonts/fonts.css fonts/*.woff2
-var fonts embed.FS
-
 func main() {
 	pages, err := pageHandler()
 	if err != nil {
@@ -49,7 +46,6 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(d.builds())
 	})
-	native.Handle("/fonts/", http.FileServerFS(fonts))
 	native.Handle("/art/", http.StripPrefix("/art", &host.Art{Dir: filepath.Join(filepath.Dir(dirs.Cache), "art"), Upstream: "https://web.poecdn.com/image/"}))
 	native.HandleFunc("POST /save", d.files.Save)
 	native.HandleFunc("GET /opened/{token}", d.files.Opened)

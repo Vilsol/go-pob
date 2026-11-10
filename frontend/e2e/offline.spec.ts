@@ -13,7 +13,6 @@ import { isTreeAsset, TREE_ASSET_PATTERN } from './support/tree_assets';
 test.describe.configure({ mode: 'default' });
 
 const BASE = process.env.E2E_BASE ?? '';
-const FONT_HOSTS = ['https://fonts.googleapis.com/', 'https://fonts.gstatic.com/'];
 
 const saveAs = async (page: Page, name: string) => {
   await page.getByRole('button', { name: /^Save \(/ }).click();
@@ -26,7 +25,7 @@ const saveAs = async (page: Page, name: string) => {
 const goOffline = async (context: BrowserContext, origin: string) => {
   const refused: string[] = [];
   await context.unrouteAll({ behavior: 'ignoreErrors' });
-  for (const host of [`${origin}/`, DATA_HOST, ...FONT_HOSTS]) {
+  for (const host of [`${origin}/`, DATA_HOST]) {
     await context.route(`${host}**`, (route) => {
       refused.push(route.request().url());
       return route.abort('internetdisconnected');
@@ -130,6 +129,12 @@ test('offline after one online visit: reload, open a saved build, edit it', { ta
     );
   }
   await expect(page.getByRole('status').filter({ hasText: /^Offline/ }), 'no offline indicator').toBeVisible();
+  const fonts = await page.evaluate(async () => {
+    await document.fonts.ready;
+    const faces = [...document.fonts];
+    return { failed: faces.filter((f) => f.status === 'error').map((f) => `${f.family} ${f.weight}`), sans: document.fonts.check('16px "IBM Plex Sans"') };
+  });
+  expect(fonts, 'the offline reload draws in the app font').toEqual({ failed: [], sans: true });
   await app.act('open-saved-offline', () => app.openSaved(name), want);
 
   await app.openBuildControls();
