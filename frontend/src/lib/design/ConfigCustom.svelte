@@ -7,6 +7,7 @@
   import ListOption from './ListOption.svelte';
   import ModCell from './ModCell.svelte';
   import Button from './Button.svelte';
+  import Icon from './Icon.svelte';
   import type { CustomGroup } from './fixtures';
   import type { CustomOps } from './config';
   import ImpactBlocks from './ImpactBlocks.svelte';
@@ -145,14 +146,15 @@
                       variant="bare"
                       class="px-0.5 text-11"
                       aria-label="Move line {i + 1} earlier"
-                      onclick={() => ops.onmove(selected, i, -1)}>◂</Button
+                      onclick={() => ops.onmove(selected, i, -1)}><Icon name="chevron-left" size={11} /></Button
                     >{/snippet}
                   {#snippet after()}<Button
                       variant="bare"
                       class="px-0.5 text-11"
                       aria-label="Move line {i + 1} later"
-                      onclick={() => ops.onmove(selected, i, 1)}>▸</Button
-                    ><Button variant="bare" class="px-0.5" aria-label="Remove line {i + 1}" onclick={() => ops.onremove(selected, i)}>×</Button>{/snippet}
+                      onclick={() => ops.onmove(selected, i, 1)}><Icon name="chevron-right" size={11} /></Button
+                    ><Button variant="bare" class="px-0.5 text-11" aria-label="Remove line {i + 1}" onclick={() => ops.onremove(selected, i)}>×</Button
+                    >{/snippet}
                 </ModCell>
               </div>
             {/each}

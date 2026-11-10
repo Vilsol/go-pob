@@ -17,6 +17,7 @@
   import RadiusVisual from '$lib/components/radius/RadiusVisual.svelte';
   import type { SidebarSection } from '$lib/display/sidebar_breakdown';
   import Button from './Button.svelte';
+  import Icon from './Icon.svelte';
   import Select from './Select.svelte';
   import StatGauge from './StatGauge.svelte';
   import StatGroup from './StatGroup.svelte';
@@ -229,7 +230,7 @@
           <span class={['font-mono text-11 toned', valueTone(p.line) || 'tone-text']} aria-hidden="true">{compact(p.line.value)}</span>
         </div>
       {:else}
-        <span class="text-14 text-text-3" title="Star a stat in the full sidebar to pin it here" aria-hidden="true">☆</span>
+        <span class="text-14 text-text-3" title="Star a stat in the full sidebar to pin it here" aria-hidden="true"><Icon name="star" size={14} /></span>
       {/each}
     </div>
   </aside>
@@ -419,7 +420,8 @@
                       aria-pressed={on}
                       onclick={() => togglePin(e.id)}
                       aria-label={on ? `Unpin ${e.line.label}` : `Pin ${e.line.label} to the collapsed rail`}
-                      title={on ? `Unpin ${e.line.label}` : `Pin ${e.line.label} to the collapsed rail`}>{on ? '★' : '☆'}</button>
+                      title={on ? `Unpin ${e.line.label}` : `Pin ${e.line.label} to the collapsed rail`}
+                      ><Icon name="star" size={12} class={on ? 'block [&_path]:fill-current' : 'block'} /></button>
                   </div>
                   {#if e.skills}
                     <Disclosure class="stat-group-head pl-2.25 font-normal tracking-normal normal-case" bind:open={fullDpsOpen}
