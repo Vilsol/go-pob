@@ -52,7 +52,7 @@ const boot = async (gameName, engineName) => {
     const res = await mod.raw.InitializeAll(mod.raw.GameDataVersion(), () => undefined);
     if (!res.ok) throw new Error(`game data: ${res.error}`);
   } else {
-    const res = await mod.exposition.Preload();
+    const res = await mod.exposition.Preload(() => {});
     if (res && res.ok === false) throw new Error(`game data: ${res.error}`);
   }
   return { go, mod };
