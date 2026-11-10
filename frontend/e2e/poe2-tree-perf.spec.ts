@@ -20,13 +20,13 @@ const pct = (xs: number[], p: number) => [...xs].sort((a, b) => a - b)[Math.min(
 // reports the PoE2 tree's first paint and its frame rate while panning; it asserts only that frames arrive
 for (const renderer of ['webgl', 'canvas']) {
   test(`PoE2 passive tree benchmark: first paint and pan, ${renderer}`, { tag: '@slow' }, async ({ page }) => {
-    await page.addInitScript((renderer) => {
+    await page.addInitScript((wanted) => {
       localStorage.setItem('options:poe2', 'true');
-      const frames: unknown[] = [];
+      const seen: unknown[] = [];
       (globalThis as unknown as { __tree2Probe: unknown }).__tree2Probe = {
-        frames,
-        renderer,
-        frame: (f: object) => frames.push({ ...f, at: performance.now() })
+        frames: seen,
+        renderer: wanted,
+        frame: (f: object) => seen.push({ ...f, at: performance.now() })
       };
     }, renderer);
     await page.context().route(`${DATA_HOST}**`, async (route) => {
@@ -59,25 +59,25 @@ for (const renderer of ['webgl', 'canvas']) {
       // requested after the move's effects have run, so the draw it schedules runs before that tick, as a browser
       // dispatches real input ahead of the frame's callbacks; requested first, every draw slipped a frame and halved the rate
       const [t0, t1] = await page.evaluate(
-        ({ cx, cy }) =>
+        ({ x, y }) =>
           new Promise<[number, number]>((done) => {
             const canvas = document.querySelector('canvas')!;
-            const ev = (type: string, x: number, y: number) => new PointerEvent(type, { clientX: x, clientY: y, button: 0, bubbles: true, pointerId: 1 });
-            canvas.dispatchEvent(ev('pointerdown', cx, cy));
-            const t0 = performance.now();
+            const ev = (type: string, clientX: number, clientY: number) => new PointerEvent(type, { clientX, clientY, button: 0, bubbles: true, pointerId: 1 });
+            canvas.dispatchEvent(ev('pointerdown', x, y));
+            const start = performance.now();
             let i = 0;
             const tick = () => {
               if (++i > 180) {
-                window.dispatchEvent(ev('pointerup', cx, cy));
-                requestAnimationFrame(() => done([t0, performance.now()]));
+                window.dispatchEvent(ev('pointerup', x, y));
+                requestAnimationFrame(() => done([start, performance.now()]));
                 return;
               }
-              canvas.dispatchEvent(ev('pointermove', cx + 200 * Math.sin(i / 10), cy + 150 * Math.cos(i / 10)));
+              canvas.dispatchEvent(ev('pointermove', x + 200 * Math.sin(i / 10), y + 150 * Math.cos(i / 10)));
               queueMicrotask(() => requestAnimationFrame(tick));
             };
             requestAnimationFrame(tick);
           }),
-        { cx, cy }
+        { x: cx, y: cy }
       );
       const pan = (await frames(page)).slice(before);
       expect(pan.length).toBeGreaterThan(10);

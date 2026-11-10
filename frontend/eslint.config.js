@@ -68,10 +68,16 @@ export default tseslint.config(
       'prefer-const': 'off'
     }
   },
+  // generated bindings open with a blanket eslint-disable whether or not the file needs it
+  {
+    files: ['src/lib/types*/index.d.ts'],
+    linterOptions: { reportUnusedDisableDirectives: 'off' }
+  },
   {
     ignores: [
       '**/*.js',
       '**/*.cjs',
+      '**/*.mjs',
       '.env.*',
       '.env',
       '.svelte-kit/',

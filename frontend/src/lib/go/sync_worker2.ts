@@ -129,6 +129,14 @@ export type Poe2TreeState = {
   progress?: Poe2Progress;
 };
 
+export type Poe2SkillSelect = Omit<calculator2.SkillSelectControls, 'Skills' | 'StatSets' | 'Minions' | 'MinionSkills' | 'MinionSkillStatSets'> & {
+  Skills: string[];
+  StatSets: string[];
+  Minions: string[];
+  MinionSkills: string[];
+  MinionSkillStatSets: string[];
+};
+
 /* tree2.ClickResult */
 export const ClickResult = { Nothing: 0, Changed: 1, ChooseAttribute: 2, ConfirmClassChange: 3 } as const;
 
@@ -256,14 +264,6 @@ export type Poe2CalcsPage = {
   haveMinion: boolean;
   /* CalcBreakdownControl.lua:147-297 (PoB-PoE2) */
   breakdowns: Record<string, CalcBreakdown>;
-};
-
-export type Poe2SkillSelect = Omit<calculator2.SkillSelectControls, 'Skills' | 'StatSets' | 'Minions' | 'MinionSkills' | 'MinionSkillStatSets'> & {
-  Skills: string[];
-  StatSets: string[];
-  Minions: string[];
-  MinionSkills: string[];
-  MinionSkillStatSets: string[];
 };
 
 export type CompareCalcsField =

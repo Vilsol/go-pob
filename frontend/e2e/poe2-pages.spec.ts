@@ -243,6 +243,12 @@ test.describe('390px wide', () => {
     ] as const) {
       await bar(page).getByRole('link', { name: tab, exact: true }).click();
       await expect(pane).toBeVisible();
+      // a pane still loading (aria-busy) or drawn in a fallback face is not the layout being checked
+      await expect(pane).not.toHaveAttribute('aria-busy', 'true');
+      await expect(pane.locator('[aria-busy=true]')).toHaveCount(0);
+      await page.evaluate(async () => {
+        await document.fonts.ready;
+      });
       // the pane sits inside the phone, takes its width below the stats, and its content does not run past it (a Calcs
       // damage table scrolls inside itself; a tab strip wider than the phone scrolls sideways, as layout-phone.spec allows)
       const fit = await pane.evaluate((el) => {

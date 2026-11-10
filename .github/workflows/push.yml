@@ -63,6 +63,15 @@ jobs:
         working-directory: ./frontend
         run: pnpm run lint
 
+      # also writes .svelte-kit, whose generated types eslint reads
+      - name: Svelte check
+        working-directory: ./frontend
+        run: pnpm run check --fail-on-warnings
+
+      - name: ESLint
+        working-directory: ./frontend
+        run: pnpm run lint:eslint
+
   generated:
     name: Generated Bindings
     runs-on: ubuntu-latest

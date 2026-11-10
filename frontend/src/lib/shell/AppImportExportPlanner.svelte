@@ -25,6 +25,7 @@
   let itemSet = $state('1');
   let error = $state<string>();
   let saved = $state<string>();
+  let savedAll = $state<{ written: string[]; errors: string[] }>();
 
   // ImportTab.lua:494-531: every rebuild of the lists selects the first of each
   $effect(() => {
@@ -65,7 +66,6 @@
   };
 
   // ImportTab.lua:440-476: one file per loadout, each named after the file the picked tree would take
-  let savedAll = $state<{ written: string[]; errors: string[] }>();
   const onexportall = () => {
     error = undefined;
     saved = undefined;

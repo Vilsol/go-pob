@@ -46,6 +46,11 @@ for (const viewport of [
     await app.importCode(await go.encode(xml), async () => expectedLines(await go.outputs(build)));
     await app.goTo('Calcs');
     await expect(page.getByRole('region', { name: 'Calculations' }).locator('[data-key]').first()).toBeVisible();
+    // a section still loading (aria-busy) or drawn in a fallback face is not the layout being checked
+    await expect(page.getByRole('region', { name: 'Calculations' }).locator('[aria-busy=true]')).toHaveCount(0);
+    await page.evaluate(async () => {
+      await document.fonts.ready;
+    });
 
     const { boxes, tables } = await geometry(page);
     const open = boxes.filter((b) => b.rows.length);

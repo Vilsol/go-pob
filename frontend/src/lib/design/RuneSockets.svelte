@@ -1,10 +1,5 @@
-<script lang="ts" module>
-  /* ItemsTab.lua:605-625, 776-854 (PoB-PoE2): the socket count, and each socket's rune from the runes that fit */
-  export type RuneSocketsInfo = { canHaveSockets: boolean; sockets: string[]; choices: { name: string; lines: string[] }[] };
-  export type RuneSocketsEdit = { op: 'sockets'; count: number } | { op: 'rune'; socket: number; rune: string };
-</script>
-
 <script lang="ts">
+  import type { RuneSocketsEdit, RuneSocketsInfo } from './items';
   import FloatingLabel from './FloatingLabel.svelte';
   import NumberInput from './NumberInput.svelte';
   import Select from './Select.svelte';

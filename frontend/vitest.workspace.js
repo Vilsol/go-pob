@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import { realpathSync } from 'node:fs';
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
@@ -13,10 +14,18 @@ const chromium = (() => {
   }
 })();
 
+// a checkout whose node_modules links elsewhere serves its modules from their real path, outside SvelteKit's allow list
+const linkedModules = {
+  name: 'allow-linked-node-modules',
+  configResolved(config) {
+    config.server.fs.allow.push(realpathSync('node_modules'));
+  }
+};
+
 export default defineWorkspace([
   'vite.config.js',
   {
-    plugins: [tailwindcss(), sveltekit(), storybookTest({ configDir: '.storybook' })],
+    plugins: [tailwindcss(), sveltekit(), storybookTest({ configDir: '.storybook' }), linkedModules],
     test: {
       name: 'storybook',
       testTimeout: 60_000,

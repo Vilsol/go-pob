@@ -19,16 +19,21 @@
   import Dialog from './Dialog.svelte';
   import DisplayItemControls from './DisplayItemControls.svelte';
   import AffixControls from './AffixControls.svelte';
-  import ItemRanges, { type ItemRangesEdit, type ItemRangesInfo } from './ItemRanges.svelte';
+  import ItemRanges from './ItemRanges.svelte';
   import CraftItemDialog from './CraftItemDialog.svelte';
   import ItemSetTip from './ItemSetTip.svelte';
-  import RuneSockets, { type RuneSocketsEdit, type RuneSocketsInfo } from './RuneSockets.svelte';
+  import RuneSockets from './RuneSockets.svelte';
   import { draggedItem, type ItemDrag } from './item_drag';
   import { dropZone, type DropZone } from './reorder';
   import { tone as toneClass } from './tone';
   import {
     BOARD_SLOTS,
     baseSlot,
+    type Board,
+    type ItemRangesEdit,
+    type ItemRangesInfo,
+    type RuneSocketsEdit,
+    type RuneSocketsInfo,
     impactRows,
     itemTip,
     replacing,
@@ -44,7 +49,7 @@
   import type { ItemSet, ItemSummary, ItemTip, ItemsFixture, StatDiff } from './fixtures';
   import type { BrowseKind, BrowseRow, PoolItem, AffixRow } from './fixtures/items';
   import type { AffixControls as AffixControlsInfo, CraftApi } from './crafting';
-  import type { ComponentProps, Snippet } from 'svelte';
+  import type { Snippet } from 'svelte';
 
   // ItemSlotControl.lua:82-93
   // ItemsTab.lua:335-340
@@ -63,7 +68,7 @@
   type Props = {
     data: Omit<ItemsFixture, 'paste'> & { paste?: ItemsFixture['paste'] };
     /* the board's slots and their phone panes; PoE1's when absent */
-    board?: ComponentProps<typeof ItemsBoard>['board'];
+    board?: Board;
     /* Item.lua:2073-2083, ItemsTab.lua:605-625, 776-854 (PoB-PoE2): the editor's item's sockets and their runes */
     runes?: RuneSocketsInfo;
     onrunes?: (edit: RuneSocketsEdit) => void;

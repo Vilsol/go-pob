@@ -63,7 +63,7 @@
   name="Top anchor keeps its top while content grows"
   asChild
   play={async ({ canvasElement }) => {
-    const c = within(canvasElement);
+    const c = within(canvasElement as HTMLElement);
     const top = async (name: string) => {
       grown = false;
       const dlg = c.getByRole('dialog', { name, hidden: true });

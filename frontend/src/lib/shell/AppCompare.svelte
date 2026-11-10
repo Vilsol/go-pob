@@ -371,10 +371,10 @@
       const a = { view: aView as Poe2Calc, page: pages.a };
       const b = { view: mm.sides.b.view, page: pages.b };
       const w = await poe2Worker();
-      const modsEqual = (sds: calculator2.ModSectionData[]) => w.CompareModsEqual(sds);
+      const compareModsEqual = (sds: calculator2.ModSectionData[]) => w.CompareModsEqual(sds);
       const sections = await (swapped
-        ? compareCalcs2(b, a, only, modsEqual, [mm.sides.bName, aName])
-        : compareCalcs2(a, b, only, modsEqual, [aName, mm.sides.bName]));
+        ? compareCalcs2(b, a, only, compareModsEqual, [mm.sides.bName, aName])
+        : compareCalcs2(a, b, only, compareModsEqual, [aName, mm.sides.bName]));
       return { sections, a, b };
     }
   );
@@ -724,10 +724,10 @@
       ? undefined
       : async (side: 'a' | 'b', group: number) => (await syncWrap?.CompareGemSupportPairs((side === 'a') !== ui.swapped ? 'a' : 'b', group)) ?? []}
     itemtip={poe2
-      ? async (side: 'a' | 'b', name: string) => {
+      ? (side: 'a' | 'b', name: string) => {
           const mm = model2.current;
           const it = mm && rowItem2([...mm.items.slots, ...mm.items.jewels], (side === 'a') !== ui.swapped ? 'a' : 'b', name);
-          return it && itemTip2(it);
+          return Promise.resolve(it && itemTip2(it));
         }
       : async (side: 'a' | 'b', name: string) => {
           const t = await syncWrap?.CompareItemTooltip((side === 'a') !== ui.swapped ? 'a' : 'b', name);
@@ -796,9 +796,9 @@
         }}
     socketview={poe2
       ? // CompareTab.lua:3827-3842 (PoB-PoE2): the open build's tree around the socket
-        async () => {
+        () => {
           const aView = get(poe2Build) as Poe2Calc | undefined;
-          return tree2 && aView ? { tree: tree2, radii: [], alloc: new Set(aView.tree.alloc) } : undefined;
+          return Promise.resolve(tree2 && aView ? { tree: tree2, radii: [], alloc: new Set(aView.tree.alloc) } : undefined);
         }
       : async (node: number) => {
           if (!m) return undefined;

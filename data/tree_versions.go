@@ -140,11 +140,11 @@ func (v *TreeVersionData) RawTree() []byte {
 
 	unzipStream := brotli.NewReader(bytes.NewReader(compressedTree))
 
-	var err error
-	v.rawTree, err = io.ReadAll(unzipStream)
+	rawTree, err := io.ReadAll(unzipStream)
 	if err != nil {
 		panic(fmt.Errorf("failed to read unzipped data: %w", err))
 	}
+	v.rawTree = rawTree
 	if fetched {
 		_ = storage.Get().SetCache(treeCacheKey, compressedTree)
 	}

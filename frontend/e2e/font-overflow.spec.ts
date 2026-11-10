@@ -45,11 +45,17 @@ test('font scaling: no page lets more boxes overflow than its baseline (0339)', 
     }
     await setFontScaling(page, 12);
   };
-  const settle = async () => {
+  const settle = async (measured = MAIN) => {
     let last = '';
     for (let i = 0; i < 40; i++) {
       await page.waitForTimeout(250);
-      const now = await page.evaluate((root) => document.querySelector(root)?.textContent ?? '', MAIN);
+      // a page still loading (aria-busy) can hold one text long enough to look settled
+      const now = await page.evaluate(async (root) => {
+        await document.fonts.ready;
+        const el = document.querySelector(root);
+        if (!el || el.matches('[aria-busy=true]') || el.querySelector('[aria-busy=true]')) return '';
+        return el.textContent ?? '';
+      }, measured);
       if (now && now === last) return;
       last = now;
     }
@@ -85,6 +91,7 @@ test('font scaling: no page lets more boxes overflow than its baseline (0339)', 
   const sheet = page.getByRole('dialog', { name: 'Settings' });
   for (const tab of await sheet.getByRole('tab').all()) {
     await tab.click();
+    await settle('dialog[open]');
     await census('Settings', 'dialog[open]');
   }
   await page.keyboard.press('Escape');
@@ -92,6 +99,7 @@ test('font scaling: no page lets more boxes overflow than its baseline (0339)', 
 
   // Import / Export is a dialog over the page
   await app.openImport();
+  await settle('dialog[open]');
   await census('Import / Export', 'dialog[open]');
   const region = page.getByRole('dialog', { name: 'Import / Export' }).getByRole('region', { name: 'Build import' });
   const box = region.getByRole('textbox', { name: /^To import a build/ });

@@ -61,6 +61,8 @@ export const BOARD_SLOTS: { slot: string; x: number; y: number; w: number; h: nu
 ];
 
 /* ItemsTab.lua:32 (PoB-PoE2): the life and mana flasks either side of the three charms */
+export type Board = { slots: typeof BOARD_SLOTS; panes: readonly { id: string; label: string; slots: readonly string[] }[] };
+
 export const BOARD_SLOTS_POE2: typeof BOARD_SLOTS = [
   ...BOARD_SLOTS.filter((b) => !b.slot.startsWith('Flask')),
   { slot: 'Flask 1', x: 210, y: 588, w: 78, h: 120 },
@@ -221,3 +223,11 @@ export function socketDescription(line: string) {
   }
   return out;
 }
+
+// ItemsTab.lua:605-625, 776-854 (PoB-PoE2): the socket count, and each socket's rune from the runes that fit
+export type RuneSocketsInfo = { canHaveSockets: boolean; sockets: string[]; choices: { name: string; lines: string[] }[] };
+export type RuneSocketsEdit = { op: 'sockets'; count: number } | { op: 'rune'; socket: number; rune: string };
+
+// ItemsTab.lua:678-694, 1128-1182, 2564-2577 (PoB-PoE2): the editor's quality, and each modifier range line's roll
+export type ItemRangesInfo = { lines: { label: string; range: number }[]; quality?: number };
+export type ItemRangesEdit = { op: 'range'; line: number; value: number } | { op: 'quality'; value: number };

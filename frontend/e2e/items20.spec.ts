@@ -591,7 +591,7 @@ test('an empty slot opens Craft Item offering only the types that fit it, on the
   await app.act(
     'undo',
     () => undo.click(),
-    async () => before
+    () => Promise.resolve(before)
   );
   await expect(tile(page, 'Gloves'), 'one undo step takes the crafted item back out').toHaveAccessibleName('Gloves: Empty');
 

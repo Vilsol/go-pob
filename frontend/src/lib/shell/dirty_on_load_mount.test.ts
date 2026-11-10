@@ -37,6 +37,9 @@ globalThis.matchMedia = ((q: string) => ({
   removeEventListener: () => {}
 })) as unknown as typeof matchMedia;
 
+// any code the worker answers with a PoE2 build; the Import page checks it inflates
+const POE2_CODE = deflateSync('<PathOfBuilding2/>').toString('base64');
+
 const worker = vi.hoisted(() => {
   let n = 0;
   const open = async () => (await import('$lib/global')).currentBuild.set({ n: ++n, ExportParty: () => Promise.resolve(false) } as never);
@@ -74,8 +77,6 @@ vi.mock('$app/state', () => ({ page: { state: {}, url: new URL('http://localhost
 
 vi.stubEnv('VITE_DESKTOP', '1');
 vi.stubGlobal('Blob', NodeBlob);
-// any code the worker answers with a PoE2 build; the Import page checks it inflates
-const POE2_CODE = deflateSync('<PathOfBuilding2/>').toString('base64');
 const { openImportLink } = await import('./link_import');
 const AppTopBar = (await import('./AppTopBar.svelte')).default;
 const AppBuildList = (await import('./AppBuildList.svelte')).default;

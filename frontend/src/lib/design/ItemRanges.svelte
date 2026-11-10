@@ -1,10 +1,5 @@
-<script lang="ts" module>
-  /* ItemsTab.lua:678-694, 1128-1182, 2564-2577 (PoB-PoE2): the editor's quality, and each modifier range line's roll */
-  export type ItemRangesInfo = { lines: { label: string; range: number }[]; quality?: number };
-  export type ItemRangesEdit = { op: 'range'; line: number; value: number } | { op: 'quality'; value: number };
-</script>
-
 <script lang="ts">
+  import type { ItemRangesEdit, ItemRangesInfo } from './items';
   import NumberInput from './NumberInput.svelte';
   import PobText from './PobText.svelte';
 

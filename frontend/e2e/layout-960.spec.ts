@@ -60,20 +60,22 @@ const FIXME: Record<string, { owner: string; finding: string; builds?: string[] 
   }
 };
 
-const settle = async (page: Page) => {
+const settle = async (page: Page, measured = '.page') => {
   let last = '';
   for (let i = 0; i < 240; i++) {
     await page.waitForTimeout(250);
-    const now = await page.evaluate(() => {
-      const root = document.querySelector('.page');
-      if (!root) return '';
+    // a page still loading (aria-busy) can hold one geometry long enough to look settled
+    const now = await page.evaluate(async (sel) => {
+      await document.fonts.ready;
+      const root = document.querySelector(sel);
+      if (!root || root.matches('[aria-busy=true]') || root.querySelector('[aria-busy=true]')) return '';
       let geo = 0;
       for (const el of root.querySelectorAll('*')) {
         const r = el.getBoundingClientRect();
         geo += r.left + 2 * r.top + 3 * r.width + 5 * r.height;
       }
       return `${root.textContent}|${Math.round(geo)}`;
-    });
+    }, measured);
     if (now && now === last) return;
     last = now;
   }
@@ -108,6 +110,7 @@ const measure = async (page: Page, file: string) => {
   found['Import / Export'] = [];
   for (const tab of ['Export', 'Import'] as const) {
     await app.openImport(tab);
+    await settle(page, 'dialog[open]');
     await rest(page);
     found['Import / Export'].push(...(await layoutFindings(page, 'dialog[open]', SCROLLERS)));
     if (tab === 'Export') await page.keyboard.press('Escape');

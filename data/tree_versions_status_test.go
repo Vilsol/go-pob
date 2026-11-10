@@ -96,3 +96,42 @@ func TestRawTreeCachesAGoodResponse(t *testing.T) {
 		t.Error("a good response was not cached")
 	}
 }
+
+func TestRawTreeRefusesATruncatedTreeAndDoesNotKeepIt(t *testing.T) {
+	t.Setenv(storage.CacheDirEnv, t.TempDir())
+	storage.InitializeStorage(nil, nil, nil, nil, nil, nil)
+	t.Cleanup(func() { storage.InitializeStorage(nil, nil, nil, nil, nil, nil) })
+
+	var body bytes.Buffer
+	w := brotli.NewWriterLevel(&body, 0)
+	_, _ = w.Write(bytes.Repeat([]byte(`{"tree":"partial"}`), 1<<14))
+	_ = w.Close()
+	truncated := body.Bytes()[:body.Len()/2]
+
+	transport := &statusTransport{status: http.StatusOK, body: truncated}
+	old := http.DefaultClient.Transport
+	http.DefaultClient.Transport = transport
+	t.Cleanup(func() { http.DefaultClient.Transport = old })
+
+	v := &TreeVersionData{Display: "status_truncated"}
+	for attempt := 1; attempt <= 2; attempt++ {
+		var got []byte
+		var recovered any
+		func() {
+			defer func() { recovered = recover() }()
+			got = v.RawTree()
+		}()
+		if recovered == nil {
+			t.Fatalf("attempt %d: RawTree returned %d bytes of a truncated tree", attempt, len(got))
+		}
+	}
+	if transport.calls != 2 {
+		t.Errorf("the second attempt did not refetch: %d calls", transport.calls)
+	}
+	if storage.Get().ExistsInCache(assetcache.CacheKey(raw.TreeURL(v.Display))) {
+		t.Error("a truncated tree was cached")
+	}
+	if v.RawLoaded() {
+		t.Error("RawLoaded reports a tree that did not load")
+	}
+}

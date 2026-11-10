@@ -21,8 +21,8 @@ test('a setting changed in one tab reaches another open tab without a reload (02
   const b = await context.newPage();
   const appA = await App.open(a, 'settings: changing tab');
   const appB = await App.open(b, 'settings: other tab');
-  await appA.importCode(code, async () => expectedLines(out));
-  await appB.importCode(code, async () => expectedLines(out));
+  await appA.importCode(code, () => Promise.resolve(expectedLines(out)));
+  await appB.importCode(code, () => Promise.resolve(expectedLines(out)));
   const rowB = appB.statsRegion().getByRole('button').filter({ hasText: 'Average Hit' }).first();
   await expect(rowB).toContainText(',');
   await expect(b).toHaveTitle('Imported build (Elementalist) - go-pob');

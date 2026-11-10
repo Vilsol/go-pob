@@ -48,6 +48,10 @@ test('sidebar: dragged narrower and wider, a value too wide covers the end of it
   const handle = page.getByRole('separator', { name: 'Resize the sidebar' });
   const width = async () => (await aside.boundingBox())!.width;
   expect(await width()).toBe(320);
+  await expect(aside.locator('[aria-busy=true]')).toHaveCount(0);
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+  });
   const wide = await rows(page);
   expect(wide.length).toBeGreaterThan(20);
   expect(

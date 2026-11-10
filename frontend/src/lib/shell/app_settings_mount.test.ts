@@ -209,7 +209,7 @@ describe('AppSettings', () => {
   it('PoE2 builds and the game engine to load first are offered without unlocking anything', async () => {
     const s = open();
     await fireEvent.click(s.getByRole('tab', { name: /^General/ }));
-    expect((s.getByRole('checkbox', { name: 'Path of Exile 2 builds' }) as HTMLInputElement).checked).toBe(true);
+    expect(s.getByRole<HTMLInputElement>('checkbox', { name: 'Path of Exile 2 builds' }).checked).toBe(true);
     expect(s.getByRole('combobox', { name: 'Which game engine to load first' })).toBeTruthy();
   });
 

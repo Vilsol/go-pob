@@ -9,8 +9,7 @@
   import EmptyState from '$lib/design/EmptyState.svelte';
   import { BOARD_SLOTS_POE2, itemTip, type CraftChoice, type ImpactBlock, type ItemSetOp, type TipProps, type WhatIf } from '$lib/design/items';
   import { BOARD_PANES_POE2 } from '$lib/design/mobile/mobile';
-  import type { RuneSocketsEdit } from '$lib/design/RuneSockets.svelte';
-  import type { ItemRangesEdit, ItemRangesInfo } from '$lib/design/ItemRanges.svelte';
+  import type { ItemRangesEdit, ItemRangesInfo, RuneSocketsEdit } from '$lib/design/items';
   import type { ItemSet, ItemSummary, ItemTip, ModLine } from '$lib/design/fixtures';
   import { itemsLayout, phoneTables } from '$lib/display/appearance';
   import { poe2Build } from '$lib/global';
@@ -225,13 +224,13 @@
       : undefined
   );
   const affixCraft: CraftApi = {
-    enchantChoices: async () => undefined,
-    notables: async () => [],
-    sortStats: async () => [],
-    preview: async () => undefined,
-    enchantSort: async () => [],
-    anointPowers: async () => [],
-    anointCompare: async () => undefined,
+    enchantChoices: () => Promise.resolve(undefined),
+    notables: () => Promise.resolve([]),
+    sortStats: () => Promise.resolve([]),
+    preview: () => Promise.resolve(undefined),
+    enchantSort: () => Promise.resolve([]),
+    anointPowers: () => Promise.resolve([]),
+    anointCompare: () => Promise.resolve(undefined),
     affixEdit: async (slot, series, slider) => {
       try {
         await (await poe2Worker()).EditDisplayItemAffix(slot, series, slider);
@@ -309,7 +308,7 @@
   };
   const oncraftcreate = async (c: CraftChoice, slot?: string) => {
     try {
-      (await poe2Worker()).CraftDisplayItem(c.rarity + 1, c.title, c.base);
+      await (await poe2Worker()).CraftDisplayItem(c.rarity + 1, c.title, c.base);
     } catch (err) {
       fail(err);
       return;
@@ -331,6 +330,7 @@
   let dbTip = $state<{ name: string; tip: TipProps }>();
   let dbNote = $state('');
   let dbListsKind: ItemDBKind | undefined;
+  let pageView = $state<'equipped' | 'stash' | 'shared' | 'browse'>('equipped');
   $effect(() => {
     const kind = dbKind;
     if (pageView !== 'browse' || dbListsKind === kind) return;
@@ -386,7 +386,7 @@
   };
   const dbOpen = async (name: string) => {
     try {
-      (await poe2Worker()).OpenDBItem(dbKind, name);
+      await (await poe2Worker()).OpenDBItem(dbKind, name);
     } catch (err) {
       fail(err);
       return;
@@ -439,7 +439,6 @@
         .catch(fail)
     );
   });
-  let pageView = $state<'equipped' | 'stash' | 'shared' | 'browse'>('equipped');
 
   // PassiveTreeView.lua:565-572 (PoB-PoE2): the tree's right-click on an allocated socket drops its slot's list open
   let socketAsked = false;

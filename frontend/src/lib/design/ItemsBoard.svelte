@@ -7,7 +7,7 @@
   import SlotMenu from './SlotMenu.svelte';
   import Dropdown from './Dropdown.svelte';
   import { tone as toneClass, type Tone } from './tone';
-  import { BOARD_CELL, BOARD_SLOTS, besideAnchor, itemTip, type TipProps, type WhatIf } from './items';
+  import { BOARD_CELL, BOARD_SLOTS, besideAnchor, itemTip, type Board, type TipProps, type WhatIf } from './items';
   import { draggedItem, type ItemDrag } from './item_drag';
   import { dropZone, type DropZone } from './reorder';
   import SocketPreview from './SocketPreview.svelte';
@@ -23,7 +23,6 @@
 
   type Equipped = { id: number; item: ItemSummary; impact?: StatDiff };
   type Option = { id: number; label: string; tone: Tone };
-  type Board = { slots: typeof BOARD_SLOTS; panes: readonly { id: string; label: string; slots: readonly string[] }[] };
   type Props = {
     slots: Record<string, Equipped | undefined>;
     /* the board's slots and their phone panes; PoE1's when absent */

@@ -17,9 +17,9 @@
   const isTree2 = (t: Tree | Tree2): t is Tree2 => Array.isArray(t.nodes);
   const scenes = new WeakMap<Tree2, Scene2>();
   // ItemSlotHelper.lua:19-25 (PoB-PoE2): the viewer shows tree.size / 17 across, centred on the socket
-  const view2 = (tree: Tree2) => {
-    let scene = scenes.get(tree);
-    if (!scene) scenes.set(tree, (scene = buildScene2(tree)));
+  const view2 = (t: Tree2) => {
+    let scene = scenes.get(t);
+    if (!scene) scenes.set(t, (scene = buildScene2(t)));
     const centre = scene.byId.get(node);
     if (!centre) return undefined;
     const reach = Math.max(scene.size / 17 / 2, ...radii.map((r) => r.outer)) * 1.1;

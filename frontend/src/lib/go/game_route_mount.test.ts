@@ -110,8 +110,8 @@ describe('a PoE2 build code in the import dialog', () => {
       disconnect() {}
     };
     const tree = within(render(Tree).container);
-    await vi.waitFor(() => expect((tree.getByRole('combobox', { name: 'Class' }) as HTMLSelectElement).value).toBe('Sorceress'), { timeout: 10_000 });
-    expect((tree.getByRole('spinbutton', { name: 'Character level' }) as HTMLInputElement).value).toBe('40');
+    await vi.waitFor(() => expect(tree.getByRole<HTMLSelectElement>('combobox', { name: 'Class' }).value).toBe('Sorceress'), { timeout: 10_000 });
+    expect(tree.getByRole<HTMLInputElement>('spinbutton', { name: 'Character level' }).value).toBe('40');
     const Sidebar = (await import('$lib/shell/AppSidebar.svelte')).default;
     const stats = within(render(Sidebar).getByRole('region', { name: 'Build stats' }));
     expect(stats.getByText('683')).toBeTruthy();
