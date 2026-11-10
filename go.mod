@@ -5,7 +5,7 @@ go 1.26.6
 require (
 	github.com/MarvinJWendt/testza v0.5.2
 	github.com/Vilsol/crystalline v0.2.0
-	github.com/Vilsol/go-pob-data v0.5.16
+	github.com/Vilsol/go-pob-data v0.5.17
 	github.com/andybalholm/brotli v1.1.1
 	github.com/dominikbraun/graph v0.23.0
 	github.com/felixge/fgprof v0.9.5
