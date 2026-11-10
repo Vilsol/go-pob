@@ -181,6 +181,13 @@ type GemInstance struct {
 	// SkillMinionItemSet and SkillMinionItemSetCalcs are the item set id the gem's minion uses; 0 is nil.
 	SkillMinionItemSet      int
 	SkillMinionItemSetCalcs int
+	// SkillMinionSkill and SkillMinionSkillCalcs are the minion's main skill, 1-based; nil is unset.
+	SkillMinionSkill      *int
+	SkillMinionSkillCalcs *int
+	// SkillMinionSkillStatSetIndexLookup (and its Calcs half) is each minion skill's stat set, by granted effect id and
+	// minion skill index.
+	SkillMinionSkillStatSetIndexLookup      map[string]map[int]int
+	SkillMinionSkillStatSetIndexLookupCalcs map[string]map[int]int
 	// SkillStageCount and SkillMineCount (and their Calcs halves) are the saved stage and mine counts; nil is unset.
 	SkillStageCount      *int
 	SkillStageCountCalcs *int

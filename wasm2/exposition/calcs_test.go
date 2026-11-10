@@ -106,6 +106,7 @@ var calcsInputFixtures = []calcsInputFixture{
 	{name: "sorceress_flameblast_stages", xml: "sorceress_flameblast", stageCount: 5},
 	{name: "sorceress_raise_zombie_minion", xml: "sorceress_raise_zombie", showMinion: true},
 	{name: "sorceress_skeletal_brute_minion_skill", xml: "sorceress_skeletal_brute", minionSkill: 2, minionSkillStatSet: 2},
+	{name: "sorceress_skeletal_brute_minion_shockwave", xml: "sorceress_skeletal_brute", showMinion: true, minionSkill: 2, minionSkillStatSet: 2},
 	{name: "sorceress_spectres_second_minion", xml: "sorceress_spectres", showMinion: true, minion: 2},
 }
 

@@ -723,10 +723,9 @@ func combineMinionSkillBuffs(env *Environment, st *buffState, activeSkill *Activ
 						if exports != nil {
 							inc := skillModList.Sum(mod.TypeIncrease, skillCfg, "AuraEffect", "BuffEffect")
 							more := skillModList.More(skillCfg, "AuraEffect", "BuffEffect") * calcLibMod(skillModList, skillCfg, "Magnitude")
-							// Go must differ: Lua renames the skill's own mods in place
 							newModList := newModList()
 							for _, m := range joinMods(buff.ModList, extraAuraModList) {
-								newModList.AddMod(m.Clone())
+								newModList.AddMod(m)
 							}
 							setSpectreSource(newModList, buff.Name, activeSkill, castingMinion)
 							exports.setAura(buff.Name, (1+inc/100)*more, newModList.Mods())

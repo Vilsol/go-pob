@@ -155,7 +155,29 @@ func loadGemInstance(env *Environment, child *pob2.Gem) *GemInstance {
 	if child.SkillMinionItemSetCalcs != nil {
 		gemInstance.SkillMinionItemSetCalcs = *child.SkillMinionItemSetCalcs
 	}
+	//pob2:block:src/Classes/SkillsTab.lua:361-362
+	gemInstance.SkillMinionSkill, gemInstance.SkillMinionSkillCalcs = child.SkillMinionSkill, child.SkillMinionSkillCalcs
+	//pob2:block:src/Classes/SkillsTab.lua:367-384
+	gemInstance.SkillMinionSkillStatSetIndexLookup = minionSkillIndexLookup(child.MinionSkillIndexLookups)
+	gemInstance.SkillMinionSkillStatSetIndexLookupCalcs = minionSkillIndexLookup(child.MinionSkillIndexLookupCalcs)
 	return gemInstance
+}
+
+func minionSkillIndexLookup(saved []pob2.MinionSkillIndexLookup) map[string]map[int]int {
+	out := map[string]map[int]int{}
+	for _, l := range saved {
+		if l.GrantedEffect == "" {
+			continue
+		}
+		m := map[int]int{}
+		for _, e := range l.Maps {
+			if !e.SkillIndex.IsNil && !e.StatSetIndex.IsNil {
+				m[e.SkillIndex.V] = e.StatSetIndex.V
+			}
+		}
+		out[l.GrantedEffect] = m
+	}
+	return out
 }
 
 // processSocketGroup fills in the gem data, levels and requirements of a group's gems, and its weapon

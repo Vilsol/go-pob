@@ -111,9 +111,8 @@ func createActiveSkill(activeEffect *GemEffect, supportList []*GemEffect, env *E
 	return activeSkill
 }
 
-// createMinionSkills initialises the active skill's minion skills. No saved build carries
-// skillMinionSkillStatSetIndexLookup or skillMinionSkill here, so every minion skill takes stat set 1
-// and the first skill is the minion's main skill.
+// createMinionSkills initialises the active skill's minion skills, each with the stat set its gem saved, and picks the
+// minion's main skill.
 //
 //pob2:src/Modules/CalcActiveSkill.lua:1136-1205
 func createMinionSkills(env *Environment, activeSkill *ActiveSkill) {
@@ -140,12 +139,26 @@ func createMinionSkills(env *Environment, activeSkill *ActiveSkill) {
 		// Not ideal, but let's avoid horrible crashes if a spectre has no skills for some reason
 		skillIDList = append(skillIDList, "MeleeAtAnimationSpeed")
 	}
-	for _, skillID := range skillIDList {
+	srcInstance := activeSkill.ActiveEffect.SrcInstance
+	var minionStatSetLookup map[int]int
+	if srcInstance != nil {
+		lookup := srcInstance.SkillMinionSkillStatSetIndexLookup
+		if env.Mode == "CALCS" {
+			lookup = srcInstance.SkillMinionSkillStatSetIndexLookupCalcs
+		}
+		minionStatSetLookup = lookup[activeSkill.ActiveEffect.GrantedEffect.ID]
+	}
+	for skillIndex, skillID := range skillIDList {
+		//pob2:block:src/Modules/CalcActiveSkill.lua:1157-1170
+		statSetIndex := 1
+		if i, ok := minionStatSetLookup[skillIndex+1]; ok {
+			statSetIndex = i
+		}
 		activeEffect := &GemEffect{
 			GrantedEffect: data.effect(skillID),
 			Level:         1,
 			Quality:       0,
-			StatSet:       &StatSetChoice{Index: 1},
+			StatSet:       &StatSetChoice{Index: statSetIndex},
 		}
 		if levelCount(activeEffect.GrantedEffect) > 1 {
 			for level := 1; level <= levelCount(activeEffect.GrantedEffect); level++ {
@@ -165,5 +178,25 @@ func createMinionSkills(env *Environment, activeSkill *ActiveSkill) {
 		minionSkill.SkillData["damageEffectiveness"] = 1 + minionDamageEffectiveness/100
 		minion.ActiveSkillList = append(minion.ActiveSkillList, minionSkill)
 	}
-	minion.MainSkill = minion.ActiveSkillList[0]
+	//pob2:block:src/Modules/CalcActiveSkill.lua:1194-1204
+	var saved *int
+	if srcInstance != nil {
+		saved = srcInstance.SkillMinionSkill
+		if env.Mode == "CALCS" {
+			saved = srcInstance.SkillMinionSkillCalcs
+		}
+	}
+	skillIndex := 1
+	if saved != nil {
+		skillIndex = *saved
+	}
+	skillIndex = max(min(skillIndex, len(minion.ActiveSkillList)), 1)
+	if srcInstance != nil {
+		if env.Mode == "CALCS" {
+			srcInstance.SkillMinionSkillCalcs = &skillIndex
+		} else if env.Mode == "MAIN" {
+			srcInstance.SkillMinionSkill = &skillIndex
+		}
+	}
+	minion.MainSkill = minion.ActiveSkillList[skillIndex-1]
 }
