@@ -77,11 +77,11 @@
   play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     for (const [slot, it] of Object.entries(ITEMS)) {
       const t = tile(canvasElement, slot);
-      const box = rect(t.querySelector('[data-item-icon]')!);
+      const box = rect(t.parentElement!.querySelector('[data-item-icon]')!);
       const [w, h] = it.cells!;
       await expect(Math.abs(box.width / box.height - w / h), slot).toBeLessThan(0.02);
       // centred in the slot, at the board's one cell size (72px a cell), smaller only where the slot cannot fit that
-      const s = rect(t);
+      const s = rect(t.parentElement!);
       await expect(Math.abs(box.left + box.width / 2 - (s.left + s.width / 2)), slot).toBeLessThan(1);
       const cell = Math.min((s.width - 24) / w, (s.height - 24) / h, BOARD_CELL);
       await expect(Math.abs(box.width - cell * w), slot).toBeLessThan(1);

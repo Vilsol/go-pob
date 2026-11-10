@@ -36,9 +36,11 @@ const settle = async (page: Page, measured = ROOT) => {
   let last = '';
   for (let i = 0; i < 240; i++) {
     await page.waitForTimeout(250);
-    const now = await page.evaluate((root) => {
+    // a page still loading (aria-busy) can hold one geometry long enough to look settled
+    const now = await page.evaluate(async (root) => {
+      await document.fonts.ready;
       const el = document.querySelector(root);
-      if (!el) return '';
+      if (!el || el.matches('[aria-busy=true]') || el.querySelector('[aria-busy=true]')) return '';
       let geo = 0;
       for (const e of el.querySelectorAll('*')) {
         const r = e.getBoundingClientRect();

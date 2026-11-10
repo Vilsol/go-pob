@@ -192,17 +192,35 @@
   <div
     role="group"
     aria-label="{b.slot} slot"
-    class={[placed ? 'absolute top-(--y) left-(--x)' : 'relative shrink-0', 'h-(--h) w-(--w)', !placed && flask && 'mb-5.5']}
+    class={[
+      placed ? 'absolute top-(--y) left-(--x)' : 'relative shrink-0',
+      'box-border h-(--h) w-(--w) rounded border border-(--tone)/60 bg-tile',
+      toneClass(e ? e.item.rarity : 'muted'),
+      (hover === k || dropOver === k) && 'border-text',
+      flask && e && !flasks[k] && 'border-dashed',
+      !placed && flask && 'mb-5.5'
+    ]}
     style="--x: {b.x / 16}rem; --y: {b.y / 16}rem; --w: {b.w / 16}rem; --h: {b.h / 16}rem"
     use:dropZone={dropTarget(k)}>
+    {#if e}
+      {@const art = artBox(e.item.cells, b.w - 24, b.h - 24, BOARD_CELL)}
+      <span class="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <span class="relative flex">
+          <ItemIcon
+            name={e.item.name}
+            base={e.item.base}
+            rarity={e.item.rarity}
+            size={art.w}
+            height={art.h}
+            unit="rem"
+            decorative
+            class={[flask && !flasks[k] && 'opacity-50']} />
+        </span>
+      </span>
+    {/if}
     <button
       bind:this={els[k]}
-      class={[
-        'relative box-border flex size-full flex-col items-start justify-between overflow-hidden rounded border border-(--tone)/60 bg-tile p-1.5 pr-6 text-left font-sans',
-        toneClass(e ? e.item.rarity : 'muted'),
-        (hover === k || dropOver === k) && 'border-text',
-        flask && e && !flasks[k] && 'border-dashed'
-      ]}
+      class="relative box-border flex h-full w-[calc(100%-1.75rem)] flex-col items-start justify-between overflow-hidden rounded-l border-0 bg-transparent p-1.5 pr-0.5 text-left font-sans"
       aria-label="{b.slot}: {e ? e.item.name : 'Empty'}"
       aria-haspopup={e || oncraft ? 'dialog' : undefined}
       title={e || !oncraft ? undefined : `Craft an item for ${b.slot}`}
@@ -225,22 +243,6 @@
         ev.preventDefault();
         overlays[k].focusGem(ev.key === 'ArrowLeft' || ev.key === 'ArrowUp');
       }}>
-      {#if e}
-        {@const art = artBox(e.item.cells, b.w - 24, b.h - 24, BOARD_CELL)}
-        <span class="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <span class="relative flex">
-            <ItemIcon
-              name={e.item.name}
-              base={e.item.base}
-              rarity={e.item.rarity}
-              size={art.w}
-              height={art.h}
-              unit="rem"
-              decorative
-              class={[flask && !flasks[k] && 'opacity-50']} />
-          </span>
-        </span>
-      {/if}
       <span class="eyebrow eyebrow-xs relative font-normal text-text-3">{flask ? '' : b.slot}</span>
       {#if !e || hover === k}
         <span data-slot-caption class="relative flex flex-col items-start">
