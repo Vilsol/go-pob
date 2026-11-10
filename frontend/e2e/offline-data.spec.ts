@@ -1,10 +1,20 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '@playwright/test';
 
 import { DATA_HOST, cachedAsset } from './support/data_cache';
 
 test.use({ serviceWorkers: 'block' });
 
-const alert = (page: import('@playwright/test').Page) => page.getByRole('alert').filter({ hasText: 'The game data could not be loaded' });
+const alert = (page: Page) => page.getByRole('alert').filter({ hasText: 'The game data could not be loaded' });
+
+// the floating activity indicator and the notice share the bottom right corner: neither may cover the other
+const expectApart = async (page: Page, notice: Locator) => {
+  const activity = page.getByRole('button', { name: /^Activity/ });
+  await expect(activity).toBeVisible();
+  const a = (await notice.boundingBox())!;
+  const b = (await activity.boundingBox())!;
+  const apart = a.x + a.width <= b.x || b.x + b.width <= a.x || a.y + a.height <= b.y || b.y + b.height <= a.y;
+  expect(apart, `the notice ${JSON.stringify(a)} and the activity indicator ${JSON.stringify(b)} overlap`).toBe(true);
+};
 
 test('game data the browser cannot fetch and has not kept shows the reason, with a retry', async ({ page, context }) => {
   const refused: string[] = [];
@@ -18,6 +28,7 @@ test('game data the browser cannot fetch and has not kept shows the reason, with
   await expect(alert(page)).toContainText('failed to fetch url');
   expect(await page.evaluate(() => performance.getEntriesByName('pob:data-loaded').length), 'data-loaded was marked for data that did not load').toBe(0);
   expect(refused.length, 'the test did not reach the data host, so it refused nothing').toBeGreaterThan(0);
+  await expectApart(page, alert(page));
 
   const reloaded = page.waitForEvent('framenavigated');
   await alert(page).getByRole('button', { name: 'Retry' }).click();
@@ -48,6 +59,7 @@ test('PoE2 game data the browser cannot fetch and has not kept shows the reason,
   const poe2Alert = page.getByRole('alert').filter({ hasText: 'The PoE2 game data could not be loaded' });
   await expect(poe2Alert).toBeVisible({ timeout: 120_000 });
   await expect(poe2Alert).toContainText('tree2: fetching');
+  await expectApart(page, poe2Alert);
   expect(refused.length, 'the test did not reach the PoE2 data, so it refused nothing').toBeGreaterThan(0);
   await expect(alert(page), 'the PoE1 game data was served, so it has no notice').toHaveCount(0);
 

@@ -179,7 +179,7 @@
         onclick={() => (colMenuOpen = !colMenuOpen)}
         onkeydown={(e: KeyboardEvent) => {
           if (e.key === 'Escape') colMenuOpen = false;
-        }}>Columns · {shown.length} / {avail.length} ▾</Button>
+        }}>Columns · {shown.length} / {avail.length} <Icon name="chevron-down" size={12} class="inline" /></Button>
       <Popover
         id="build-cols"
         open={colMenuOpen}
@@ -254,7 +254,7 @@
           <span role="gridcell" class="text-text-3">folder · {countIn(builds, c)} builds{n ? ` · ${n} subfolder${n > 1 ? 's' : ''}` : ''}</span>
           {#if hot}
             <span role="gridcell" class="ml-auto text-12 font-semibold text-accent">Drop to move into {leaf(c)}</span>
-            <div aria-hidden="true" class="drag-ghost top-5 left-65"><span class="grip">⋮⋮</span><span>{drag?.name}</span></div>
+            <div aria-hidden="true" class="drag-ghost top-5 left-65"><span class="grip"><Icon name="grip" size={12} /></span><span>{drag?.name}</span></div>
           {/if}
         </div>
       {/each}
@@ -299,7 +299,7 @@
             ><button
               class="drag-handle group-hover:opacity-100 group-focus-within:opacity-100"
               aria-label="Drag {b.name} to a folder"
-              title="Drag onto a folder to move it (keyboard: ⋯ → Move to…)">⋮⋮</button
+              title="Drag onto a folder to move it (keyboard: ⋯ → Move to…)"><Icon name="grip" size={14} class="mx-auto" /></button
             ></span>
           {#each shown as c (c.key)}
             {#if c.key === 'name'}
@@ -344,6 +344,9 @@
   </div>
   <div class="note">
     {rows.length} builds in {folder || 'all folders'}{ql && folder ? ' and its subfolders' : folder ? ' (subfolders listed above)' : ''} · click selects, double-click
-    / Enter / the name opens · drag ⋮⋮ onto a folder to move, or ⋯ → Move to… · click a column header to sort
+    / Enter / the name opens · drag <Icon name="grip" size={12} class="inline align-[-2px]" /> onto a folder to move, or <Icon
+      name="more"
+      size={12}
+      class="inline align-[-2px]" />, then Move to… · click a column header to sort
   </div>
 </main>

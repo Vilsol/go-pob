@@ -88,7 +88,7 @@
           class={['h-5 w-4 shrink-0 border-0 bg-transparent p-0 text-10 text-text-2', !r.kids && 'invisible']}
           tabindex={r.kids ? 0 : -1}
           aria-label="{r.isOpen ? 'Collapse' : 'Expand'} {r.name}"
-          onclick={() => ontoggle(r.path)}>{r.isOpen ? '▾' : '▸'}</button>
+          onclick={() => ontoggle(r.path)}><Icon name={r.isOpen ? 'chevron-down' : 'chevron-right'} size={12} class="mx-auto" /></button>
         <button
           class={[
             'flex min-w-0 grow items-center gap-1.5 border-0 bg-transparent p-0 text-left font-sans text-13',
@@ -107,7 +107,9 @@
                 : ['font-mono text-11', cur ? 'bg-line' : 'bg-bar', total ? 'text-text-2' : 'text-text-3']
             ]}>{hot ? 'drop here' : total}</span>
         </button>
-        {#if hot}<div aria-hidden="true" class="drag-ghost top-5.5 left-17.5"><span class="grip">⋮⋮</span><span>{drag?.name}</span></div>{/if}
+        {#if hot}<div aria-hidden="true" class="drag-ghost top-5.5 left-17.5">
+            <span class="grip"><Icon name="grip" size={12} /></span><span>{drag?.name}</span>
+          </div>{/if}
       </div>
     {/each}
   </div>

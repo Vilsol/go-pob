@@ -179,10 +179,10 @@
     jewelPick = { id, slot, el };
     onhoveritem?.(id, slot);
   };
-  const jewelChoices = (choices?: number[]) => [
-    { value: '0', label: 'None' },
-    ...jewelOptions.filter((o) => !choices || choices.includes(o.id)).map((o) => ({ value: String(o.id), label: o.label }))
-  ];
+  const jewelChoices = (choices?: number[]) => {
+    const fits = choices && new Set(choices);
+    return [{ value: '0', label: 'None' }, ...jewelOptions.filter((o) => !fits || fits.has(o.id)).map((o) => ({ value: String(o.id), label: o.label }))];
+  };
 </script>
 
 {#snippet boardSlot(b: (typeof BOARD_SLOTS)[number], placed: boolean)}

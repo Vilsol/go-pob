@@ -119,7 +119,7 @@
   </header>
   <div class="flex h-11 shrink-0 items-center gap-2 border-b border-line pr-3 phone:hidden">
     <Button type="button" class="h-full min-w-0 grow justify-start rounded-none border-0 px-3" aria-haspopup="dialog" onclick={() => (foldersOpen = true)}
-      ><span class="truncate">Folders · {folder || 'All builds'} ▾</span></Button>
+      ><span class="truncate">Folders · {folder || 'All builds'}</span><Icon name="chevron-down" size={12} /></Button>
     {#if onnewfolder && phone.current}<Button size="sm" class="shrink-0" title="Make a folder in {folder ? leaf(folder) : 'All builds'}" onclick={onnewfolder}
         >New folder</Button
       >{/if}

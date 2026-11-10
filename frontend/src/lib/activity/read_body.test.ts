@@ -28,4 +28,12 @@ describe('readBody', () => {
     await readBody(new Response(stream([1])), (_, t) => seen.push(t));
     expect(seen).toEqual([undefined, undefined]);
   });
+
+  it('returns every byte when the length is short of the body or beyond it', async () => {
+    const short = await readBody(new Response(stream([1, 2], [3], [4, 5]), { headers: { 'content-length': '3' } }), () => {});
+    expect([...new Uint8Array(short)]).toEqual([1, 2, 3, 4, 5]);
+    const long = await readBody(new Response(stream([1, 2], [3]), { headers: { 'content-length': '8' } }), () => {});
+    expect(long.byteLength).toBe(3);
+    expect([...new Uint8Array(long)]).toEqual([1, 2, 3]);
+  });
 });

@@ -5,15 +5,23 @@ export const readBody = async (res: Response, onbytes: (done: number, total: num
   const total = res.headers.get('content-encoding') ? undefined : length;
   if (!res.body) return res.arrayBuffer();
   const reader = res.body.getReader();
+  // with the total known each chunk lands in place as it arrives, so no one task copies the whole body at the end
+  let into = total ? new Uint8Array(total) : undefined;
   const chunks: Uint8Array[] = [];
   let done = 0;
   for (;;) {
     const r = await reader.read();
     if (r.done) break;
-    chunks.push(r.value);
+    if (into && done + r.value.byteLength <= into.byteLength) into.set(r.value, done);
+    else {
+      if (into) chunks.push(into.subarray(0, done));
+      into = undefined;
+      chunks.push(r.value);
+    }
     done += r.value.byteLength;
     onbytes(done, total);
   }
+  if (into) return done === into.byteLength ? into.buffer : into.buffer.slice(0, done);
   const out = new Uint8Array(done);
   let at = 0;
   for (const c of chunks) {

@@ -145,6 +145,12 @@
 
   let wasmLoading = $state(true);
   let dataLoading = $state(false);
+  // the floating activity indicator sits in the bottom corner (ActivityIndicator.svelte); a notice there stands above it
+  const floatingActivity = $derived(!($game && !wasmLoading) || phone.current);
+  const noticeClass = $derived([
+    'fixed right-2 left-2 ml-auto max-w-160',
+    floatingActivity ? 'bottom-14 max-phone:bottom-[calc(6.5rem+env(safe-area-inset-bottom))]' : 'bottom-2'
+  ]);
 
   let loadingMessage = $state('Initializing...');
   let loadingStage = $state('');
@@ -347,12 +353,12 @@
 {#if !wasmLoading}<AppImportModal />{/if}
 
 {#if dataError}
-  <Notice float kind="error" title="The game data could not be loaded" class="fixed right-2 bottom-2 left-2 ml-auto max-w-160">
+  <Notice float kind="error" title="The game data could not be loaded" class={noticeClass}>
     <span class="break-all">{dataError}</span>
     {#snippet actions()}<Button onclick={() => location.reload()}>Retry</Button>{/snippet}
   </Notice>
 {:else if $poe2DataError}
-  <Notice float kind="error" title="The PoE2 game data could not be loaded" class="fixed right-2 bottom-2 left-2 ml-auto max-w-160">
+  <Notice float kind="error" title="The PoE2 game data could not be loaded" class={noticeClass}>
     <span class="break-all">{$poe2DataError}</span>
     {#snippet actions()}<Button onclick={() => location.reload()}>Retry</Button>{/snippet}
   </Notice>
@@ -369,4 +375,4 @@
 <PwaStatus />
 <Toasts />
 <ActivityBar />
-{#if !($game && !wasmLoading) || phone.current}<ActivityIndicator floating />{/if}
+{#if floatingActivity}<ActivityIndicator floating />{/if}

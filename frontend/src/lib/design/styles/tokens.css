@@ -184,11 +184,21 @@
 }
 
 @layer base {
+  /* a control or the root left on the browser's default font makes Chromium on Linux resolve that system font once per
+     size through a blocking font-config query, a few hundred ms in the first layout */
+  html {
+    font-family: var(--font-sans);
+  }
+  button,
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+  }
   body {
     margin: 0;
     background: var(--color-ground);
     color: var(--color-text);
-    font-family: var(--font-sans);
   }
   h1,
   h2,

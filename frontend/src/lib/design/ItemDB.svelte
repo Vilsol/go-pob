@@ -25,6 +25,8 @@
     hover?: string | null;
     tip?: TipProps;
     note?: string;
+    /* why the list could not be loaded */
+    error?: string;
     onadd: (name: string, equip: boolean, second: boolean) => void;
     onopen: (name: string) => void;
     oncopy: (name: string) => void;
@@ -42,6 +44,7 @@
     hover = $bindable(null),
     tip,
     note = '',
+    error = '',
     onadd,
     onopen,
     oncopy,
@@ -217,7 +220,7 @@
       </div>
       <div class="note flex justify-between px-3 py-1.5 text-11">
         <span>{busy ? (sort ? 'Sorting…' : 'Loading…') : `${rows.length} items`}</span>
-        <span role="status" class={note ? 'text-better' : 'sr-only'}>{note}</span>
+        {#if error}<span role="alert" class="text-error">{error}</span>{:else}<span role="status" class={note ? 'text-better' : 'sr-only'}>{note}</span>{/if}
       </div>
     </section>
   </div>

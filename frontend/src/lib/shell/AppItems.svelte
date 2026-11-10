@@ -702,6 +702,7 @@
   let dbRows = $state<ItemDBRowPlain[]>([]);
   let dbBusy = $state(false);
   let dbNote = $state('');
+  let dbError = $state('');
   let dbTip = $state<{ name: string; tip: ItemTip }>();
   let dbSeq = 0;
 
@@ -733,13 +734,14 @@
           if (mine !== dbSeq) return;
           dbRows = rows;
           dbBusy = false;
+          dbError = '';
         })
         .catch((e: Error) => {
           logError(e);
           if (mine !== dbSeq) return;
           dbRows = [];
           dbBusy = false;
-          dbNote = `The item list could not be loaded: ${e.message}`;
+          dbError = `The item list could not be loaded: ${e.message}`;
         });
     });
   });
@@ -1115,6 +1117,7 @@
         bind:hover={dbHover}
         tip={dbTipProps}
         note={dbNote}
+        error={dbError}
         onadd={(name: string, equip: boolean, second: boolean) => {
           dbAdd(name, equip, second).catch(logError);
         }}

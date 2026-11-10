@@ -250,7 +250,8 @@
             title={undoLabel}>
             <Icon name="undo" />
           </Button>
-          <Button icon size="xs" class="h-8 w-4 border-0" {...attrs} aria-label="Undo history (right-click or long-press Undo)" title="Undo history">▾</Button>
+          <Button icon size="xs" class="h-8 w-4 border-0" {...attrs} aria-label="Undo history (right-click or long-press Undo)" title="Undo history"
+            ><Icon name="chevron-down" size={12} /></Button>
           <Button icon onclick={onredo} disabled={undone === 0} aria-label={redoLabel} title={redoLabel}>
             <Icon name="redo" />
           </Button>
