@@ -1,4 +1,5 @@
 import type { calculator } from '$lib/types';
+import type { StatSetControls } from '$lib/go/engine';
 import type { StatCompareSection } from '$lib/skill_tree/stat_compare';
 import type { CompareFixture, CompareSide, CompareStat, PowerRow, SkillsFixture, SocketGroupFixture } from './fixtures';
 
@@ -202,14 +203,25 @@ export function pairSkills(A: SkillsFixture, B: SkillsFixture) {
   return { both, onlyA: only(ag, usedA, 'a'), onlyB: only(bg, usedB, 'b') };
 }
 
-export type CalcsHeaderField = 'group' | 'mode' | 'showMinion' | 'MainActiveSkill' | 'SkillPart' | 'StageCount' | 'MineCount' | 'Minion' | 'MinionSkill';
+export type CalcsHeaderField =
+  | 'group'
+  | 'mode'
+  | 'showMinion'
+  | 'MainActiveSkill'
+  | 'StatSet'
+  | 'SkillPart'
+  | 'StageCount'
+  | 'MineCount'
+  | 'Minion'
+  | 'MinionSkill'
+  | 'MinionSkillStatSet';
 export type CalcsHeaderSide = {
   name: string;
   groups: string[];
   skillNumber: number;
   buffMode: string;
   showMinion?: boolean;
-  controls?: calculator.MainSkillControls;
+  controls?: calculator.MainSkillControls & StatSetControls;
   info: { label: string; text: string }[];
 };
 

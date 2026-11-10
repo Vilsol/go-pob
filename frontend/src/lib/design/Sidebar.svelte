@@ -7,6 +7,7 @@
   import PobText from './PobText.svelte';
   import { tick } from 'svelte';
   import type { calculator } from '$lib/types';
+  import type { StatSetControls } from '$lib/go/engine';
   import { colorCodes } from '$lib/display/colors';
   import { VALUE_COLOR } from '$lib/display/format_stat';
   import type { Sidebar } from '$lib/display/sidebar';
@@ -23,13 +24,13 @@
   import { MINION_ITEM_DROP, draggedItem } from './item_drag';
   import { dropZone } from './reorder';
 
-  type Control = 'MainActiveSkill' | 'SkillPart' | 'StageCount' | 'MineCount' | 'Minion' | 'MinionSkill';
+  type Control = 'MainActiveSkill' | 'StatSet' | 'SkillPart' | 'StageCount' | 'MineCount' | 'Minion' | 'MinionSkill' | 'MinionSkillStatSet';
   type Breakdown = { formula?: string; groups: { title?: string; rows: { src: string; val: string; tone?: Tone }[] }[] };
   type Props = {
     sidebar: Sidebar;
     socketGroups: string[];
     mainSocketGroup: number;
-    controls?: calculator.MainSkillControls;
+    controls?: calculator.MainSkillControls & StatSetControls;
     collapsed?: boolean;
     /** fills its container (the phone stats sheet): no rail, no resize */
     fill?: boolean;
@@ -271,6 +272,16 @@
               disabled={!controls.SkillEnabled}
               onchange={(e: Event) => oncontrol?.('MainActiveSkill', selected(e))} /></FloatingLabel>
         {/if}
+        {#if controls.StatSetShown}
+          <!-- Build.lua:382-389 (PoB-PoE2) -->
+          <FloatingLabel label="Stat set"
+            ><Select
+              size="md"
+              options={opts(controls.StatSets)}
+              value={String(controls.StatSet)}
+              disabled={!controls.StatSetEnabled}
+              onchange={(e: Event) => oncontrol?.('StatSet', selected(e))} /></FloatingLabel>
+        {/if}
         {#if controls.PartShown}
           <FloatingLabel label="Skill part"
             ><Select
@@ -353,6 +364,16 @@
                   onchange={(e: Event) => oncontrol?.('MinionSkill', selected(e))} /></FloatingLabel>
             {/if}
           </div>
+        {/if}
+        {#if controls.MinionSkillStatSetShown}
+          <!-- Build.lua:475-483 (PoB-PoE2) -->
+          <FloatingLabel label="Minion skill stat set"
+            ><Select
+              size="md"
+              options={opts(controls.MinionSkillStatSets)}
+              value={String(controls.MinionSkillStatSet)}
+              disabled={!controls.MinionSkillStatSetEnabled}
+              onchange={(e: Event) => oncontrol?.('MinionSkillStatSet', selected(e))} /></FloatingLabel>
         {/if}
       {/if}
       {#each statuses as w, i (i)}

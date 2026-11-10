@@ -4,7 +4,7 @@ import { currentBuild, UITick } from '$lib/global.js';
 import { logError } from '$lib/utils';
 import type { calculator } from '$lib/types';
 
-export type MainSkillField = 'MainActiveSkill' | 'StatSet' | 'SkillPart' | 'StageCount' | 'MineCount' | 'Minion' | 'MinionSkill';
+export type MainSkillField = 'MainActiveSkill' | 'StatSet' | 'SkillPart' | 'StageCount' | 'MineCount' | 'Minion' | 'MinionSkill' | 'MinionSkillStatSet';
 
 /* CalcsTab.lua:54-118 */
 export function writeMainSkill(c: calculator.MainSkillControls | undefined, field: MainSkillField, value: number | undefined, calcs = false) {

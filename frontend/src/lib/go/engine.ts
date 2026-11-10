@@ -102,8 +102,19 @@ export type TreeModel = {
   reset(): void;
 };
 
-// Build.lua:382-389, 2103-2109 (PoB-PoE2): the Stat Set dropdown, which PoE1 has none of
-export type StatSetControls = { StatSets?: string[]; StatSet?: number; StatSetShown?: boolean; StatSetEnabled?: boolean };
+// Build.lua:382-389, 475-483, 2103-2109, 2179-2186 (PoB-PoE2): the Stat Set and Minion Skill Stat Set dropdowns, and the
+// Manage Beasts button (Build.lua:465-467, 2151-2156), which PoE1 has none of
+export type StatSetControls = {
+  StatSets?: string[];
+  StatSet?: number;
+  StatSetShown?: boolean;
+  StatSetEnabled?: boolean;
+  MinionSkillStatSets?: string[];
+  MinionSkillStatSet?: number;
+  MinionSkillStatSetShown?: boolean;
+  MinionSkillStatSetEnabled?: boolean;
+  BeastLibraryShown?: boolean;
+};
 
 // CalcsTab.lua:40-119 over the latest calculation
 export type CalcsTabView = {
@@ -148,7 +159,7 @@ export type BuildEngine = {
   // emits after every recalculation
   calculated: Readable<unknown>;
   sidebar: Readable<Sidebar | undefined>;
-  mainSkill: Readable<calculator.MainSkillControls | undefined>;
+  mainSkill: Readable<(calculator.MainSkillControls & StatSetControls) | undefined>;
   mainGroup(): MainGroupView;
   setMainSkill(field: MainSkillField, value: number | undefined): void;
   // Main.lua:1750-1756

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding2>
+	<Build ascendClassName="None" characterLevelAutoMode="false" className="Sorceress" level="40" mainSocketGroup="1" targetVersion="0_1" viewMode="IMPORT">
+	</Build>
+	<Items activeItemSet="1" useSecondWeaponSet="true">
+		<Item id="1">
+			Rarity: RARE
+Storm Shell
+Vaal Cuirass
+Armour: 900
+Item Level: 80
+Quality: 20
+Sockets: S S
+Rune: Desert Rune
+LevelReq: 60
+Implicits: 0
+{rune}+12% to Fire Resistance
++120 to Armour
+{fractured}85% increased Armour
++90 to maximum Life
+{range:0.8}+(10-20)% to Cold Resistance
+{crafted}+35% to Fire Resistance
+		</Item>
+		<Item id="2">
+			Rarity: MAGIC
+Withered Wand of the Spark
+Item Level: 40
+LevelReq: 20
+Implicits: 0
++1 to Level of all Lightning Spell Skills
+		</Item>
+		<Item id="3">
+			Rarity: NORMAL
+Twig Focus
+Item Level: 40
+LevelReq: 6
+Implicits: 0
+		</Item>
+		<Item id="4">
+			Rarity: RARE
+Glyph Pillar
+Ashen Staff
+Item Level: 60
+LevelReq: 40
+Implicits: 0
++2 to Level of all Spell Skills
+{range:0.25}(40-60)% increased Spell Damage
++0% to Cold Resistance
+		</Item>
+		<Item id="5">
+			Rarity: RARE
+Gloom Loop
+Iron Ring
+Item Level: 70
+LevelReq: 30
+Implicits: 1
+{enchant}+5% to all Elemental Resistances
++40 to maximum Mana
++20% to Lightning Resistance
+Corrupted
+		</Item>
+		<Item id="6">
+			Rarity: MAGIC
+Sapphire of Thought
+Item Level: 70
+LevelReq: 1
+Implicits: 0
+12% increased Spell Damage
+(5-9)% increased Cast Speed
+		</Item>
+		<ItemSet id="1" title="Default" useSecondWeaponSet="true">
+			<Slot itemId="1" name="Body Armour"/>
+			<Slot itemId="2" name="Weapon 1"/>
+			<Slot itemId="3" name="Weapon 2"/>
+			<Slot itemId="4" name="Weapon 1 Swap"/>
+			<Slot itemId="5" name="Ring 1" note="Any {resistance} ring"/>
+			<Slot itemId="0" name="Belt" note="Heavy Belt"/>
+		</ItemSet>
+		<ItemSet id="2" title="Swap set" useSecondWeaponSet="false">
+			<Slot itemId="4" name="Weapon 1"/>
+		</ItemSet>
+	</Items>
+	<Skills activeSkillSet="1" defaultGemLevel="normalMaximum" defaultGemQuality="0">
+		<SkillSet id="1">
+			<Skill enabled="true" includeInFullDPS="true" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gems/SkillGemSpark" level="10" nameSpec="Spark" quality="5" skillId="SparkPlayer" variantId="Spark"/>
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gems/SupportGemArcaneTempo" level="1" nameSpec="Rapid Casting I" quality="0" skillId="SupportRapidCastingPlayer" variantId="RapidCastingSupport"/>
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gems/SupportGemArcaneTempo" level="3" nameSpec="Rapid Casting I" quality="10" skillId="SupportRapidCastingPlayer" variantId="RapidCastingSupport"/>
+			</Skill>
+			<Skill enabled="false" includeInFullDPS="nil" label="Backup" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gem/SkillGemFireball" level="8" nameSpec="Fireball" quality="0" skillId="FireballPlayer" variantId="Fireball"/>
+			</Skill>
+		</SkillSet>
+		<SkillSet id="2" title="Leveling">
+			<Skill enabled="true" includeInFullDPS="nil" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gem/SkillGemFireball" level="4" nameSpec="Fireball" note="Swap to Spark at 20" quality="0" skillId="FireballPlayer" variantId="Fireball"/>
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gems/SupportGemArcaneTempo" level="1" nameSpec="Rapid Casting I" note="Early" quality="0" skillId="SupportRapidCastingPlayer" variantId="RapidCastingSupport"/>
+			</Skill>
+		</SkillSet>
+	</Skills>
+	<Tree activeSpec="1">
+		<Spec ascendClassId="0" classId="7" masteryEffects="" nodes="61419,46819,8616,57710,56935,39886,47555,18407,22419,4739" secondaryAscendClassId="nil" title="Other" treeVersion="0_5">
+			<Sockets>
+				<Socket nodeId="61419" itemId="6"/>
+			</Sockets>
+			<WeaponSet1 nodes="4739"/>
+			<Notes>
+				<Note nodeId="46819">Take this first</Note>
+			</Notes>
+		</Spec>
+		<Spec ascendClassId="1" classId="7" masteryEffects="" nodes="8616,57710" secondaryAscendClassId="nil" title="Second" treeVersion="0_5">
+		</Spec>
+	</Tree>
+</PathOfBuilding2>

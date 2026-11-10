@@ -3,6 +3,7 @@ package calculator2
 import (
 	"slices"
 	"strconv"
+	"strings"
 
 	"github.com/Vilsol/go-pob/pob2"
 )
@@ -97,8 +98,9 @@ func BuildCalcsOutput(main *Environment, used *UsedTables) *Environment {
 	return env
 }
 
-// SkillSelectControls is what RefreshSkillSelectControls leaves on the Active Skill, Stat Set, Skill Part, Skill Stages
-// and Active Mines controls. Indexes are 1-based; a buf is the edit box's text.
+// SkillSelectControls is what RefreshSkillSelectControls leaves on the Active Skill, Stat Set, Skill Part, Skill Stages,
+// Active Mines, Minion, Minion Skill and Minion Skill Stat Set controls and the Manage Spectres and Manage Beasts
+// buttons. Indexes are 1-based; a buf is the edit box's text.
 type SkillSelectControls struct {
 	Skills          []string
 	StatSets        []string
@@ -113,6 +115,21 @@ type SkillSelectControls struct {
 	PartShown       bool
 	StageShown      bool
 	MineShown       bool
+
+	Minions                   []string
+	MinionSkills              []string
+	MinionSkillStatSets       []string
+	Minion                    int
+	MinionSkill               int
+	MinionSkillStatSet        int
+	MinionShown               bool
+	MinionEnabled             bool
+	MinionLibraryShown        bool
+	BeastLibraryShown         bool
+	MinionSkillShown          bool
+	MinionSkillEnabled        bool
+	MinionSkillStatSetShown   bool
+	MinionSkillStatSetEnabled bool
 }
 
 // skillSelectSkill is socketGroupList[mainGroup]'s displaySkillList..suffix and mainActiveSkill..suffix; calcs is the
@@ -133,8 +150,8 @@ func skillSelectSkill(env *Environment, mainGroup int, calcs bool) ([]*ActiveSki
 }
 
 // SkillSelect is RefreshSkillSelectControls(controls, mainGroup, suffix) over env, the calculation that listed the
-// group's skills; calcs is the "Calcs" suffix. The minion controls are not ported, and PoE2's skill data has no
-// multipart skill, so the Skill Part dropdown never shows.
+// group's skills; calcs is the "Calcs" suffix, whose controls carry the Calcs tab's Show Minion Stats check box.
+// PoE2's skill data has no multipart skill, so the Skill Part dropdown never shows.
 //
 //pob2:src/Modules/Build.lua:2059-2195
 func SkillSelect(build *pob2.PathOfBuilding2, env *Environment, mainGroup int, calcs bool) SkillSelectControls {
@@ -193,7 +210,169 @@ func SkillSelect(build *pob2.PathOfBuilding2, env *Environment, mainGroup int, c
 			controls.StageCount = "1"
 		}
 	}
+	skillSelectMinion(build, env, &controls, activeSkill, gem, calcs)
 	return controls
+}
+
+// minionEntry is one mainSkillMinion list entry: an item set or a minion.
+type minionEntry struct {
+	label     string
+	minionID  string
+	itemSetID int
+}
+
+// skillMinionEntries is the Minion dropdown's list for activeSkill, and whether the dropdown shows at all.
+//
+//pob2:block:src/Modules/Build.lua:2132-2167
+func skillMinionEntries(env *Environment, activeSkill *ActiveSkill) ([]minionEntry, bool) {
+	activeEffect := activeSkill.ActiveEffect
+	overlay := activeEffect.GrantedEffect.Overlay
+	minionList := activeSkill.MinionList
+	if minionList == nil {
+		minionList = overlay.MinionList
+	}
+	var skillFlags map[string]bool
+	if activeEffect.StatSet != nil {
+		skillFlags = activeEffect.StatSet.SkillFlags
+	}
+	if skillFlags["disable"] || (overlay.MinionList == nil && len(minionList) == 0) {
+		return nil, false
+	}
+	var entries []minionEntry
+	if overlay.MinionHasItemSet {
+		if tab := env.items; tab != nil {
+			for _, itemSetID := range tab.ItemSetOrderList {
+				label := "Default Item Set"
+				if set := tab.ItemSets[itemSetID]; set != nil && set.Title != "" {
+					label = set.Title
+				}
+				entries = append(entries, minionEntry{label: label, itemSetID: itemSetID})
+			}
+		}
+		return entries, true
+	}
+	minions := minionData()
+	for _, minionID := range minionList {
+		if minion := minions[minionID]; minion != nil {
+			entries = append(entries, minionEntry{label: minion.Name, minionID: minionID})
+		}
+	}
+	return entries, true
+}
+
+// skillMinionSkillIndex is srcInstance.skillMinionSkill..suffix as createMinionSkills leaves it: clamped to the
+// minion's skills.
+//
+//pob2:block:src/Modules/CalcActiveSkill.lua:1194-1203
+func skillMinionSkillIndex(gem *pob2.Gem, calcs bool, count int) int {
+	index := 1
+	saved := gem.SkillMinionSkill
+	if calcs {
+		saved = gem.SkillMinionSkillCalcs
+	}
+	if saved != nil {
+		index = *saved
+	}
+	return max(min(index, count), 1)
+}
+
+// minionSkillStatSetLookup is srcInstance.skillMinionSkillStatSetIndexLookup..suffix.
+func minionSkillStatSetLookup(gem *pob2.Gem, calcs bool) *[]pob2.MinionSkillIndexLookup {
+	if calcs {
+		return &gem.MinionSkillIndexLookupCalcs
+	}
+	return &gem.MinionSkillIndexLookups
+}
+
+// skillSelectMinion fills the Minion, Minion Skill and Minion Skill Stat Set controls and the library buttons.
+//
+//pob2:block:src/Modules/Build.lua:2132-2191
+func skillSelectMinion(build *pob2.PathOfBuilding2, env *Environment, controls *SkillSelectControls, activeSkill *ActiveSkill, gem *pob2.Gem, calcs bool) {
+	entries, shown := skillMinionEntries(env, activeSkill)
+	if !shown {
+		return
+	}
+	activeEffect := activeSkill.ActiveEffect
+	grantedEffect := activeEffect.GrantedEffect
+	src := activeEffect.SrcInstance
+	controls.Minions = []string{}
+	controls.Minion = 1
+	if grantedEffect.Overlay.MinionHasItemSet {
+		itemSetID := 0
+		if src != nil {
+			itemSetID = src.SkillMinionItemSet
+			if calcs {
+				itemSetID = src.SkillMinionItemSetCalcs
+			}
+		}
+		if itemSetID == 0 {
+			itemSetID = 1
+		}
+		for i, e := range entries {
+			if e.itemSetID == itemSetID {
+				controls.Minion = i + 1
+				break
+			}
+		}
+	} else {
+		// the Calcs tab's Show Minion Stats check box hides the library buttons
+		libraryShown := grantedEffect.Overlay.MinionList != nil && len(grantedEffect.Overlay.MinionList) == 0 &&
+			!(calcs && readCalcsInputs(build).ShowMinion)
+		controls.MinionLibraryShown = libraryShown && strings.HasPrefix(grantedEffect.Name, "Spectre:")
+		controls.BeastLibraryShown = libraryShown && strings.HasPrefix(grantedEffect.Name, "Companion:")
+		minionID := ""
+		if src != nil {
+			minionID = src.SkillMinion
+			if calcs {
+				minionID = src.SkillMinionCalcs
+			}
+		}
+		if minionID == "" && len(entries) > 0 {
+			minionID = entries[0].minionID
+		}
+		for i, e := range entries {
+			if e.minionID == minionID {
+				controls.Minion = i + 1
+				break
+			}
+		}
+	}
+	for _, e := range entries {
+		controls.Minions = append(controls.Minions, e.label)
+	}
+	controls.MinionEnabled = len(entries) > 1
+	controls.MinionShown = true
+	minion := activeSkill.Minion
+	if minion == nil {
+		controls.Minions = append(controls.Minions, "<No spectres in build>")
+		return
+	}
+	if len(minion.ActiveSkillList) == 0 || gem == nil {
+		return
+	}
+	for _, minionSkill := range minion.ActiveSkillList {
+		controls.MinionSkills = append(controls.MinionSkills, minionSkill.ActiveEffect.GrantedEffect.Name)
+	}
+	controls.MinionSkill = skillMinionSkillIndex(gem, calcs, len(minion.ActiveSkillList))
+	controls.MinionSkillShown = true
+	controls.MinionSkillEnabled = len(controls.MinionSkills) > 1
+	controls.MinionSkillStatSets = []string{}
+	for _, statSet := range minion.ActiveSkillList[controls.MinionSkill-1].ActiveEffect.GrantedEffect.StatSets {
+		controls.MinionSkillStatSets = append(controls.MinionSkillStatSets, statSet.Label)
+	}
+	controls.MinionSkillStatSet = 1
+	for _, lookup := range *minionSkillStatSetLookup(gem, calcs) {
+		if lookup.GrantedEffect != grantedEffect.ID {
+			continue
+		}
+		for _, m := range lookup.Maps {
+			if !m.SkillIndex.IsNil && m.SkillIndex.V == controls.MinionSkill && !m.StatSetIndex.IsNil {
+				controls.MinionSkillStatSet = m.StatSetIndex.V
+			}
+		}
+	}
+	controls.MinionSkillStatSetShown = true
+	controls.MinionSkillStatSetEnabled = len(controls.MinionSkillStatSets) > 1
 }
 
 func gemCount(gem *pob2.Gem, calcs bool, field func(*pob2.Gem) (*int, *int)) *int {
@@ -224,16 +403,125 @@ func skillSelectGem(build *pob2.PathOfBuilding2, env *Environment, mainGroup int
 // skillSelectSrc is the saved gem the Stat Set, Skill Stages and Active Mines controls write: displaySkillList..suffix
 // [mainActiveSkill..suffix].activeEffect.srcInstance, and that effect's granted effect id.
 func skillSelectSrc(build *pob2.PathOfBuilding2, env *Environment, mainGroup int, calcs bool) (*pob2.Gem, string, error) {
+	activeSkill, gem, err := skillSelectActive(build, env, mainGroup, calcs)
+	if err != nil {
+		return nil, "", err
+	}
+	return gem, activeSkill.ActiveEffect.GrantedEffect.ID, nil
+}
+
+// skillSelectActive is displaySkillList..suffix[mainActiveSkill..suffix] and the saved gem of its srcInstance.
+func skillSelectActive(build *pob2.PathOfBuilding2, env *Environment, mainGroup int, calcs bool) (*ActiveSkill, *pob2.Gem, error) {
 	displaySkillList, mainActiveSkill := skillSelectSkill(env, mainGroup, calcs)
 	if mainActiveSkill < 1 || mainActiveSkill > len(displaySkillList) || displaySkillList[mainActiveSkill-1].ActiveEffect == nil {
-		return nil, "", errNoSocketGroup
+		return nil, nil, errNoSocketGroup
 	}
-	activeEffect := displaySkillList[mainActiveSkill-1].ActiveEffect
-	gem := skillSelectGem(build, env, mainGroup, activeEffect.SrcInstance)
-	if gem == nil || activeEffect.GrantedEffect == nil {
-		return nil, "", errNoSocketGroup
+	activeSkill := displaySkillList[mainActiveSkill-1]
+	gem := skillSelectGem(build, env, mainGroup, activeSkill.ActiveEffect.SrcInstance)
+	if gem == nil || activeSkill.ActiveEffect.GrantedEffect == nil {
+		return nil, nil, errNoSocketGroup
 	}
-	return gem, activeEffect.GrantedEffect.ID, nil
+	return activeSkill, gem, nil
+}
+
+// SetSkillMinion is the Minion dropdown: either suffix writes both the minion (or its item set) and its Calcs twin,
+// and renames a Spectre or Companion gem after its pick.
+//
+//pob2:block:src/Modules/Build.lua:421-443
+//pob2:block:src/Classes/CalcsTab.lua:107-132
+func SetSkillMinion(build *pob2.PathOfBuilding2, env *Environment, mainGroup int, calcs bool, index int) error {
+	activeSkill, gem, err := skillSelectActive(build, env, mainGroup, calcs)
+	if err != nil {
+		return err
+	}
+	entries, shown := skillMinionEntries(env, activeSkill)
+	if !shown || index < 1 || index > len(entries) {
+		return errNoSocketGroup
+	}
+	value := entries[index-1]
+	if value.itemSetID != 0 {
+		gem.SkillMinionItemSet = &value.itemSetID
+		gem.SkillMinionItemSetCalcs = &value.itemSetID
+	} else {
+		gem.SkillMinion = &value.minionID
+		gem.SkillMinionCalcs = &value.minionID
+	}
+	if strings.HasPrefix(gem.NameSpec, "Spectre:") {
+		gem.NameSpec = "Spectre: " + value.label
+	} else if strings.HasPrefix(gem.NameSpec, "Companion:") {
+		gem.NameSpec = "Companion: " + value.label
+	}
+	return nil
+}
+
+// SetCompareCalcsMinion is the Compare tab's Calcs header Minion dropdown: unlike the Calcs tab's, it writes only the
+// Calcs minion (or item set) and keeps the gem's name.
+//
+//pob2:block:src/Classes/CompareTab.lua:556-573
+func SetCompareCalcsMinion(build *pob2.PathOfBuilding2, env *Environment, mainGroup int, index int) error {
+	activeSkill, gem, err := skillSelectActive(build, env, mainGroup, true)
+	if err != nil {
+		return err
+	}
+	entries, shown := skillMinionEntries(env, activeSkill)
+	if !shown || index < 1 || index > len(entries) {
+		return errNoSocketGroup
+	}
+	if selected := entries[index-1]; selected.itemSetID != 0 {
+		gem.SkillMinionItemSetCalcs = &selected.itemSetID
+	} else if selected.minionID != "" {
+		gem.SkillMinionCalcs = &selected.minionID
+	}
+	return nil
+}
+
+// SetSkillMinionSkill is the Minion Skill dropdown: srcInstance.skillMinionSkill..suffix = index.
+//
+//pob2:block:src/Modules/Build.lua:468-474
+//pob2:block:src/Classes/CalcsTab.lua:143-151
+func SetSkillMinionSkill(build *pob2.PathOfBuilding2, env *Environment, mainGroup int, calcs bool, index int) error {
+	_, gem, err := skillSelectActive(build, env, mainGroup, calcs)
+	if err != nil {
+		return err
+	}
+	if calcs {
+		gem.SkillMinionSkillCalcs = &index
+	} else {
+		gem.SkillMinionSkill = &index
+	}
+	return nil
+}
+
+// SetSkillMinionSkillStatSet is the Minion Skill Stat Set dropdown: the stat set of the selected minion skill, kept
+// per granted effect in srcInstance.skillMinionSkillStatSetIndexLookup..suffix.
+//
+//pob2:block:src/Modules/Build.lua:475-483
+//pob2:block:src/Classes/CalcsTab.lua:152-162
+func SetSkillMinionSkillStatSet(build *pob2.PathOfBuilding2, env *Environment, mainGroup int, calcs bool, index int) error {
+	activeSkill, gem, err := skillSelectActive(build, env, mainGroup, calcs)
+	if err != nil {
+		return err
+	}
+	if activeSkill.Minion == nil || len(activeSkill.Minion.ActiveSkillList) == 0 {
+		return errNoSocketGroup
+	}
+	grantedEffectID := activeSkill.ActiveEffect.GrantedEffect.ID
+	skillIndex := skillMinionSkillIndex(gem, calcs, len(activeSkill.Minion.ActiveSkillList))
+	lookups := minionSkillStatSetLookup(gem, calcs)
+	i := slices.IndexFunc(*lookups, func(l pob2.MinionSkillIndexLookup) bool { return l.GrantedEffect == grantedEffectID })
+	if i < 0 {
+		*lookups = append(*lookups, pob2.MinionSkillIndexLookup{GrantedEffect: grantedEffectID})
+		i = len(*lookups) - 1
+	}
+	lookup := &(*lookups)[i]
+	for j := range lookup.Maps {
+		if m := &lookup.Maps[j]; !m.SkillIndex.IsNil && m.SkillIndex.V == skillIndex {
+			m.StatSetIndex = pob2.Nil[int]{V: index}
+			return nil
+		}
+	}
+	lookup.Maps = append(lookup.Maps, pob2.MinionSkillIndexMap{SkillIndex: pob2.Nil[int]{V: skillIndex}, StatSetIndex: pob2.Nil[int]{V: index}})
+	return nil
 }
 
 // SetSkillStatSet is the Stat Set dropdown: srcInstance.statSet..suffix[grantedEffectId] = index.

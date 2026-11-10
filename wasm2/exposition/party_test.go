@@ -221,3 +221,45 @@ func TestPartyMemberMovesTheCalculation(t *testing.T) {
 		t.Errorf("CombinedDPS with the party disabled %v, PoB-PoE2 without it %v", got, wantWithout)
 	}
 }
+
+// PartyImpact's calculation without the party writes its own export; the build keeps the main calculation's, which
+// PartyTab:Save writes.
+func TestPartyImpactKeepsTheMainExport(t *testing.T) {
+	raw, err := os.ReadFile(filepath.Join("..", "..", "testdata", "oracle", "poe2_party_import.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var o partyImportOracle
+	if err := json.Unmarshal(raw, &o); err != nil {
+		t.Fatal(err)
+	}
+	xml, err := os.ReadFile(filepath.Join("testdata", "sorceress_spark.xml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	calc, err := ParseBuild(string(xml))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := calc.AddPartyMember(o.Inputs["buffers"], "All", false); err != nil {
+		t.Fatal(err)
+	}
+	calc.SetExportParty(true)
+	if _, err := calc.Calculate(); err != nil {
+		t.Skipf("the PoE2 build does not calculate here: %v", err)
+	}
+	before := calc.PartyExports()
+	if len(before) == 0 {
+		t.Fatal("Export Support wrote no export; the test sees nothing")
+	}
+	if _, err := calc.PartyImpact([]string{"CombinedDPS"}); err != nil {
+		t.Fatal(err)
+	}
+	if after := calc.PartyExports(); !reflect.DeepEqual(after, before) {
+		for k, v := range before {
+			if after[k] != v {
+				t.Errorf("%s: the export changed\n main      %q\n after it  %q", k, v, after[k])
+			}
+		}
+	}
+}

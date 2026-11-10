@@ -315,6 +315,48 @@ describe('the PoE2 Compare page', () => {
     ]);
   });
 
+  // CompareTab.lua:550-610, 2309-2329 (PoB-PoE2): each side's Stat Set, Show Minion Stats, Minion, Minion Skill and Minion
+  // Skill Stat Set; the lists and the minion's damage are PoB-PoE2's (oracle/poe2_calcs.lua)
+  it("sets each build's Calcs stat set and minion controls from the Calcs header", async () => {
+    const spectres = JSON.parse(await readFile(resolve(ORACLE, 'poe2_calcs_sorceress_spectres_second_minion.json'), 'utf8')) as {
+      output: Record<string, number>;
+      controls: { minions: string[]; statSets: string[] };
+    };
+    const brute = JSON.parse(await readFile(resolve(ORACLE, 'poe2_calcs_sorceress_skeletal_brute_minion_skill.json'), 'utf8')) as {
+      controls: { minionSkills: string[]; minionSkillStatSets: string[] };
+    };
+    const page = await open('sorceress_spectres.xml');
+    await compareCode(page, encode(await fixture('sorceress_skeletal_brute.xml')));
+    await page.findByRole('region', { name: 'Stat comparison' }, { timeout: 30_000 });
+    await fireEvent.click(page.getByRole('tab', { name: 'Calcs' }));
+    const header = await page.findByRole('group', { name: 'Calcs skill controls' }, { timeout: 10_000 });
+    const side = (i: number) => within(within(header).getAllByRole('group')[i]);
+    const select = (i: number, name: string) => side(i).getByRole<HTMLSelectElement>('combobox', { name });
+    expect([...select(0, 'Stat Set').options].map((o) => o.text)).toEqual(spectres.controls.statSets);
+    expect([...select(0, 'Minion').options].map((o) => o.text)).toEqual(spectres.controls.minions);
+    expect(side(0).queryByRole('button', { name: 'Manage Spectres...' })).toBeNull();
+
+    await fireEvent.click(side(0).getByRole('checkbox', { name: 'Show Minion Stats' }));
+    await waitFor(() => expect(issued).toContain('SetCalcsShowMinion'));
+    const minion = select(0, 'Minion');
+    minion.value = '1';
+    await fireEvent.change(minion);
+    await waitFor(() => expect(worker2Instance.CompareCalcsPages()?.a.output.TotalDPS).toBe(spectres.output.TotalDPS), { timeout: 10_000 });
+
+    const minionSkill = select(1, 'Minion Skill');
+    expect([...minionSkill.options].map((o) => o.text)).toEqual(brute.controls.minionSkills);
+    minionSkill.value = '1';
+    await fireEvent.change(minionSkill);
+    await waitFor(() => expect([...select(1, 'Minion Skill Stat Set').options].map((o) => o.text)).toEqual(brute.controls.minionSkillStatSets), {
+      timeout: 10_000
+    });
+    expect(issued.filter((c) => c.startsWith('SetCompareCalcs') || c.startsWith('SetCalcs'))).toEqual([
+      'SetCalcsShowMinion',
+      'SetCompareCalcsMinion',
+      'SetCompareCalcsControl'
+    ]);
+  });
+
   // CompareTab.lua (PoB-PoE2) is created with each build: its view lasts while the build stays open
   it('keeps the view across an edit and starts afresh with another build', async () => {
     const page = await open('sorceress_spark.xml');

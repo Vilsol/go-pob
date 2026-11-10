@@ -257,9 +257,50 @@ export type Poe2CalcsPage = {
   breakdowns: Record<string, CalcBreakdown>;
 };
 
-export type Poe2SkillSelect = Omit<calculator2.SkillSelectControls, 'Skills' | 'StatSets'> & { Skills: string[]; StatSets: string[] };
+export type Poe2SkillSelect = Omit<calculator2.SkillSelectControls, 'Skills' | 'StatSets' | 'Minions' | 'MinionSkills' | 'MinionSkillStatSets'> & {
+  Skills: string[];
+  StatSets: string[];
+  Minions: string[];
+  MinionSkills: string[];
+  MinionSkillStatSets: string[];
+};
 
-const skillSelectOf = (c: calculator2.SkillSelectControls): Poe2SkillSelect => ({ ...c, Skills: [...(c.Skills ?? [])], StatSets: [...(c.StatSets ?? [])] });
+export type CompareCalcsField =
+  | 'group'
+  | 'mode'
+  | 'showMinion'
+  | 'MainActiveSkill'
+  | 'StatSet'
+  | 'StageCount'
+  | 'MineCount'
+  | 'Minion'
+  | 'MinionSkill'
+  | 'MinionSkillStatSet';
+
+/* CompareTab.lua:494-616, 619-765 (PoB-PoE2): one Calcs header control of either build; an empty box clears its count */
+const compareCalcsControl = (c: exposition.Calculator, field: CompareCalcsField, value: number | string | boolean | undefined) => {
+  const n = value === undefined ? undefined : Number(value);
+  if (field === 'group') c.SetCalcsSkillNumber(Number(value));
+  else if (field === 'mode') c.SetCalcsBuffMode(String(value));
+  else if (field === 'showMinion') c.SetCalcsShowMinion(!!value);
+  else if (field === 'StageCount') c.SetSkillStageCount(true, n).unwrap();
+  else if (field === 'MineCount') c.SetSkillMineCount(true, n).unwrap();
+  else if (n === undefined) return;
+  else if (field === 'MainActiveSkill') c.SetMainActiveSkillCalcs(n).unwrap();
+  else if (field === 'StatSet') c.SetSkillStatSet(true, n).unwrap();
+  else if (field === 'Minion') c.SetCompareCalcsMinion(n).unwrap();
+  else if (field === 'MinionSkill') c.SetSkillMinionSkill(true, n).unwrap();
+  else c.SetSkillMinionSkillStatSet(true, n).unwrap();
+};
+
+const skillSelectOf = (c: calculator2.SkillSelectControls): Poe2SkillSelect => ({
+  ...c,
+  Skills: [...(c.Skills ?? [])],
+  StatSets: [...(c.StatSets ?? [])],
+  Minions: [...(c.Minions ?? [])],
+  MinionSkills: [...(c.MinionSkills ?? [])],
+  MinionSkillStatSets: [...(c.MinionSkillStatSets ?? [])]
+});
 
 /* ItemsTab:AddItemTooltip's title and mod line groups (PoB-PoE2) */
 export type Poe2Item = { id: number; rarity: string; name: string[]; lines: string[][] };
@@ -714,15 +755,18 @@ class PoB2Worker {
   }
 
   /* CompareTab.lua:620-718 (PoB-PoE2): a Calcs header control of the compared build */
-  async SetCompareCalcsControl(field: 'group' | 'mode' | 'showMinion' | 'MainActiveSkill', value: number | string | boolean): Promise<CompareInfo> {
+  async SetCompareCalcsControl(field: CompareCalcsField, value: number | string | boolean | undefined): Promise<CompareInfo> {
     const b = this.compareB;
     if (!b) return this.GetCompareInfo();
-    const c = b.calc;
-    if (field === 'group') c.SetCalcsSkillNumber(Number(value));
-    else if (field === 'mode') c.SetCalcsBuffMode(String(value));
-    else if (field === 'showMinion') c.SetCalcsShowMinion(!!value);
-    else c.SetMainActiveSkillCalcs(Number(value)).unwrap();
+    compareCalcsControl(b.calc, field, value);
     return this.compareEdited(b);
+  }
+
+  /* CompareTab.lua:556-573 (PoB-PoE2): the open build's Minion dropdown in the Calcs header */
+  async SetCompareCalcsMinion(index: number): Promise<Poe2Calc> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    this.calc.SetCompareCalcsMinion(index).unwrap();
+    return this.changed('SetGemSkillMinionCalcs');
   }
 
   /* CompareCalcsHelpers.lua:370-409 (PoB-PoE2): a build's SkillBuffs or SkillDebuffs panel in the Calcs header */
@@ -1030,6 +1074,26 @@ class PoB2Worker {
     if (!this.calc) throw new Error('no PoE2 build is open');
     this.calc.SetSkillMineCount(calcs, count).unwrap();
     return this.changed(calcs ? 'SetGemSkillMineCountCalcs' : 'SetGemSkillMineCount', `Set the mine count to ${count ?? 'its default'}`);
+  }
+
+  /* Build.lua:421-483 and CalcsTab.lua:107-162 (PoB-PoE2): the Minion, Minion Skill and Minion Skill Stat Set dropdowns
+     of the sidebar or the Calcs tab */
+  async SetSkillMinion(calcs: boolean, index: number): Promise<Poe2Calc> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    this.calc.SetSkillMinion(calcs, index).unwrap();
+    return this.changed(calcs ? 'SetGemSkillMinionCalcs' : 'SetGemSkillMinion');
+  }
+
+  async SetSkillMinionSkill(calcs: boolean, index: number): Promise<Poe2Calc> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    this.calc.SetSkillMinionSkill(calcs, index).unwrap();
+    return this.changed(calcs ? 'SetGemSkillMinionSkillCalcs' : 'SetGemSkillMinionSkill');
+  }
+
+  async SetSkillMinionSkillStatSet(calcs: boolean, index: number): Promise<Poe2Calc> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    this.calc.SetSkillMinionSkillStatSet(calcs, index).unwrap();
+    return this.changed(calcs ? 'SetGemMinionSkillStatSetCalcs' : 'SetGemMinionSkillStatSet');
   }
 
   /* CalcsTab.lua:218-233 (PoB-PoE2): each subsection's saved collapsed state, null where the build saved none */
@@ -1847,6 +1911,12 @@ class PoB2Worker {
   BuildPlannerExport(meta: exposition.BuildPlannerMeta, specIndex: number, skillSetId: number, itemSetId: number): exposition.BuildPlannerFile {
     if (!this.calc) throw new Error('no PoE2 build is open');
     return this.calc.BuildPlannerExport(meta, specIndex, skillSetId, itemSetId).unwrap();
+  }
+
+  /* BuildExportPoE2.lua:264-282, 330-366 (PoB-PoE2): a .build file per loadout, named after the picked tree's file */
+  BuildPlannerExportAll(meta: exposition.BuildPlannerMeta, specIndex: number): exposition.BuildPlannerExportAll {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    return this.calc.BuildPlannerExportAll(meta, specIndex).unwrap();
   }
 
   /* ItemsTab.lua:2232-2246 (PoB-PoE2): the editor's affix drop-downs, prefixes first */

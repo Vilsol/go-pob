@@ -41,21 +41,40 @@
   });
   const options = (list?: exposition.BuildPlannerSet[]) => (list ?? []).map((s) => ({ value: String(s.Key), label: s.Label }));
 
-  // ImportTab.lua:413-435, 484-491
+  // ImportTab.lua:484-491
+  const metadata = () => ({
+    Name: buildName || BUILD_PLANNER_NAME,
+    Author: author || BUILD_PLANNER_AUTHOR,
+    Description: description,
+    UseGeneratedItemText: useGeneratedItemText
+  });
+
+  // ImportTab.lua:413-435
   const onexport = () => {
     error = undefined;
     saved = undefined;
-    const meta = {
-      Name: buildName || BUILD_PLANNER_NAME,
-      Author: author || BUILD_PLANNER_AUTHOR,
-      Description: description,
-      UseGeneratedItemText: useGeneratedItemText
-    };
+    savedAll = undefined;
+    const meta = metadata();
     poe2Worker()
       .then((w) => w.BuildPlannerExport(meta, Number(spec), Number(skillSet), Number(itemSet)))
       .then((file) => {
         saveBuildFile(file.FileName, file.JSON);
         saved = file.FileName;
+      })
+      .catch((err: unknown) => (error = err instanceof Error ? err.message : String(err)));
+  };
+
+  // ImportTab.lua:440-476: one file per loadout, each named after the file the picked tree would take
+  let savedAll = $state<{ written: string[]; errors: string[] }>();
+  const onexportall = () => {
+    error = undefined;
+    saved = undefined;
+    savedAll = undefined;
+    poe2Worker()
+      .then((w) => w.BuildPlannerExportAll(metadata(), Number(spec)))
+      .then((all) => {
+        for (const file of all.Files ?? []) saveBuildFile(file.FileName, file.JSON);
+        savedAll = { written: (all.Files ?? []).map((f) => f.FileName), errors: [...(all.Errors ?? [])] };
       })
       .catch((err: unknown) => (error = err instanceof Error ? err.message : String(err)));
   };
@@ -79,13 +98,18 @@
     bind:checked={useGeneratedItemText}
     title="For items without a note, generate a note that contains the current mods, item name and item base">Generated text for empty item notes</Checkbox>
   <Field label="Description"><Textarea class="h-16 p-2 text-13" bind:value={description} /></Field>
-  <Button
-    size="md"
-    variant="primary"
-    class="self-start"
-    disabled={!sets}
-    title="Writes a single file containing the three sets picked above."
-    onclick={onexport}>Export Selected Sets</Button>
+  <div class="flex flex-wrap gap-2">
+    <Button size="md" variant="primary" disabled={!sets} title="Writes a single file containing the three sets picked above." onclick={onexport}
+      >Export Selected Sets</Button>
+    <Button size="md" disabled={!sets} title="Exports one file per loadout. The loadout name is appended to each filename." onclick={onexportall}
+      >Export All Loadouts</Button>
+  </div>
+  {#if savedAll}
+    <InlineMessage kind={savedAll.errors.length ? 'error' : 'success'}>
+      <span class="whitespace-pre-line"
+        >{`Wrote ${savedAll.written.length} file(s):\n${savedAll.written.join('\n')}`}{#if savedAll.errors.length}{`\n\n${savedAll.errors.length} failed:\n${savedAll.errors.join('\n')}`}{/if}</span>
+    </InlineMessage>
+  {/if}
   {#if error}<InlineMessage kind="error">Couldn't save the build file: {error}</InlineMessage>{/if}
   {#if saved}<InlineMessage kind="success">Build file exported: {saved}</InlineMessage>{/if}
 </section>

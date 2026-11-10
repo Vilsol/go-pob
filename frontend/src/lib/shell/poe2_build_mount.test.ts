@@ -352,6 +352,46 @@ describe('the PoE2 config and main skill writes', () => {
     await vi.waitFor(() => expect(get(poe2Engine.mainSkill)?.StageCount).toBe('4'));
     expect(worker2Instance.Serialize()).toMatch(/nameSpec="Flameblast"[^>]* skillStageCount="4"/);
   }, 120_000);
+
+  // Build.lua:382-389, 2103-2109 (PoB-PoE2): the sidebar's Stat Set dropdown writes the main skill's statSet; the list
+  // is PoB-PoE2's (oracle/poe2_calcs.lua)
+  it("picks the main skill's stat set", async () => {
+    const oracle = JSON.parse(await readFile(resolve(ORACLE, 'poe2_calcs_sorceress_spark.json'), 'utf8')) as {
+      sidebarControls: { statSets: string[]; statSetEnabled: boolean };
+    };
+    poe2Build.set(await worker2Instance.Open(await fixture('sorceress_spark.xml')));
+    issued.length = 0;
+    const page = render(AppSidebar);
+    const box = within(page.getByRole('complementary', { name: 'Main skill and stats' }));
+    const statSet = await vi.waitFor(() => box.getByRole<HTMLSelectElement>('combobox', { name: 'Stat set' }));
+    expect([...statSet.options].map((o) => o.text)).toEqual(oracle.sidebarControls.statSets);
+    expect(statSet.disabled).toBe(!oracle.sidebarControls.statSetEnabled);
+    statSet.value = '2';
+    await fireEvent.change(statSet);
+    await vi.waitFor(() => expect(issued).toEqual(['SetSkillStatSet(false,2)']));
+    await vi.waitFor(() => expect(get(poe2Engine.mainSkill)?.StatSet).toBe(2));
+    expect(worker2Instance.Serialize()).toMatch(/<StatSetIndex [^>]*index="2"/);
+  }, 120_000);
+
+  // Build.lua:2132-2187 (PoB-PoE2): the sidebar's minion dropdowns; the lists are PoB-PoE2's (oracle/poe2_calcs.lua)
+  it("shows the main skill's minion, minion skill and minion skill stat set", async () => {
+    const oracle = JSON.parse(await readFile(resolve(ORACLE, 'poe2_calcs_sorceress_skeletal_brute_minion_skill.json'), 'utf8')) as {
+      sidebarControls: { minions: string[]; minionSkills: string[]; minionSkillStatSets: string[] };
+    };
+    poe2Build.set(await worker2Instance.Open(await fixture('sorceress_skeletal_brute.xml')));
+    issued.length = 0;
+    const page = render(AppSidebar);
+    const box = within(page.getByRole('complementary', { name: 'Main skill and stats' }));
+    const options = (name: string) => [...box.getByRole<HTMLSelectElement>('combobox', { name }).options].map((o) => o.text);
+    await vi.waitFor(() => expect(options('Minion')).toEqual(oracle.sidebarControls.minions));
+    expect(options('Minion skill')).toEqual(oracle.sidebarControls.minionSkills);
+    expect(options('Minion skill stat set')).toEqual(oracle.sidebarControls.minionSkillStatSets);
+    const skill = box.getByRole<HTMLSelectElement>('combobox', { name: 'Minion skill' });
+    skill.value = '2';
+    await fireEvent.change(skill);
+    await vi.waitFor(() => expect(issued).toEqual(['SetSkillMinionSkill(false,2)']));
+    expect(worker2Instance.Serialize()).toMatch(/nameSpec="Skeletal Brute"[^>]* skillMinionSkill="2"/);
+  }, 120_000);
 });
 
 // TreeTab.lua:355-364, SkillsTab.lua:594-599 (PoB-PoE2): the tabs' own undo binds the keys only when no whole-build
@@ -713,6 +753,60 @@ describe('the PoE2 Calcs page', () => {
     await vi.waitFor(() => expect([...lifeOf().querySelectorAll<HTMLElement>('[data-key]')].flatMap((r) => cells(r))).toEqual(want));
     expect(show.checked).toBe(true);
     expect(issued).toContain('SetCalcsShowMinion(true)');
+  }, 120_000);
+
+  // CalcsTab.lua:107-132 and Build.lua:2132-2167 (PoB-PoE2): the Minion dropdown lists the build's spectres and picks the
+  // one the minion's sections show; the values are PoB-PoE2's (oracle/poe2_calcs.lua with showMinion=true minionCalcs=2)
+  it("picks the Calcs tab's minion", async () => {
+    const oracle = JSON.parse(await readFile(resolve(ORACLE, 'poe2_calcs_sorceress_spectres_second_minion.json'), 'utf8')) as {
+      output: Record<string, number>;
+      controls: { minions: string[] };
+    };
+    poe2Build.set(await worker2Instance.Open(await fixture('sorceress_spectres.xml')));
+    issued.length = 0;
+    const page = render(AppCalcs);
+    await vi.waitFor(() => within(page.getByRole('region', { name: 'Calculations' })).getByRole('region', { name: 'Life' }), { timeout: 60_000 });
+    await fireEvent.click(await vi.waitFor(() => within(page.container).getByRole<HTMLInputElement>('checkbox', { name: 'Show Minion Stats' })));
+    const minion = await vi.waitFor(() => {
+      const box = within(page.container).getByRole<HTMLSelectElement>('combobox', { name: 'Minion' });
+      expect([...box.options].map((o) => o.text)).toEqual(oracle.controls.minions);
+      return box;
+    });
+    expect(minion.disabled).toBe(false);
+    minion.value = '2';
+    await fireEvent.change(minion);
+    await vi.waitFor(() => expect(worker2Instance.CalcsPage().output.TotalDPS).toBe(oracle.output.TotalDPS));
+    await vi.waitFor(() => expect(minion.value).toBe('2'));
+    expect(issued.filter((c) => c.startsWith('Set'))).toEqual(['SetCalcsShowMinion(true)', 'SetSkillMinion(true,2)']);
+  }, 120_000);
+
+  // CalcsTab.lua:143-162 and Build.lua:2170-2187 (PoB-PoE2): the Minion Skill dropdown, and the stat sets of the minion
+  // skill it picked; the lists are PoB-PoE2's (oracle/poe2_calcs.lua with minionSkillCalcs=2 minionSkillStatSetCalcs=2)
+  it("picks the Calcs tab's minion skill and its stat set", async () => {
+    const oracle = JSON.parse(await readFile(resolve(ORACLE, 'poe2_calcs_sorceress_skeletal_brute_minion_skill.json'), 'utf8')) as {
+      controls: { minionSkills: string[]; minionSkillStatSets: string[] };
+    };
+    poe2Build.set(await worker2Instance.Open(await fixture('sorceress_skeletal_brute.xml')));
+    issued.length = 0;
+    const page = render(AppCalcs);
+    await vi.waitFor(() => within(page.getByRole('region', { name: 'Calculations' })).getByRole('region', { name: 'Life' }), { timeout: 60_000 });
+    const skill = await vi.waitFor(() => {
+      const box = within(page.container).getByRole<HTMLSelectElement>('combobox', { name: 'Minion Skill' });
+      expect([...box.options].map((o) => o.text)).toEqual(oracle.controls.minionSkills);
+      return box;
+    });
+    skill.value = '2';
+    await fireEvent.change(skill);
+    const statSet = await vi.waitFor(() => {
+      const box = within(page.container).getByRole<HTMLSelectElement>('combobox', { name: 'Minion Skill Stat Set' });
+      expect([...box.options].map((o) => o.text)).toEqual(oracle.controls.minionSkillStatSets);
+      return box;
+    });
+    expect(statSet.disabled).toBe(false);
+    statSet.value = '2';
+    await fireEvent.change(statSet);
+    await vi.waitFor(() => expect(statSet.value).toBe('2'));
+    expect(issued.filter((c) => c.startsWith('Set'))).toEqual(['SetSkillMinionSkill(true,2)', 'SetSkillMinionSkillStatSet(true,2)']);
   }, 120_000);
 
   // CalcSectionControl.lua:34, 49-55 and CalcsTab.lua:218-233, 252-260 (PoB-PoE2): a section's toggle is saved with

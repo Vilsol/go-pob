@@ -1,5 +1,6 @@
 -- usage (from PoB-PoE2's src/): luajit poe2_calcs.lua <build.xml> <out.json> [skill_number=<n>] [misc_buffMode=<mode>]
 --   [mainActiveSkillCalcs=<n>] [statSetCalcs=<n>] [skillStageCountCalcs=<n>] [showMinion=true]
+--   [minionCalcs=<n>] [minionSkillCalcs=<n>] [minionSkillStatSetCalcs=<n>]
 -- Records the Calcs tab PoB-PoE2 draws for a build over its CALCS calculation, after setting the tab's inputs and the
 -- shown socket group's active skill the arguments name: the actor's number, true and string outputs
 -- (and its MainHand and OffHand tables'),
@@ -22,6 +23,13 @@ loadBuildFromXML(xml)
 runCallback("OnFrame")
 
 local calcsTab = build.calcsTab
+local function calcsSkillSelect()
+	for _, section in ipairs(calcsTab.sectionList) do
+		if section.id == "SkillSelect" then
+			return section
+		end
+	end
+end
 local set = {}
 for i = 3, #arg do
 	local k, v = arg[i]:match("^([%w_]+)=(.*)$")
@@ -59,6 +67,19 @@ if next(set) then
 	end
 	build.buildFlag = true
 	runCallback("OnFrame")
+	-- CalcsTab.lua:107-162: the Minion, Minion Skill and Minion Skill Stat Set dropdowns, each picked after the
+	-- calculation that listed it
+	for _, name in ipairs({ "minionCalcs", "minionSkillCalcs", "minionSkillStatSetCalcs" }) do
+		if set[name] then
+			local controls = calcsSkillSelect().controls
+			build:RefreshSkillSelectControls(controls, calcsTab.input.skill_number, "Calcs")
+			local control = ({ minionCalcs = controls.mainSkillMinion, minionSkillCalcs = controls.mainSkillMinionSkill, minionSkillStatSetCalcs = controls.mainSkillMinionSkillStatSet })[name]
+			local index = tonumber(set[name])
+			control.selFunc(index, control.list[index])
+			build.buildFlag = true
+			runCallback("OnFrame")
+		end
+	end
 end
 local player = calcsTab.calcsEnv.player
 local actor = calcsTab.input.showMinion and calcsTab.calcsEnv.minion or player
@@ -77,14 +98,25 @@ local function selectControls(controls)
 		statSets = list(controls.statSet), statSet = controls.statSet.selIndex, statSetShown = controls.statSet.shown, statSetEnabled = controls.statSet.enabled,
 		partShown = controls.mainSkillPart.shown, stageShown = controls.mainSkillStageCount.shown, stageCount = controls.mainSkillStageCount.buf,
 		mineShown = controls.mainSkillMineCount.shown, mineCount = controls.mainSkillMineCount.buf,
+		minionShown = controls.mainSkillMinion.shown == true,
+		minions = controls.mainSkillMinion.shown == true and list(controls.mainSkillMinion) or nil,
+		minion = controls.mainSkillMinion.shown == true and controls.mainSkillMinion.selIndex or nil,
+		minionEnabled = controls.mainSkillMinion.enabled == true,
+		minionLibraryShown = controls.mainSkillMinionLibrary.shown and true or false,
+		beastLibraryShown = controls.mainSkillBeastLibrary.shown and true or false,
+		minionSkillShown = controls.mainSkillMinionSkill.shown == true,
+		minionSkills = controls.mainSkillMinionSkill.shown == true and list(controls.mainSkillMinionSkill) or nil,
+		minionSkill = controls.mainSkillMinionSkill.shown == true and controls.mainSkillMinionSkill.selIndex or nil,
+		minionSkillEnabled = controls.mainSkillMinionSkill.enabled == true,
+		minionSkillStatSetShown = controls.mainSkillMinionSkillStatSet.shown == true,
+		minionSkillStatSets = controls.mainSkillMinionSkillStatSet.shown == true and list(controls.mainSkillMinionSkillStatSet) or nil,
+		minionSkillStatSet = controls.mainSkillMinionSkillStatSet.shown == true and controls.mainSkillMinionSkillStatSet.selIndex or nil,
+		minionSkillStatSetEnabled = controls.mainSkillMinionSkillStatSet.enabled == true,
 	}
 end
-local skillSelect
-for _, section in ipairs(calcsTab.sectionList) do
-	if section.id == "SkillSelect" then
-		skillSelect = section
-	end
-end
+local skillSelect = calcsSkillSelect()
+-- CalcsTab.lua:181-185 run every frame: the check box state the refresh reads is the one the last frame left
+skillSelect.controls.showMinion.state = calcsTab.input.showMinion
 build:RefreshSkillSelectControls(skillSelect.controls, calcsTab.input.skill_number, "Calcs")
 local controls = selectControls(skillSelect.controls)
 controls.haveMinion = calcsTab:CheckFlag({ flag = "haveMinion" }, player, player) and true or false

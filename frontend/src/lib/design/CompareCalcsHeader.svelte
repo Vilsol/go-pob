@@ -70,6 +70,19 @@
             >{#each c.Skills as l, k (k)}<option value={String(k)}>{l}</option>{/each}</Select
           ></Field>
       {/if}
+      {#if c?.StatSetShown}
+        <!-- CompareTab.lua:601-610 (PoB-PoE2) -->
+        <Field label="Stat Set:" inline>
+          <Select
+            size="xs"
+            class="max-w-60"
+            aria-label="Stat Set"
+            disabled={!c.StatSetEnabled}
+            value={String((c.StatSet ?? 1) - 1)}
+            onchange={(e: Event & { currentTarget: HTMLSelectElement }) => oncontrol(side, 'StatSet', Number(e.currentTarget.value) + 1)}
+            >{#each c.StatSets ?? [] as l, k (k)}<option value={String(k)}>{l}</option>{/each}</Select
+          ></Field>
+      {/if}
       {#if c?.PartShown}
         <Field label="Skill Part:" inline>
           <Select
@@ -125,6 +138,19 @@
             value={String(c.MinionSkill - 1)}
             onchange={(e: Event & { currentTarget: HTMLSelectElement }) => oncontrol(side, 'MinionSkill', Number(e.currentTarget.value) + 1)}
             >{#each c.MinionSkills ?? [] as l, k (k)}<option value={String(k)}>{l}</option>{/each}</Select
+          ></Field>
+      {/if}
+      {#if c?.MinionSkillStatSetShown}
+        <!-- CompareTab.lua:589-599 (PoB-PoE2) -->
+        <Field label="Minion Skill Stat Set:" inline>
+          <Select
+            size="xs"
+            class="max-w-60"
+            aria-label="Minion Skill Stat Set"
+            disabled={!c.MinionSkillStatSetEnabled}
+            value={String((c.MinionSkillStatSet ?? 1) - 1)}
+            onchange={(e: Event & { currentTarget: HTMLSelectElement }) => oncontrol(side, 'MinionSkillStatSet', Number(e.currentTarget.value) + 1)}
+            >{#each c.MinionSkillStatSets ?? [] as l, k (k)}<option value={String(k)}>{l}</option>{/each}</Select
           ></Field>
       {/if}
       <Field label="Calc Mode:" inline>

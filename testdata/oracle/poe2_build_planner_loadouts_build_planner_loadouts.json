@@ -1,0 +1,187 @@
+{
+  "cases":[{
+      "errors":[],
+      "files":[{
+          "build":{
+            "author":"Author",
+            "description":"",
+            "inventory_slots":[{
+                "slot_x":0,
+                "additional_text":"Heavy Belt",
+                "inventory_id":"Belt1"
+              },{
+                "slot_x":0,
+                "additional_text":"<rgb(255, 255, 119)>{<b>{Storm Shell\nVaal Cuirass}}\n\n<rgb(184, 218, 241)>{Bonded: +20 to maximum Life}\n<rgb(184, 218, 241)>{Bonded: +20 to maximum Mana}\n<rgb(184, 218, 241)>{+14% to Fire Resistance}\n<rgb(162, 145, 96)>{85% increased Armour}\n<rgb(136, 136, 255)>{+120 to Armour}\n<rgb(136, 136, 255)>{+90 to maximum Life}\n<rgb(136, 136, 255)>{+18% to Cold Resistance}\n<rgb(184, 218, 241)>{+35% to Fire Resistance}",
+                "inventory_id":"BodyArmour1"
+              },{
+                "slot_x":0,
+                "additional_text":"<rgb(200, 200, 200)>{<b>{Twig Focus}}\n",
+                "inventory_id":"Offhand1"
+              },{
+                "slot_x":0,
+                "additional_text":"Any {resistance} ring",
+                "inventory_id":"Ring1"
+              },{
+                "slot_x":0,
+                "additional_text":"<rgb(136, 136, 255)>{<b>{Withered Wand of the Spark}}\n\n<rgb(136, 136, 255)>{+1 to Level of all Lightning Spell Skills}",
+                "inventory_id":"Weapon1"
+              },{
+                "slot_x":0,
+                "additional_text":"<rgb(255, 255, 119)>{<b>{Glyph Pillar\nAshen Staff}}\n\n<rgb(136, 136, 255)>{+2 to Level of all Spell Skills}\n<rgb(136, 136, 255)>{45% increased Spell Damage}",
+                "inventory_id":"Weapon2"
+              }],
+            "name":"Planner build - Leveling",
+            "passives":[{
+                "id":"spells18",
+                "weapon_set":1
+              },{
+                "id":"witch595",
+                "weapon_set":0
+              }],
+            "skills":[{
+                "support_skills":["Metadata/Items/Gems/SupportGemArcaneTempo",{
+                    "id":"Metadata/Items/Gems/SupportGemArcaneTempo",
+                    "additional_text":"Level 1, 10% Quality"
+                  }],
+                "id":"Metadata/Items/Gems/SkillGemSpark",
+                "additional_text":"Level 10, 5% Quality"
+              }]
+          },
+          "fileName":"Planner build - Leveling [0.5].build"
+        },{
+          "build":{
+            "ascendancy":"Sorceress1",
+            "author":"Author",
+            "description":"",
+            "inventory_slots":[{
+                "slot_x":0,
+                "additional_text":"<rgb(255, 255, 119)>{<b>{Glyph Pillar\nAshen Staff}}\n\n<rgb(136, 136, 255)>{+2 to Level of all Spell Skills}\n<rgb(136, 136, 255)>{45% increased Spell Damage}",
+                "inventory_id":"Weapon1"
+              }],
+            "name":"Planner build - Endgame",
+            "passives":[{
+                "id":"AscendancySorceress1Start_",
+                "weapon_set":0
+              },{
+                "id":"witch595",
+                "weapon_set":0
+              }],
+            "skills":[{
+                "support_skills":[{
+                    "id":"Metadata/Items/Gems/SupportGemArcaneTempo",
+                    "additional_text":"Early"
+                  }],
+                "id":"Metadata/Items/Gem/SkillGemFireball",
+                "additional_text":"Swap to Spark at 20"
+              }]
+          },
+          "fileName":"Planner build - Endgame {2} [0.5].build"
+        }],
+      "loadouts":[{
+          "fileName":"Leveling",
+          "itemSetId":1,
+          "name":"Leveling",
+          "skillSetId":1,
+          "specIndex":1
+        },{
+          "fileName":"Endgame {2}",
+          "itemSetId":2,
+          "name":"Endgame",
+          "skillSetId":2,
+          "specIndex":2
+        }],
+      "specIndex":1
+    },{
+      "errors":[],
+      "files":[{
+          "build":{
+            "author":"Author",
+            "description":"",
+            "inventory_slots":[{
+                "slot_x":0,
+                "additional_text":"Heavy Belt",
+                "inventory_id":"Belt1"
+              },{
+                "slot_x":0,
+                "additional_text":"<rgb(255, 255, 119)>{<b>{Storm Shell\nVaal Cuirass}}\n\n<rgb(184, 218, 241)>{Bonded: +20 to maximum Life}\n<rgb(184, 218, 241)>{Bonded: +20 to maximum Mana}\n<rgb(184, 218, 241)>{+14% to Fire Resistance}\n<rgb(162, 145, 96)>{85% increased Armour}\n<rgb(136, 136, 255)>{+120 to Armour}\n<rgb(136, 136, 255)>{+90 to maximum Life}\n<rgb(136, 136, 255)>{+18% to Cold Resistance}\n<rgb(184, 218, 241)>{+35% to Fire Resistance}",
+                "inventory_id":"BodyArmour1"
+              },{
+                "slot_x":0,
+                "additional_text":"<rgb(200, 200, 200)>{<b>{Twig Focus}}\n",
+                "inventory_id":"Offhand1"
+              },{
+                "slot_x":0,
+                "additional_text":"Any {resistance} ring",
+                "inventory_id":"Ring1"
+              },{
+                "slot_x":0,
+                "additional_text":"<rgb(136, 136, 255)>{<b>{Withered Wand of the Spark}}\n\n<rgb(136, 136, 255)>{+1 to Level of all Lightning Spell Skills}",
+                "inventory_id":"Weapon1"
+              },{
+                "slot_x":0,
+                "additional_text":"<rgb(255, 255, 119)>{<b>{Glyph Pillar\nAshen Staff}}\n\n<rgb(136, 136, 255)>{+2 to Level of all Spell Skills}\n<rgb(136, 136, 255)>{45% increased Spell Damage}",
+                "inventory_id":"Weapon2"
+              }],
+            "name":"Planner build - Leveling",
+            "passives":[{
+                "id":"spells18",
+                "weapon_set":1
+              },{
+                "id":"witch595",
+                "weapon_set":0
+              }],
+            "skills":[{
+                "support_skills":["Metadata/Items/Gems/SupportGemArcaneTempo",{
+                    "id":"Metadata/Items/Gems/SupportGemArcaneTempo",
+                    "additional_text":"Level 1, 10% Quality"
+                  }],
+                "id":"Metadata/Items/Gems/SkillGemSpark",
+                "additional_text":"Level 10, 5% Quality"
+              }]
+          },
+          "fileName":"Planner build - Leveling [0.5].build"
+        },{
+          "build":{
+            "ascendancy":"Sorceress1",
+            "author":"Author",
+            "description":"",
+            "inventory_slots":[{
+                "slot_x":0,
+                "additional_text":"<rgb(255, 255, 119)>{<b>{Glyph Pillar\nAshen Staff}}\n\n<rgb(136, 136, 255)>{+2 to Level of all Spell Skills}\n<rgb(136, 136, 255)>{45% increased Spell Damage}",
+                "inventory_id":"Weapon1"
+              }],
+            "name":"Planner build - Endgame",
+            "passives":[{
+                "id":"AscendancySorceress1Start_",
+                "weapon_set":0
+              },{
+                "id":"witch595",
+                "weapon_set":0
+              }],
+            "skills":[{
+                "support_skills":[{
+                    "id":"Metadata/Items/Gems/SupportGemArcaneTempo",
+                    "additional_text":"Early"
+                  }],
+                "id":"Metadata/Items/Gem/SkillGemFireball",
+                "additional_text":"Swap to Spark at 20"
+              }]
+          },
+          "fileName":"Planner build - Endgame {2} [0.5].build"
+        }],
+      "loadouts":[{
+          "fileName":"Leveling",
+          "itemSetId":1,
+          "name":"Leveling",
+          "skillSetId":1,
+          "specIndex":1
+        },{
+          "fileName":"Endgame {2}",
+          "itemSetId":2,
+          "name":"Endgame",
+          "skillSetId":2,
+          "specIndex":2
+        }],
+      "specIndex":2
+    }]
+}

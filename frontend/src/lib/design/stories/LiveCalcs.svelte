@@ -19,8 +19,11 @@
   bind:showAll={s.showAll}
   bind:q={s.q}
   onmaingroup={(i: number) => (s.group = i)}
-  oncontrol={(key: 'MainActiveSkill' | 'StatSet' | 'SkillPart' | 'StageCount' | 'MineCount' | 'Minion' | 'MinionSkill', value: number | undefined) => {
-    if (!s.controls || key === 'StatSet') return;
+  oncontrol={(
+    key: 'MainActiveSkill' | 'StatSet' | 'SkillPart' | 'StageCount' | 'MineCount' | 'Minion' | 'MinionSkill' | 'MinionSkillStatSet',
+    value: number | undefined
+  ) => {
+    if (!s.controls || key === 'StatSet' || key === 'MinionSkillStatSet') return;
     if (key === 'StageCount' || key === 'MineCount') s.controls[key] = value === undefined ? '' : String(value);
     else if (value !== undefined) s.controls[key] = value;
   }}

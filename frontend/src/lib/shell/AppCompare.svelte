@@ -26,7 +26,7 @@
   import { get } from 'svelte/store';
   import { buildOpens, buildRevision, currentBuild, currentBuildPath, outputs, poe2Build, poe2Session } from '$lib/global.js';
   import { game } from '$lib/go/engine';
-  import { poe2Run, poe2Worker } from '$lib/go/engine_poe2.svelte';
+  import { poe2Run, poe2Worker, skillSelect2 } from '$lib/go/engine_poe2.svelte';
   import { compareCalcs2, compareFixture2, itemTip2, powerRows2, rowItem2, withPower2, type Poe2CompareSides, type Poe2Power } from './compare_poe2';
   import type { Poe2Calc } from '$lib/go/sync_worker2';
   import { decodeCode, rootElement } from '$lib/go/game_detect';
@@ -399,9 +399,9 @@
         groups: (view.socketGroups ?? []).map((g) => g.label),
         skillNumber: page.inputs.skillNumber,
         buffMode: page.inputs.buffMode,
-        controls: page.skills.length
-          ? ({ Skills: page.skills, SkillEnabled: page.skills.length > 1, MainActiveSkill: page.mainActiveSkill } as calculator.MainSkillControls)
-          : undefined,
+        // CompareTab.lua:2309-2329 (PoB-PoE2): RefreshSkillSelectControls with the "Calcs" suffix and no library buttons
+        showMinion: page.controls.MinionShown ? page.inputs.showMinion : undefined,
+        controls: page.skills.length ? { ...skillSelect2(page.controls), MinionLibraryShown: false, BeastLibraryShown: false } : undefined,
         info: [
           { label: 'Aura/Buff Skills', text: page.strings.BuffList ?? '' },
           { label: 'Combat Buffs', text: page.strings.CombatList ?? '' },
@@ -413,7 +413,9 @@
     return {
       sides: [side(order[0]), side(order[1])] as [CalcsHeaderSide, CalcsHeaderSide],
       oncontrol: (shown: 0 | 1, field: CalcsHeaderField, value: number | string | boolean | undefined) => {
-        if (value === undefined || (field !== 'group' && field !== 'mode' && field !== 'MainActiveSkill')) return;
+        // PoE2's skill data has no multipart skill
+        if (field === 'SkillPart' || (value === undefined && field !== 'StageCount' && field !== 'MineCount')) return;
+        const n = value === undefined ? undefined : Number(value);
         if (order[shown] === 'b')
           void poe2Worker()
             .then((w) => w.SetCompareCalcsControl(field, value))
@@ -421,7 +423,15 @@
             .catch(logError);
         else if (field === 'group') void poe2Run((w) => w.SetCalcsSkillNumber(Number(value)));
         else if (field === 'mode') void poe2Run((w) => w.SetCalcsBuffMode(String(value)));
-        else void poe2Run((w) => w.SetMainActiveSkillCalcs(Number(value)));
+        else if (field === 'showMinion') void poe2Run((w) => w.SetCalcsShowMinion(!!value));
+        else if (field === 'StageCount') void poe2Run((w) => w.SetSkillStageCount(true, n));
+        else if (field === 'MineCount') void poe2Run((w) => w.SetSkillMineCount(true, n));
+        else if (n === undefined) return;
+        else if (field === 'StatSet') void poe2Run((w) => w.SetSkillStatSet(true, n));
+        else if (field === 'Minion') void poe2Run((w) => w.SetCompareCalcsMinion(n));
+        else if (field === 'MinionSkill') void poe2Run((w) => w.SetSkillMinionSkill(true, n));
+        else if (field === 'MinionSkillStatSet') void poe2Run((w) => w.SetSkillMinionSkillStatSet(true, n));
+        else void poe2Run((w) => w.SetMainActiveSkillCalcs(n));
       },
       breakdown: async (shown: 0 | 1, name: string) => (await poe2Worker()).CompareSkillBreakdown(order[shown], name)
     };

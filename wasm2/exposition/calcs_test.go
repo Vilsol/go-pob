@@ -28,6 +28,35 @@ type skillSelectOracle struct {
 	StageShown      bool     `json:"stageShown"`
 	MineShown       bool     `json:"mineShown"`
 	HaveMinion      bool     `json:"haveMinion"`
+
+	Minions                   []string `json:"minions"`
+	MinionSkills              []string `json:"minionSkills"`
+	MinionSkillStatSets       []string `json:"minionSkillStatSets"`
+	Minion                    int      `json:"minion"`
+	MinionSkill               int      `json:"minionSkill"`
+	MinionSkillStatSet        int      `json:"minionSkillStatSet"`
+	MinionShown               bool     `json:"minionShown"`
+	MinionEnabled             bool     `json:"minionEnabled"`
+	MinionLibraryShown        bool     `json:"minionLibraryShown"`
+	BeastLibraryShown         bool     `json:"beastLibraryShown"`
+	MinionSkillShown          bool     `json:"minionSkillShown"`
+	MinionSkillEnabled        bool     `json:"minionSkillEnabled"`
+	MinionSkillStatSetShown   bool     `json:"minionSkillStatSetShown"`
+	MinionSkillStatSetEnabled bool     `json:"minionSkillStatSetEnabled"`
+}
+
+// shownOnly drops what a hidden dropdown keeps from an earlier refresh.
+func (o skillSelectOracle) shownOnly() skillSelectOracle {
+	if !o.MinionShown {
+		o.MinionEnabled = false
+	}
+	if !o.MinionSkillShown {
+		o.MinionSkillEnabled = false
+	}
+	if !o.MinionSkillStatSetShown {
+		o.MinionSkillStatSetEnabled = false
+	}
+	return o
 }
 
 type calcsOracle struct {
@@ -59,6 +88,14 @@ type calcsInputFixture struct {
 	statSet         int
 	stageCount      int
 	showMinion      bool
+	// minion, minionSkill and minionSkillStatSet are picked in that order, each after the calculation that listed it.
+	minion             int
+	minionSkill        int
+	minionSkillStatSet int
+}
+
+func (f calcsInputFixture) minionPicks() bool {
+	return f.minion != 0 || f.minionSkill != 0 || f.minionSkillStatSet != 0
 }
 
 var calcsInputFixtures = []calcsInputFixture{
@@ -68,6 +105,8 @@ var calcsInputFixtures = []calcsInputFixture{
 	{name: "sorceress_three_spells_fireball_explosion", xml: "sorceress_three_spells", skillNumber: 1, mainActiveSkill: 2, statSet: 2},
 	{name: "sorceress_flameblast_stages", xml: "sorceress_flameblast", stageCount: 5},
 	{name: "sorceress_raise_zombie_minion", xml: "sorceress_raise_zombie", showMinion: true},
+	{name: "sorceress_skeletal_brute_minion_skill", xml: "sorceress_skeletal_brute", minionSkill: 2, minionSkillStatSet: 2},
+	{name: "sorceress_spectres_second_minion", xml: "sorceress_spectres", showMinion: true, minion: 2},
 }
 
 func readCalcsOracle(t *testing.T, name, xmlName string) (calcsOracle, *Calculator) {
@@ -118,7 +157,7 @@ func readCalcsInputFixture(t *testing.T, f calcsInputFixture) (calcsOracle, *Cal
 		t.Fatal(err)
 	}
 	// the stat set and stage controls write the skill the calculation above listed
-	if f.statSet == 0 && f.stageCount == 0 && !f.showMinion {
+	if f.statSet == 0 && f.stageCount == 0 && !f.showMinion && !f.minionPicks() {
 		return oracle, calc
 	}
 	if f.statSet != 0 {
@@ -137,6 +176,20 @@ func readCalcsInputFixture(t *testing.T, f calcsInputFixture) (calcsOracle, *Cal
 	if _, err := calc.Calculate(); err != nil {
 		t.Fatal(err)
 	}
+	for _, pick := range []struct {
+		index int
+		set   func(bool, int) error
+	}{{f.minion, calc.SetSkillMinion}, {f.minionSkill, calc.SetSkillMinionSkill}, {f.minionSkillStatSet, calc.SetSkillMinionSkillStatSet}} {
+		if pick.index == 0 {
+			continue
+		}
+		if err := pick.set(true, pick.index); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := calc.Calculate(); err != nil {
+			t.Fatal(err)
+		}
+	}
 	return oracle, calc
 }
 
@@ -147,7 +200,15 @@ func checkSkillSelect(t *testing.T, what string, want skillSelectOracle, got cal
 		MainActiveSkill: got.MainActiveSkill, StatSet: got.StatSet, SkillShown: got.SkillShown, StatSetShown: got.StatSetShown,
 		StatSetEnabled: got.StatSetEnabled, PartShown: got.PartShown, StageShown: got.StageShown, MineShown: got.MineShown,
 		HaveMinion: want.HaveMinion,
+
+		Minions: got.Minions, MinionSkills: got.MinionSkills, MinionSkillStatSets: got.MinionSkillStatSets,
+		Minion: got.Minion, MinionSkill: got.MinionSkill, MinionSkillStatSet: got.MinionSkillStatSet,
+		MinionShown: got.MinionShown, MinionEnabled: got.MinionEnabled, MinionLibraryShown: got.MinionLibraryShown,
+		BeastLibraryShown: got.BeastLibraryShown, MinionSkillShown: got.MinionSkillShown,
+		MinionSkillEnabled: got.MinionSkillEnabled, MinionSkillStatSetShown: got.MinionSkillStatSetShown,
+		MinionSkillStatSetEnabled: got.MinionSkillStatSetEnabled,
 	}
+	ours, want = ours.shownOnly(), want.shownOnly()
 	if !reflect.DeepEqual(ours, want) {
 		t.Errorf("%s controls:\n PoB-PoE2 %+v\n ours     %+v", what, want, ours)
 	}
@@ -314,7 +375,7 @@ func TestCalcsInputsMatchPoB(t *testing.T) {
 			if name := calc.calcsActor(calcsEnv).MainSkill.ActiveEffect.GrantedEffect.Name; name != oracle.MainSkill {
 				t.Errorf("main skill %s, PoB-PoE2 %s", name, oracle.MainSkill)
 			}
-			if main := calc.env.Player.MainSkill.ActiveEffect.GrantedEffect.Name; main == oracle.MainSkill && f.buffMode == "" && f.statSet == 0 && f.stageCount == 0 {
+			if main := calc.env.Player.MainSkill.ActiveEffect.GrantedEffect.Name; main == oracle.MainSkill && f.buffMode == "" && f.statSet == 0 && f.stageCount == 0 && !f.minionPicks() {
 				t.Errorf("the sidebar's main skill %s is the Calcs tab's; the fixture tests no selection", main)
 			}
 			checkCalcsNumbers(t, f.name, oracle, got.Output)
@@ -394,5 +455,31 @@ func TestCalcsSectionCollapsedRoundTrip(t *testing.T) {
 	}
 	if n := strings.Count(out, `<Section `); n != 2 {
 		t.Errorf("%d Section elements, want 2:\n%s", n, out)
+	}
+}
+
+// CompareTab.lua:556-573 (PoB-PoE2): the Compare tab's Calcs header Minion dropdown moves only the Calcs tab's minion;
+// the sidebar keeps its own, and the gem keeps its name.
+func TestSetCompareCalcsMinionWritesOnlyCalcs(t *testing.T) {
+	_, calc := readCalcsOracle(t, "sorceress_spectres_second_minion", "sorceress_spectres")
+	if _, err := calc.Calculate(); err != nil {
+		t.Fatal(err)
+	}
+	if err := calc.SetCompareCalcsMinion(2); err != nil {
+		t.Fatal(err)
+	}
+	out, err := calc.Calculate()
+	if err != nil {
+		t.Fatal(err)
+	}
+	page, err := calc.CalcsOutputs()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if page.Controls.Minion != 2 || out.MainSkill.Minion != 1 {
+		t.Errorf("Calcs minion %d, sidebar minion %d; want 2 and 1", page.Controls.Minion, out.MainSkill.Minion)
+	}
+	if got := out.MainSkill.Skills; len(got) != 1 || got[0] != "Spectre: Vaal Skeletal Priest" {
+		t.Errorf("sidebar skills %v; the gem was renamed", got)
 	}
 }

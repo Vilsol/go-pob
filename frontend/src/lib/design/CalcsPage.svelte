@@ -32,7 +32,10 @@
     q?: string;
     pin?: string;
     onmaingroup: (i: number) => void;
-    oncontrol: (key: 'MainActiveSkill' | 'StatSet' | 'SkillPart' | 'StageCount' | 'MineCount' | 'Minion' | 'MinionSkill', value: number | undefined) => void;
+    oncontrol: (
+      key: 'MainActiveSkill' | 'StatSet' | 'SkillPart' | 'StageCount' | 'MineCount' | 'Minion' | 'MinionSkill' | 'MinionSkillStatSet',
+      value: number | undefined
+    ) => void;
     /* CalcsTab.lua:106-110 */
     onspectres?: () => void;
     /* CalcsTab.lua:46-51 */
@@ -405,6 +408,7 @@
         class="w-32.5"
         options={(controls.Minions ?? []).map((m, i) => ({ value: String(i + 1), label: m.Label }))}
         value={String(controls.Minion)}
+        disabled={!controls.MinionEnabled}
         onchange={(e: Event) => oncontrol('Minion', num(e))} /></FloatingLabel>
   {/if}
   {#if controls?.MinionLibraryShown && onspectres}
@@ -417,7 +421,19 @@
         class="w-30"
         options={opts(controls.MinionSkills)}
         value={String(controls.MinionSkill)}
+        disabled={!controls.MinionSkillEnabled}
         onchange={(e: Event) => oncontrol('MinionSkill', num(e))} /></FloatingLabel>
+  {/if}
+  {#if controls?.MinionSkillStatSetShown}
+    <!-- CalcsTab.lua:152-162 (PoB-PoE2) -->
+    <FloatingLabel label="Minion Skill Stat Set"
+      ><Select
+        size="xs"
+        class="w-30"
+        disabled={!controls.MinionSkillStatSetEnabled}
+        options={opts(controls.MinionSkillStatSets)}
+        value={String(controls.MinionSkillStatSet)}
+        onchange={(e: Event) => oncontrol('MinionSkillStatSet', num(e))} /></FloatingLabel>
   {/if}
   {#if showMinion !== undefined}
     <label class="check-label h-6.5 text-text-2"

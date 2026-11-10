@@ -69,18 +69,39 @@ export const poe2Run = async <T>(op: (w: Remote<Worker2Type>) => Promise<T>, vie
 
 const fail = (err: unknown) => poe2Error.set(err instanceof Error ? err.message : String(err));
 
-// Build.lua:376-420 (PoB-PoE2): the sidebar's controls, and with calcs the Calcs tab's (CalcsTab.lua:58-100)
+// Build.lua:376-483 (PoB-PoE2): the sidebar's controls, and with calcs the Calcs tab's (CalcsTab.lua:58-162)
 const writeSkillSelect2 = (calcs: boolean, field: MainSkillField, value: number | undefined) => {
   if (field === 'MainActiveSkill' && value !== undefined) void poe2Run((w) => (calcs ? w.SetMainActiveSkillCalcs(value) : w.SetMainActiveSkill(value)));
   else if (field === 'StatSet' && value !== undefined) void poe2Run((w) => w.SetSkillStatSet(calcs, value));
   else if (field === 'StageCount') void poe2Run((w) => w.SetSkillStageCount(calcs, value));
   else if (field === 'MineCount') void poe2Run((w) => w.SetSkillMineCount(calcs, value));
+  else if (field === 'Minion' && value !== undefined) void poe2Run((w) => w.SetSkillMinion(calcs, value));
+  else if (field === 'MinionSkill' && value !== undefined) void poe2Run((w) => w.SetSkillMinionSkill(calcs, value));
+  else if (field === 'MinionSkillStatSet' && value !== undefined) void poe2Run((w) => w.SetSkillMinionSkillStatSet(calcs, value));
 };
+
+// Build.lua:2132-2191 (PoB-PoE2): the minion dropdowns and library buttons as the shared controls carry them
+const minionControls2 = (c: Poe2SkillSelect | undefined) => ({
+  MinionShown: c?.MinionShown ?? false,
+  MinionEnabled: c?.MinionEnabled ?? false,
+  MinionLibraryShown: c?.MinionLibraryShown ?? false,
+  BeastLibraryShown: c?.BeastLibraryShown ?? false,
+  Minions: c?.Minions?.map((Label) => ({ Label })),
+  Minion: c?.Minion ?? 0,
+  MinionSkillShown: c?.MinionSkillShown ?? false,
+  MinionSkillEnabled: c?.MinionSkillEnabled ?? false,
+  MinionSkills: c?.MinionSkills,
+  MinionSkill: c?.MinionSkill ?? 0,
+  MinionSkillStatSetShown: c?.MinionSkillStatSetShown ?? false,
+  MinionSkillStatSetEnabled: c?.MinionSkillStatSetEnabled ?? false,
+  MinionSkillStatSets: c?.MinionSkillStatSets,
+  MinionSkillStatSet: c?.MinionSkillStatSet ?? 0
+});
 const setMainSkill2 = (field: MainSkillField, value: number | undefined) => writeSkillSelect2(false, field, value);
 
 // Build.lua:2059-2195 (PoB-PoE2): RefreshSkillSelectControls' state as the shared controls carry it; PoE2's skill data
-// has no multipart skill, and the minion controls are not ported
-const skillSelect2 = (c: Poe2SkillSelect): calculator.MainSkillControls & StatSetControls =>
+// has no multipart skill
+export const skillSelect2 = (c: Poe2SkillSelect): calculator.MainSkillControls & StatSetControls =>
   ({
     Skills: c.Skills,
     SkillEnabled: c.SkillEnabled,
@@ -93,7 +114,8 @@ const skillSelect2 = (c: Poe2SkillSelect): calculator.MainSkillControls & StatSe
     StageShown: c.StageShown,
     StageCount: c.StageCount,
     MineShown: c.MineShown,
-    MineCount: c.MineCount
+    MineCount: c.MineCount,
+    ...minionControls2(c)
   }) as calculator.MainSkillControls & StatSetControls;
 
 // the config page reads the options again after every calculation
@@ -128,9 +150,9 @@ const sidebar2 = (calc: Calc): Sidebar => {
 
 const mainGroupOf = (calc: Calc | undefined): Poe2SocketGroup | undefined => calc?.socketGroups?.[(calc.mainSocketGroup ?? 1) - 1];
 
-// Build.lua:363-420, 2059-2195 (PoB-PoE2): the main group's active skill, stat set, stages and mines; PoE2 has none of
-// PoE1's gem parts, and the minion controls are not ported
-const controls2 = (calc: Calc | undefined): calculator.MainSkillControls | undefined => {
+// Build.lua:363-483, 2059-2195 (PoB-PoE2): the main group's active skill, stat set, stages, mines and minion controls;
+// PoE2 has none of PoE1's gem parts
+const controls2 = (calc: Calc | undefined): (calculator.MainSkillControls & StatSetControls) | undefined => {
   const group = mainGroupOf(calc);
   if (!group) return undefined;
   const select = calc!.mainSkill;
@@ -152,20 +174,14 @@ const controls2 = (calc: Calc | undefined): calculator.MainSkillControls | undef
     StatSet: select?.StatSet,
     StatSetShown: select?.StatSetShown,
     StatSetEnabled: select?.StatSetEnabled,
-    MinionShown: false,
-    MinionEnabled: false,
-    MinionLibraryShown: false,
-    Minion: 0,
-    MinionSkillShown: false,
-    MinionSkillEnabled: false,
-    MinionSkill: 0,
+    ...minionControls2(select),
     SkillDisabled: false,
     DisableReason: '',
     InfoMessage: '',
     InfoMessage2: '',
     MinionInfoMessage: '',
     MinionInfoMessage2: ''
-  } as unknown as calculator.MainSkillControls;
+  } as unknown as calculator.MainSkillControls & StatSetControls;
 };
 
 // Build.lua:364-368 (PoB-PoE2)

@@ -213,6 +213,20 @@ export declare namespace calculator2 {
     readonly PartShown: boolean;
     readonly StageShown: boolean;
     readonly MineShown: boolean;
+    readonly Minions?: Array<string>;
+    readonly MinionSkills?: Array<string>;
+    readonly MinionSkillStatSets?: Array<string>;
+    readonly Minion: number;
+    readonly MinionSkill: number;
+    readonly MinionSkillStatSet: number;
+    readonly MinionShown: boolean;
+    readonly MinionEnabled: boolean;
+    readonly MinionLibraryShown: boolean;
+    readonly BeastLibraryShown: boolean;
+    readonly MinionSkillShown: boolean;
+    readonly MinionSkillEnabled: boolean;
+    readonly MinionSkillStatSetShown: boolean;
+    readonly MinionSkillStatSetEnabled: boolean;
   }
   interface SkillSetView {
     readonly ID: number;
@@ -240,9 +254,26 @@ export declare namespace exposition {
     readonly HaveRange: boolean;
     readonly Tooltip?: Array<string>;
   }
+  interface BuildPlannerExportAll {
+    Files?: Array<exposition.BuildPlannerFile>;
+    Errors?: Array<string>;
+    /** Releases the Go resources behind this wrapper. */
+    release(): void;
+    [Symbol.dispose](): void;
+  }
   interface BuildPlannerFile {
     readonly FileName: string;
     readonly JSON: string;
+  }
+  interface BuildPlannerLoadout {
+    Name: string;
+    FileName: string;
+    SpecIndex: number;
+    SkillSetID: number;
+    ItemSetID: number;
+    /** Releases the Go resources behind this wrapper. */
+    release(): void;
+    [Symbol.dispose](): void;
   }
   interface BuildPlannerMeta {
     readonly Name: string;
@@ -316,6 +347,8 @@ export declare namespace exposition {
     AllocateAttributeNode(id: number, attributeIndex: number, allocMode: number): Result<void>;
     BuildItemCompare(id: number): Promise<Result<(exposition.ItemCompareView | undefined)>>;
     BuildPlannerExport(meta: exposition.BuildPlannerMeta, specIndex: number, skillSetID: number, itemSetID: number): Result<exposition.BuildPlannerFile>;
+    BuildPlannerExportAll(meta: exposition.BuildPlannerMeta, specIndex: number): Result<exposition.BuildPlannerExportAll>;
+    BuildPlannerLoadouts(): (Array<exposition.BuildPlannerLoadout> | undefined);
     BuildPlannerSets(): exposition.BuildPlannerSets;
     BuySimilar(slotName: string): Result<(exposition.BuySimilarView | undefined)>;
     BuySimilarURL(slotName: string, o: calculator2.BuySimilarOptions): Result<string>;
@@ -427,6 +460,7 @@ export declare namespace exposition {
     SetCalcsSkillNumber(n: number): void;
     SetCharacterLevelAutoMode(auto: boolean): void;
     SetCharacterRune(slot: string, runeName: string): Result<void>;
+    SetCompareCalcsMinion(index: number): Result<void>;
     SetConfigInput(name: string, value: calculator2.ConfigValue, isDefault: boolean): void;
     SetCustomModifierBlocks(blocks: Array<exposition.CustomBlock> | undefined): void;
     SetDisplayItemAffixRange(control: number, val: number): Result<void>;
@@ -451,6 +485,9 @@ export declare namespace exposition {
     SetPartyOptions(destination: string, appendMode: boolean, showAdvanceTools: boolean): void;
     SetRichNotes(plain: string, doc: string): void;
     SetSkillMineCount(calcs: boolean, count: number | undefined): Result<void>;
+    SetSkillMinion(calcs: boolean, index: number): Result<void>;
+    SetSkillMinionSkill(calcs: boolean, index: number): Result<void>;
+    SetSkillMinionSkillStatSet(calcs: boolean, index: number): Result<void>;
     SetSkillStageCount(calcs: boolean, count: number | undefined): Result<void>;
     SetSkillStatSet(calcs: boolean, index: number): Result<void>;
     SetSlotActive(slot: string, state: boolean): Result<void>;

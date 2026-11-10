@@ -137,6 +137,29 @@ describe('Export to in-game build planner, with a PoE2 build open', () => {
     expect(files[0].name).toBe('Unnamed Build [0.5].build');
     expect(JSON.parse(files[0].json)).toMatchObject({ name: 'Unnamed Build', author: 'Author', description: '' });
   });
+
+  // ImportTab.lua:440-476 (PoB-PoE2): a file per loadout; the names and files are PoB-PoE2's
+  // (oracle/poe2_build_planner_loadouts.lua)
+  it('saves a .build file per loadout, as Export All Loadouts writes them', async () => {
+    const oracle = JSON.parse(await readFile(resolve(ORACLE, 'poe2_build_planner_loadouts_build_planner_loadouts.json'), 'utf8')) as {
+      cases: { specIndex: number; files: { fileName: string; build: Record<string, unknown> }[] }[];
+    };
+    const want = oracle.cases.find((c) => c.specIndex === 1)!;
+    expect(want.files.length).toBe(2);
+    poe2Build.set(await worker2Instance.Open(await fixture('build_planner_loadouts.xml')));
+    files.length = 0;
+    (await import('./import_modal.svelte')).openImport('export');
+    const view = render((await import('./AppImportModal.svelte')).default);
+    const box = within(await view.findByRole('region', { name: 'Build planner export' }));
+    await waitFor(() => expect(box.getByRole<HTMLSelectElement>('combobox', { name: 'Tree' }).options.length).toBe(2));
+    await fireEvent.input(box.getByRole('textbox', { name: 'Build name' }), { target: { value: 'Planner build' } });
+    await fireEvent.click(box.getByRole('button', { name: 'Export All Loadouts' }));
+    await waitFor(() => expect(files).toHaveLength(2));
+    expect(files.map((f) => f.name)).toEqual(want.files.map((f) => f.fileName));
+    for (const [i, f] of want.files.entries()) expect(sorted(JSON.parse(files[i].json) as Record<string, unknown>)).toEqual(sorted(f.build));
+    expect(box.getByText(/^Wrote 2 file\(s\):/)).toBeTruthy();
+    poe2Build.set(await worker2Instance.Open(await fixture('build_planner.xml')));
+  });
 });
 
 // ImportTab.lua:138-141 (PoB-PoE2): the Export Support box lives on the Import / Export tab

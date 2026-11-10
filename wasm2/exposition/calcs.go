@@ -214,6 +214,41 @@ func (c *Calculator) SetSkillMineCount(calcs bool, count *int) error {
 	return calculator2.SetSkillMineCount(c.build, env, group, calcs, count)
 }
 
+// SetSkillMinion, SetSkillMinionSkill and SetSkillMinionSkillStatSet are the Minion, Minion Skill and Minion Skill Stat
+// Set dropdowns of the sidebar (calcs false) or the Calcs tab.
+func (c *Calculator) SetSkillMinion(calcs bool, index int) error {
+	env, group, err := c.skillSelectEnv(calcs)
+	if err != nil {
+		return err
+	}
+	return calculator2.SetSkillMinion(c.build, env, group, calcs, index)
+}
+
+// SetCompareCalcsMinion is the Compare tab's Calcs header Minion dropdown.
+func (c *Calculator) SetCompareCalcsMinion(index int) error {
+	env, group, err := c.skillSelectEnv(true)
+	if err != nil {
+		return err
+	}
+	return calculator2.SetCompareCalcsMinion(c.build, env, group, index)
+}
+
+func (c *Calculator) SetSkillMinionSkill(calcs bool, index int) error {
+	env, group, err := c.skillSelectEnv(calcs)
+	if err != nil {
+		return err
+	}
+	return calculator2.SetSkillMinionSkill(c.build, env, group, calcs, index)
+}
+
+func (c *Calculator) SetSkillMinionSkillStatSet(calcs bool, index int) error {
+	env, group, err := c.skillSelectEnv(calcs)
+	if err != nil {
+		return err
+	}
+	return calculator2.SetSkillMinionSkillStatSet(c.build, env, group, calcs, index)
+}
+
 // skillSelectEnv is the calculation whose skill list the controls show, and the group they show.
 func (c *Calculator) skillSelectEnv(calcs bool) (*calculator2.Environment, int, error) {
 	env := c.env

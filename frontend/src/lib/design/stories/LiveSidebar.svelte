@@ -4,7 +4,7 @@
   import { breakdowns } from '../fixtures/shell';
   import type { StatLine } from '$lib/display/stat_list';
 
-  type Control = 'MainActiveSkill' | 'SkillPart' | 'StageCount' | 'MineCount' | 'Minion' | 'MinionSkill';
+  type Control = 'MainActiveSkill' | 'StatSet' | 'SkillPart' | 'StageCount' | 'MineCount' | 'Minion' | 'MinionSkill' | 'MinionSkillStatSet';
 
   type Props = { fx: BuildFixture; collapsed?: boolean; fill?: boolean; pinned?: string[] };
   let { fx, collapsed = false, fill = false, pinned = $bindable([]) }: Props = $props();
@@ -23,6 +23,7 @@
   breakdown={(l: StatLine) => breakdowns[l.label]}
   onmaingroup={(i: number) => (s.group = i)}
   oncontrol={(field: Control, v: number | undefined) => {
+    if (field === 'StatSet' || field === 'MinionSkillStatSet') return;
     if (field === 'StageCount' || field === 'MineCount') s.controls[field] = v === undefined ? '' : String(v);
     else s.controls[field] = v ?? 0;
   }} />

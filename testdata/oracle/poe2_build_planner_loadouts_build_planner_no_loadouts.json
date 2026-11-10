@@ -1,0 +1,13 @@
+{
+  "cases":[{
+      "errors":["This build has no passive trees to export."],
+      "files":[],
+      "loadouts":[],
+      "specIndex":1
+    },{
+      "errors":["This build has no passive trees to export."],
+      "files":[],
+      "loadouts":[],
+      "specIndex":2
+    }]
+}
