@@ -4,6 +4,7 @@
   import SearchField from '$lib/design/SearchField.svelte';
   import { isTypingTarget } from '$lib/design/keys';
   import { createTree2Renderer, type Tree2Renderer } from './gl_renderer2';
+  import { park, unpark, type Parked } from './tree_cache';
   import { buildAtlas2, sheetPath2 } from '$lib/skill_tree/tree2_art';
   import {
     attachArt2,
@@ -17,6 +18,7 @@
     scaleOf,
     SPRITE2_FLOATS,
     type Tree2,
+    type Scene2,
     type Tree2Node,
     type View2
   } from './scene2';
@@ -92,13 +94,8 @@
     power
   }: Props = $props();
 
-  // a tree without sprites keeps its vector shapes
-  const scene = $derived.by(() => {
-    const s = buildScene2(data);
-    if (data.art?.sprites && Object.keys(data.art.sprites).length) attachArt2(s, data.art, buildAtlas2(data.art.sprites), artBase);
-    return s;
-  });
   let canvas = $state<HTMLCanvasElement>();
+  let host = $state<HTMLDivElement>();
   let box = $state<HTMLDivElement>();
   let renderer = $state.raw<Tree2Renderer | undefined>();
   /* PassiveTreeView.lua:45-46 */
@@ -126,6 +123,16 @@
     renderer?: string;
   };
   const probe = () => (globalThis as { __tree2Probe?: Probe }).__tree2Probe;
+  // the worker hands each visit its own copy of the tree, so the last visit's renderer is matched by the tree's shape
+  const treeKey = () => `poe2:${artBase}:${data.nodes.length}:${data.minX},${data.minY},${data.maxX},${data.maxY}:${probe()?.renderer ?? ''}`;
+  const kept = unpark<Tree2Renderer, Scene2>(treeKey());
+  // a tree without sprites keeps its vector shapes
+  const scene = $derived.by(() => {
+    if (kept?.key === treeKey()) return kept.scene;
+    const s = buildScene2(data);
+    if (data.art?.sprites && Object.keys(data.art.sprites).length) attachArt2(s, data.art, buildAtlas2(data.art.sprites), artBase);
+    return s;
+  });
 
   const alloc = $derived(new Set(spec.alloc));
   let searchStr = $state('');
@@ -190,6 +197,7 @@
       hovered: hovered?.id,
       alloc: spec.alloc.length,
       renderer: renderer?.kind,
+      complete: renderer?.complete(),
       overlays: scene.counts.strokes - scene.counts.connectorStrokes,
       sprites: scene.counts.under + scene.counts.over,
       lines: scene.counts.lines,
@@ -228,8 +236,25 @@
     view = { ...view, width: Math.max(1, Math.round(r.width)), height: Math.max(1, Math.round(r.height)), dpr: window.devicePixelRatio || 1 };
   };
 
+  $effect(() => {
+    if (!canvas) return;
+    canvas.style.width = `${view.width}px`;
+    canvas.style.height = `${view.height}px`;
+  });
+
   onMount(() => {
-    renderer = createTree2Renderer(canvas!, scene, afterDraw, probe()?.renderer as 'webgl' | 'canvas' | undefined);
+    let entry = kept;
+    if (!entry || entry.scene !== scene) {
+      entry?.renderer.destroy();
+      const c = document.createElement('canvas');
+      c.className = 'absolute inset-0 h-full w-full';
+      const fresh: Parked<Tree2Renderer, Scene2> = (entry = { key: treeKey(), canvas: c, scene, onDraw: afterDraw, renderer: undefined! });
+      fresh.renderer = createTree2Renderer(c, scene, (ms) => fresh.onDraw(ms), probe()?.renderer as 'webgl' | 'canvas' | undefined);
+    }
+    entry.onDraw = afterDraw;
+    host!.append(entry.canvas);
+    canvas = entry.canvas;
+    renderer = entry.renderer;
     const p = probe();
     if (p) {
       p.renderer = renderer.kind;
@@ -257,8 +282,8 @@
     resize();
     return () => {
       ro.disconnect();
-      renderer?.destroy();
       renderer = undefined;
+      park(entry);
     };
   });
 
@@ -429,22 +454,21 @@
 <svelte:window onkeydown={keydown} onkeyup={keyup} onblur={blur} onpointerup={pointerUp} />
 
 <div class="relative h-full min-h-[320px] w-full overflow-hidden" bind:this={box}>
-  <div role="img" aria-label="Passive skill tree" class="absolute inset-0">
-    <canvas
-      bind:this={canvas}
-      class="absolute inset-0 h-full w-full"
-      style="touch-action: none; cursor: {hovered ? 'pointer' : 'grab'}"
-      style:width="{view.width}px"
-      style:height="{view.height}px"
-      onpointerdown={pointerDown}
-      onpointermove={pointerMove}
-      onpointerenter={() => (pointerIn = true)}
-      onpointerleave={() => {
-        pointerIn = false;
-        if (!down) setHover(undefined);
-      }}
-      onwheel={wheel}
-      oncontextmenu={contextMenu}></canvas>
+  <div
+    role="img"
+    aria-label="Passive skill tree"
+    class="absolute inset-0"
+    bind:this={host}
+    style="touch-action: none; cursor: {hovered ? 'pointer' : 'grab'}"
+    onpointerdown={pointerDown}
+    onpointermove={pointerMove}
+    onpointerenter={() => (pointerIn = true)}
+    onpointerleave={() => {
+      pointerIn = false;
+      if (!down) setHover(undefined);
+    }}
+    onwheel={wheel}
+    oncontextmenu={contextMenu}>
   </div>
 
   {#if !matches}

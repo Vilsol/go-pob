@@ -139,17 +139,19 @@ type Tex = { tex: WebGLTexture; ready: boolean; w: number; h: number; requested:
 export class GlTreeRenderer implements TreeRenderer {
   readonly kind = 'webgl';
   private canvas: HTMLCanvasElement;
-  private spriteProg: WebGLProgram;
-  private strokeProg: WebGLProgram;
-  private sheets: Tex[];
+  private spriteProg!: WebGLProgram;
+  private strokeProg!: WebGLProgram;
+  private sheets!: Tex[];
   private art = new Map<string, Tex>();
-  private bufs: { background: WebGLBuffer; strokes: WebGLBuffer; sprites: WebGLBuffer };
-  private vaos: { background: WebGLVertexArrayObject; strokes: WebGLVertexArrayObject; sprites: WebGLVertexArrayObject };
+  private bufs!: { background: WebGLBuffer; strokes: WebGLBuffer; sprites: WebGLBuffer };
+  private vaos!: { background: WebGLVertexArrayObject; strokes: WebGLVertexArrayObject; sprites: WebGLVertexArrayObject };
   private view: View = { offsetX: 0, offsetY: 0, scaling: 10, width: 1, height: 1, dpr: 1 };
   private state: SceneState = { active: new Set(), hoverPath: new Set(), hovered: undefined, className: undefined, ascendancy: undefined };
   private stateDirty = true;
   private frame = 0;
   private lost = false;
+  // counts the contexts the renderer has set up, so an upload begun on a lost one is dropped
+  private generation = 0;
   private artPath: string | undefined;
 
   constructor(
@@ -160,6 +162,17 @@ export class GlTreeRenderer implements TreeRenderer {
   ) {
     if (scene.sheets.length >= MAX_SHEETS) throw new Error(`the tree uses ${scene.sheets.length} sprite sheets; the renderer binds ${MAX_SHEETS - 1}`);
     this.canvas = gl.canvas as HTMLCanvasElement;
+    this.setup();
+    this.canvas.addEventListener('webglcontextlost', this.onLost);
+    this.canvas.addEventListener('webglcontextrestored', this.onRestored);
+  }
+
+  // every GL object the renderer draws with, made anew on a restored context; the sheets load again as they are drawn
+  private setup() {
+    const { gl, scene } = this;
+    this.generation++;
+    this.art = new Map();
+    this.stateDirty = true;
     this.spriteProg = this.program(SPRITE_VS, SPRITE_FS);
     this.strokeProg = this.program(STROKE_VS, STROKE_FS);
 
@@ -203,8 +216,6 @@ export class GlTreeRenderer implements TreeRenderer {
     gl.uniform4fv(gl.getUniformLocation(this.strokeProg, 'u_colour'), STYLE_COLOURS.flatMap(hexColour));
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-
-    this.canvas.addEventListener('webglcontextlost', this.onLost);
   }
 
   setView(view: View) {
@@ -231,11 +242,20 @@ export class GlTreeRenderer implements TreeRenderer {
     cancelAnimationFrame(this.frame);
     this.frame = -1;
     this.canvas.removeEventListener('webglcontextlost', this.onLost);
+    this.canvas.removeEventListener('webglcontextrestored', this.onRestored);
     this.gl.getExtension('WEBGL_lose_context')?.loseContext();
   }
 
-  private onLost = () => {
+  // a lost context is restored only if its loss is cancelled
+  private onLost = (e: Event) => {
+    e.preventDefault();
     this.lost = true;
+  };
+
+  private onRestored = () => {
+    this.lost = false;
+    this.setup();
+    this.request();
   };
 
   private request() {
@@ -437,9 +457,11 @@ export class GlTreeRenderer implements TreeRenderer {
   }
 
   private load(t: Tex, url: string, unit: number) {
+    const generation = this.generation;
+    const gone = () => this.frame === -1 || this.lost || this.generation !== generation;
     void loadBitmap(url)
       .then(async (bmp) => {
-        if (this.frame === -1 || this.lost) return bmp.close();
+        if (gone()) return bmp.close();
         const { gl } = this;
         const [w, h] = [bmp.width, bmp.height];
         const max = gl.getParameter(gl.MAX_TEXTURE_SIZE) as number;
@@ -454,7 +476,7 @@ export class GlTreeRenderer implements TreeRenderer {
               })
             : bmp;
         if (src !== bmp) bmp.close();
-        if (this.frame === -1 || this.lost) return src.close();
+        if (gone()) return src.close();
         gl.activeTexture(gl.TEXTURE0 + unit);
         gl.bindTexture(gl.TEXTURE_2D, t.tex);
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);

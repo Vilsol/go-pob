@@ -52,15 +52,19 @@ vi.mock('$lib/go/worker', () => {
 const states: SceneState[] = [];
 type View = { offsetX: number; offsetY: number; scaling: number; width: number; height: number };
 const views: View[] = [];
+let built = 0;
 vi.mock('./renderer', () => ({
-  createRenderer: () => ({
-    kind: 'canvas',
-    setView: (v: View) => views.push(v),
-    setState: (s: SceneState) => states.push(s),
-    complete: () => true,
-    drawListArt: () => undefined,
-    destroy: () => {}
-  })
+  createRenderer: () => {
+    built++;
+    return {
+      kind: 'canvas',
+      setView: (v: View) => views.push(v),
+      setState: (s: SceneState) => states.push(s),
+      complete: () => true,
+      drawListArt: () => undefined,
+      destroy: () => {}
+    };
+  }
 }));
 
 const st = await import('$lib/skill_tree');
@@ -97,6 +101,18 @@ const mount = async (props: Record<string, unknown> = {}) => {
 };
 
 const someNotable = () => Object.values(tree.nodes).find((n) => n.isNotable && !n.ascendancyName && n.group !== undefined)!;
+
+describe('a return to the tree', () => {
+  it('takes the renderer and canvas the last visit kept, and builds none', async () => {
+    const first = await mount();
+    const n = built;
+    cleanup();
+    expect(first.canvas.isConnected).toBe(false);
+    const second = await mount();
+    expect(built, 'renderers built on the return').toBe(n);
+    expect(second.canvas).toBe(first.canvas);
+  });
+});
 
 describe('a press on a node (PassiveTreeView.lua:221-257)', () => {
   const pressAt = async (canvas: HTMLCanvasElement, path: [number, number][]) => {

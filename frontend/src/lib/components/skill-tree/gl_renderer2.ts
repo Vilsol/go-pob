@@ -7,6 +7,8 @@ export interface Tree2Renderer {
   readonly kind: 'webgl' | 'canvas';
   setView(view: View2): void;
   setState(state: Scene2State): void;
+  // every sprite sheet the last drawn frame asked for was on it
+  complete(): boolean;
   destroy(): void;
 }
 
@@ -122,6 +124,8 @@ void main() {
 
 const MAX_SHEETS = 16;
 const UPLOAD_ROWS = 512;
+// a sheet up to this many pixels goes up in one call
+const ONE_CALL_PIXELS = 2048 * 2048;
 const ARRIVAL_MS = 200;
 
 const SPRITE_VS = `${HEAD}
@@ -205,11 +209,11 @@ type Tex = { tex: WebGLTexture; ready: boolean; w: number; h: number };
 
 export class GlTree2Renderer implements Tree2Renderer {
   readonly kind = 'webgl';
-  private discProg: WebGLProgram;
-  private strokeProg: WebGLProgram;
-  private spriteProg: WebGLProgram;
-  private bufs: { discs: WebGLBuffer; strokes: WebGLBuffer; rings: WebGLBuffer; under: WebGLBuffer; lines: WebGLBuffer; over: WebGLBuffer };
-  private vaos: {
+  private discProg!: WebGLProgram;
+  private strokeProg!: WebGLProgram;
+  private spriteProg!: WebGLProgram;
+  private bufs!: { discs: WebGLBuffer; strokes: WebGLBuffer; rings: WebGLBuffer; under: WebGLBuffer; lines: WebGLBuffer; over: WebGLBuffer };
+  private vaos!: {
     discs: WebGLVertexArrayObject;
     strokes: WebGLVertexArrayObject;
     rings: WebGLVertexArrayObject;
@@ -218,16 +222,34 @@ export class GlTree2Renderer implements Tree2Renderer {
     over: WebGLVertexArrayObject;
   };
   private sheets: Tex[] = [];
+  // bound to every unit whose sheet is not up yet
+  private empty!: WebGLTexture;
   private view: View2 = { zoomLevel: 3, zoomX: 0, zoomY: 0, width: 1, height: 1, dpr: 1 };
   private state?: Scene2State;
   private dirty = true;
   private frame = 0;
+  private shown = false;
+  private lost = false;
+  // counts the contexts the renderer has set up, so an upload begun on a lost one is dropped
+  private generation = 0;
 
   constructor(
     private gl: WebGL2RenderingContext,
     private scene: Scene2,
     private afterDraw: (ms: number) => void
   ) {
+    this.setup();
+    const canvas = gl.canvas as HTMLCanvasElement;
+    canvas.addEventListener('webglcontextlost', this.onLost);
+    canvas.addEventListener('webglcontextrestored', this.onRestored);
+  }
+
+  // every GL object the renderer draws with, made anew on a restored context; the sheets load again as they are drawn
+  private setup() {
+    const { gl } = this;
+    this.generation++;
+    this.sheets = [];
+    this.dirty = true;
     this.discProg = this.program(DISC_VS, DISC_FS);
     this.strokeProg = this.program(STROKE_VS, STROKE_FS);
     this.spriteProg = this.program(SPRITE_VS, SPRITE_FS);
@@ -250,7 +272,7 @@ export class GlTree2Renderer implements Tree2Renderer {
       lines: this.vao(corners, this.bufs.lines, SPRITE2_FLOATS, SPRITE_ATTRS),
       over: this.vao(corners, this.bufs.over, SPRITE2_FLOATS, SPRITE_ATTRS)
     };
-    const empty = this.texture(0);
+    const empty = (this.empty = this.texture(0));
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
     for (let i = 0; i < MAX_SHEETS; i++) {
@@ -277,11 +299,30 @@ export class GlTree2Renderer implements Tree2Renderer {
     this.request();
   }
 
+  complete() {
+    return this.shown;
+  }
+
   destroy() {
     cancelAnimationFrame(this.frame);
     this.frame = -1;
+    const canvas = this.gl.canvas as HTMLCanvasElement;
+    canvas.removeEventListener('webglcontextlost', this.onLost);
+    canvas.removeEventListener('webglcontextrestored', this.onRestored);
     this.gl.getExtension('WEBGL_lose_context')?.loseContext();
   }
+
+  // a lost context is restored only if its loss is cancelled
+  private onLost = (e: Event) => {
+    e.preventDefault();
+    this.lost = true;
+  };
+
+  private onRestored = () => {
+    this.lost = false;
+    this.setup();
+    this.request();
+  };
 
   private request() {
     if (this.frame === 0) this.frame = requestAnimationFrame(() => this.draw());
@@ -294,31 +335,57 @@ export class GlTree2Renderer implements Tree2Renderer {
     let t = this.sheets[i];
     if (!t) {
       t = this.sheets[i] = { tex: this.texture(i), ready: false, w: 1, h: 1 };
+      this.gl.bindTexture(this.gl.TEXTURE_2D, this.empty);
       this.load(t, `${art.base}/${sheetPath2(art.atlas.sheets[i])}`, i);
     }
     return t.ready;
   };
 
-  // a sheet goes up in bands of rows, a task each: a whole sheet in one call holds the main thread for about 100 ms
+  // a large sheet goes up in bands of rows, a task each: a whole sheet in one call holds the main thread for about 100 ms.
+  // The sheet stays off its unit until level 0 is whole, so no draw samples a level not yet filled; it draws from level 0
+  // at once and from its mipmaps once a later task has made them
   private load(t: Tex, url: string, unit: number) {
+    const generation = this.generation;
+    const gone = () => this.frame === -1 || this.lost || this.generation !== generation;
     void loadBitmap(url)
       .then(async (bmp) => {
         const { gl } = this;
         const [w, h] = [bmp.width, bmp.height];
-        for (let y = 0; y < h; y += UPLOAD_ROWS) {
-          if (y) await new Promise((r) => setTimeout(r));
-          if (this.frame === -1) return bmp.close();
+        const bind = (tex: WebGLTexture) => {
           gl.activeTexture(gl.TEXTURE0 + unit);
-          gl.bindTexture(gl.TEXTURE_2D, t.tex);
-          if (!y) gl.texStorage2D(gl.TEXTURE_2D, Math.floor(Math.log2(Math.max(w, h))) + 1, gl.RGBA8, w, h);
-          gl.pixelStorei(gl.UNPACK_SKIP_ROWS, y);
-          gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, y, w, Math.min(UPLOAD_ROWS, h - y), gl.RGBA, gl.UNSIGNED_BYTE, bmp);
-          gl.pixelStorei(gl.UNPACK_SKIP_ROWS, 0);
+          gl.bindTexture(gl.TEXTURE_2D, tex);
+        };
+        if (gone()) return bmp.close();
+        bind(t.tex);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAX_LEVEL, 0);
+        gl.texStorage2D(gl.TEXTURE_2D, Math.floor(Math.log2(Math.max(w, h))) + 1, gl.RGBA8, w, h);
+        if (w * h <= ONE_CALL_PIXELS) {
+          gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, bmp);
+        } else {
+          for (let y = 0; y < h; y += UPLOAD_ROWS) {
+            if (y) {
+              bind(this.empty);
+              await new Promise((r) => setTimeout(r));
+              if (gone()) return bmp.close();
+              bind(t.tex);
+            }
+            gl.pixelStorei(gl.UNPACK_SKIP_ROWS, y);
+            gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, y, w, Math.min(UPLOAD_ROWS, h - y), gl.RGBA, gl.UNSIGNED_BYTE, bmp);
+            gl.pixelStorei(gl.UNPACK_SKIP_ROWS, 0);
+          }
         }
-        gl.generateMipmap(gl.TEXTURE_2D);
-        [t.w, t.h, t.ready] = [w, h, true];
         bmp.close();
+        [t.w, t.h, t.ready] = [w, h, true];
         this.dirty = true;
+        this.request();
+        // after the frame that first draws the sheet
+        await new Promise((r) => requestAnimationFrame(() => setTimeout(r)));
+        if (gone()) return;
+        bind(t.tex);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAX_LEVEL, 1000);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
         this.request();
       })
       .catch(() => undefined);
@@ -344,7 +411,7 @@ export class GlTree2Renderer implements Tree2Renderer {
 
   private draw() {
     this.frame = 0;
-    if (!this.state) return;
+    if (!this.state || this.lost) return;
     const t0 = performance.now();
     const { gl, view, scene } = this;
     const canvas = gl.canvas as HTMLCanvasElement;
@@ -355,6 +422,7 @@ export class GlTree2Renderer implements Tree2Renderer {
     if (this.dirty) {
       this.dirty = false;
       fillScene2(scene, this.state, this.sheetReady);
+      this.shown = this.sheets.every((t) => t.ready);
       this.upload(this.bufs.discs, scene.discs.subarray(0, counts.discs * DISC_FLOATS));
       this.upload(this.bufs.strokes, scene.strokes.subarray(0, counts.connectorStrokes * STROKE2_FLOATS));
       this.upload(this.bufs.rings, scene.strokes.subarray(counts.connectorStrokes * STROKE2_FLOATS, counts.strokes * STROKE2_FLOATS));
@@ -463,6 +531,7 @@ export class CanvasTree2Renderer implements Tree2Renderer {
   // a tree too big for a layer: the canvas as last drawn at offset (x, y), which a drag shifts, drawing only what it uncovers
   private scroll?: { a: HTMLCanvasElement; b: HTMLCanvasElement; k: number; x: number; y: number };
   private settle?: ReturnType<typeof setTimeout>;
+  private shown = false;
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -481,6 +550,10 @@ export class CanvasTree2Renderer implements Tree2Renderer {
     this.state = state;
     this.dirty = true;
     this.request();
+  }
+
+  complete() {
+    return this.shown;
   }
 
   destroy() {
@@ -711,6 +784,7 @@ export class CanvasTree2Renderer implements Tree2Renderer {
     if (this.dirty) {
       this.dirty = false;
       fillScene2(scene, this.state, this.sheetReady);
+      this.shown = this.requested.every((r, i) => !r || !!this.sheets[i]);
       this.spare = this.layer?.canvas ?? this.spare;
       this.layer = undefined;
       this.bounds = undefined;

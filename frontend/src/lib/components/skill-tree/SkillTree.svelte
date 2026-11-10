@@ -11,8 +11,9 @@
   import NodeSearch from '$lib/components/skill-tree/NodeSearch.svelte';
   import { calculateAllocationPath, extendTrace, withClusterPaths, type PrecalculatedAllocationPaths } from './paths';
   import { treeProbe } from './probe';
-  import { buildClusterLayer, buildScene, sceneDrawList } from './scene';
+  import { buildClusterLayer, buildScene, sceneDrawList, type Scene } from './scene';
   import { createRenderer, type TreeRenderer } from './renderer';
+  import { objectId, park, unpark, type Parked } from './tree_cache';
   import NodeTooltip from './NodeTooltip.svelte';
   import { keepForOffline } from '$lib/pwa';
   import type { NodeStatDiff, StatDiffBlock } from '$lib/skill_tree/stat_compare';
@@ -239,7 +240,10 @@
 
   const hoveredNode = writable<Node | undefined>();
 
-  const scene = buildScene(skillTree);
+  // the loaded tree outlives the page, so the last visit's renderer is matched by it
+  const treeKey = `poe1:${objectId(skillTree)}:${skillTreeVersion}:${treeProbe()?.renderer ?? ''}`;
+  const kept = unpark<TreeRenderer, Scene>(treeKey);
+  const scene = kept?.scene ?? buildScene(skillTree);
   const placedById = new Map(scene.nodes.map((n) => [n.id, n]));
   const clusterLayer = $derived(
     buildClusterLayer(skillTree, [...(cluster ?? []), ...(compareCluster ?? [])], (id) => placedById.get(id), new Set((compareCluster ?? []).map((c) => c.id)))
@@ -451,6 +455,8 @@
 
   let devicePixelRatio = $state(1);
   let glCanvas = $state<HTMLCanvasElement>();
+  let glHost = $state<HTMLDivElement>();
+  let entry: Parked<TreeRenderer, Scene> | undefined;
   let overlay = $state<HTMLCanvasElement>();
   let renderer = $state.raw<TreeRenderer>();
   let lastDrawMs = $state(0);
@@ -508,15 +514,29 @@
   };
 
   $effect(() => {
-    if (!glCanvas || renderer) {
+    if (!glHost) {
       return;
     }
-    const probe = treeProbe();
-    renderer = createRenderer(glCanvas, scene, cdnBase, afterDraw, probe?.renderer);
-    if (probe && renderer.kind === 'webgl') {
-      probe.drawList = () => ({ complete: renderer!.complete(), items: sceneDrawList(scene, scaling, renderer!.drawListArt()) });
-      probe.selfCheck = () => renderer!.selfCheck?.() ?? ['no self-check'];
+    if (!entry) {
+      const probe = treeProbe();
+      if (kept) {
+        entry = kept;
+      } else {
+        const c = document.createElement('canvas');
+        c.className = 'absolute inset-0 w-full h-full';
+        const fresh: Parked<TreeRenderer, Scene> = (entry = { key: treeKey, canvas: c, scene, onDraw: afterDraw, renderer: undefined! });
+        fresh.renderer = createRenderer(c, scene, cdnBase, (ms) => fresh.onDraw(ms), probe?.renderer);
+      }
+      entry.onDraw = afterDraw;
+      glCanvas = entry.canvas;
+      renderer = entry.renderer;
+      if (probe && renderer.kind === 'webgl') {
+        probe.drawList = () => ({ complete: renderer!.complete(), items: sceneDrawList(scene, scaling, renderer!.drawListArt()) });
+        probe.selfCheck = () => renderer!.selfCheck?.() ?? ['no self-check'];
+      }
     }
+    // eslint-disable-next-line svelte/no-dom-manipulating -- the host holds only the kept canvas, which Svelte does not render
+    glHost.append(entry.canvas);
   });
 
   $effect(() => {
@@ -751,7 +771,7 @@
     new ResizeObserver(resize).observe(parentContainer!);
     resize();
     return () => {
-      renderer?.destroy();
+      if (entry) park(entry);
       renderer = undefined;
       cancelAnimationFrame(overlayFrame);
     };
@@ -784,12 +804,14 @@
       data-heat={heat ? heat.values.size : undefined}
       class="relative"
       style="touch-action: none; cursor: {cursor}; width: {canvasWidth}px; height: {canvasHeight}px">
-      <canvas
-        bind:this={glCanvas}
-        class="absolute inset-0 w-full h-full"
+      <div
+        role="presentation"
+        class="absolute inset-0"
+        bind:this={glHost}
         onpointerdown={gestures ? touchDown : mouseDown}
         onwheel={onScroll}
-        oncontextmenu={gestures ? (e) => e.preventDefault() : contextMenu}></canvas>
+        oncontextmenu={gestures ? (e) => e.preventDefault() : contextMenu}>
+      </div>
       <canvas
         bind:this={overlay}
         class="absolute inset-0 w-full h-full pointer-events-none"

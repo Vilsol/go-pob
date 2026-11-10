@@ -11,13 +11,18 @@ afterEach(cleanup);
 
 const states: Scene2State[] = [];
 const views: View2[] = [];
+let built = 0;
 vi.mock('./gl_renderer2', () => ({
-  createTree2Renderer: () => ({
-    kind: 'canvas',
-    setView: (v: View2) => views.push(v),
-    setState: (s: Scene2State) => states.push(s),
-    destroy: () => {}
-  })
+  createTree2Renderer: () => {
+    built++;
+    return {
+      kind: 'canvas',
+      setView: (v: View2) => views.push(v),
+      setState: (s: Scene2State) => states.push(s),
+      complete: () => true,
+      destroy: () => {}
+    };
+  }
 }));
 
 const SkillTree2 = (await import('./SkillTree2.svelte')).default;
@@ -90,6 +95,16 @@ const press = async (canvas: HTMLCanvasElement, p: { x: number; y: number }) => 
 };
 
 describe('the PoE2 tree view', () => {
+  it('keeps its renderer and canvas for the next visit, and builds none on the return', () => {
+    const first = mount([]);
+    const n = built;
+    cleanup();
+    expect(first.canvas.isConnected).toBe(false);
+    const second = mount([]);
+    expect(built, 'renderers built on the return').toBe(n);
+    expect(second.canvas).toBe(first.canvas);
+  });
+
   it('hovers a node: the host hears of it, the hover path reaches the renderer', async () => {
     errors.length = 0;
     const { canvas, onhover } = mount([]);
