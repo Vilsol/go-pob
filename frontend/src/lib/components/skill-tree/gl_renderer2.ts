@@ -1,4 +1,4 @@
-import { hardwareWebGL2 } from './webgl';
+import { GL2_ATTRS, hardwareWebGL2 } from './webgl';
 import { DISC_FLOATS, SPRITE2_FLOATS, STROKE2_FLOATS, fillScene2, scaleOf, type Scene2, type Scene2State, type View2 } from './scene2';
 import { sheetPath2 } from '$lib/skill_tree/tree2_art';
 import { loadBitmap } from './sheet_bitmap';
@@ -123,9 +123,8 @@ void main() {
 }`;
 
 const MAX_SHEETS = 16;
-const UPLOAD_ROWS = 512;
-// a sheet up to this many pixels goes up in one call
-const ONE_CALL_PIXELS = 2048 * 2048;
+// the most pixels of a sheet uploaded in one frame
+const BAND_PIXELS = 1024 * 1024;
 const ARRIVAL_MS = 200;
 
 const SPRITE_VS = `${HEAD}
@@ -341,9 +340,17 @@ export class GlTree2Renderer implements Tree2Renderer {
     return t.ready;
   };
 
-  // a large sheet goes up in bands of rows, a task each: a whole sheet in one call holds the main thread for about 100 ms.
+  // each upload waits for a frame of its own: uploads queued between two frames are all done before the second is shown
+  private slot = Promise.resolve();
+  private nextFrame() {
+    const turn = this.slot.then(() => new Promise<void>((r) => requestAnimationFrame(() => r())));
+    this.slot = turn;
+    return turn;
+  }
+
+  // a sheet goes up in bands of rows, a frame each: a whole large sheet in one call holds the page for about 100 ms.
   // The sheet stays off its unit until level 0 is whole, so no draw samples a level not yet filled; it draws from level 0
-  // at once and from its mipmaps once a later task has made them
+  // at once and from its mipmaps once a later frame has made them
   private load(t: Tex, url: string, unit: number) {
     const generation = this.generation;
     const gone = () => this.frame === -1 || this.lost || this.generation !== generation;
@@ -355,32 +362,29 @@ export class GlTree2Renderer implements Tree2Renderer {
           gl.activeTexture(gl.TEXTURE0 + unit);
           gl.bindTexture(gl.TEXTURE_2D, tex);
         };
-        if (gone()) return bmp.close();
-        bind(t.tex);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAX_LEVEL, 0);
-        gl.texStorage2D(gl.TEXTURE_2D, Math.floor(Math.log2(Math.max(w, h))) + 1, gl.RGBA8, w, h);
-        if (w * h <= ONE_CALL_PIXELS) {
-          gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, bmp);
-        } else {
-          for (let y = 0; y < h; y += UPLOAD_ROWS) {
-            if (y) {
-              bind(this.empty);
-              await new Promise((r) => setTimeout(r));
-              if (gone()) return bmp.close();
-              bind(t.tex);
-            }
+        const rows = Math.max(1, Math.floor(BAND_PIXELS / w));
+        for (let y = 0; y < h; y += rows) {
+          await this.nextFrame();
+          if (gone()) return bmp.close();
+          bind(t.tex);
+          if (!y) {
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAX_LEVEL, 0);
+            gl.texStorage2D(gl.TEXTURE_2D, Math.floor(Math.log2(Math.max(w, h))) + 1, gl.RGBA8, w, h);
+          }
+          if (h <= rows) gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, bmp);
+          else {
             gl.pixelStorei(gl.UNPACK_SKIP_ROWS, y);
-            gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, y, w, Math.min(UPLOAD_ROWS, h - y), gl.RGBA, gl.UNSIGNED_BYTE, bmp);
+            gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, y, w, Math.min(rows, h - y), gl.RGBA, gl.UNSIGNED_BYTE, bmp);
             gl.pixelStorei(gl.UNPACK_SKIP_ROWS, 0);
           }
+          if (y + rows < h) bind(this.empty);
         }
         bmp.close();
         [t.w, t.h, t.ready] = [w, h, true];
         this.dirty = true;
         this.request();
-        // after the frame that first draws the sheet
-        await new Promise((r) => requestAnimationFrame(() => setTimeout(r)));
+        await this.nextFrame();
         if (gone()) return;
         bind(t.tex);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAX_LEVEL, 1000);
@@ -509,6 +513,9 @@ const css = (r: number, g: number, b: number, a: number) => `rgba(${Math.round(r
 
 // the largest drawn-tree layer the Canvas 2D renderer keeps, in device pixels (about 32 MB)
 const LAYER_PIXELS = 8_000_000;
+// a layer is painted a slice a frame, each slice stopping once the frame's draw has taken this long, so no frame holds the page
+const SLICE_MS = 12;
+const SLICE_ITEMS = 8;
 // the most tinted sprite copies it keeps
 const TINTED_MAX = 8192;
 
@@ -526,6 +533,13 @@ export class CanvasTree2Renderer implements Tree2Renderer {
   private tinted = new Map<string, HTMLCanvasElement>();
   // the drawn tree at one scale, which a pan only moves; dropped when the scene or the scale changes
   private layer?: { canvas: HTMLCanvasElement; k: number; x: number; y: number };
+  // the layer drawn from the scene as now filled; a stale layer is shown until its successor is painted
+  private fresh = false;
+  // the layer being painted: the step of the paint order and the item it has reached
+  private painting?: { canvas: HTMLCanvasElement; k: number; x: number; y: number; step: number; i: number };
+  // the filled buffers the layer was painted from: a fill that leaves them as they were (a return to the page) keeps it
+  private painted?: Float32Array[];
+  private filled = false;
   private bounds?: [number, number, number, number];
   private spare?: HTMLCanvasElement;
   // a tree too big for a layer: the canvas as last drawn at offset (x, y), which a drag shifts, drawing only what it uncovers
@@ -575,6 +589,10 @@ export class CanvasTree2Renderer implements Tree2Renderer {
       void loadBitmap(`${art.base}/${sheetPath2(art.atlas.sheets[i])}`)
         .then((bmp) => {
           if (this.frame === -1) return bmp.close();
+          // the first scaled draw from a sheet builds its mipmaps, which takes tens of milliseconds: done here, in its own task
+          const warm = document.createElement('canvas').getContext('2d')!;
+          warm.imageSmoothingQuality = 'medium';
+          warm.drawImage(bmp, 0, 0, bmp.width, bmp.height, 0, 0, 1, 1);
           this.sheets[i] = bmp;
           this.arrived();
         })
@@ -657,10 +675,10 @@ export class CanvasTree2Renderer implements Tree2Renderer {
     }
   }
 
-  private discs(ctx: CanvasRenderingContext2D, s: number, [vx0, vy0, vx1, vy1]: Rect) {
+  private discs(ctx: CanvasRenderingContext2D, s: number, [vx0, vy0, vx1, vy1]: Rect, from = 0, to = this.scene.counts.discs) {
     const { scene } = this;
     const d = scene.discs;
-    for (let i = 0; i < scene.counts.discs; i++) {
+    for (let i = from; i < to; i++) {
       const o = i * DISC_FLOATS;
       const r = Math.max(d[o + 2], 1.5 / s);
       if (d[o] + r < vx0 || d[o] - r > vx1 || d[o + 1] + r < vy0 || d[o + 1] - r > vy1) continue;
@@ -676,8 +694,8 @@ export class CanvasTree2Renderer implements Tree2Renderer {
   }
 
   // T is the tree-to-device scale k and offset (tx, ty); an image wholly outside the device rect [X0, Y0, X1, Y1] is skipped
-  private sprites(ctx: CanvasRenderingContext2D, buf: Float32Array, count: number, k: number, tx: number, ty: number, [X0, Y0, X1, Y1]: Rect) {
-    for (let i = 0; i < count; i++) {
+  private sprites(ctx: CanvasRenderingContext2D, buf: Float32Array, count: number, k: number, tx: number, ty: number, [X0, Y0, X1, Y1]: Rect, from = 0) {
+    for (let i = from; i < count; i++) {
       const o = i * SPRITE2_FLOATS;
       const [a, b, c, d] = [k * buf[o + 2], k * buf[o + 3], k * buf[o + 4], k * buf[o + 5]];
       const [e, f] = [k * buf[o] + tx, k * buf[o + 1] + ty];
@@ -773,6 +791,57 @@ export class CanvasTree2Renderer implements Tree2Renderer {
     }
   }
 
+  // paints the next slice of p in the order paint() draws; true once the whole layer is painted
+  private paintSlice(p: NonNullable<typeof this.painting>, s: number, end: number) {
+    const { scene } = this;
+    const c = scene.counts;
+    const ctx = p.canvas.getContext('2d')!;
+    const [k, tx, ty] = [p.k, -p.x, -p.y];
+    const r: Rect = [0, 0, p.canvas.width, p.canvas.height];
+    const v: Rect = [(r[0] - tx) / k, (r[1] - ty) / k, (r[2] - tx) / k, (r[3] - ty) / k];
+    const steps: [number, (from: number, to: number) => void][] = scene.art
+      ? [
+          [c.under, (a, b) => this.sprites(ctx, scene.under, b, k, tx, ty, r, a)],
+          [c.lines, (a, b) => this.sprites(ctx, scene.lines, b, k, tx, ty, r, a)],
+          [c.connectorStrokes, (a, b) => this.strokes(ctx, a, b, s, v)],
+          [c.discs, (a, b) => this.discs(ctx, s, v, a, b)],
+          [c.over, (a, b) => this.sprites(ctx, scene.over, b, k, tx, ty, r, a)],
+          [c.strokes - c.connectorStrokes, (a, b) => this.strokes(ctx, c.connectorStrokes + a, c.connectorStrokes + b, s, v)]
+        ]
+      : [
+          [c.strokes, (a, b) => this.strokes(ctx, a, b, s, v)],
+          [c.discs, (a, b) => this.discs(ctx, s, v, a, b)]
+        ];
+    ctx.imageSmoothingQuality = 'medium';
+    for (; p.step < steps.length; p.step++, p.i = 0) {
+      const [n, run] = steps[p.step];
+      while (p.i < n) {
+        const to = Math.min(n, p.i + SLICE_ITEMS);
+        ctx.setTransform(k, 0, 0, k, tx, ty);
+        run(p.i, to);
+        p.i = to;
+        if (performance.now() > end) return p.step === steps.length - 1 && p.i === n;
+      }
+    }
+    return true;
+  }
+
+  private sameFill() {
+    const { scene } = this;
+    const c = scene.counts;
+    const now = [
+      scene.discs.subarray(0, c.discs * DISC_FLOATS),
+      scene.strokes.subarray(0, c.strokes * STROKE2_FLOATS),
+      scene.under.subarray(0, c.under * SPRITE2_FLOATS),
+      scene.lines.subarray(0, c.lines * SPRITE2_FLOATS),
+      scene.over.subarray(0, c.over * SPRITE2_FLOATS)
+    ];
+    const was = this.painted;
+    const same = !!was && now.every((a, i) => a.length === was[i].length && a.every((x, j) => x === was[i][j]));
+    if (!same) this.painted = now.map((a) => a.slice());
+    return same;
+  }
+
   private draw() {
     this.frame = 0;
     if (!this.state) return;
@@ -784,11 +853,13 @@ export class CanvasTree2Renderer implements Tree2Renderer {
     if (this.dirty) {
       this.dirty = false;
       fillScene2(scene, this.state, this.sheetReady);
-      this.shown = this.requested.every((r, i) => !r || !!this.sheets[i]);
-      this.spare = this.layer?.canvas ?? this.spare;
-      this.layer = undefined;
-      this.bounds = undefined;
-      if (this.scroll) this.scroll.k = NaN;
+      this.filled = this.requested.every((r, i) => !r || !!this.sheets[i]);
+      if (!this.sameFill()) {
+        this.fresh = false;
+        if (this.painting) [this.spare, this.painting] = [this.painting.canvas, undefined];
+        this.bounds = undefined;
+        if (this.scroll) this.scroll.k = NaN;
+      }
     }
     const s = scaleOf(scene, view);
     ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
@@ -802,21 +873,36 @@ export class CanvasTree2Renderer implements Tree2Renderer {
     // a test turns the layer off to compare it with the scene drawn straight to the canvas
     const layered = (globalThis as { __tree2Probe?: { layer?: boolean } }).__tree2Probe?.layer !== false;
     if (layered && lw > 0 && lh > 0 && lw * lh <= LAYER_PIXELS) {
-      if (this.layer?.k !== k) {
-        const c = this.layer?.canvas ?? this.spare ?? document.createElement('canvas');
-        this.spare = undefined;
-        if (c.width !== lw || c.height !== lh) [c.width, c.height] = [lw, lh];
-        const lc = c.getContext('2d')!;
-        lc.setTransform(1, 0, 0, 1, 0, 0);
-        lc.clearRect(0, 0, lw, lh);
-        this.paint(lc, s, k, 1 - x0 * k, 1 - y0 * k);
-        this.layer = { canvas: c, k, x: x0 * k - 1, y: y0 * k - 1 };
+      if (!this.fresh || this.layer?.k !== k) {
+        if (this.painting?.k !== k) {
+          const c = this.painting?.canvas ?? this.spare ?? document.createElement('canvas');
+          this.spare = undefined;
+          if (c.width !== lw || c.height !== lh) [c.width, c.height] = [lw, lh];
+          const lc = c.getContext('2d')!;
+          lc.setTransform(1, 0, 0, 1, 0, 0);
+          lc.clearRect(0, 0, lw, lh);
+          this.painting = { canvas: c, k, x: x0 * k - 1, y: y0 * k - 1, step: 0, i: 0 };
+        }
+        const p = this.painting;
+        if (this.paintSlice(p, s, t0 + SLICE_MS)) {
+          this.spare = this.layer?.canvas;
+          this.layer = { canvas: p.canvas, k, x: p.x, y: p.y };
+          this.painting = undefined;
+          this.fresh = true;
+        } else this.request();
       }
+      // a layer at another scale is drawn scaled until the one at this scale is painted; with none, the part painted so far
+      const l = this.layer ?? this.painting!;
+      const z = k / l.k;
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.drawImage(this.layer.canvas, Math.round(tx + this.layer.x), Math.round(ty + this.layer.y));
+      if (z === 1) ctx.drawImage(l.canvas, Math.round(tx + l.x), Math.round(ty + l.y));
+      else ctx.drawImage(l.canvas, tx + l.x * z, ty + l.y * z, l.canvas.width * z, l.canvas.height * z);
+      this.shown = this.filled && this.fresh && l === this.layer && z === 1;
     } else {
       this.spare = this.layer?.canvas ?? this.spare;
       this.layer = undefined;
+      this.fresh = false;
+      this.shown = this.filled;
       if (layered) {
         const scroll = this.scrolled(s, k, tx, ty, w, h);
         ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -873,10 +959,18 @@ export class CanvasTree2Renderer implements Tree2Renderer {
 }
 
 // a software WebGL (SwiftShader, llvmpipe) pans slower than Canvas 2D, so it takes the canvas, as PoE1's tree does
-export const createTree2Renderer = (canvas: HTMLCanvasElement, scene: Scene2, afterDraw: (ms: number) => void, force?: 'webgl' | 'canvas'): Tree2Renderer => {
+// gl: a context already made on canvas, which the renderer takes
+export const createTree2Renderer = (
+  canvas: HTMLCanvasElement,
+  scene: Scene2,
+  afterDraw: (ms: number) => void,
+  force?: 'webgl' | 'canvas',
+  gl?: WebGL2RenderingContext
+): Tree2Renderer => {
+  if (gl) return new GlTree2Renderer(gl, scene, afterDraw);
   if (force === 'webgl' || (force === undefined && hardwareWebGL2())) {
-    const gl = canvas.getContext('webgl2', { alpha: false, antialias: false, premultipliedAlpha: true });
-    if (gl) return new GlTree2Renderer(gl, scene, afterDraw);
+    const ctx = canvas.getContext('webgl2', GL2_ATTRS);
+    if (ctx) return new GlTree2Renderer(ctx, scene, afterDraw);
   }
   return new CanvasTree2Renderer(canvas, scene, afterDraw);
 };

@@ -5,6 +5,7 @@
   import { isTypingTarget } from '$lib/design/keys';
   import { createTree2Renderer, type Tree2Renderer } from './gl_renderer2';
   import { park, unpark, type Parked } from './tree_cache';
+  import { GL2_ATTRS, hardwareContext } from './webgl';
   import { buildAtlas2, sheetPath2 } from '$lib/skill_tree/tree2_art';
   import {
     attachArt2,
@@ -244,46 +245,69 @@
 
   onMount(() => {
     let entry = kept;
-    if (!entry || entry.scene !== scene) {
-      entry?.renderer.destroy();
-      const c = document.createElement('canvas');
-      c.className = 'absolute inset-0 h-full w-full';
-      const fresh: Parked<Tree2Renderer, Scene2> = (entry = { key: treeKey(), canvas: c, scene, onDraw: afterDraw, renderer: undefined! });
-      fresh.renderer = createTree2Renderer(c, scene, (ms) => fresh.onDraw(ms), probe()?.renderer as 'webgl' | 'canvas' | undefined);
+    if (entry && entry.scene !== scene) {
+      entry.renderer.destroy();
+      entry = undefined;
     }
-    entry.onDraw = afterDraw;
-    host!.append(entry.canvas);
-    canvas = entry.canvas;
-    renderer = entry.renderer;
-    const p = probe();
-    if (p) {
-      p.renderer = renderer.kind;
-      p.screenOf = project;
-      p.focus = focus;
-      p.sprite = (name) => {
-        const sp = scene.art?.atlas.byName.get(name);
-        return sp && { url: `${scene.art!.base}/${sheetPath2(scene.art!.atlas.sheets[sp.sheet])}`, x: sp.x, y: sp.y, w: sp.w, h: sp.h };
-      };
-      p.icon = (id) => scene.art?.data.nodes[String(id)]?.icon;
-      p.scale = () => scaleOf(scene, view);
-      p.sheetCounts = () => {
-        const out: Record<string, number> = {};
-        for (const layer of ['under', 'lines', 'over'] as const) {
-          for (let i = 0; i < scene.counts[layer]; i++) {
-            const name = sheetPath2(scene.art!.atlas.sheets[scene[layer][i * SPRITE2_FLOATS + 10]]);
-            out[name] = (out[name] ?? 0) + 1;
+    const c = entry?.canvas ?? document.createElement('canvas');
+    c.className = 'absolute inset-0 h-full w-full';
+    host!.append(c);
+    canvas = c;
+    const attach = (e: Parked<Tree2Renderer, Scene2>) => {
+      entry = e;
+      e.onDraw = afterDraw;
+      renderer = e.renderer;
+      const p = probe();
+      if (p) {
+        p.renderer = e.renderer.kind;
+        p.screenOf = project;
+        p.focus = focus;
+        p.sprite = (name) => {
+          const sp = scene.art?.atlas.byName.get(name);
+          return sp && { url: `${scene.art!.base}/${sheetPath2(scene.art!.atlas.sheets[sp.sheet])}`, x: sp.x, y: sp.y, w: sp.w, h: sp.h };
+        };
+        p.icon = (id) => scene.art?.data.nodes[String(id)]?.icon;
+        p.scale = () => scaleOf(scene, view);
+        p.sheetCounts = () => {
+          const out: Record<string, number> = {};
+          for (const layer of ['under', 'lines', 'over'] as const) {
+            for (let i = 0; i < scene.counts[layer]; i++) {
+              const name = sheetPath2(scene.art!.atlas.sheets[scene[layer][i * SPRITE2_FLOATS + 10]]);
+              out[name] = (out[name] ?? 0) + 1;
+            }
           }
-        }
-        return out;
-      };
-    }
+          return out;
+        };
+      }
+    };
+    // a new renderer, with its graphics context, is built in a task of its own, apart from the page's mount
+    let build = entry
+      ? undefined
+      : setTimeout(() => {
+          // the graphics context in one task and the renderer's programs and buffers in the next
+          const force = probe()?.renderer as 'webgl' | 'canvas' | undefined;
+          const g = document.createElement('canvas');
+          const gl = force === undefined ? hardwareContext(g, GL2_ATTRS) : null;
+          build = setTimeout(() => {
+            if (gl) {
+              g.className = c.className;
+              c.replaceWith(g);
+              canvas = g;
+            }
+            const fresh: Parked<Tree2Renderer, Scene2> = { key: treeKey(), canvas: canvas!, scene, onDraw: afterDraw, renderer: undefined! };
+            fresh.renderer = createTree2Renderer(canvas!, scene, (ms) => fresh.onDraw(ms), force, gl ?? undefined);
+            attach(fresh);
+          });
+        });
+    if (entry) attach(entry);
     const ro = new ResizeObserver(resize);
     ro.observe(box!);
     resize();
     return () => {
+      clearTimeout(build);
       ro.disconnect();
       renderer = undefined;
-      park(entry);
+      if (entry) park(entry);
     };
   });
 

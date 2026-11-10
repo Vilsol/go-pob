@@ -95,8 +95,9 @@ const press = async (canvas: HTMLCanvasElement, p: { x: number; y: number }) => 
 };
 
 describe('the PoE2 tree view', () => {
-  it('keeps its renderer and canvas for the next visit, and builds none on the return', () => {
+  it('keeps its renderer and canvas for the next visit, and builds none on the return', async () => {
     const first = mount([]);
+    await vi.waitFor(() => expect(views.at(-1)?.width).toBe(W));
     const n = built;
     cleanup();
     expect(first.canvas.isConnected).toBe(false);

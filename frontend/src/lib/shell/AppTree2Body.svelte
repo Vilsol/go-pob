@@ -59,7 +59,8 @@
   });
   void poe2Worker()
     .then((w) => w.TreeData())
-    .then((d) => (treeData = d))
+    // the tree mounts in a task of its own, not in the one that received the tree's data
+    .then((d) => setTimeout(() => (treeData = d)))
     .catch(fail);
 
   const byId = $derived(new Map((treeData?.nodes ?? []).map((n) => [n.id, n])));
