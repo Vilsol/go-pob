@@ -404,6 +404,16 @@ npx playwright test -c e2e/playwright.config.ts {% if usage.grep %}--grep "$usag
 ''',
 ]
 
+[tasks.e2e-rerun-failed]
+description = "Re-run each test a full e2e run failed, with the spec files of the tests that started just before it, in one worker, --times times (default 3); --log is that run's saved output. Use it before re-running the whole suite for a lone failure"
+dir = "frontend"
+usage = '''
+flag "--log <log>" env="LOG" required=#true
+flag "--before <before>" env="BEFORE" default="12"
+flag "--times <times>" env="TIMES" default="3"
+'''
+run = 'node e2e/rerun_failed.mjs --log "$usage_log" --before "$usage_before" --times "$usage_times"'
+
 [tasks.e2e-durations]
 description = "Record each e2e test's duration from a CI run (--run <id>, default the latest finished e2e run on dev) into frontend/e2e/durations.json, which CI's shards split by"
 dir = "frontend"
