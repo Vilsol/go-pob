@@ -12,6 +12,8 @@
   import { dropZone, type DropZone } from './reorder';
   import SocketPreview from './SocketPreview.svelte';
   import ItemIcon from './ItemIcon.svelte';
+  import PobText from './PobText.svelte';
+  import { pobPlain } from './pob_text';
   import ItemSockets from './ItemSockets.svelte';
   import { abyssalSlots, artBox, placeGems, type SocketedGem, type SocketedGroup } from './item_sockets';
   import TooltipLines from './TooltipLines.svelte';
@@ -220,7 +222,7 @@
     <button
       bind:this={els[k]}
       class="relative box-border flex h-full w-[calc(100%-1.75rem)] flex-col items-start justify-between overflow-hidden rounded-l border-0 bg-transparent p-1.5 pr-0.5 text-left font-sans"
-      aria-label="{b.slot}: {e ? e.item.name : 'Empty'}"
+      aria-label="{b.slot}: {e ? pobPlain(e.item.name) : 'Empty'}"
       aria-haspopup={e || oncraft ? 'dialog' : undefined}
       title={e || !oncraft ? undefined : `Craft an item for ${b.slot}`}
       aria-describedby={hover === k && tip ? `${uid}-tip` : undefined}
@@ -248,7 +250,7 @@
           <span
             data-pob-color={e && (!flask || flasks[k]) ? '' : undefined}
             class={['rounded-tight bg-tile/80 text-12 leading-[0.9375rem] font-semibold', e && (!flask || flasks[k]) ? 'text-(--tone)' : 'text-text-3']}
-            >{e ? e.item.name : 'Empty'}</span>
+            >{#if e}<PobText text={e.item.name} />{:else}Empty{/if}</span>
           {#if e?.item.sockets}<span class="note-sm rounded-tight bg-tile/80 font-mono before:content-[attr(data-sockets)]" data-sockets={e.item.sockets}></span
             >{/if}
         </span>
@@ -393,7 +395,7 @@
       <button
         bind:this={els[slot]}
         class="min-w-0 grow truncate border-0 bg-transparent p-0 text-left font-sans text-12"
-        aria-label="{label}: {e ? e.item.name : 'Empty'}"
+        aria-label="{label}: {e ? pobPlain(e.item.name) : 'Empty'}"
         aria-haspopup={!e && oncraft ? 'dialog' : undefined}
         title={e || !oncraft ? undefined : `Craft an item for ${label}`}
         onclick={() => (e ? onedit(slot) : oncraft?.(slot))}
@@ -402,7 +404,9 @@
         onfocus={() => (hover = slot)}
         onblur={() => (hover = null)}
         ><span class="text-text-3">{label}</span>
-        <span data-pob-color class={e ? 'text-(--tone)' : 'text-text-3'}>{e ? e.item.name : 'Empty'}</span></button>
+        <span data-pob-color class={e ? 'text-(--tone)' : 'text-text-3'}
+          >{#if e}<PobText text={e.item.name} />{:else}Empty{/if}</span
+        ></button>
       {#if e || fitting(slot).length}
         <SlotMenu
           slot={label}

@@ -4,6 +4,7 @@
   import SearchField from './SearchField.svelte';
   import Icon from './Icon.svelte';
   import ItemIcon from './ItemIcon.svelte';
+  import PobText from './PobText.svelte';
   import FloatingItemTip from './FloatingItemTip.svelte';
   import Select from './Select.svelte';
   import Button from './Button.svelte';
@@ -223,7 +224,7 @@
                 }
               }}
               onfocus={() => (hover = r.key)}
-              onblur={() => (hover = null)}>{r.tip.item}</button>
+              onblur={() => (hover = null)}><PobText text={r.tip.item} /></button>
           </span>
           <span role="cell" class="col-span-7 truncate text-text-2">{r.tip.base}</span>
           <span role="cell" class={['col-span-4 truncate', hover === r.key ? 'text-text-2' : 'text-text-3']}>{r.slot}</span>

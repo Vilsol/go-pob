@@ -3,6 +3,7 @@
   import FloatingItemTip from './FloatingItemTip.svelte';
   import SlotMenu from './SlotMenu.svelte';
   import ItemIcon from './ItemIcon.svelte';
+  import PobText from './PobText.svelte';
   import { tone as toneClass, type Tone } from './tone';
   import { itemTip, type WhatIf } from './items';
   import type { ItemSummary, StatDiff } from './fixtures';
@@ -88,7 +89,7 @@
           aria-describedby={hover === key && tip ? `${uid}-tip` : undefined}
           onclick={() => onedit(key)}
           onfocus={enter(key)}
-          onblur={leave}>{e.item.name}</button>
+          onblur={leave}><PobText text={e.item.name} /></button>
       {:else if oncraft && menu}
         <button
           class={['cell-link', hover === key ? 'text-text-2' : 'text-text-3']}
