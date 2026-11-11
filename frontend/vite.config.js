@@ -10,6 +10,7 @@ const config = {
   resolve: process.env.VITEST ? { conditions: ['browser'] } : undefined,
 
   test: {
+    name: 'unit',
     environment: 'node',
     testTimeout: 20_000,
     poolOptions: { forks: { maxForks: Math.max(1, Math.floor(availableParallelism() / 2)), minForks: 1 } },

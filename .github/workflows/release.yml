@@ -87,28 +87,21 @@ jobs:
         run: pnpm i
         working-directory: frontend
 
-      - name: Build wasm
-        run: |
-          go build -trimpath -tags=timetzdata -v -o frontend/static/go-pob.wasm ./wasm
-          go build -trimpath -tags=timetzdata -v -o frontend/static/go-pob2.wasm ./wasm2
-        env:
-          GOOS: js
-          GOARCH: wasm
-
       - name: Set up TinyGo
         run: ./.github/tinygo_install.sh
 
-      - name: Build TinyGo wasm
+      # four wasm files, each built then compressed in its own process: the TinyGo builds and brotli are mostly
+      # single-threaded, so side by side the step takes about as long as the slowest file
+      - name: Build and compress wasm
         run: |
-          ./.github/tinygo_build.sh wasm frontend/static/go-pob-tiny.wasm -tags=timetzdata
-          ./.github/tinygo_build.sh wasm2 frontend/static/go-pob2-tiny.wasm -tags=timetzdata
-
-      - name: Compress wasm
-        run: |
-          gzip -k9 frontend/static/go-pob.wasm frontend/static/go-pob2.wasm frontend/static/go-pob-tiny.wasm frontend/static/go-pob2-tiny.wasm
-          node frontend/scripts/compress-wasm.mjs go-pob.wasm go-pob2.wasm go-pob-tiny.wasm go-pob2-tiny.wasm
-          rm frontend/static/go-pob.wasm frontend/static/go-pob.wasm.br.sha256 frontend/static/go-pob2.wasm frontend/static/go-pob2.wasm.br.sha256
-          rm frontend/static/go-pob-tiny.wasm frontend/static/go-pob-tiny.wasm.br.sha256 frontend/static/go-pob2-tiny.wasm frontend/static/go-pob2-tiny.wasm.br.sha256
+          static=frontend/static
+          pack() { gzip -k9 "$static/$1" && node frontend/scripts/compress-wasm.mjs "$1" && rm "$static/$1" "$static/$1.br.sha256"; }
+          (GOOS=js GOARCH=wasm go build -trimpath -tags=timetzdata -v -o $static/go-pob.wasm ./wasm && pack go-pob.wasm) & p1=$!
+          (GOOS=js GOARCH=wasm go build -trimpath -tags=timetzdata -v -o $static/go-pob2.wasm ./wasm2 && pack go-pob2.wasm) & p2=$!
+          (./.github/tinygo_build.sh wasm $static/go-pob-tiny.wasm -tags=timetzdata && pack go-pob-tiny.wasm) & p3=$!
+          (./.github/tinygo_build.sh wasm2 $static/go-pob2-tiny.wasm -tags=timetzdata && pack go-pob2-tiny.wasm) & p4=$!
+          for p in "$p1" "$p2" "$p3" "$p4"; do wait "$p"; done
+          ls -la $static/*.wasm.*
 
       - name: Build frontend
         working-directory: frontend
