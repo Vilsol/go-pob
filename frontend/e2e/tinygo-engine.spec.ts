@@ -7,7 +7,7 @@ import { App } from './support/app';
 import { buildXml } from './support/builds';
 import { DATA_HOST, cachedAsset } from './support/data_cache';
 import * as go from './support/go_model';
-import { poe2Stat } from './support/poe2';
+import { poe2Nav, poe2Stat } from './support/poe2';
 import { expectedLines } from './support/stats';
 import { routeTreeAssets } from './support/tree_assets';
 
@@ -111,6 +111,40 @@ test.describe(() => {
     expect(tiny.wasm.filter((w) => w.startsWith('go-pob.wasm') || w.startsWith('go-pob2.wasm'))).toEqual([]);
     expect(tiny.value).toBe(std.value);
     expect([...std.errors, ...tiny.errors]).toEqual([]);
+  });
+
+  // a PoE2 build's every page on the TinyGo engine: a page whose worker call overflows TinyGo's stack crashes the engine,
+  // which falls back to Go (the Skills page did, with the default stack size)
+  test('with TinyGo chosen, every PoE2 page opens without the engine falling back to Go', async ({ browser }) => {
+    needsTinyGo();
+    const context = await browser.newContext({ serviceWorkers: 'block' });
+    await context.addInitScript(() => localStorage.setItem('options:poe2', 'true'));
+    await chooseTinyGo(context);
+    await routeData(context);
+    const page = await context.newPage();
+    const wasm = wasmRequests(page);
+    const logs: string[] = [];
+    page.on('console', (m) => logs.push(m.text()));
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(e.message));
+    await routeTreeAssets(page);
+    await page.goto('/');
+    await expect(page.getByRole('button', { name: 'Import build', exact: true })).toBeVisible({ timeout: 180_000 });
+    await importPoe2(page);
+    await expect(poe2Stat(page, 'Life')).toHaveText(/^\d/, { timeout: 180_000 });
+    for (const name of ['Tree', 'Skills', 'Items', 'Calcs', 'Config', 'Party', 'Notes']) {
+      try {
+        await poe2Nav(page, name).click({ timeout: 30_000 });
+        await expect(page).toHaveURL(new RegExp(`/${name.toLowerCase()}`));
+        await expect(poe2Stat(page, 'Life')).toHaveText(/^\d/, { timeout: 60_000 });
+        expect(logs.filter((l) => /crashed|stack overflow/.test(l))).toEqual([]);
+      } catch (e) {
+        throw new Error(`opening ${name}: ${(e as Error).message.split('\n')[0]}; last console lines: ${JSON.stringify(logs.slice(-12))}`);
+      }
+    }
+    expect(wasm.filter((w) => w.startsWith('go-pob.wasm') || w.startsWith('go-pob2.wasm'))).toEqual([]);
+    expect(errors).toEqual([]);
+    await context.close();
   });
 
   test('Settings switches the engine to TinyGo and back, each with a reload', async ({ page }) => {
