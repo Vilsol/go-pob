@@ -15,5 +15,7 @@ describe('itemLib.wiki', () => {
   });
   it('routes spaces to underscores and nothing else', () => {
     expect(wikiUrl("Kaom's Heart")).toBe("https://www.poewiki.net/wiki/Kaom's_Heart");
+    // PoB-PoE2's ItemTools.lua:480-485
+    expect(wikiUrl("Kaom's Heart", true)).toBe("https://www.poe2wiki.net/wiki/Kaom's_Heart");
   });
 });

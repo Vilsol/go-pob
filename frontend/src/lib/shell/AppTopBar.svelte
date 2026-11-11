@@ -7,7 +7,7 @@
   import { goto } from '$app/navigation';
   import { base } from '$app/paths';
   import { page } from '$app/state';
-  import { currentBuildPath, devMode } from '$lib/global.js';
+  import { currentBuildPath, devMode, poe2Build } from '$lib/global.js';
   import { showWarnings } from '$lib/display/item_options';
   import { currentEngine, runtime } from '$lib/go/engine';
   import { logError } from '$lib/utils';
@@ -112,7 +112,7 @@
     e.preventDefault();
     const wiki = hoveredWikiName();
     if (wiki) {
-      openWiki(wiki);
+      openWiki(wiki, !!$poe2Build);
       return;
     }
     const segment = importDialog.open ? 'import' : (page.url.pathname.slice(base.length).split('/').filter(Boolean)[0] ?? '');

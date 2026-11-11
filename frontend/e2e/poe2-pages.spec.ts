@@ -306,3 +306,25 @@ test('the PoE2 Notes page edits the notes the build saves with', async ({ page }
   await expect(view.getByRole('textbox', { name: 'Notes' })).toContainText('Spark plan', { timeout: 60_000 });
   expect(errors).toEqual([]);
 });
+
+// ItemTools.lua:475-485 (PoB-PoE2): F1 over an item opens its poe2wiki.net page, not poewiki.net's
+test('F1 over a PoE2 item opens its poe2wiki.net page', async ({ page }) => {
+  const { view, errors } = await open(page, ITEMS_FIXTURE);
+  await page.evaluate(() => {
+    const w = window as unknown as { opened: string[] };
+    w.opened = [];
+    window.open = (url?: string | URL) => (w.opened.push(String(url)), null);
+  });
+  await poe2Nav(page, 'Items').click();
+  // the fixture's stash lists its items; the Equipped board marks none for the wiki
+  await view.getByRole('tab', { name: 'Stash6' }).click();
+  const item = view.locator('[data-wiki]').first();
+  const name = await item.getAttribute('data-wiki');
+  expect(name, 'the Items page names no item for the wiki').toBeTruthy();
+  await item.hover();
+  await page.keyboard.press('F1');
+  await expect
+    .poll(() => page.evaluate(() => (window as unknown as { opened: string[] }).opened))
+    .toEqual([`https://www.poe2wiki.net/wiki/${name!.replaceAll(' ', '_')}`]);
+  expect(errors).toEqual([]);
+});
