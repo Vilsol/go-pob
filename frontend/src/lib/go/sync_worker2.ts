@@ -1246,6 +1246,18 @@ class PoB2Worker {
     return this.changed(SPEC_SOURCES[op.op]);
   }
 
+  /* TreeTab.lua:822-823 (PoB-PoE2) */
+  ExportTreeLink(): string {
+    return this.calc?.ExportTreeLink().unwrap() ?? '';
+  }
+
+  /* TreeTab.lua:695-814 (PoB-PoE2): the popup's message, or the build with the link's tree added and active */
+  async ImportTreeLink(title: string, link: string): Promise<{ msg: string; calc?: Poe2Calc }> {
+    if (!this.calc) throw new Error('no PoE2 build is open');
+    const msg = this.calc.ImportTreeLink(title, link).unwrap() ?? '';
+    return msg ? { msg } : { msg, calc: await this.changed('ImportTreeLink', `Imported a tree link as ${title || 'Default'}`) };
+  }
+
   /* PassiveSpec.lua:161-171 (PoB-PoE2) */
   TreeNodeNote(nodeId: number): string {
     return this.calc?.TreeNodeNote(nodeId) ?? '';

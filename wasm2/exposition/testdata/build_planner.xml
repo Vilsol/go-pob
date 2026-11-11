@@ -105,6 +105,8 @@ Implicits: 0
 			</Sockets>
 			<WeaponSet1 nodes="4739"/>
 			<Notes>
+				<Note nodeId="4739">A note on an allocated node
+over two lines</Note>
 				<Note nodeId="46819">Take this first</Note>
 			</Notes>
 		</Spec>

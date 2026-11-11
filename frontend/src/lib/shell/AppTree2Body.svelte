@@ -22,6 +22,7 @@
   import { showPowerRows, type PowerFilter, type PowerSort, type ShownPowerRow } from '$lib/design/tree';
   import { displayStats2 } from '$lib/display/stats2';
   import { formatNumSep, luaFormat } from '$lib/display/format_stat';
+  import { resolvePoeUrl, shrinkTreeLink } from './link_import';
 
   // the PoE2 worker hands back a Poe2Calc; a view without its fields renders the stats it has
   const view = $derived($poe2Build as (Partial<Poe2Calc> & Poe2View) | undefined);
@@ -249,6 +250,22 @@
     const v = get(poe2Build);
     if (v) poe2Edited(v);
   };
+  // TreeTab.lua:766-814 (PoB-PoE2): a poeurl.com link is resolved first; the message is the popup's, empty on success
+  const importTree = async (title: string, link: string) => {
+    let resolved = link;
+    if (/poeurl\.com\//.test(link)) {
+      try {
+        resolved = await resolvePoeUrl(link);
+      } catch (err) {
+        return err instanceof Error ? err.message : String(err);
+      }
+    }
+    const res = await poe2Run(
+      (w) => w.ImportTreeLink(title, resolved),
+      (r) => r.calc
+    );
+    return res ? res.msg : (get(poe2Error) ?? 'Import failed');
+  };
   const ATTRIBUTES = ['Strength', 'Dexterity', 'Intelligence'];
   const nodeLabel = (n: Tree2Node | TreeNodeFx | undefined) => n?.name ?? '';
   /* PassiveTreeView.lua:478-488, 513 (PoB-PoE2): the base class whose ascendancies hold the picked node's */
@@ -292,6 +309,10 @@
         specTip={m.specTip}
         onpick={(n: TreeNodeFx) => void pick(n).catch(logError)}
         onresettree={() => m.reset()}
+        onexporttree={async () => (await poe2Worker()).ExportTreeLink()}
+        onshrinktree={shrinkTreeLink}
+        onimporttree={importTree}
+        wikiUrl={(name: string) => `https://www.poe2wiki.net/wiki/${name.replaceAll(' ', '_')}`}
         {compareSpec}
         oncompare={(i: number) => (compareSpec = i)}
         project={(id: number) => tree2?.project(id)}

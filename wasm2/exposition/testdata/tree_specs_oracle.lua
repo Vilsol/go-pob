@@ -1,9 +1,11 @@
 -- Loads a build and edits its passive trees through the tree list's and the top bar's own controls, one step at a
 -- time, recalculating after each. Prints one JSON row per step: the step name, the active spec, the tree list's
 -- labels, every spec as Save writes it, and a few output stats.
--- usage: tree_specs_oracle.lua <out.jsonl> <build.xml> specs|class
+-- The links scenario's rows also carry the Export Tree popup's link, or the link the Import Tree popup took and its
+-- message.
+-- usage: tree_specs_oracle.lua <out.jsonl> <build.xml> specs|class|links
 local outPath, xmlPath, scenario = arg[1], arg[2], arg[3]
-assert(outPath and xmlPath and (scenario == "specs" or scenario == "class"), "usage: tree_specs_oracle.lua <out.jsonl> <build.xml> specs|class")
+assert(outPath and xmlPath and (scenario == "specs" or scenario == "class" or scenario == "links"), "usage: tree_specs_oracle.lua <out.jsonl> <build.xml> specs|class|links")
 
 dofile("HeadlessWrapper.lua")
 
@@ -26,8 +28,12 @@ local build = __mainObject__.main.modes.BUILD
 local tab = build.treeTab
 
 -- a popup's text box takes the step's title and its Save is pressed; a confirm popup takes the step's answer
-local title, answer
+local title, answer, popup
 main.OpenPopup = function(_, _, _, _, controls)
+	popup = controls
+	if scenario == "links" then
+		return
+	end
 	controls.edit:SetText(title, true)
 	controls.save.onClick()
 end
@@ -43,6 +49,7 @@ local list = new("PassiveSpecListControl"):PassiveSpecListControl(nil, { 0, 50, 
 
 local stats = { "Life", "Str", "Dex", "Int" }
 local out = assert(io.open(outPath, "w"))
+local link, msg
 local function row(step)
 	build.buildFlag = true
 	runCallback("OnFrame")
@@ -85,7 +92,9 @@ local function row(step)
 	end
 	out:write('{"step":', encodeString(step), ',"active":', tab.activeSpec, ',"className":', encodeString(build.spec.curClassName),
 		',"ascendClassName":', encodeString(build.spec.curAscendClassName), ',"labels":[', table.concat(labels, ","), '],"specs":[',
-		table.concat(specs, ","), '],"output":{', table.concat(parts, ","), "}}\n")
+		table.concat(specs, ","), '],"output":{', table.concat(parts, ","), "}", link and (',"link":' .. encodeString(link)) or "",
+		msg and (',"msg":' .. encodeString(msg)) or "", "}\n")
+	link, msg = nil, nil
 end
 
 local function select(index)
@@ -156,6 +165,35 @@ if scenario == "specs" then
 	pick(2)
 	list:OnSelDelete(2, list.selValue)
 	row("delete 2")
+elseif scenario == "links" then
+	local function export()
+		tab:OpenExportPopup()
+		link = popup.edit.buf
+		row("export")
+		return popup.edit.buf
+	end
+	local function import(name, treeLink)
+		tab:OpenImportPopup()
+		popup.name:SetText(name, true)
+		popup.edit:SetText(treeLink, true)
+		popup.import.onClick()
+		link, msg = treeLink, popup.msg.label:gsub("%^%d", "")
+		row("import " .. name)
+	end
+	local radius = export()
+	import("Radius link", radius)
+	select(2)
+	row("select 2")
+	local weaponSets = export()
+	import("Weapon sets link", "https://www.pathofexile.com/passive-skill-tree/0.5.0/" .. weaponSets)
+	ascendDrop(2)
+	row("ascendancy 2")
+	local ascended = export()
+	import("Ascended link", "https://poeskilltree.com/?v=0.5.0#" .. ascended)
+	import("Bad link", "xx")
+	import("Version 7 link", "AAAABwYA")
+	import("Class 99 link", "AAAABmMAAA==")
+	import("Planner link", "https://poeplanner.com/AAAAAAAAAAAAAAAAAAAA")
 else
 	ascendDrop(1)
 	row("ascendancy 1")

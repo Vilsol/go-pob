@@ -180,6 +180,89 @@ test('the PoE2 tree page manages trees and keeps a node note', async ({ page }) 
   expect(errors).toEqual([]);
 });
 
+// PassiveTreeView.lua:200-211, 251-255 and ItemTools.lua:480-485 (PoB-PoE2): Ctrl+C copies the hovered node's name and
+// stats, F1 opens its poe2wiki.net page, and a Ctrl+click zooms two steps in (out with the right button) without
+// allocating; node 44871 is TreeData/0_5/tree.lua's "Energy Shield", "+10 to maximum Energy Shield"
+test('the PoE2 tree copies a node, opens its wiki page and zooms with Ctrl+click', async ({ page }) => {
+  const errors: string[] = [];
+  await openPoe2(page, errors);
+  const view = poe2Page(page);
+  await expect(view).toBeVisible({ timeout: 180_000 });
+  await poe2Nav(page, 'Tree').click();
+  await expect(view.getByRole('img', { name: 'Passive skill tree' })).toBeVisible({ timeout: 60_000 });
+  await page.evaluate(() => {
+    const seen = ((globalThis as unknown as { __seen: string[] }).__seen = [] as string[]);
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText: (t: string) => (seen.push(`copy:${t}`), Promise.resolve()) }, configurable: true });
+    window.open = (url?: string | URL) => (seen.push(`open:${String(url)}`), null);
+  });
+  const seen = () => page.evaluate(() => (globalThis as unknown as { __seen: string[] }).__seen);
+  const zoomLevel = () =>
+    page.evaluate(() => (globalThis as unknown as { __tree2Probe: { frames: { view: { zoomLevel: number } }[] } }).__tree2Probe.frames.at(-1)?.view.zoomLevel);
+
+  let at = await screenOf(page, 44871);
+  await page.mouse.move(at.x, at.y);
+  for (let i = 0; i < 10; i++) await page.mouse.wheel(0, -100);
+  await expect.poll(zoomLevel).toBe(13);
+  at = await screenOf(page, 44871);
+  await page.mouse.move(at.x + 1, at.y + 1);
+  await page.mouse.move(at.x, at.y);
+  await expect.poll(async () => (await lastFrame(page))?.hovered).toBe(44871);
+  await page.keyboard.press('Control+c');
+  await page.keyboard.press('F1');
+  await expect.poll(seen).toEqual(['copy:# Energy Shield\n+10 to maximum Energy Shield\n', 'open:https://www.poe2wiki.net/wiki/Energy_Shield']);
+
+  const alloc = (await lastFrame(page))?.alloc;
+  await page.keyboard.down('Control');
+  await page.mouse.click(at.x, at.y);
+  await expect.poll(zoomLevel).toBe(15);
+  await page.mouse.click(at.x, at.y, { button: 'right' });
+  await expect.poll(zoomLevel).toBe(13);
+  await page.keyboard.up('Control');
+  expect((await lastFrame(page))?.alloc).toBe(alloc);
+  await expect(poe2Stat(page, 'EnergyShield')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+// TreeTab.lua:695-849 (PoB-PoE2): Export Tree gives PoB-PoE2's link for the active tree, Import Tree refuses what it
+// refuses with its message and adds a tree from a link; the links and messages are PoB-PoE2's, from
+// wasm2/exposition/testdata/tree_specs_oracle.lua
+test('the PoE2 tree page exports and imports tree links as PoB-PoE2 does', async ({ page }) => {
+  const rows = readFileSync(resolve(import.meta.dirname, '../../wasm2/exposition/testdata/tree_specs_links_pob.jsonl'), 'utf8')
+    .trim()
+    .split('\n')
+    .map((l) => JSON.parse(l) as { step: string; link?: string; msg?: string; labels: string[] });
+  const exported = rows.find((r) => r.step === 'export')!;
+  const bad = rows.find((r) => r.step === 'import Bad link')!;
+  const imported = rows.find((r) => r.step === 'import Radius link')!;
+  const errors: string[] = [];
+  await openPoe2(page, errors, resolve(import.meta.dirname, '../../wasm2/exposition/testdata/tree_specs.xml'));
+  const view = poe2Page(page);
+  await expect(view).toBeVisible({ timeout: 180_000 });
+  await poe2Nav(page, 'Tree').click();
+  await expect(view.getByRole('img', { name: 'Passive skill tree' })).toBeVisible({ timeout: 60_000 });
+
+  await page.keyboard.press('Control+m');
+  const dialog = page.getByRole('dialog', { name: 'Manage passive trees' });
+  await dialog.getByRole('button', { name: 'Export Tree' }).click();
+  await expect(dialog.getByRole('textbox', { name: 'Passive tree link' })).toHaveValue(exported.link!);
+  await dialog.getByRole('group', { name: 'Export Tree' }).getByRole('button', { name: 'Done' }).click();
+
+  await dialog.getByRole('button', { name: 'Import Tree' }).click();
+  const form = dialog.getByRole('form', { name: 'Import Tree' });
+  await form.getByRole('textbox', { name: 'Enter name for this passive tree' }).fill('Radius link');
+  await form.getByRole('textbox', { name: 'Enter passive tree link' }).fill(bad.link!);
+  await form.getByRole('button', { name: 'Import' }).click();
+  await expect(form.getByRole('alert')).toHaveText(bad.msg!);
+  await expect(dialog.getByRole('listbox', { name: 'Passive trees' }).getByRole('option')).toHaveCount(2);
+
+  await form.getByRole('textbox', { name: 'Enter passive tree link' }).fill(imported.link!);
+  await form.getByRole('button', { name: 'Import' }).click();
+  await expect(form).toBeHidden();
+  await expect(dialog.getByRole('listbox', { name: 'Passive trees' }).getByRole('option')).toHaveCount(imported.labels.length);
+  await expect(dialog.getByRole('option', { name: /^Radius link/ })).toContainText('current');
+  expect(errors).toEqual([]);
+});
+
 // TreeTab.lua:197-283, 932-1048 and PassiveTreeView.lua:1003-1030 (PoB-PoE2): the power report lists the nodes' power for
 // the chosen stat and depth, and the tree draws each node's power
 test('the PoE2 power report lists node power and the tree draws the heat map', async ({ page }) => {

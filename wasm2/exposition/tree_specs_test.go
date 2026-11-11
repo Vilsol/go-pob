@@ -14,6 +14,8 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/Vilsol/go-pob/pob2"
 )
 
 // treeSpecsRow is one row of testdata/tree_specs_<scenario>_pob.jsonl, which testdata/tree_specs_oracle.lua writes
@@ -26,10 +28,14 @@ type treeSpecsRow struct {
 	Labels          []string            `json:"labels"`
 	Specs           []map[string]string `json:"specs"`
 	Output          map[string]float64  `json:"output"`
+	Link            string              `json:"link"`
+	Msg             string              `json:"msg"`
 }
 
-// oracleSpec is the idx-th <Spec> as the oracle prints PassiveSpec:Save's output of it.
-func oracleSpec(t *testing.T, c *Calculator, idx int) map[string]string {
+// oracleSpec is the idx-th <Spec> as the oracle prints PassiveSpec:Save's output of it. With fileNodes its nodes are the
+// build file's, in id order: a spec Import Tree just decoded keeps nodes that a Load prunes (PassiveSpec.lua:1951-2007)
+// until an edit runs BuildAllDependsAndPaths on it, and the file holds them as PoB-PoE2 would save them.
+func oracleSpec(t *testing.T, c *Calculator, idx int, fileNodes bool) map[string]string {
 	t.Helper()
 	s := &c.build.Tree.Specs[idx-1]
 	spec, err := c.specAt(idx)
@@ -39,6 +45,9 @@ func oracleSpec(t *testing.T, c *Calculator, idx int) map[string]string {
 		"title": specTitle(s), "treeVersion": save.TreeVersion, "classId": strconv.Itoa(save.ClassID), "ascendClassId": strconv.Itoa(save.AscendClassID),
 		"nodes": save.Nodes, "masteryEffects": save.MasteryEffects, "secondaryAscendClassId": "nil",
 		"overrides": save.StrNodes + "|" + save.DexNodes + "|" + save.IntNodes,
+	}
+	if fileNodes {
+		out["nodes"] = sortedNodes(s)
 	}
 	if s.Title == nil {
 		out["title"] = ""
@@ -57,6 +66,24 @@ func oracleSpec(t *testing.T, c *Calculator, idx int) map[string]string {
 	return out
 }
 
+func sortedNodes(s *pob2.Spec) string {
+	if s.Nodes == nil {
+		return ""
+	}
+	var ids []int
+	for _, f := range strings.Split(*s.Nodes, ",") {
+		if id, err := strconv.Atoi(f); err == nil {
+			ids = append(ids, id)
+		}
+	}
+	slices.Sort(ids)
+	parts := make([]string, len(ids))
+	for i, id := range ids {
+		parts[i] = strconv.Itoa(id)
+	}
+	return strings.Join(parts, ",")
+}
+
 // treeSpecsSteps are the oracle's steps, by its step names.
 var treeSpecsSteps = map[string]func(t *testing.T, c *Calculator){
 	"new Second":         func(t *testing.T, c *Calculator) { mustOK(t, c.NewTreeSpec("Second")) },
@@ -72,6 +99,7 @@ var treeSpecsSteps = map[string]func(t *testing.T, c *Calculator){
 	"delete 2":           func(_ *testing.T, c *Calculator) { c.DeleteTreeSpec(2) },
 	"ascendancy 1":       func(t *testing.T, c *Calculator) { mustOK(t, c.ChangeTreeAscendancy(1)) },
 	"ascendancy 0":       func(t *testing.T, c *Calculator) { mustOK(t, c.ChangeTreeAscendancy(0)) },
+	"ascendancy 2":       func(t *testing.T, c *Calculator) { mustOK(t, c.ChangeTreeAscendancy(2)) },
 	"class Sorceress cancel": func(t *testing.T, c *Calculator) {
 		if ask, err := c.ChangeTreeClass(classIDOf(t, "Sorceress"), TreeClassAsk); err != nil || !ask {
 			t.Fatalf("the change does not ask first: %v %v", ask, err)
@@ -136,27 +164,43 @@ func readTreeSpecsOracle(t *testing.T, scenario string) []treeSpecsRow {
 }
 
 func TestTreeSpecsMatchPoB(t *testing.T) {
-	for _, scenario := range []string{"specs", "class"} {
+	for _, scenario := range []string{"specs", "class", "links"} {
 		t.Run(scenario, func(t *testing.T) {
 			calc, _ := openFixture(t, "tree_specs.xml")
 			for _, want := range readTreeSpecsOracle(t, scenario) {
+				var link, msg string
 				if step, ok := treeSpecsSteps[want.Step]; ok {
 					step(t, calc)
+				} else if want.Step == "export" {
+					var err error
+					link, err = calc.ExportTreeLink()
+					mustOK(t, err)
+				} else if title, ok := strings.CutPrefix(want.Step, "import "); ok {
+					var err error
+					link = want.Link
+					msg, err = calc.ImportTreeLink(title, link)
+					mustOK(t, err)
 				} else if want.Step != "load" {
 					t.Fatalf("no step %q", want.Step)
 				}
 				out, err := calc.Calculate()
 				mustOK(t, err)
 				view := calc.TreeSpecs()
-				got := treeSpecsRow{Step: want.Step, Active: view.Active, ClassName: out.ClassName, AscendClassName: out.AscendClassName, Labels: view.Labels}
+				got := treeSpecsRow{Step: want.Step, Active: view.Active, ClassName: out.ClassName, AscendClassName: out.AscendClassName, Labels: view.Labels,
+					Link: link, Msg: msg}
 				for i := range calc.build.Tree.Specs {
-					got.Specs = append(got.Specs, oracleSpec(t, calc, i+1))
+					got.Specs = append(got.Specs, oracleSpec(t, calc, i+1, scenario == "links"))
 				}
 				got.Output = map[string]float64{}
 				for stat := range want.Output {
 					got.Output[stat] = math.Round(out.Output[stat])
 				}
 				if !reflect.DeepEqual(got, want) {
+					for i := range min(len(got.Specs), len(want.Specs)) {
+						if !reflect.DeepEqual(got.Specs[i], want.Specs[i]) {
+							t.Errorf("%s: spec %d\n got %v\nwant %v", want.Step, i+1, got.Specs[i], want.Specs[i])
+						}
+					}
 					t.Fatalf("%s:\n got %+v\nwant %+v", want.Step, got, want)
 				}
 			}
@@ -189,7 +233,7 @@ func TestTreeSpecsOracleIsCurrent(t *testing.T) {
 	mustOK(t, err)
 	fixture, err := filepath.Abs(filepath.Join("testdata", "tree_specs.xml"))
 	mustOK(t, err)
-	for _, scenario := range []string{"specs", "class"} {
+	for _, scenario := range []string{"specs", "class", "links"} {
 		out := filepath.Join(t.TempDir(), "tree.jsonl")
 		cmd := exec.CommandContext(context.Background(), "setarch", "-R", luajit, probe, out, fixture, scenario)
 		cmd.Dir = filepath.Join(pob, "src")

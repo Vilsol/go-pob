@@ -416,11 +416,13 @@ export declare namespace exposition {
     EquippedItems(): Result<(exposition.ItemsView | undefined)>;
     ExportCode(player: Array<exposition.SavedStat> | undefined, fullDPS: Array<exposition.SavedFullDPS> | undefined, minion: Array<exposition.SavedStat> | undefined): Result<string>;
     ExportParty(): boolean;
+    ExportTreeLink(): Result<string>;
     GemOptions(): calculator2.GemOptions;
     GemSortCache(group: number, gemIDs: Array<string> | undefined): Result<(exposition.GemSortCacheView | undefined)>;
     GemSortDPS(group: number, gemIDs: Array<string> | undefined, field: string): Promise<Result<(exposition.GemSortDPSView | undefined)>>;
     HoverNode(id: number, allocMode: number): exposition.TreeHover;
     ImportParty(xmlText: string, destination: string, appendMode: boolean): Result<void>;
+    ImportTreeLink(title: string, treeLink: string): Result<string>;
     ItemDBRows(kind: string, f: calculator2.ItemDBFilter): Result<(Array<exposition.ItemDBRow> | undefined)>;
     ItemText(id: number): Result<string>;
     ItemsPage(): Result<(exposition.ItemsPageView | undefined)>;

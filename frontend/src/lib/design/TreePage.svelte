@@ -107,6 +107,8 @@
     onimporttree?: (title: string, link: string) => Promise<string>;
     /* TreeTab.lua:818-830 */
     onshrinktree?: (link: string) => Promise<string>;
+    /* ItemTools.lua:480-485: the wiki page F1 opens for a node name; PoB-PoE2's is poe2wiki.net */
+    wikiUrl?: (name: string) => string;
     specTip?: {
       index: number;
       title: string;
@@ -193,6 +195,7 @@
     onexporttree,
     onimporttree,
     onshrinktree,
+    wikiUrl = (name: string) => `https://www.poewiki.net/wiki/${name.replace(/ /g, '_')}`,
     versions = [],
     specVersion,
     onresettree,
@@ -307,7 +310,7 @@
   function wikiKey(e: KeyboardEvent) {
     if (e.key !== 'F1' || !H || document.querySelector('dialog[open]')) return;
     e.preventDefault();
-    window.open(`https://www.poewiki.net/wiki/${H.name.replace(/ /g, '_')}`, '_blank', 'noopener');
+    window.open(wikiUrl(H.name), '_blank', 'noopener');
   }
   function pageKey(e: KeyboardEvent) {
     if (document.querySelector('dialog[open]')) return;
