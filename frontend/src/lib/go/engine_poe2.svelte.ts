@@ -322,7 +322,7 @@ export const poe2Engine: BuildEngine = {
     redo: () => moveHistory((w) => w.Redo()),
     undoTo: (i) => moveHistory((w) => w.UndoTo(i))
   },
-  // ConfigTab.lua (PoB-PoE2): no option comparisons, custom modifier comparisons or mod browser yet
+  // ConfigTab.lua (PoB-PoE2): no mod browser yet
   config: {
     table: () => import('$lib/design/config_table2').then((m) => m.poe2ConfigTable),
     revision: revision2,
@@ -330,7 +330,11 @@ export const poe2Engine: BuildEngine = {
       const v = get(poe2Build) as Calc | undefined;
       return v && Promise.resolve({ ...v.configInputs });
     },
-    placeholders: () => (get(poe2Build) ? Promise.resolve({}) : undefined),
+    // ConfigTab.lua:1051-1052 (PoB-PoE2)
+    placeholders: () => {
+      const v = get(poe2Build) as Calc | undefined;
+      return v && Promise.resolve({ ...v.configPlaceholders });
+    },
     relevance: derived(poe2Build, (v) => (v as Calc | undefined)?.relevance ?? ({} as calculator2.ConfigRelevance)),
     output: derived(poe2Build, (v) => v?.output),
     set: (key, value) => poe2Run((w) => w.SetConfigOption(key, value)),
@@ -353,8 +357,12 @@ export const poe2Engine: BuildEngine = {
       parse: (lines) =>
         poe2Worker()
           .then((w) => w.ParseModLines(lines))
-          .then((l) => l as exposition.ModLine[])
-    }
+          .then((l) => l as exposition.ModLine[]),
+      // ConfigTab.lua:62-79 (PoB-PoE2)
+      compare: (g) => (get(poe2Build) ? poe2Worker().then((w) => w.CustomModGroupCompare(g)) : undefined)
+    },
+    // ConfigTab.lua:774-838 (PoB-PoE2)
+    compare: (key, value) => (get(poe2Build) ? poe2Worker().then((w) => w.ConfigCompare(key, value)) : undefined)
   },
   // Build.lua:1479-1511, 2226-2331 (PoB-PoE2): the main calculation's breakdown and mod tables a sidebar line names
   breakdownSteps: async (line) => {

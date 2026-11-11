@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#MISE description="Record the pinned PoB-PoE2's config tab tooltip stat comparisons and option placeholders over the wasm2 Spark fixture"
+#USAGE flag "--pob2-dir <dir>" env="POB2_DIR" help="the PoB-PoE2 checkout (default: beside the repository)"
+set -euo pipefail
+root="$(git rev-parse --show-toplevel)"
+pob2="${POB2_DIR:-$(realpath "$(git rev-parse --path-format=absolute --git-common-dir)/../../PathOfBuilding-PoE2")}"
+mise run pob-pin --game poe2
+go run "$root/scripts/gopob" nice mise x --cd "$pob2/src" -- luajit "$root/oracle/poe2_config_whatif.lua" \
+  "$root/wasm2/exposition/testdata/sorceress_spark.xml" "$root/testdata/oracle/poe2_config_whatif_sorceress_spark.json" \
+  '<Input name="enemyIsBoss" string="None"/>' \
+  '<Input name="enemyIsBoss" string="Boss"/>' \
+  '<Input name="enemyIsBoss" string="Uber"/><Input name="enemySizePreset" string="Huge"/>' \
+  '<Input name="enemyIsBoss" string="Pinnacle"/><Input name="presetBossSkills" string="Atziri Flameblast"/>' \
+  '<Input name="enemyIsBoss" string="Uber"/><Input name="presetBossSkills" string="Shaper Slam"/><Input name="enemyLevel" number="90"/>' >/dev/null

@@ -61,6 +61,7 @@ func configPlaceholders(env *Environment) map[string]float64 {
 //pob2:block:src/Classes/ConfigTab.lua:1177-1199
 func applyConfigVars(env *Environment, modList, enemyModList *moddb.ModList) {
 	c := &configApply{env: env, modList: modList, enemyModList: enemyModList, placeholder: configPlaceholders(env)}
+	env.configPlaceholder = c.placeholder
 	for _, v := range configVarList {
 		input, set := env.ConfigInput[v.name]
 		if !set && v.defaultState != nil {

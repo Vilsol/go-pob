@@ -386,6 +386,8 @@ export declare namespace exposition {
     CompareItems(from: exposition.Calculator | undefined): Result<(exposition.CompareItemsView | undefined)>;
     CompareModsEqual(from: exposition.Calculator | undefined, sds: Array<calculator2.ModSectionData> | undefined): Result<(Array<boolean> | undefined)>;
     CompareSkillBreakdown(name: string): Result<(Array<calculator2.CompareSkillBreakdownRow> | undefined)>;
+    ConfigCompare(name: string, value: calculator2.ConfigValue): Promise<Result<(exposition.ItemCompareView | undefined)>>;
+    ConfigPlaceholders(): (Record<string, number> | undefined);
     ConfigRelevance(query: calculator2.ConfigRelevance): Result<calculator2.ConfigRelevance>;
     ConfigSets(): exposition.ConfigSetsView;
     CopyCompareItem(from: exposition.Calculator | undefined, slotName: string, andUse: boolean): Result<boolean>;
@@ -397,6 +399,7 @@ export declare namespace exposition {
     CopyTreeSpec(specID: number, title: string): Result<void>;
     CraftDisplayItem(rarity: number, title: string, base: string): Result<void>;
     CraftItemCompare(rarity: number, title: string, base: string): Promise<Result<(exposition.ItemCompareView | undefined)>>;
+    CustomModGroupCompare(i: number): Promise<Result<(exposition.ItemCompareView | undefined)>>;
     CustomModifierBlocks(): (Array<exposition.CustomBlock> | undefined);
     DBItemCompare(kind: string, name: string): Promise<Result<(exposition.ItemCompareView | undefined)>>;
     DeleteAllSocketGroups(): Result<void>;

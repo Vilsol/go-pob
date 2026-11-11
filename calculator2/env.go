@@ -105,6 +105,8 @@ type Environment struct {
 	WeaponSetValidationSkillList []*ActiveSkill
 	// partyTab is build.partyTab, parsed from the buffers it applies.
 	partyTab *partyTab
+	// configPlaceholder is the config set's placeholder table after BuildModList's options ran.
+	configPlaceholder map[string]float64
 }
 
 // calcOverride is CalcOverride's weaponSet, mainSocketGroup and skipWeaponSetContexts; 0 is nil. With RepSlotName

@@ -1,0 +1,449 @@
+{
+  "custom":[{
+      "group":0,
+      "lines":["^7Disabling this group will give you:","^xDD0022-25 Effective Hit Pool (-4.7%)","^xDD0022-32 Phys Max Hit (-4.2%)","^xDD0022-28 Fire Max Hit (-4.7%)","^xDD0022-21 Cold Max Hit (-4.6%)","^xDD0022-21 Lightning Max Hit (-4.6%)","^xDD0022-32 Chaos Max Hit (-4.7%)","^xDD0022-32 Total Life (-4.7%)"]
+    }],
+  "options":[{
+      "lines":["^7Toggling this option will give you:","^x33FF77+17.4 Average Hit (+100.0%)","^x33FF77+0.36 Cast Rate (+25.0%)","^x33FF77+37.4 Hit DPS (+150.0%)","^xDD0022+6.79 Mana Cost per second (+25.0%)","^x33FF77+10 Effective Hit Pool (+1.9%)","^x33FF77+86 Phys Max Hit (+11.2%)","^x33FF77+10% Phys. Damage Reduction","^x33FF77+23.8% Movement Speed Modifier","^x33FF77+7.1% Skill Movement Speed"],
+      "value":true,
+      "var":"buffAdrenaline"
+    },{
+      "lines":["^7Toggling this option will give you:","^x33FF77+0.21 Cast Rate (+15.0%)","^x33FF77+3.7 Hit DPS (+15.0%)","^xDD0022+4.07 Mana Cost per second (+15.0%)","^x33FF77+1.9 Mana Regen"],
+      "value":true,
+      "var":"buffArcaneSurge"
+    },{
+      "lines":["^7Toggling this option will give you:","^x33FF77+0.29 Cast Rate (+20.0%)","^x33FF77+5.0 Hit DPS (+20.0%)","^xDD0022+5.43 Mana Cost per second (+20.0%)","^x33FF77+9.5% Movement Speed Modifier","^x33FF77+2.8% Skill Movement Speed"],
+      "value":true,
+      "var":"buffOnslaught"
+    },{
+      "lines":["^7Toggling this option will give you:","^x33FF77+10.4 Average Hit (+59.4%)","^x33FF77+14.8 Hit DPS (+59.4%)"],
+      "value":true,
+      "var":"buffUnholyMight"
+    },{
+      "lines":["^7Toggling this option will give you:","^x33FF77+1.7 Average Hit (+10.0%)","^x33FF77+2.5 Hit DPS (+10.0%)","^x33FF77+61 Effective Hit Pool (+11.3%)","^x33FF77+85 Phys Max Hit (+11.1%)","^x33FF77+66 Fire Max Hit (+11.1%)","^x33FF77+51 Cold Max Hit (+11.2%)","^x33FF77+51 Lightning Max Hit (+11.2%)","^x33FF77+76 Chaos Max Hit (+11.1%)","^x33FF77+1% Phys. Damage Reduction"],
+      "value":true,
+      "var":"conditionEnemyIntimidated"
+    },{
+      "lines":["^7Toggling this option will give you:","^x33FF77+3.5 Average Hit (+20.0%)","^x33FF77+5.0 Hit DPS (+20.0%)"],
+      "value":true,
+      "var":"conditionEnemyShocked"
+    },{
+      "lines":["^7Toggling this option will give you:","^x33FF77+1.7 Average Hit (+10.0%)","^x33FF77+2.5 Hit DPS (+10.0%)"],
+      "value":true,
+      "var":"conditionEnemyUnnerved"
+    },{
+      "lines":["^7Toggling this option will give you:","^x33FF77+34.2 Life Regen"],
+      "value":true,
+      "var":"conditionOnConsecratedGround"
+    },{
+      "lines":["^7Toggling this option will give you:","^x33FF77+47.5% Movement Speed Modifier","^x33FF77+14.3% Skill Movement Speed"],
+      "value":true,
+      "var":"conditionSprinting"
+    },{
+      "lines":["^7Selecting this option will give you:","^xDD0022-2.8 Average Hit (-16.0%)","^xDD0022-4.0 Hit DPS (-16.0%)","^xDD0022-32 Effective Hit Pool (-5.8%)","^xDD0022-43 Phys Max Hit (-5.6%)","^xDD0022-34 Fire Max Hit (-5.7%)","^xDD0022-25 Cold Max Hit (-5.5%)","^xDD0022-25 Lightning Max Hit (-5.5%)","^xDD0022-39 Chaos Max Hit (-5.7%)","^xDD0022-1% Phys. Damage Reduction"],
+      "value":"20Percent",
+      "var":"deliriousPercentage"
+    },{
+      "lines":["^7Selecting this option will give you:","^xDD0022-5.6 Average Hit (-32.0%)","^xDD0022-8.0 Hit DPS (-32.0%)","^xDD0022-59 Effective Hit Pool (-10.9%)","^xDD0022-82 Phys Max Hit (-10.7%)","^xDD0022-64 Fire Max Hit (-10.8%)","^xDD0022-48 Cold Max Hit (-10.5%)","^xDD0022-48 Lightning Max Hit (-10.5%)","^xDD0022-73 Chaos Max Hit (-10.7%)","^xDD0022-1% Phys. Damage Reduction"],
+      "value":"40Percent",
+      "var":"deliriousPercentage"
+    },{
+      "lines":["^7Selecting this option will give you:","^xDD0022-8.4 Average Hit (-48.0%)","^xDD0022-12.0 Hit DPS (-48.0%)","^xDD0022-84 Effective Hit Pool (-15.6%)","^xDD0022-117 Phys Max Hit (-15.3%)","^xDD0022-91 Fire Max Hit (-15.3%)","^xDD0022-69 Cold Max Hit (-15.2%)","^xDD0022-69 Lightning Max Hit (-15.2%)","^xDD0022-104 Chaos Max Hit (-15.2%)","^xDD0022-2% Phys. Damage Reduction"],
+      "value":"60Percent",
+      "var":"deliriousPercentage"
+    },{
+      "lines":["^7Selecting this option will give you:","^xDD0022-11.2 Average Hit (-64.0%)","^xDD0022-15.9 Hit DPS (-64.0%)","^xDD0022-107 Effective Hit Pool (-19.6%)","^xDD0022-148 Phys Max Hit (-19.3%)","^xDD0022-115 Fire Max Hit (-19.4%)","^xDD0022-88 Cold Max Hit (-19.3%)","^xDD0022-88 Lightning Max Hit (-19.3%)","^xDD0022-132 Chaos Max Hit (-19.3%)","^xDD0022-2% Phys. Damage Reduction"],
+      "value":"80Percent",
+      "var":"deliriousPercentage"
+    },{
+      "lines":["^7Selecting this option will give you:","^xDD0022-14.0 Average Hit (-80.0%)","^xDD0022-19.9 Hit DPS (-80.0%)","^xDD0022-127 Effective Hit Pool (-23.4%)","^xDD0022-177 Phys Max Hit (-23.1%)","^xDD0022-137 Fire Max Hit (-23.1%)","^xDD0022-105 Cold Max Hit (-23.1%)","^xDD0022-105 Lightning Max Hit (-23.1%)","^xDD0022-158 Chaos Max Hit (-23.1%)","^xDD0022-2% Phys. Damage Reduction"],
+      "value":"100Percent",
+      "var":"deliriousPercentage"
+    },{
+      "lines":["^7Selecting this option will give you:","^xDD0022-542 Effective Hit Pool","^x33FF77+81% Phys. Damage Reduction"],
+      "value":"DamageOverTime",
+      "var":"enemyDamageType"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+17.4 Average Hit (+100.0%)","^x33FF77+24.9 Hit DPS (+100.0%)","^x33FF77+74 Effective Hit Pool (+13.7%)","^x33FF77+66% Phys. Damage Reduction"],
+      "value":"None",
+      "var":"enemyIsBoss"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+7.0 Average Hit (+40.0%)","^x33FF77+10.0 Hit DPS (+40.0%)","^x33FF77+36 Effective Hit Pool (+6.6%)","^x33FF77+33% Phys. Damage Reduction"],
+      "value":"Boss",
+      "var":"enemyIsBoss"
+    },{
+      "lines":["^7Selecting this option will give you:","^xDD0022-12.2 Average Hit (-70.0%)","^xDD0022-17.4 Hit DPS (-70.0%)","^xDD0022-6 Effective Hit Pool (-1.1%)","^xDD0022-2% Phys. Damage Reduction"],
+      "value":"Uber",
+      "var":"enemyIsBoss"
+    },{
+      "lines":["^7Selecting this option will give you:","^xDD0022-171 Effective Hit Pool (-31.5%)","^xDD0022-287 Phys Max Hit (-37.5%)","^xDD0022-223 Fire Max Hit (-37.5%)","^xDD0022-170 Cold Max Hit (-37.4%)","^xDD0022-170 Lightning Max Hit (-37.4%)","^xDD0022-256 Chaos Max Hit (-37.5%)","^x33FF77+81% Phys. Damage Reduction"],
+      "value":"Atziri Flameblast",
+      "var":"presetBossSkills"
+    },{
+      "lines":["^7Selecting this option will give you:","^xDD0022-94 Effective Hit Pool (-17.3%)","^x33FF77+81% Phys. Damage Reduction"],
+      "value":"Shaper Ball",
+      "var":"presetBossSkills"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+155 Effective Hit Pool (+28.5%)","^xDD0022-7% Phys. Damage Reduction"],
+      "value":"Shaper Slam",
+      "var":"presetBossSkills"
+    },{
+      "lines":["^7Selecting this option will give you:","^xDD0022-542 Effective Hit Pool","^x33FF77+81% Phys. Damage Reduction"],
+      "value":"Shaper Beam",
+      "var":"presetBossSkills"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+39 Effective Hit Pool (+7.2%)","^xDD0022-7% Phys. Damage Reduction"],
+      "value":"Sirus Meteor",
+      "var":"presetBossSkills"
+    },{
+      "lines":["^7Selecting this option will give you:","^xDD0022-542 Effective Hit Pool","^x33FF77+81% Phys. Damage Reduction"],
+      "value":"Cortex Ground Degen",
+      "var":"presetBossSkills"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+52 Effective Hit Pool (+9.5%)","^x33FF77+81% Phys. Damage Reduction"],
+      "value":"Exarch Ball",
+      "var":"presetBossSkills"
+    },{
+      "lines":["^7Selecting this option will give you:","^xDD0022-94 Effective Hit Pool (-17.3%)","^x33FF77+81% Phys. Damage Reduction"],
+      "value":"Eater Beam",
+      "var":"presetBossSkills"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+43 Effective Hit Pool (+7.9%)","^x33FF77+81% Phys. Damage Reduction"],
+      "value":"Maven Fireball",
+      "var":"presetBossSkills"
+    },{
+      "lines":["^7Selecting this option will give you:","^xDD0022-56 Effective Hit Pool (-10.3%)","^x33FF77+81% Phys. Damage Reduction"],
+      "value":"Maven Memory Game",
+      "var":"presetBossSkills"
+    },{
+      "lines":["^7Toggling this option will give you:","^xDD0022-10 Effective Hit Pool (-1.8%)","^xDD0022-28 Cold Max Hit (-6.2%)","^xDD0022-10% Cold Resistance"],
+      "value":false,
+      "var":"questAct 1ClearfellBeira"
+    },{
+      "lines":["^7Toggling this option will give you:","^xDD0022-30 Total Spirit (-30.0%)"],
+      "value":false,
+      "var":"questAct 1FreythornKing In The Mists"
+    },{
+      "lines":["^7Toggling this option will give you:","^xDD0022-17 Effective Hit Pool (-3.1%)","^xDD0022-21 Phys Max Hit (-2.7%)","^xDD0022-18 Fire Max Hit (-3.0%)","^xDD0022-14 Cold Max Hit (-3.1%)","^xDD0022-14 Lightning Max Hit (-3.1%)","^xDD0022-21 Chaos Max Hit (-3.1%)","^xDD0022-21 Total Life (-3.1%)"],
+      "value":false,
+      "var":"questAct 1Ogham ManorCandlemass"
+    },{
+      "lines":["^7Toggling this option will give you:","^xDD0022-10 Effective Hit Pool (-1.8%)","^xDD0022-28 Lightning Max Hit (-6.2%)","^xDD0022-10% Lightning Resistance"],
+      "value":false,
+      "var":"questAct 2Spires of DesharSisters of Garukhan Shrine"
+    },{
+      "lines":["^7Toggling this option will give you:","^xDD0022-30 Total Spirit (-30.0%)"],
+      "value":false,
+      "var":"questAct 3Azak BogIgnagduk"
+    },{
+      "lines":["^7Toggling this option will give you:","^xDD0022-10 Effective Hit Pool (-1.8%)","^xDD0022-48 Fire Max Hit (-8.1%)","^xDD0022-10% Fire Resistance"],
+      "value":false,
+      "var":"questAct 3Jiquani's MachinariumBlackjaw"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+2.4 Mana Regen"],
+      "value":"25% increased Mana Regeneration Rate",
+      "var":"questAct 3Venom CryptsVenom Draught"
+    },{
+      "lines":["^7Toggling this option will give you:","^xDD0022-11 Total Mana (-4.8%)","^xDD0022-0.4 Mana Regen"],
+      "value":false,
+      "var":"questAct 4Eye of HinekoraSilent Hall"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+2 Effective Hit Pool (+0.4%)","^x33FF77+22 Phys Max Hit (+2.9%)","^x33FF77+2 Evasion rating (+28.6%)","^x33FF77+278 Armour (+30.0%)","^x33FF77+2% Phys. Damage Reduction"],
+      "value":"30% increased Global Armour, Evasion and Energy Shield",
+      "var":"questAct 4Eye of HinekoraTribal Medicine"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+4 Effective Hit Pool (+0.8%)","^x33FF77+13 Fire Max Hit (+2.2%)","^x33FF77+13 Cold Max Hit (+2.9%)","^x33FF77+13 Lightning Max Hit (+2.9%)","^x33FF77+0 Deflection Rating"],
+      "value":"+15% of Armour also applies to Elemental Damage\n\tGain Deflection Rating equal to 12% of Evasion Rating\n\t12% faster start of Energy Shield Recharge",
+      "var":"questAct 4Eye of HinekoraTribal Medicine"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+5 Strength","^x33FF77+8 Effective Hit Pool (+1.5%)","^x33FF77+10 Phys Max Hit (+1.3%)","^x33FF77+9 Fire Max Hit (+1.5%)","^x33FF77+7 Cold Max Hit (+1.5%)","^x33FF77+7 Lightning Max Hit (+1.5%)","^x33FF77+10 Chaos Max Hit (+1.5%)","^x33FF77+10 Total Life (+1.5%)"],
+      "value":"+5 to Strength",
+      "var":"questAct 4Halls Of The DeadNgamahu's Test"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+5 Effective Hit Pool (+0.9%)","^x33FF77+27 Fire Max Hit (+4.5%)","^x33FF77+5% Fire Resistance"],
+      "value":"+5% to Fire Resistance",
+      "var":"questAct 4Halls Of The DeadNgamahu's Test"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+5 Intelligence","^x33FF77+11 Total Mana (+4.8%)","^x33FF77+0.5 Mana Regen"],
+      "value":"+5 to Intelligence",
+      "var":"questAct 4Halls Of The DeadTasalio's Test"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+5 Effective Hit Pool (+0.9%)","^x33FF77+16 Cold Max Hit (+3.5%)","^x33FF77+5% Cold Resistance"],
+      "value":"+5% to Cold Resistance",
+      "var":"questAct 4Halls Of The DeadTasalio's Test"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+5 Dexterity"],
+      "value":"+5 to Dexterity",
+      "var":"questAct 4Halls Of The DeadTawhoa's Test"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+5 Effective Hit Pool (+0.9%)","^x33FF77+16 Lightning Max Hit (+3.5%)","^x33FF77+5% Lightning Resistance"],
+      "value":"+5% to Lightning Resistance",
+      "var":"questAct 4Halls Of The DeadTawhoa's Test"
+    },{
+      "lines":["^7Toggling this option will give you:","^xDD0022-26 Effective Hit Pool (-4.8%)","^xDD0022-33 Phys Max Hit (-4.3%)","^xDD0022-29 Fire Max Hit (-4.9%)","^xDD0022-22 Cold Max Hit (-4.8%)","^xDD0022-22 Lightning Max Hit (-4.8%)","^xDD0022-33 Chaos Max Hit (-4.8%)","^xDD0022-33 Total Life (-4.8%)"],
+      "value":false,
+      "var":"questInterlude 2Khari CrossingMolten Shrine"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+15 Effective Hit Pool (+2.8%)","^x33FF77+27 Fire Max Hit (+4.5%)","^x33FF77+16 Cold Max Hit (+3.5%)","^x33FF77+16 Lightning Max Hit (+3.5%)","^x33FF77+5% Fire Resistance","^x33FF77+5% Cold Resistance","^x33FF77+5% Lightning Resistance"],
+      "value":"+5% to all Elemental Resistances",
+      "var":"questInterlude 2QimahSeven Pillars"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+2.8% Movement Speed Modifier","^x33FF77+0.8% Skill Movement Speed"],
+      "value":"3% increased Movement Speed",
+      "var":"questInterlude 2QimahSeven Pillars"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+1 Effective Hit Pool (+0.2%)","^x33FF77+11 Phys Max Hit (+1.4%)","^x33FF77+1 Evasion rating (+14.3%)","^x33FF77+139 Armour (+15.0%)","^x33FF77+1% Phys. Damage Reduction"],
+      "value":"15% increased Global Armour, Evasion and Energy Shield",
+      "var":"questInterlude 2QimahSeven Pillars"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+0.3m Presence Radius (+7.5%)"],
+      "value":"20% increased Presence Area Of Effect",
+      "var":"questInterlude 2QimahSeven Pillars"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+5 Strength","^x33FF77+5 Dexterity","^x33FF77+5 Intelligence","^x33FF77+8 Effective Hit Pool (+1.5%)","^x33FF77+10 Phys Max Hit (+1.3%)","^x33FF77+9 Fire Max Hit (+1.5%)","^x33FF77+7 Cold Max Hit (+1.5%)","^x33FF77+7 Lightning Max Hit (+1.5%)","^x33FF77+10 Chaos Max Hit (+1.5%)","^x33FF77+10 Total Life (+1.5%)","^x33FF77+11 Total Mana (+4.8%)","^x33FF77+0.5 Mana Regen"],
+      "value":"+5 to all Attributes",
+      "var":"questInterlude 2QimahSeven Pillars"
+    },{
+      "lines":["^7Selecting this option will give you:","^xDD0022-1 Intelligence","^xDD0022-16 Effective Hit Pool (-3.0%)","^xDD0022-11 Phys Max Hit (-1.4%)","^xDD0022-25 Fire Max Hit (-4.2%)","^xDD0022-14 Cold Max Hit (-3.1%)","^xDD0022-14 Lightning Max Hit (-3.1%)","^xDD0022-2 Total Mana (-0.9%)","^xDD0022-1 Evasion rating (-14.3%)","^xDD0022-139 Armour (-15.0%)","^xDD0022-2% Phys. Damage Reduction","^xDD0022-5% Fire Resistance","^xDD0022-5% Cold Resistance","^xDD0022-5% Lightning Resistance","^xDD0022-2.8% Movement Speed Modifier","^xDD0022-0.8% Skill Movement Speed","^xDD0022-0.5m Presence Radius (-12.5%)"],
+      "value":"5% increased Experience Gain\n\t-5% to all Elemental Resistances\n\t3% reduced Movement Speed\n\t15% reduced Global Armour, Evasion and Energy Shield\n\t20% reduced Presence Area Of Effect\n\t12% reduced Cooldown Recovery Rate\n\t5% reduced Attributes",
+      "var":"questInterlude 2QimahSeven Pillars"
+    },{
+      "lines":["^7Toggling this option will give you:","^xDD0022-40 Total Spirit (-40.0%)"],
+      "value":false,
+      "var":"questInterlude 3Kriar VillageLythara"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+247 Effective Hit Pool (+45.6%)","^x33FF77+584 Fire Max Hit (+98.3%)","^x33FF77+279 Cold Max Hit (+61.3%)","^x33FF77+279 Lightning Max Hit (+61.3%)","^x33FF77+60% Fire Resistance","^x33FF77+60% Cold Resistance","^x33FF77+60% Lightning Resistance"],
+      "value":0,
+      "var":"resistancePenalty"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+200 Effective Hit Pool (+36.8%)","^x33FF77+410 Fire Max Hit (+69.0%)","^x33FF77+228 Cold Max Hit (+50.1%)","^x33FF77+228 Lightning Max Hit (+50.1%)","^x33FF77+50% Fire Resistance","^x33FF77+50% Cold Resistance","^x33FF77+50% Lightning Resistance"],
+      "value":-10,
+      "var":"resistancePenalty"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+148 Effective Hit Pool (+27.3%)","^x33FF77+282 Fire Max Hit (+47.5%)","^x33FF77+166 Cold Max Hit (+36.5%)","^x33FF77+166 Lightning Max Hit (+36.5%)","^x33FF77+40% Fire Resistance","^x33FF77+40% Cold Resistance","^x33FF77+40% Lightning Resistance"],
+      "value":-20,
+      "var":"resistancePenalty"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+103 Effective Hit Pool (+19.0%)","^x33FF77+182 Fire Max Hit (+30.6%)","^x33FF77+114 Cold Max Hit (+25.1%)","^x33FF77+114 Lightning Max Hit (+25.1%)","^x33FF77+30% Fire Resistance","^x33FF77+30% Cold Resistance","^x33FF77+30% Lightning Resistance"],
+      "value":-30,
+      "var":"resistancePenalty"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+63 Effective Hit Pool (+11.7%)","^x33FF77+103 Fire Max Hit (+17.3%)","^x33FF77+70 Cold Max Hit (+15.4%)","^x33FF77+70 Lightning Max Hit (+15.4%)","^x33FF77+20% Fire Resistance","^x33FF77+20% Cold Resistance","^x33FF77+20% Lightning Resistance"],
+      "value":-40,
+      "var":"resistancePenalty"
+    },{
+      "lines":["^7Selecting this option will give you:","^x33FF77+32 Effective Hit Pool (+5.8%)","^x33FF77+56 Fire Max Hit (+9.4%)","^x33FF77+33 Cold Max Hit (+7.3%)","^x33FF77+33 Lightning Max Hit (+7.3%)","^x33FF77+10% Fire Resistance","^x33FF77+10% Cold Resistance","^x33FF77+10% Lightning Resistance"],
+      "value":-50,
+      "var":"resistancePenalty"
+    },{
+      "lines":["^7Selecting this option will give you:","^xDD0022-7.5 Total DPS inc. Bleed (-30.0%)","^xDD0022-7.5 Total DPS inc. Ignite (-30.0%)","^xDD0022-7.5 Total DPS inc. Poison (-30.0%)"],
+      "value":"MAX",
+      "var":"warcryMode"
+    }],
+  "placeholders":[{
+      "inputs":"",
+      "placeholders":{
+        "ChillStacks":1,
+        "ScorchStacks":1,
+        "ShockStacks":1,
+        "conditionCorruptingCryStages":10,
+        "demonFormStacks":10,
+        "enemyArmour":8063,
+        "enemyChaosDamage":386,
+        "enemyChaosResist":0,
+        "enemyColdDamage":965,
+        "enemyColdPen":3,
+        "enemyColdResist":50,
+        "enemyCritChance":5,
+        "enemyCritDamage":30,
+        "enemyCriticalWeaknessStacks":20,
+        "enemyDamageRollRange":70,
+        "enemyDistance":20,
+        "enemyEvasion":1175,
+        "enemyFireDamage":965,
+        "enemyFirePen":3,
+        "enemyFireResist":50,
+        "enemyLevel":82,
+        "enemyLightningDamage":965,
+        "enemyLightningPen":3,
+        "enemyLightningResist":50,
+        "enemyPhysicalDamage":965,
+        "enemyRadius":3,
+        "enemySpeed":700,
+        "multiplierCurrentEnergyShield":100,
+        "multiplierDifferentAmmoFired":1,
+        "multiplierDifferentGrenadeFired":1,
+        "multiplierStunnedRecently":1,
+        "multiplierWarcryUsedRecently":1,
+        "multiplierWitheredStackCountSelf":15,
+        "sigilOfPowerStages":1
+      }
+    },{
+      "inputs":"<Input name=\"enemyIsBoss\" string=\"None\"/>",
+      "placeholders":{
+        "ChillStacks":1,
+        "ScorchStacks":1,
+        "ShockStacks":1,
+        "conditionCorruptingCryStages":10,
+        "demonFormStacks":10,
+        "enemyArmour":418,
+        "enemyChaosDamage":12,
+        "enemyColdDamage":31,
+        "enemyCritChance":5,
+        "enemyCritDamage":30,
+        "enemyCriticalWeaknessStacks":20,
+        "enemyDamageRollRange":70,
+        "enemyDistance":20,
+        "enemyEvasion":347,
+        "enemyFireDamage":31,
+        "enemyLevel":40,
+        "enemyLightningDamage":31,
+        "enemyPhysicalDamage":31,
+        "enemyRadius":3,
+        "enemySpeed":700,
+        "multiplierCurrentEnergyShield":100,
+        "multiplierDifferentAmmoFired":1,
+        "multiplierDifferentGrenadeFired":1,
+        "multiplierStunnedRecently":1,
+        "multiplierWarcryUsedRecently":1,
+        "multiplierWitheredStackCountSelf":15,
+        "sigilOfPowerStages":1
+      }
+    },{
+      "inputs":"<Input name=\"enemyIsBoss\" string=\"Boss\"/>",
+      "placeholders":{
+        "ChillStacks":1,
+        "ScorchStacks":1,
+        "ShockStacks":1,
+        "conditionCorruptingCryStages":10,
+        "demonFormStacks":10,
+        "enemyArmour":418,
+        "enemyChaosDamage":49,
+        "enemyChaosResist":0,
+        "enemyColdDamage":123,
+        "enemyColdResist":30,
+        "enemyCritChance":5,
+        "enemyCritDamage":30,
+        "enemyCriticalWeaknessStacks":20,
+        "enemyDamageRollRange":70,
+        "enemyDistance":20,
+        "enemyEvasion":347,
+        "enemyFireDamage":123,
+        "enemyFireResist":30,
+        "enemyLevel":40,
+        "enemyLightningDamage":123,
+        "enemyLightningResist":30,
+        "enemyPhysicalDamage":123,
+        "enemyRadius":3,
+        "enemySpeed":700,
+        "multiplierCurrentEnergyShield":100,
+        "multiplierDifferentAmmoFired":1,
+        "multiplierDifferentGrenadeFired":1,
+        "multiplierStunnedRecently":1,
+        "multiplierWarcryUsedRecently":1,
+        "multiplierWitheredStackCountSelf":15,
+        "sigilOfPowerStages":1
+      }
+    },{
+      "inputs":"<Input name=\"enemyIsBoss\" string=\"Uber\"/><Input name=\"enemySizePreset\" string=\"Huge\"/>",
+      "placeholders":{
+        "ChillStacks":1,
+        "ScorchStacks":1,
+        "ShockStacks":1,
+        "conditionCorruptingCryStages":10,
+        "demonFormStacks":10,
+        "enemyArmour":6719,
+        "enemyChaosDamage":312,
+        "enemyChaosResist":0,
+        "enemyColdDamage":1248,
+        "enemyColdPen":8,
+        "enemyColdResist":50,
+        "enemyCritChance":5,
+        "enemyCritDamage":30,
+        "enemyCriticalWeaknessStacks":20,
+        "enemyDamageRollRange":70,
+        "enemyDistance":20,
+        "enemyEvasion":1097,
+        "enemyFireDamage":1248,
+        "enemyFirePen":8,
+        "enemyFireResist":50,
+        "enemyLevel":82,
+        "enemyLightningDamage":1248,
+        "enemyLightningPen":8,
+        "enemyLightningResist":50,
+        "enemyPhysicalDamage":1248,
+        "enemyRadius":11,
+        "enemySpeed":700,
+        "multiplierCurrentEnergyShield":100,
+        "multiplierDifferentAmmoFired":1,
+        "multiplierDifferentGrenadeFired":1,
+        "multiplierStunnedRecently":1,
+        "multiplierWarcryUsedRecently":1,
+        "multiplierWitheredStackCountSelf":15,
+        "sigilOfPowerStages":1
+      }
+    },{
+      "inputs":"<Input name=\"enemyIsBoss\" string=\"Pinnacle\"/><Input name=\"presetBossSkills\" string=\"Atziri Flameblast\"/>",
+      "placeholders":{
+        "ChillStacks":1,
+        "ScorchStacks":1,
+        "ShockStacks":1,
+        "conditionCorruptingCryStages":10,
+        "demonFormStacks":10,
+        "enemyArmour":8063,
+        "enemyChaosResist":0,
+        "enemyColdResist":50,
+        "enemyCritChance":0,
+        "enemyCritDamage":30,
+        "enemyCriticalWeaknessStacks":20,
+        "enemyDamageRollRange":70,
+        "enemyDistance":20,
+        "enemyEvasion":1175,
+        "enemyFireDamage":30733,
+        "enemyFirePen":10,
+        "enemyFireResist":50,
+        "enemyLevel":82,
+        "enemyLightningResist":50,
+        "enemyRadius":3,
+        "enemySpeed":25000,
+        "multiplierCurrentEnergyShield":100,
+        "multiplierDifferentAmmoFired":1,
+        "multiplierDifferentGrenadeFired":1,
+        "multiplierStunnedRecently":1,
+        "multiplierWarcryUsedRecently":1,
+        "multiplierWitheredStackCountSelf":15,
+        "sigilOfPowerStages":1
+      }
+    },{
+      "inputs":"<Input name=\"enemyIsBoss\" string=\"Uber\"/><Input name=\"presetBossSkills\" string=\"Shaper Slam\"/><Input name=\"enemyLevel\" number=\"90\"/>",
+      "placeholders":{
+        "ChillStacks":1,
+        "ScorchStacks":1,
+        "ShockStacks":1,
+        "conditionCorruptingCryStages":10,
+        "demonFormStacks":10,
+        "enemyArmour":7944,
+        "enemyChaosResist":0,
+        "enemyColdResist":50,
+        "enemyCritChance":0,
+        "enemyCritDamage":30,
+        "enemyCriticalWeaknessStacks":20,
+        "enemyDamageRollRange":70,
+        "enemyDistance":20,
+        "enemyEvasion":1161,
+        "enemyFireResist":50,
+        "enemyLevel":82,
+        "enemyLightningResist":50,
+        "enemyPhysicalDamage":10717,
+        "enemyRadius":3,
+        "enemySpeed":1755,
+        "multiplierCurrentEnergyShield":100,
+        "multiplierDifferentAmmoFired":1,
+        "multiplierDifferentGrenadeFired":1,
+        "multiplierStunnedRecently":1,
+        "multiplierWarcryUsedRecently":1,
+        "multiplierWitheredStackCountSelf":15,
+        "sigilOfPowerStages":1
+      }
+    }]
+}

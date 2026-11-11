@@ -158,6 +158,8 @@ export type Poe2Calc = Poe2View & {
   tree: Poe2TreeState;
   // ConfigSetListControl.lua:93-99 (PoB-PoE2)
   configSets?: { sets: { id: number; title: string }[]; active: number };
+  // ConfigTab.lua:1051-1052, ConfigOptions.lua:780-794, 1982-2139, 2189-2241 (PoB-PoE2): each option's placeholder
+  configPlaceholders?: Record<string, number>;
   // ConfigTab.lua:24-98 (PoB-PoE2)
   customBlocks?: { Title: string; Enabled: string; Text: string }[];
   // TreeTab.lua:485-491 (PoB-PoE2): the tree list's labels and the active spec, 1-based
@@ -447,6 +449,14 @@ const configSetsOf = (calc: exposition.Calculator | undefined): { sets: { id: nu
 const customBlocksOf = (calc: exposition.Calculator | undefined): { Title: string; Enabled: string; Text: string }[] =>
   (calc?.CustomModifierBlocks() ?? []).map((b) => ({ Title: b.Title, Enabled: String(b.Enabled), Text: b.Text }));
 
+// Build.lua:2628-2640 (PoB-PoE2): a config tooltip's one calculation against the misc calculator's base pass
+const configWhatIf = (v: exposition.ItemCompareView | undefined): StatCompareSection[] | undefined => {
+  const block = v?.Blocks?.[0];
+  if (!v || !block) return undefined;
+  const outputs = (o: exposition.CompareOutputs) => ({ output: { ...(o.Output ?? {}) }, minion: o.Minion ? { ...o.Minion } : undefined });
+  return addStatCompares2({ ...(v.SkillFlags ?? {}) }, { ...(v.MinionSkillFlags ?? {}) }, v.Minion, outputs(v.Base), outputs(block.Compare));
+};
+
 const treeSpecsOf = (calc: exposition.Calculator | undefined): { labels: string[]; active: number } => {
   const v = calc?.TreeSpecs();
   return { labels: [...(v?.Labels ?? [])], active: v?.Active ?? 1 };
@@ -615,6 +625,7 @@ class PoB2Worker {
       mainSkill: skillSelectOf(out.MainSkill),
       configInputs: inputs,
       configSets: configSetsOf(calc),
+      configPlaceholders: { ...(calc.ConfigPlaceholders() ?? {}) },
       treeSpecs: treeSpecsOf(calc),
       customBlocks: customBlocksOf(calc),
       relevance: Object.fromEntries(Object.entries(rel).map(([k, v]) => [k, [...((v as string[] | undefined) ?? [])]])) as calculator2.ConfigRelevance,
@@ -998,6 +1009,16 @@ class PoB2Worker {
   async SetCustomModifierBlocks(blocks: { Title?: string; Enabled?: string; Text: string }[]): Promise<Poe2Calc> {
     this.calc?.SetCustomModifierBlocks(blocks.map((b) => ({ Title: b.Title ?? 'Default', Enabled: b.Enabled !== 'false', Text: b.Text })));
     return this.changed('SetCustomModifierBlocks', `Edited custom modifiers (${blocks.length} block${blocks.length === 1 ? '' : 's'})`);
+  }
+
+  /* ConfigTab.lua:774-838 (PoB-PoE2): an option tooltip's stat differences with the option set to value */
+  async ConfigCompare(name: string, value: ConfigValue2): Promise<StatCompareSection[] | undefined> {
+    return this.calc && configWhatIf((await this.calc.ConfigCompare(name, fromValue(value))).unwrap());
+  }
+
+  /* ConfigTab.lua:62-79 (PoB-PoE2): a custom modifier group's enable check tooltip */
+  async CustomModGroupCompare(group: number): Promise<StatCompareSection[] | undefined> {
+    return this.calc && configWhatIf((await this.calc.CustomModGroupCompare(group)).unwrap());
   }
 
   ParseModLines(

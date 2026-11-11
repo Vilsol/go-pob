@@ -354,6 +354,7 @@ wasm2/exposition/items_craft.go     GO-NATIVE  crystalline binding surface for t
 wasm2/exposition/item_db.go         GO-NATIVE  crystalline binding surface for the PoE2 unique database list (ItemDBControl.lua's filters, tooltip, copy and Ctrl+click)
 wasm2/exposition/items_affix.go     GO-NATIVE  crystalline binding surface for the PoE2 item editor's affix drop-downs, roll sliders, modifier ranges and quality (ItemsTab.lua)
 wasm2/exposition/item_compare.go    GO-NATIVE  crystalline binding surface for the PoE2 item tooltips' stat differences (ItemsTab.lua's AddItemTooltip over the misc calculator)
+wasm2/exposition/config_whatif.go   GO-NATIVE  crystalline binding surface for the PoE2 config tab's option placeholders and tooltip stat differences (ConfigTab.lua over the misc calculator)
 wasm2/exposition/node_compare.go     GO-NATIVE  crystalline binding surface for the PoE2 node tooltip (PassiveTreeView.lua's AddNodeTooltip stat differences, pathing lines and Shift path tracing)
 wasm2/exposition/node_power.go       GO-NATIVE  crystalline binding surface for the PoE2 node power heat map and power report (CalcsTab.lua's PowerBuilder, TreeTab.lua's power controls), run in steps
 wasm2/exposition/main.go            GO-NATIVE  crystalline binding surface for the PoE2 frontend
@@ -618,6 +619,7 @@ calculator2/calc_offence_ailments.go PORT     src/Modules/CalcOffence.lua,src/Mo
 calculator2/calc_setup_weapon.go PORT         src/Modules/Data.lua,src/Modules/CalcSetup.lua
 calculator2/calc_setup.go           PORT       src/Modules/CalcSetup.lua,src/Classes/PassiveTree.lua,src/Classes/ConfigTab.lua,src/Modules/ConfigOptions.lua
 calculator2/calc_setup_config.go    PORT       src/Classes/ConfigTab.lua,src/Modules/ConfigOptions.lua
+calculator2/config_whatif.go        PORT       src/Classes/ConfigTab.lua,src/Modules/ConfigOptions.lua
 calculator2/configs.go              PORT       src/Modules/ConfigOptions.lua
 calculator2/calc_setup_items.go     PORT       src/Modules/CalcSetup.lua,src/Classes/ItemsTab.lua,src/Classes/ItemSlotControl.lua,src/Classes/TreeTab.lua,src/Classes/PassiveTree.lua,src/Classes/ModList.lua
 calculator2/calc_setup_radius.go    PORT       src/Modules/CalcSetup.lua
