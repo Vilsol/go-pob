@@ -42,6 +42,44 @@
   let ilvlMax = $state('');
   const num = (s: string) => (/^\d+$/.test(s.trim()) ? Number(s) : undefined);
   const unique = $derived(!!item && isTradeUnique(item));
+
+  const options = $derived.by((): TradeOptions => {
+    const ticked = defences.flatMap((d, i) =>
+      defenceRows[i]?.on ? [[d.tradeKey, { min: num(defenceRows[i].min), max: num(defenceRows[i].max) }] as const] : []
+    );
+    return {
+      realm,
+      league,
+      listed,
+      baseType,
+      ilvlMin: num(ilvlMin),
+      ilvlMax: num(ilvlMax),
+      defences: Object.fromEntries(ticked),
+      mods: mods.map((m, i) => ({ checked: m.canSearch && !!modRows[i]?.on, min: dec(modRows[i]?.min ?? ''), max: dec(modRows[i]?.max ?? '') }))
+    };
+  });
+  // CompareBuySimilar.lua:345-348, 517-524: every control rebuilds the URL, and Open URL waits for one; the search opens
+  // within the click, as a browser blocks a tab opened after an await
+  let built = $state<{ key: string; url: string }>();
+  $effect(() => {
+    const o = options;
+    const key = JSON.stringify(o);
+    if (!url || !open) return;
+    let current = true;
+    url(o)
+      .then((u) => {
+        if (current && u) built = { key, url: u };
+      })
+      .catch(() => {});
+    return () => {
+      current = false;
+    };
+  });
+  const searchUrl = $derived.by(() => {
+    if (!item) return undefined;
+    if (!url) return tradeSearchUrl(item, slot, options);
+    return built?.key === JSON.stringify(options) ? built.url : undefined;
+  });
 </script>
 
 <Dialog bind:open title="Buy Similar" size="md">
@@ -114,32 +152,12 @@
   {#snippet actions()}
     <DialogActions
       confirm="Search"
-      disabled={!item}
+      disabled={!searchUrl}
       oncancel={() => (open = false)}
       onconfirm={() => {
-        if (!item) return;
-        const ticked = defences.flatMap((d, i) =>
-          defenceRows[i]?.on ? [[d.tradeKey, { min: num(defenceRows[i].min), max: num(defenceRows[i].max) }] as const] : []
-        );
-        const o: TradeOptions = {
-          realm,
-          league,
-          listed,
-          baseType,
-          ilvlMin: num(ilvlMin),
-          ilvlMax: num(ilvlMax),
-          defences: Object.fromEntries(ticked),
-          mods: mods.map((m, i) => ({ checked: m.canSearch && !!modRows[i]?.on, min: dec(modRows[i]?.min ?? ''), max: dec(modRows[i]?.max ?? '') }))
-        };
-        if (!url) {
-          onsearch(tradeSearchUrl(item, slot, o));
-          open = false;
-          return;
-        }
-        void url(o).then((u) => {
-          if (u) onsearch(u);
-          open = false;
-        });
+        if (!searchUrl) return;
+        onsearch(searchUrl);
+        open = false;
       }} />
   {/snippet}
 </Dialog>

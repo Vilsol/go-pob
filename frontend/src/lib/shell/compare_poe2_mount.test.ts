@@ -15,6 +15,13 @@ const TRADE_STATS = /\/files\/api\/trade2\/data\/stats\.json\.br$/;
 
 afterEach(cleanup);
 
+// Search waits for the URL of the current selections, then opens it within the click
+const clickSearch = async (dialog: { getByRole: (role: 'button', options: { name: string }) => HTMLElement }) => {
+  const search = dialog.getByRole('button', { name: 'Search' }) as HTMLButtonElement;
+  await waitFor(() => expect(search.disabled).toBe(false), { timeout: 30_000 });
+  await fireEvent.click(search);
+};
+
 if (!HTMLDialogElement.prototype.showModal) {
   HTMLDialogElement.prototype.showModal = function () {
     this.open = true;
@@ -547,7 +554,7 @@ describe('the PoE2 Compare page', () => {
     let dialog = within(await page.findByRole('dialog', { name: 'Buy Similar' }));
     expect(dialog.getByRole<HTMLSelectElement>('combobox', { name: 'Realm' }).disabled).toBe(true);
     expect(dialog.getByRole<HTMLInputElement>('textbox', { name: 'Evasion min' }).value).toBe(pob.Gloves.defences[0].min);
-    await fireEvent.click(dialog.getByRole('button', { name: 'Search' }));
+    await clickSearch(dialog);
     await waitFor(() => expect(opened).toHaveLength(1));
     expect(decode(opened[0])).toEqual(pob.Gloves.default);
 
@@ -562,7 +569,7 @@ describe('the PoE2 Compare page', () => {
     await fireEvent.click(dialog.getByRole('checkbox', { name: 'Evasion' }));
     await fireEvent.input(dialog.getByRole('textbox', { name: 'Evasion max' }), { target: { value: '5000' } });
     await fireEvent.click(dialog.getByRole('checkbox', { name: 'Energy Shield' }));
-    await fireEvent.click(dialog.getByRole('button', { name: 'Search' }));
+    await clickSearch(dialog);
     await waitFor(() => expect(opened).toHaveLength(2));
     expect(decode(opened[1])).toEqual(pob.Gloves.set);
     spy.mockRestore();
@@ -610,7 +617,7 @@ describe('the PoE2 Compare page', () => {
       if (m.canSearch && m.min !== undefined && i % 2 === 0)
         await fireEvent.input(within(group).getByRole('textbox', { name: `${name} max` }), { target: { value: '999' } });
     }
-    await fireEvent.click(dialog.getByRole('button', { name: 'Search' }));
+    await clickSearch(dialog);
     await waitFor(() => expect(opened).toHaveLength(1));
     const url = opened[0];
     const i = url.lastIndexOf('/');

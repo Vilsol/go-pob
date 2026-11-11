@@ -113,8 +113,8 @@ test('Buy similar opens the trade search for the pasted item (0280)', async ({ p
   const dialog = page.getByRole('dialog', { name: 'Buy Similar' });
   await dialog.getByRole('combobox', { name: 'Realm' }).selectOption({ label: 'PS4' });
   await dialog.getByRole('button', { name: 'Search' }).click();
+  await expect.poll(() => page.evaluate(() => (window as unknown as { opened: string[] }).opened.length)).toBe(1);
   const opened = await page.evaluate(() => (window as unknown as { opened: string[] }).opened);
-  expect(opened).toHaveLength(1);
   expect(opened[0].startsWith('https://www.pathofexile.com/trade/search/sony/Standard?q=')).toBe(true);
   const q = JSON.parse(decodeURIComponent(opened[0].split('?q=')[1])) as { query: Record<string, unknown> };
   expect(q.query).toMatchObject({ name: "Kaom's Heart", type: 'Glorious Plate', status: { option: 'securable' } });

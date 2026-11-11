@@ -40,8 +40,8 @@ describe('Buy Similar defences', () => {
 
 // CompareBuySimilar.lua:134-175, 459-516 (PoB-PoE2)
 describe('Buy Similar mods', () => {
-  it('sends the checked rows with their boxes, and a row without trade ids cannot be checked', async () => {
-    const sent: unknown[] = [];
+  it('searches the checked rows with their boxes within the click, and a row without trade ids cannot be checked', async () => {
+    const opened: string[] = [];
     const { getByRole } = render(BuySimilarDialog, {
       open: true,
       item: { rarity: 'RARE', title: '', name: 'Doom Shell', baseName: 'Vaal Cuirass', type: 'Body Armour' },
@@ -51,23 +51,40 @@ describe('Buy Similar mods', () => {
         { type: 'explicit', lines: ['^8Grants Skill: Level 20 Fireball'], canSearch: false, hasBoxes: false, min: '' },
         { type: 'explicit', lines: ['^x8888FF20% reduced Light Radius'], canSearch: true, hasBoxes: true, min: '20' }
       ],
-      url: (o: TradeOptions) => {
-        sent.push(o.mods);
-        return Promise.resolve('https://www.pathofexile.com/trade2/search/poe2/Standard/x');
-      },
-      onsearch: () => {}
+      // the URL is built as the selections change, so the click opens it without waiting
+      url: (o: TradeOptions) => Promise.resolve(`https://www.pathofexile.com/trade2/search/poe2/Standard/${JSON.stringify(o.mods)}`),
+      onsearch: (u: string) => opened.push(u)
     });
     const mods = within(getByRole('group', { name: 'Mods' }));
     expect(mods.getByRole<HTMLInputElement>('checkbox', { name: 'Grants Skill: Level 20 Fireball' }).disabled).toBe(true);
     expect(mods.getByRole<HTMLInputElement>('textbox', { name: '+90 to maximum Life min' }).value).toBe('90');
     await fireEvent.click(mods.getByRole('checkbox', { name: '20% reduced Light Radius' }));
     await fireEvent.input(mods.getByRole('textbox', { name: '20% reduced Light Radius max' }), { target: { value: '-2.5' } });
-    await fireEvent.click(getByRole('button', { name: 'Search' }));
-    await waitFor(() => expect(sent).toHaveLength(1));
-    expect(sent[0]).toEqual([
-      { checked: false, min: 90, max: undefined },
-      { checked: false, min: undefined, max: undefined },
+    const search = getByRole('button', { name: 'Search' }) as HTMLButtonElement;
+    await waitFor(() => expect(search.disabled).toBe(false));
+    await fireEvent.click(search);
+    expect(opened).toHaveLength(1);
+    expect(JSON.parse(opened[0].slice(opened[0].lastIndexOf('/') + 1))).toEqual([
+      { checked: false, min: 90 },
+      { checked: false },
       { checked: true, min: 20, max: -2.5 }
     ]);
+  });
+
+  it('keeps Search disabled while the URL for the current selections is being built', async () => {
+    let resolve: (u: string) => void = () => {};
+    const opened: string[] = [];
+    const { getByRole } = render(BuySimilarDialog, {
+      open: true,
+      item: { rarity: 'RARE', title: '', name: 'Doom Shell', baseName: 'Vaal Cuirass', type: 'Body Armour' },
+      url: () => new Promise<string>((r) => (resolve = r)),
+      onsearch: (u: string) => opened.push(u)
+    });
+    const search = getByRole('button', { name: 'Search' }) as HTMLButtonElement;
+    expect(search.disabled).toBe(true);
+    resolve('https://www.pathofexile.com/trade/search/Standard?q=x');
+    await waitFor(() => expect(search.disabled).toBe(false));
+    await fireEvent.click(search);
+    expect(opened).toEqual(['https://www.pathofexile.com/trade/search/Standard?q=x']);
   });
 });

@@ -9,6 +9,13 @@ import { resolve } from 'node:path';
 import { cachedAsset } from '../../../e2e/support/data_cache';
 
 afterEach(cleanup);
+
+// Search waits for the URL of the current selections, then opens it within the click
+const clickSearch = async (dialog: { getByRole: (role: 'button', options: { name: string }) => HTMLElement }) => {
+  const search = dialog.getByRole('button', { name: 'Search' }) as HTMLButtonElement;
+  await waitFor(() => expect(search.disabled).toBe(false), { timeout: 30_000 });
+  await fireEvent.click(search);
+};
 const pageErrors: string[] = [];
 beforeAll(() => {
   window.addEventListener('error', (e) => pageErrors.push(e.error ? String(e.error) : e.message));
@@ -143,7 +150,7 @@ describe('Buy Similar on the Compare page', () => {
       if (m.canSearch && m.min !== undefined && i % 2 === 0)
         await fireEvent.input(within(group).getByRole('textbox', { name: `${name} max` }), { target: { value: '999' } });
     }
-    await fireEvent.click(dialog.getByRole('button', { name: 'Search' }));
+    await clickSearch(dialog);
     await waitFor(() => expect(opened).toHaveLength(1));
     const [base, q] = opened[0].split('?q=');
     expect({ base, query: JSON.parse(decodeURIComponent(q)) as unknown }).toEqual(want.modSearch);
