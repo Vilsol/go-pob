@@ -11,7 +11,7 @@
     "check:bindings": "node harness/check_bindings.mjs",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --check .",
-    "lint:eslint": "node --max-old-space-size=6144 node_modules/eslint/bin/eslint.js .",
+    "lint:eslint": "node --max-old-space-size=6144 node_modules/eslint/bin/eslint.js --cache --cache-strategy content --cache-location node_modules/.cache/eslint/ .",
     "format": "prettier --write .",
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build -o storybook-static",

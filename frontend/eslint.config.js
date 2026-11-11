@@ -38,7 +38,7 @@ export default tseslint.config(
   {
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        project: ['./tsconfig.json', './e2e/tsconfig.json', './functions/tsconfig.json', './harness/tsconfig.json'],
         tsconfigRootDir: import.meta.dirname
       }
     }
