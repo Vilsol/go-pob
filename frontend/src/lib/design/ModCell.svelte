@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Glyphs from './Glyphs.svelte';
   import type { Snippet } from 'svelte';
   import type { HTMLAttributes } from 'svelte/elements';
 
@@ -39,6 +40,6 @@
   {:else}
     <span class="mod-cell-text">{text}</span>
   {/if}
-  {#if status[k]}<span class="mod-cell-badge" {title}>{status[k]}</span>{/if}
+  {#if status[k]}<span class="mod-cell-badge" {title}><Glyphs text={status[k]} /></span>{/if}
   {@render after?.()}
 </div>

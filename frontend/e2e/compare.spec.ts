@@ -150,7 +150,7 @@ test('the power report lists what the Go model measures, and Equip writes B’s 
   );
   const got = shown
     .filter((r) => r.cat !== 'Config')
-    .map((r) => `${r.what}\t${/^[▲▼] (\S+)/.exec(r.value)?.[1] ?? r.value}`)
+    .map((r) => `${r.what}\t${/^(?:[▲▼] )?(\S+)/.exec(r.value)?.[1] ?? r.value}`)
     .sort();
   expect(got).toEqual(want);
 
@@ -189,7 +189,7 @@ test('the power report lists what the Go model measures, and Equip writes B’s 
   expect(
     shownMana
       .filter((r) => r.cat !== 'Config')
-      .map((r) => `${r.what}\t${/^[▲▼] (\S+)/.exec(r.value)?.[1] ?? r.value}`)
+      .map((r) => `${r.what}\t${/^(?:[▲▼] )?(\S+)/.exec(r.value)?.[1] ?? r.value}`)
       .sort()
   ).toEqual(wantMana);
   await page.getByRole('combobox', { name: 'Metric' }).first().selectOption('life');
@@ -217,7 +217,9 @@ test('the tree, items, skills and config views read both builds; Use and Take wr
   await page.getByRole('tab', { name: 'Items' }).click();
   const items = page.getByRole('table', { name: 'Items by slot' });
   await expect(items.getByRole('row').filter({ hasText: 'Belt' })).toHaveCount(1);
-  await expect(items.getByRole('row').filter({ hasText: 'Belt' }).getByRole('cell').last()).toHaveText(/[▲▼]/, { timeout: 60_000 });
+  await expect(items.getByRole('row').filter({ hasText: 'Belt' }).getByRole('cell').last().locator('[data-glyph="▲"], [data-glyph="▼"]').first()).toBeAttached({
+    timeout: 60_000
+  });
 
   await page.getByRole('tab', { name: 'Skills' }).click();
   await expect(page.getByRole('region', { name: 'Skill setups' }).getByRole('table').first()).toBeVisible();
@@ -340,7 +342,7 @@ test('items, Equip and Calcs controls show and write each build’s own, as the 
   expect(ok, `the model has B's ${bBelt}`).toBe(true);
   await belt.getByRole('button').nth(1).hover();
   await expect(page.locator('#compare-item-tip')).toContainText(tip.Title![0]);
-  await expect(belt.getByRole('cell').last()).toHaveText(/[▲▼]/, { timeout: 60_000 });
+  await expect(belt.getByRole('cell').last().locator('[data-glyph="▲"], [data-glyph="▼"]').first()).toBeAttached({ timeout: 60_000 });
   await belt.getByRole('button', { name: 'Equip' }).hover();
   await expect(page.locator('#compare-equip-tip')).toContainText('Equipping this item in Belt will give you:');
 

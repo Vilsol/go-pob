@@ -12,6 +12,9 @@
     copy: ['M5.5 5.5h8v8h-8z M10.5 5.5v-3h-8v8h3', 1.3],
     check: ['M3 8.5l3.2 3L13 4.5', 1.6],
     warn: ['M8 1.8 14.7 13.5H1.3z M8 6.2v3.6 M8 11.6v.1', 1.4],
+    box: ['M3 3h10v10H3z', 1.3],
+    rule: ['M2 8h12', 1.5],
+    'box-check': ['M3 3h10v10H3z M5.2 8.2l2 2 3.8-4.4', 1.3],
     star: ['M8 1.8l1.9 4 4.3.5-3.2 3 .9 4.3L8 11.4l-3.9 2.2.9-4.3-3.2-3 4.3-.5z', 1.3],
     refresh: ['M13 3.5v3h-3 M12.6 6.5A5 5 0 1 0 13 9.5', 1.5],
     undo: ['M5 3 2 6l3 3 M2 6h8a4 4 0 0 1 0 8H7', 1.6],
@@ -31,15 +34,25 @@
     calc: ['M3 2h10v12H3z M5 4.5h6 M5.5 8h1M9.5 8h1M5.5 11h1M9.5 11h1', 1.3],
     notes: ['M3.5 2h9v12h-9z M5.5 5h5M5.5 8h5M5.5 11h3', 1.3]
   } as const;
-  export type IconName = keyof typeof STROKES | 'gear' | 'save' | 'grip' | 'more' | 'info';
+  // filled 16x16 paths drawn with currentColor
+  const FILLS = {
+    'tri-up': 'M8 3.2 14 12.8H2z',
+    'tri-down': 'M8 12.8 14 3.2H2z',
+    dot: 'M8 4.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 1 0 0-7z',
+    quote: 'M2.5 9.5C2.5 6.3 4.2 4 7 3.3l.4 1.1C5.9 5 5.1 6 5 7.3h2v5H2.5z M9 9.5C9 6.3 10.7 4 13.5 3.3l.4 1.1c-1.5.6-2.3 1.6-2.4 2.9h2v5H9z'
+  } as const;
+  export type IconName = keyof typeof STROKES | keyof typeof FILLS | 'gear' | 'save' | 'grip' | 'more' | 'info';
 </script>
 
 <script lang="ts">
-  let { name, size = 16, class: extra = '' }: { name: IconName; size?: number; class?: string } = $props();
+  // em: size relative to the surrounding text, for an icon that stands in for a glyph inside a line
+  let { name, size = 16, em, class: extra = '' }: { name: IconName; size?: number; em?: number; class?: string } = $props();
   const stroke = $derived(name in STROKES ? STROKES[name as keyof typeof STROKES] : undefined);
+  const fill = $derived(name in FILLS ? FILLS[name as keyof typeof FILLS] : undefined);
+  const dim = $derived(em ? `${em}em` : `${size / 16}rem`);
 </script>
 
-<svg width={size} height={size} class={['shrink-0', extra]} style:width="{size / 16}rem" style:height="{size / 16}rem" viewBox="0 0 16 16" aria-hidden="true">
+<svg width={size} height={size} class={['shrink-0', extra]} style:width={dim} style:height={dim} viewBox="0 0 16 16" aria-hidden="true">
   {#if name === 'gear'}
     <path
       d="M13.40 6.51 L15.12 6.92 L15.12 9.08 L13.40 9.49 L12.87 10.76 L13.80 12.27 L12.27 13.80 L10.76 12.87 L9.49 13.40 L9.08 15.12 L6.92 15.12 L6.51 13.40 L5.24 12.87 L3.73 13.80 L2.20 12.27 L3.13 10.76 L2.60 9.49 L0.88 9.08 L0.88 6.92 L2.60 6.51 L3.13 5.24 L2.20 3.73 L3.73 2.20 L5.24 3.13 L6.51 2.60 L6.92 0.88 L9.08 0.88 L9.49 2.60 L10.76 3.13 L12.27 2.20 L13.80 3.73 L12.87 5.24 Z"
@@ -66,6 +79,8 @@
     <circle cx="8" cy="8" r="6.3" fill="none" stroke="currentColor" stroke-width="1.4"></circle>
     <path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
     <circle cx="8" cy="4.9" r="0.95" fill="currentColor"></circle>
+  {:else if fill}
+    <path d={fill} fill="currentColor"></path>
   {:else if stroke}
     <path d={stroke[0]} fill="none" stroke="currentColor" stroke-width={stroke[1]} stroke-linecap="round" stroke-linejoin="round"></path>
   {/if}

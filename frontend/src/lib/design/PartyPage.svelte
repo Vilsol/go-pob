@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Glyphs from './Glyphs.svelte';
   import Textarea from './Textarea.svelte';
   import Select from './Select.svelte';
   import Input from './Input.svelte';
@@ -140,7 +141,7 @@
       <span class="text-text-3">Party effects disabled</span>
     {:else}
       {#each impact as [label, text, dir] (label)}<div class="flex justify-between gap-2">
-          <span>{label}</span><span class={['toned', toneClass(dir)]}>{text}</span>
+          <span>{label}</span><span class={['toned', toneClass(dir)]}><Glyphs {text} /></span>
         </div>{/each}
     {/if}
   </div>

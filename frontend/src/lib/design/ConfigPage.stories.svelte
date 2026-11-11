@@ -216,7 +216,7 @@
     await userEvent.keyboard('Crit Immune{Enter}');
     const second = p.getByRole('textbox', { name: `Modifier line ${n + 2}` });
     await expect(cellOf(second)).toHaveAttribute('data-k', 'bad');
-    await expect(within(cellOf(second)).getByText('✗ no match')).toBeVisible();
+    await expect(within(cellOf(second)).getByText('no match')).toBeVisible();
     await expect(p.getByText(/1 applied · 1 not recognised/)).toBeVisible();
     await userEvent.hover(cellOf(first));
     const tip = await c.findByRole('tooltip');

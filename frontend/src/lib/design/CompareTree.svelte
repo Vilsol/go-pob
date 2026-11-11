@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Glyphs from './Glyphs.svelte';
   import Checkbox from './Checkbox.svelte';
   import SearchField from './SearchField.svelte';
   import Badge from './Badge.svelte';
@@ -90,7 +91,8 @@
             {/each}
             {#if side.key === 'overlay'}
               <div class="absolute bottom-2.5 left-2.5 flex gap-3 rounded border border-line bg-surface-1/92 px-2 py-1.25 text-11 text-text-2">
-                <span class="text-build-a">● only A</span><span class="text-build-b">● only B</span><span class="text-text-3">● both</span>
+                <span class="text-build-a"><Glyphs text="● only A" /></span><span class="text-build-b"><Glyphs text="● only B" /></span><span
+                  class="text-text-3"><Glyphs text="● both" /></span>
               </div>
             {/if}
           </section>

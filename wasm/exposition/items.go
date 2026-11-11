@@ -72,8 +72,10 @@ type ParsedItem struct {
 	Explicits   []ItemModLine
 	Flask       bool
 	FitSlots    []string
-	Tooltip     calculator.ItemTooltip
-	ArmourData  map[string]float64
+	// the slot PoB's Buy similar reads the item as (ItemsTab.lua:356)
+	ComparisonSlot string
+	Tooltip        calculator.ItemTooltip
+	ArmourData     map[string]float64
 	// inventory cells of the base type; 0 when the base is unknown to the game data
 	Width  int
 	Height int
@@ -114,10 +116,22 @@ func ParseItem(build *pob.PathOfBuilding, text string, stats calculator.ItemTool
 	if err != nil {
 		return ParsedItem{}, err
 	}
-	return parsedItem(build, item, stats), nil
+	return parsedItem(build, item, buildItemID(build, text), stats), nil
 }
 
-func parsedItem(build *pob.PathOfBuilding, item *calculator.Item, stats calculator.ItemTooltipStats) ParsedItem {
+// the id of the build's item with this text, as buildItem matches it; 0 for a pasted item
+func buildItemID(build *pob.PathOfBuilding, text string) int {
+	if build != nil {
+		for _, it := range build.Items.Items {
+			if it.Text == text {
+				return it.ID
+			}
+		}
+	}
+	return 0
+}
+
+func parsedItem(build *pob.PathOfBuilding, item *calculator.Item, itemID int, stats calculator.ItemTooltipStats) ParsedItem {
 	p := ParsedItem{
 		Name:        item.Name,
 		Title:       item.Title,
@@ -163,6 +177,7 @@ func parsedItem(build *pob.PathOfBuilding, item *calculator.Item, stats calculat
 		p.ItemLevel = *item.ItemLevel
 	}
 	if build != nil {
+		p.ComparisonSlot = calculator.GetComparisonSlotNameForItem(build, item, itemID)
 		for _, s := range fitSlots {
 			if calculator.IsItemValidForSlot(build, item, s) {
 				p.FitSlots = append(p.FitSlots, s)

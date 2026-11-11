@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Glyphs from './Glyphs.svelte';
   import { followOtherTabs } from '$lib/storage/tabs';
   import Input from './Input.svelte';
   import Disclosure from './Disclosure.svelte';
@@ -379,7 +380,7 @@
       {/if}
       {#each statuses as w, i (i)}
         <Notice kind="warn" size="sm" class="text-worse">
-          <span aria-hidden="true">⚠</span>
+          <span aria-hidden="true"><Glyphs text="⚠" /></span>
           {w.text}
         </Notice>
       {/each}

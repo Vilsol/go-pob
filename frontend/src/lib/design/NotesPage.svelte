@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Glyphs from './Glyphs.svelte';
+  import { GLYPH_ICONS } from './glyph_icons';
   import Input from './Input.svelte';
   import Button from './Button.svelte';
   import Popover from './Popover.svelte';
@@ -217,7 +219,8 @@
     aria-pressed={t.is?.()}
     title={tip(t)}
     disabled={pobView}
-    onclick={t.run}>{@render glyph(t.label)}</button>
+    onclick={t.run}
+    >{#if GLYPH_ICONS[t.label]}<Glyphs text={t.label} />{:else}{@render glyph(t.label)}{/if}</button>
 {/snippet}
 {#snippet sep()}<span class="mx-0.5 h-5.5 w-px shrink-0 bg-line" aria-hidden="true"></span>{/snippet}
 
@@ -247,7 +250,7 @@
         if (e.key === 'Escape') paletteOpen = false;
       }}
       >{@render glyph('A')}<span class="toned h-1 w-3.5 rounded-hair bg-(--tone,var(--color-text))" style:--tone={codeToCss(currentCode)} data-pob-color></span
-      >▾</Button>
+      ><Glyphs text="▾" /></Button>
     <Popover open={paletteOpen} anchor={paletteRoot} onclose={() => (paletteOpen = false)} class="flex w-82.5 flex-col gap-1.5 p-2">
       <div role="listbox" aria-label="PoB colours" tabindex="-1" class="grid grid-cols-3 gap-1">
         {#each SWATCHES as s (s.name)}
@@ -324,7 +327,7 @@
         !infoShown && 'hidden'
       ]}
       >Rich text (formatting, colours, lists, links) is stored in the build. PoB export flattens it to plain text with ^xRRGGBB colour codes: formatting and
-      links export as their text, list items as “• ” / “1. ” / “☐ ” lines, a rule as a line of dashes.</span>
+      links export as their text, list items as “• ” / “1. ” / “<Glyphs text="☐" /> ” lines, a rule as a line of dashes.</span>
   </span>
 </Toolbar>
 

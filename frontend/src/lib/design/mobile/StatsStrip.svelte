@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Glyphs from '../Glyphs.svelte';
   import type { Sidebar } from '$lib/display/sidebar';
   import type { StatCompareLine } from '$lib/skill_tree/stat_compare';
   import { headlines } from './mobile';
@@ -30,5 +31,5 @@
     </span>
   {/each}
   <span class="sticky right-0 flex w-6 shrink-0 items-center justify-center bg-bar text-text-3"
-    ><span aria-hidden="true">▴</span><span class="sr-only">Show all stats</span></span>
+    ><span aria-hidden="true"><Glyphs text="▴" /></span><span class="sr-only">Show all stats</span></span>
 </button>

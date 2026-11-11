@@ -449,7 +449,7 @@
     }
     paste = { item: summary(p.item), name: p.item.Name, pending: true, blocks: [] };
     const tradeItem = { rarity: p.item.Rarity, title: p.item.Title, name: p.item.Name, baseName: p.item.BaseName, type: p.item.Type };
-    pasteTrade = { source: text, item: tradeItem, slot: p.item.FitSlots?.[0], defences: tradeDefences(tradeItem, p.item.ArmourData) };
+    pasteTrade = { source: text, item: tradeItem, slot: p.item.ComparisonSlot, defences: tradeDefences(tradeItem, p.item.ArmourData) };
     const [d, c, affixes, extras, bases] = await Promise.all([
       syncWrap?.GetDisplayItem(text),
       syncWrap?.GetDisplayItemCraft(text),

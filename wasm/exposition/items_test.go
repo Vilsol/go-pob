@@ -78,6 +78,9 @@ func TestParseItemPaste(t *testing.T) {
 	if !slices.Equal(p.FitSlots, []string{"Helmet"}) {
 		t.Errorf("fits %v", p.FitSlots)
 	}
+	if p.ComparisonSlot != "Helmet" {
+		t.Errorf("comparison slot %q", p.ComparisonSlot)
+	}
 	if p.Width != 2 || p.Height != 2 {
 		t.Errorf("helmet cells %dx%d, want 2x2", p.Width, p.Height)
 	}
@@ -158,7 +161,7 @@ func TestParseItemOfABuildItemMatchesAFreshParse(t *testing.T) {
 			if freshErr != nil {
 				continue
 			}
-			if want := parsedItem(build, fresh, calculator.ItemTooltipStats{}); !reflect.DeepEqual(got, want) {
+			if want := parsedItem(build, fresh, buildItemID(build, it.Text), calculator.ItemTooltipStats{}); !reflect.DeepEqual(got, want) {
 				t.Fatalf("round %d item %d: cached %+v\nfresh %+v", round, it.ID, got, want)
 			}
 		}

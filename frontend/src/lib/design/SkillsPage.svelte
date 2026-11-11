@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Glyphs from './Glyphs.svelte';
   import GemIcon from './GemIcon.svelte';
   import Tooltip from './Tooltip.svelte';
   import SectionHeading from './SectionHeading.svelte';
@@ -300,7 +301,7 @@
                 size={16}
                 decorative
                 class="mr-1 align-[-3px]" />{/if}{groupLabel(g)}{#if i === mainGroup}<span class="text-10 font-semibold tracking-caps text-accent">
-                ★ MAIN</span
+                <Glyphs text="★ MAIN" /></span
               >{/if}</span
           ><span class="font-mono text-11 text-text-2">{g.gems.length}/{socketCount(g) || '–'}{g.slot ? ' · ' + g.slot : ''}</span></span>
         <span class="max-w-full truncate text-11 text-text-2">{g.gems.map((m) => m.name.replace(/ Support$/, '')).join(', ') || 'No gems'}</span>

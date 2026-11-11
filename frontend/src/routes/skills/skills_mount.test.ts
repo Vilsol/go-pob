@@ -634,7 +634,12 @@ describe('the gem picker sort cache (GemSelectControl.lua:255-441)', () => {
       await vi.waitFor(() => expect(dps).toHaveBeenCalled(), { timeout: 5000 });
       expect(dps.mock.calls[0][1].map((g) => g.id)).toEqual([EXTRA.id]);
       await fireEvent.input(box, { target: { value: EXTRA.name } });
-      await vi.waitFor(() => expect(within(editor()).getByRole('option', { name: new RegExp(EXTRA.name) }).textContent).toContain('▲ +50%'));
+      await vi.waitFor(() => expect(within(editor()).getByRole('option', { name: new RegExp(EXTRA.name) }).textContent).toContain(' +50%'));
+      expect(
+        within(editor())
+          .getByRole('option', { name: new RegExp(EXTRA.name) })
+          .querySelector('[data-glyph="▲"]')
+      ).not.toBeNull();
     } finally {
       cache.mockRestore();
       dps.mockRestore();

@@ -32832,6 +32832,7 @@ func crystallineMarshalExpositionParsedItem(v *ParsedItem) any {
 			return out
 		}()
 	}))
+	out.Set("ComparisonSlot", string(v.ComparisonSlot))
 	out.Set("Tooltip", crystallineJSON(func(b []byte, ok *bool) []byte {
 		b = crystallineAppendCalculatorItemTooltip(b, &v.Tooltip, ok)
 		return b
@@ -52184,6 +52185,8 @@ func crystallineAppendExpositionParsedItem(b []byte, v *ParsedItem, ok *bool) []
 
 		b = append(b, ']')
 	}
+	b = append(b, ",\"ComparisonSlot\":"...)
+	b = crystallineAppendString(b, string(v.ComparisonSlot))
 	b = append(b, ",\"Tooltip\":"...)
 	b = crystallineAppendCalculatorItemTooltip(b, &v.Tooltip, ok)
 	b = append(b, ",\"ArmourData\":"...)

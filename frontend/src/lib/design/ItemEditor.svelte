@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Glyphs from './Glyphs.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import Dialog from './Dialog.svelte';
   import Button from './Button.svelte';
@@ -193,7 +194,7 @@
             {#if impact}{impact.header}{:else if slot}No what-if for {slot} yet{:else}Fits no equipment slot{/if}
           </div>
           {#each rows as d, i (i)}
-            <div class="kv"><span>{d.label}</span><span class={['toned', toneClass(d.dir)]}>{d.text}</span></div>
+            <div class="kv"><span>{d.label}</span><span class={['toned', toneClass(d.dir)]}><Glyphs text={d.text} /></span></div>
           {/each}
         {/if}
       </section>

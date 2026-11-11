@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Glyphs from './Glyphs.svelte';
   import { tone as toneClass, type Tone } from './tone';
   import ImpactBlocks from './ImpactBlocks.svelte';
   import type { WhatIf } from './items';
@@ -78,7 +79,7 @@
       </div>
     {:else}
       {#each impact as d, i (i)}
-        <div class="kv"><span>{d.label}</span><span class={['toned', toneClass(d.dir)]}>{d.text}</span></div>
+        <div class="kv"><span>{d.label}</span><span class={['toned', toneClass(d.dir)]}><Glyphs text={d.text} /></span></div>
       {/each}
     {/if}
   </div>

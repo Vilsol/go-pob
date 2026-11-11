@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Glyphs from './Glyphs.svelte';
   import GemIcon from './GemIcon.svelte';
   import Input from './Input.svelte';
   import Field from './Field.svelte';
@@ -547,7 +548,8 @@
               <span class={['toned col-span-6 truncate', toneClass(r.attr)]}
                 ><GemIcon name={r.name} size={16} decorative class="mr-1 align-[-3px]" />{r.name}</span>
               <span class="col-span-2 text-11 text-text-2">{r.support ? 'Support' : 'Active'}</span>
-              <span class={['col-span-4 text-right font-mono text-12', deltas[r.name] > 0 && !r.socketed ? 'text-better' : 'text-text-2']}>{deltaText(r)}</span>
+              <span class={['col-span-4 text-right font-mono text-12', deltas[r.name] > 0 && !r.socketed ? 'text-better' : 'text-text-2']}
+                ><Glyphs text={deltaText(r)} /></span>
             </div>
           {:else}
             <EmptyState inset="row" text="No gems match “{q}”." />

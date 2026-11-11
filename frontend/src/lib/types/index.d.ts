@@ -2200,6 +2200,7 @@ export declare namespace exposition {
     readonly Explicits?: Array<exposition.ItemModLine>;
     readonly Flask: boolean;
     readonly FitSlots?: Array<string>;
+    readonly ComparisonSlot: string;
     readonly Tooltip: calculator.ItemTooltip;
     readonly ArmourData?: Record<string, number>;
     readonly Width: number;

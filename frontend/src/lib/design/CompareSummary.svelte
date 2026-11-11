@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Glyphs from './Glyphs.svelte';
   import SectionHeading from './SectionHeading.svelte';
   import EmptyState from './EmptyState.svelte';
   import ButterflyRow from './ButterflyRow.svelte';
@@ -56,7 +57,7 @@
     {#each top as p, i (i)}
       <div class="grid grid-cols-[3.25rem_minmax(0,1fr)_6.875rem] items-baseline gap-2 border-b border-surface-2 py-0.75">
         <span class="text-text-3">{CATS[p.cat]}</span><span class="truncate" title={pobPlain(p.what)}><PobText text={p.what} /></span><span
-          class={['toned text-right font-mono', toneClass(dirTone(p.impact[mi]))]}>{arrowed(p.impact[mi], signed(p.impact[mi]))}</span>
+          class={['toned text-right font-mono', toneClass(dirTone(p.impact[mi]))]}><Glyphs text={arrowed(p.impact[mi], signed(p.impact[mi]))} /></span>
       </div>
     {:else}
       <EmptyState text="No single difference moves this metric." />

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Glyphs from './Glyphs.svelte';
   import Dot from './Dot.svelte';
   import EmptyState from './EmptyState.svelte';
   import Segmented from './Segmented.svelte';
@@ -265,12 +266,11 @@
       {#snippet row(it: HistoryItem, i: number)}
         {@const kind = history[i].kind ?? 'other'}
         <span class="flex min-w-0 items-center gap-1.5"
-          ><span class="w-3 shrink-0 text-accent" aria-hidden="true">{it.current ? '●' : ''}</span><span
-            class="flex shrink-0 text-text-3"
-            title={STEP_KINDS[kind]}><Icon name={STEP_ICONS[kind]} size={14} /></span
-          ><span class={['truncate', i < undone && 'line-through']}>{it.label}</span>{#if history[i].delta}<span class="sr-only"
-              >. {deltaText(history[i].delta)}</span
-            >{/if}</span
+          ><span class="w-3 shrink-0 text-accent" aria-hidden="true"
+            >{#if it.current}<Glyphs text="●" />{/if}</span
+          ><span class="flex shrink-0 text-text-3" title={STEP_KINDS[kind]}><Icon name={STEP_ICONS[kind]} size={14} /></span><span
+            class={['truncate', i < undone && 'line-through']}>{it.label}</span
+          >{#if history[i].delta}<span class="sr-only">. {deltaText(history[i].delta)}</span>{/if}</span
         ><span class="shrink-0 text-11 text-text-3">{history[i].page} · {history[i].when}</span>
       {/snippet}
     </Menu>

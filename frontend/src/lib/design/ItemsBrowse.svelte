@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Glyphs from './Glyphs.svelte';
   import SearchField from './SearchField.svelte';
   import FloatingLabel from './FloatingLabel.svelte';
   import FloatingItemTip from './FloatingItemTip.svelte';
@@ -82,7 +83,7 @@
                 class="mr-1.5 align-middle" />{r.name}</span>
             <span role="cell" class="col-span-4 truncate text-text-2 max-phone:col-span-1 max-phone:col-start-1 max-phone:row-start-2">{r.type}</span>
             <span role="cell" class="col-span-6 truncate text-text-3 max-phone:col-span-2 max-phone:row-start-3"
-              >{r.note}{#if r.impact}&nbsp;·&#32;<span class={['toned', toneClass(r.impact.dir)]}>{r.impact.text}</span>{/if}</span>
+              >{r.note}{#if r.impact}&nbsp;·&#32;<span class={['toned', toneClass(r.impact.dir)]}><Glyphs text={r.impact.text} /></span>{/if}</span>
             <span role="cell" class="col-span-2 text-right font-mono text-text-2 max-phone:col-span-1 max-phone:col-start-2 max-phone:row-start-2"
               >{r.req}</span>
             <span role="cell" class="col-span-5 flex justify-end gap-1 max-phone:col-span-1 max-phone:col-start-2 max-phone:row-start-1">

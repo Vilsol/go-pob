@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Glyphs from './Glyphs.svelte';
   import Checkbox from './Checkbox.svelte';
   import SortHeader from './SortHeader.svelte';
   import MetricSelect from './MetricSelect.svelte';
@@ -74,7 +75,8 @@
     <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-text-2">
       <span>A <span class="font-mono text-text">{num(a)}</span></span>
       <span>B <span class="font-mono text-text">{num(b)}</span></span>
-      <span class={['toned font-mono text-12 font-semibold', toneClass(dirTone(diff))]}>{diff >= 0 ? '▲' : '▼'} B {signed(diff)} ({pctOf(diff, a)})</span>
+      <span class={['toned font-mono text-12 font-semibold', toneClass(dirTone(diff))]}
+        ><Glyphs text={`${diff >= 0 ? '▲' : '▼'} B ${signed(diff)} (${pctOf(diff, a)})`} /></span>
       <span class="text-text-3"
         >Each row: take B’s version of one thing into A, recalculate A, report the change. Rows with no effect on {label} are hidden ({power.length -
           nonzero.length} hidden).</span>
@@ -126,7 +128,7 @@
             style:--x={v >= 0 ? '50%' : `${(50 - w).toFixed(1)}%`}
             style:--w={`${w.toFixed(1)}%`}></span
           ></span>
-        <span role="cell" class={['toned text-right font-mono', toneClass(dirTone(v))]}>{arrowed(v, `${signed(v)} (${pctOf(v, a)})`)}</span>
+        <span role="cell" class={['toned text-right font-mono', toneClass(dirTone(v))]}><Glyphs text={arrowed(v, `${signed(v)} (${pctOf(v, a)})`)} /></span>
         <span role="cell" class="text-right font-mono text-text-2">{p.points ?? ''}</span>
         <span role="cell" class="text-right font-mono text-text-2">{p.points ? signed(per(p)) : ''}</span>
         <span role="cell" class="flex justify-end"
@@ -141,7 +143,7 @@
           >Not additive: each row is measured alone. Adopting all of B gives exactly B’s {label}.</span
         ></span>
       <span role="cell" class="max-phone:hidden"></span>
-      <span role="cell" class={['toned text-right font-mono', toneClass(dirTone(total))]}>{arrowed(total, signed(total))}</span>
+      <span role="cell" class={['toned text-right font-mono', toneClass(dirTone(total))]}><Glyphs text={arrowed(total, signed(total))} /></span>
       <span role="cell"></span><span role="cell"></span><span role="cell"></span>
     </div>
   </div>

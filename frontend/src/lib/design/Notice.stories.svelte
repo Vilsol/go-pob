@@ -1,4 +1,5 @@
 <script module lang="ts">
+  import Glyphs from './Glyphs.svelte';
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import { expect, within } from 'storybook/test';
   import InlineMessage from './InlineMessage.svelte';
@@ -30,7 +31,7 @@
       >These notes were edited as PoB text, so that text is shown.{#snippet actions()}<Button size="sm" variant="primary">Restore rich version</Button><Button
           size="sm">Keep PoB text</Button
         >{/snippet}</Notice>
-    <Notice kind="warn" size="sm" class="text-worse">⚠ You have 2 unallocated passive points</Notice>
+    <Notice kind="warn" size="sm" class="text-worse"><Glyphs text="⚠" /> You have 2 unallocated passive points</Notice>
     <Notice kind="error">The build file could not be read.</Notice>
     <Notice float>Loading game data: items</Notice>
   </div>

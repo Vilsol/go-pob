@@ -100,6 +100,31 @@ func equippedSlotForItem(build *pob.PathOfBuilding, slots []listSlot, itemID int
 	return nil, nil
 }
 
+//pob:src/Classes/ItemsTab.lua:2544-2557
+func GetComparisonSlotNameForItem(build *pob.PathOfBuilding, item *Item, itemID int) string {
+	slots := orderedListSlots(build)
+	if itemID != 0 {
+		if slot, _ := equippedSlotForItem(build, slots, itemID); slot != nil {
+			return slot.name
+		}
+	}
+	if item.Type == "Jewel" {
+		for k, slot := range slots {
+			if slot.inactive || slot.selected != 0 {
+				continue
+			}
+			if slot.nodeID != 0 {
+				if IsJewelValidForSocket(item, slot.nodeID) {
+					return slot.name
+				}
+			} else if slotShown(build, orderedItemSlots[k], false) && IsItemValidForSlot(build, item, slot.name) {
+				return slot.name
+			}
+		}
+	}
+	return item.getPrimarySlot()
+}
+
 //pob:src/Classes/ItemListControl.lua:206-227
 func findSocketedJewel(build *pob.PathOfBuilding, item *Item, itemID int, excludeActive bool) (string, bool) {
 	if item == nil || item.Type != "Jewel" {

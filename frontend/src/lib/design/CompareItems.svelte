@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Glyphs from './Glyphs.svelte';
   import Button from './Button.svelte';
   import Tooltip from './Tooltip.svelte';
   import Checkbox from './Checkbox.svelte';
@@ -146,7 +147,7 @@
         <span class="text-text-3">no what-if (flask or socket)</span>
       {:else}
         {#each lines(r).slice(0, 2) as l, i (i)}<span class={['toned max-w-full truncate', l.up ? 'tone-better' : 'tone-worse']} title={l.text}
-            >{l.up ? '▲' : '▼'} {l.text}</span
+            ><Glyphs text={`${l.up ? '▲' : '▼'} ${l.text}`} /></span
           >{:else}<span class="text-text-3">no change</span>{/each}
       {/if}
       {@render buttons(r)}

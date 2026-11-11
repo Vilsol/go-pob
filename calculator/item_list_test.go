@@ -432,3 +432,45 @@ func TestItemListLoadoutFilterAgainstPoB(t *testing.T) {
 		}
 	}
 }
+
+// TestGetComparisonSlotNameForItem: ItemsTab.lua:2544-2557: the equipped slot (either set), the first empty
+// allocated socket for a jewel, else the primary slot.
+func TestGetComparisonSlotNameForItem(t *testing.T) {
+	initItemsTabData(t)
+	build := loadCorpusBuild(t, itemList0339)
+	slot := func(id int) string {
+		text, ok := buildItemText(build, id)
+		if !ok {
+			t.Fatalf("REFUSING: no item %d", id)
+		}
+		return GetComparisonSlotNameForItem(build, ParseItem(text), id)
+	}
+	loose := func(text string) string {
+		return GetComparisonSlotNameForItem(build, ParseItem(text), 0)
+	}
+	for _, c := range []struct {
+		got, want string
+	}{
+		{slot(59), "Ring 2"},
+		{slot(5), "Ring 2"},
+		{slot(73), "Weapon 1"},
+		{slot(6), "Weapon 1 Swap"},
+		{slot(41), "Jewel 2491"},
+		{loose("Rarity: Normal\nIron Ring\n"), "Ring 1"},
+		{loose("Rarity: Normal\nImbued Wand\n"), "Weapon 1"},
+		{loose("Rarity: Normal\nCobalt Jewel\n"), "Jewel"},
+	} {
+		if c.got != c.want {
+			t.Errorf("slot %q, want %q", c.got, c.want)
+		}
+	}
+	spec := &build.Tree.Specs[build.ActiveSpecIndex()]
+	for k := range spec.Sockets {
+		if spec.Sockets[k].NodeID == 26196 || spec.Sockets[k].NodeID == 44169 {
+			spec.Sockets[k].ItemID = 0
+		}
+	}
+	if got := loose("Rarity: Normal\nCobalt Jewel\n"); got != "Jewel 26196" {
+		t.Errorf("loose jewel %q, want the first empty socket, Jewel 26196", got)
+	}
+}

@@ -16,20 +16,18 @@ const ITEM_ART = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADU
 // url -> why the harness could not serve it, so a page's net::ERR_FAILED names its cause
 const failed = new Map<string, string>();
 
-const localCopy = async (url: string): Promise<{ file: string; type: string } | string> => {
+const localCopy = async (url: string): Promise<{ file: string } | string> => {
   const file = resolve(DIR, createHash('sha256').update(url).digest('hex'));
-  if (existsSync(file)) return { file, type: existsSync(`${file}.type`) ? readFileSync(`${file}.type`, 'utf8') : '' };
+  if (existsSync(file)) return { file };
   for (let attempt = 1; ; attempt++) {
     try {
       const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const type = res.headers.get('content-type') ?? '';
       mkdirSync(DIR, { recursive: true });
       const tmp = `${file}.${process.pid}.tmp`;
       writeFileSync(tmp, Buffer.from(await res.arrayBuffer()));
-      writeFileSync(`${file}.type`, type);
       renameSync(tmp, file);
-      return { file, type };
+      return { file };
     } catch (e) {
       if (attempt === 5) return `the harness could not fetch it after ${attempt} attempts: ${String(e)}`;
       await new Promise((r) => setTimeout(r, 1_000 * attempt));

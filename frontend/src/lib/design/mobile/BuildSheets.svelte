@@ -3,6 +3,7 @@
 </script>
 
 <script lang="ts">
+  import Glyphs from '../Glyphs.svelte';
   import type { BuildWarning } from '$lib/display/sidebar';
   import IssueRow from '../IssueRow.svelte';
   import { issueKinds } from '../issue_kinds';
@@ -48,7 +49,8 @@
                 open = undefined;
                 onhistory?.(i);
               }}>
-              <span class="w-3 shrink-0 text-accent" aria-hidden="true">{i === undone ? '●' : ''}</span>
+              <span class="w-3 shrink-0 text-accent" aria-hidden="true"
+                >{#if i === undone}<Glyphs text="●" />{/if}</span>
               <span class="flex shrink-0 text-text-3" title={STEP_KINDS[kind]}><Icon name={STEP_ICONS[kind]} size={16} /></span>
               <span class={['min-w-0 flex-1 truncate', i < undone && 'line-through']}>{h.action}</span>
               <span class="shrink-0 text-11 text-text-3">{h.page} · {h.when}</span>

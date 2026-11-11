@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Glyphs from './Glyphs.svelte';
   import Textarea from './Textarea.svelte';
   import InlineMessage from './InlineMessage.svelte';
   import { isTypingTarget } from './keys';
@@ -628,7 +629,7 @@
                 Equip impact{pasteSlot ? ` (in ${pasteSlot}${replacing(sample.impact) ? `, ${replacing(sample.impact)}` : ''})` : ''}
               </div>
               {#each impactRows(sample.impact, 6) as d, i (i)}
-                <div class="kv"><span>{d.label}</span><span class={['toned', toneClass(d.dir)]}>{d.text}</span></div>
+                <div class="kv"><span>{d.label}</span><span class={['toned', toneClass(d.dir)]}><Glyphs text={d.text} /></span></div>
               {/each}
             </div>
           {/if}

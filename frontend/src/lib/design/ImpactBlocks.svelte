@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Glyphs from './Glyphs.svelte';
   import type { Snippet } from 'svelte';
   import { tone as toneClass } from './tone';
   import { impactText, type ImpactBlock } from './items';
@@ -24,7 +25,9 @@
       <div class="flex flex-col gap-0.75" data-section data-actor={s.actor}>
         {#if s.actor}<div class="subhead font-sans">{s.actor}</div>{/if}
         {#each s.lines as l, k (k)}
-          <div class="kv" data-line><span>{l.label}</span><span class={['toned', toneClass(l.better ? 'up' : 'down')]}>{impactText(l)}</span></div>
+          <div class="kv" data-line>
+            <span>{l.label}</span><span class={['toned', toneClass(l.better ? 'up' : 'down')]}><Glyphs text={impactText(l)} /></span>
+          </div>
         {/each}
       </div>
     {/each}

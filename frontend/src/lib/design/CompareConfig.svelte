@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Glyphs from './Glyphs.svelte';
   import Select from './Select.svelte';
   import Input from './Input.svelte';
   import Checkbox from './Checkbox.svelte';
@@ -158,8 +159,8 @@
             {:else}
               <div aria-hidden="true" class={['data-row data-head gap-2.5 py-1.5 text-10 tracking-caps', GRID]}>
                 <span>OPTION</span><span class="text-build-a">A’S VALUE</span><span class="text-build-b">B’S VALUE</span>
-                <span class="text-right">A WITH B’S VALUE {sort === 'a' ? '▼' : ''}</span><span class="text-right"
-                  >B WITH A’S VALUE {sort === 'b' ? '▼' : ''}</span>
+                <span class="text-right">A WITH B’S VALUE<Glyphs text={sort === 'a' ? ' ▼' : ''} /></span><span class="text-right"
+                  >B WITH A’S VALUE<Glyphs text={sort === 'b' ? ' ▼' : ''} /></span>
                 <span></span>
               </div>
             {/if}
@@ -185,9 +186,9 @@
                       ><span role="cell" class="max-phone:hidden"></span>
                     {:else}
                       <span role="cell" class={['toned text-right font-mono', toneClass(dirTone(va))]}
-                        >{arrowed(va, `${signed(va)} (${pctOf(va, baseA)})`)}</span>
+                        ><Glyphs text={arrowed(va, `${signed(va)} (${pctOf(va, baseA)})`)} /></span>
                       <span role="cell" class={['toned text-right font-mono', toneClass(dirTone(vb))]}
-                        >{arrowed(vb, `${signed(vb)} (${pctOf(vb, baseB)})`)}</span>
+                        ><Glyphs text={arrowed(vb, `${signed(vb)} (${pctOf(vb, baseB)})`)} /></span>
                       <span role="cell" class="flex justify-end max-phone:col-start-2 max-phone:row-start-1"
                         >{#if canApply}<Button size="2xs" onclick={() => onuse(c.key)}>Use B’s value</Button>{/if}</span>
                     {/if}
@@ -204,7 +205,7 @@
       {/if}
     </div>
     <div class="note-sm px-3 py-1.5">
-      Each impact is measured alone on the selected metric ({metrics[mi].label}). Blue ▲ = the receiving build gets better, orange ▼ = worse.
+      Each impact is measured alone on the selected metric ({metrics[mi].label}). <Glyphs text="Blue ▲ = the receiving build gets better, orange ▼ = worse." />
     </div>
   </section>
 </div>

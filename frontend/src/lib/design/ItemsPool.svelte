@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Glyphs from './Glyphs.svelte';
   import Tooltip from './Tooltip.svelte';
   import SearchField from './SearchField.svelte';
   import Icon from './Icon.svelte';
@@ -256,7 +257,7 @@
         <div role="row" class="px-3 py-3"><span role="cell" class="note">{rows.length ? `No ${title.toLowerCase()} item matches “${q}”.` : empty}</span></div>
       {/each}
     </div>
-    <div class="note px-3 py-2 text-11">{footer}</div>
+    <div class="note px-3 py-2 text-11"><Glyphs text={footer} /></div>
   </section>
 </div>
 {#if info}
