@@ -45,9 +45,9 @@ func (c *Calculator) miscCalculator() (*calculator2.MiscCalculator, error) {
 }
 
 func compareOutputs(env *calculator2.Environment) CompareOutputs {
-	out := CompareOutputs{Output: env.Player.Output}
+	out := CompareOutputs{Output: withFlags(env.Player.Output, env.Player.OutputFlags)}
 	if main := env.Player.MainSkill; main != nil && main.Minion != nil {
-		out.Minion = main.Minion.Output
+		out.Minion = withFlags(main.Minion.Output, main.Minion.OutputFlags)
 	}
 	return out
 }

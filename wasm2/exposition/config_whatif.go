@@ -30,27 +30,18 @@ func (c *Calculator) miscCompare(calc func(*calculator2.MiscCalculator) *calcula
 	if err != nil {
 		return nil, err
 	}
-	view := &ItemCompareView{Base: flaggedOutputs(misc.Base), SkillFlags: statSetFlags(c.env.Player.MainSkill), Blocks: []ItemCompareBlock{}}
+	view := &ItemCompareView{Base: compareOutputs(misc.Base), SkillFlags: statSetFlags(c.env.Player.MainSkill), Blocks: []ItemCompareBlock{}}
 	if main := c.env.Player.MainSkill; main != nil && main.Minion != nil {
 		view.Minion = true
 		view.MinionSkillFlags = statSetFlags(main.Minion.MainSkill)
 	}
 	if env := calc(misc); env != nil {
-		view.Blocks = append(view.Blocks, ItemCompareBlock{Compare: flaggedOutputs(env)})
+		view.Blocks = append(view.Blocks, ItemCompareBlock{Compare: compareOutputs(env)})
 	}
 	return view, nil
 }
 
-// flaggedOutputs is compareOutputs with each actor's true output entries, which the stat list's condFuncs read, as 1.
-func flaggedOutputs(env *calculator2.Environment) CompareOutputs {
-	out := compareOutputs(env)
-	out.Output = withFlags(out.Output, env.Player.OutputFlags)
-	if main := env.Player.MainSkill; main != nil && main.Minion != nil {
-		out.Minion = withFlags(out.Minion, main.Minion.OutputFlags)
-	}
-	return out
-}
-
+// withFlags is output with each true boolean entry, which the stat list's condFuncs read, as 1.
 func withFlags(output map[string]float64, flags map[string]bool) map[string]float64 {
 	out := maps.Clone(output)
 	for k, v := range flags {
