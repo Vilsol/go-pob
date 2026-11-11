@@ -1,6 +1,7 @@
 @layer components {
+  /* the font's own line height: a fixed one rounds below the glyphs' height on some renderers and the text overflows */
   .pill {
-    @apply rounded-pill border border-(--tone)/53 bg-(--tone)/8 px-1.75 font-mono text-11 leading-4 font-semibold whitespace-nowrap text-(--tone);
+    @apply rounded-pill border border-(--tone)/53 bg-(--tone)/8 px-1.75 py-px font-mono text-11 leading-normal font-semibold whitespace-nowrap text-(--tone);
   }
   .pill-even {
     @apply border-line bg-transparent text-text-3;
