@@ -3,6 +3,7 @@ package exposition
 import (
 	"slices"
 	"strconv"
+	"strings"
 
 	"github.com/Vilsol/go-pob/calculator2"
 	"github.com/Vilsol/go-pob/data/tree2"
@@ -321,4 +322,46 @@ func (c *Calculator) TreeSpecAlloc(specID int) ([]int, error) {
 	}
 	slices.Sort(out)
 	return out, nil
+}
+
+// TreeConversionView is what go-pob tells the user when the active spec was saved on an older tree than TreeVersion:
+// go-pob-data publishes TreeVersion only, so the spec opened on it, as ConvertToVersion would have moved it. Saved is
+// how many nodes the spec saved, Lost how many of those are not allocated on TreeVersion.
+type TreeConversionView struct {
+	From  string
+	To    string
+	Saved int
+	Lost  int
+}
+
+// TreeConversion is the zero view (From empty) when the active spec is on TreeVersion.
+//
+//pob2:src/Classes/TreeTab.lua:588-611
+func (c *Calculator) TreeConversion() (TreeConversionView, error) {
+	if len(c.build.Tree.Specs) == 0 {
+		return TreeConversionView{}, nil
+	}
+	saved := &c.build.Tree.Specs[c.activeSpecIndex()-1]
+	from := specTreeVersion(saved)
+	if from == TreeVersion {
+		return TreeConversionView{}, nil
+	}
+	spec, err := c.spec()
+	if err != nil {
+		return TreeConversionView{}, err
+	}
+	view := TreeConversionView{From: treeVersionDisplay(from), To: treeVersionDisplay(TreeVersion)}
+	if saved.Nodes != nil {
+		for _, field := range strings.Split(*saved.Nodes, ",") {
+			id, err := strconv.Atoi(strings.TrimSpace(field))
+			if err != nil {
+				continue
+			}
+			view.Saved++
+			if _, ok := spec.AllocNodes[id]; !ok {
+				view.Lost++
+			}
+		}
+	}
+	return view, nil
 }

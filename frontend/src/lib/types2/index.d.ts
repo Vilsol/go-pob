@@ -528,6 +528,7 @@ export declare namespace exposition {
     StepNodePower(n: number): Promise<Result<(exposition.PowerProgress | undefined)>>;
     SyncCalcsSkillSelection(): void;
     TraceNode(trace: Array<number> | undefined, id: number): Result<(exposition.TraceView | undefined)>;
+    TreeConversion(): Result<exposition.TreeConversionView>;
     TreeNodeNote(nodeID: number): string;
     TreeSpecAlloc(specID: number): Result<(Array<number> | undefined)>;
     TreeSpecRows(): Result<(Array<exposition.TreeSpecRow> | undefined)>;
@@ -817,6 +818,12 @@ export declare namespace exposition {
     readonly Label: string;
     readonly ClassID: number;
     readonly Ascendancies?: Array<string>;
+  }
+  interface TreeConversionView {
+    readonly From: string;
+    readonly To: string;
+    readonly Saved: number;
+    readonly Lost: number;
   }
   interface TreeHover {
     readonly Path?: Array<number>;

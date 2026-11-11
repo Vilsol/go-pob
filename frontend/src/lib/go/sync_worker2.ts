@@ -1224,6 +1224,12 @@ class PoB2Worker {
     return treeSpecsOf(this.calc);
   }
 
+  /* TreeTab.lua:588-611 (PoB-PoE2): the active spec was saved on an older tree than the one it opened on */
+  TreeConversion(): { from: string; to: string; saved: number; lost: number } | undefined {
+    const v = this.calc?.TreeConversion().unwrap();
+    return v?.From ? { from: v.From, to: v.To, saved: v.Saved, lost: v.Lost } : undefined;
+  }
+
   private activeSpecTitle() {
     const v = this.TreeSpecs();
     return v.labels[v.active - 1] || 'Default';

@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"slices"
 	"strconv"
 	"strings"
@@ -270,5 +271,49 @@ func TestTreeSpecAllocIsTheComparedSpecsAllocation(t *testing.T) {
 	past, _ := calc.TreeSpecAlloc(9)
 	if slices.Contains(second, 44871) || !slices.Equal(second, past) {
 		t.Fatalf("spec 2 alloc %v, past the list %v", second, past)
+	}
+}
+
+var (
+	specOn05  = regexp.MustCompile(`(<Spec [^>]*?)nodes="([^"]*)"([^>]*?)treeVersion="0_5"`)
+	specNodes = regexp.MustCompile(`<Spec [^>]*nodes="([^"]*)"`)
+)
+
+// TreeTab.lua:588-611 (PoB-PoE2): a spec saved on an older tree opens on TreeVersion, and go-pob says so; a node the
+// newer tree lacks counts as saved but not allocated
+func TestTreeConversionOfAnOlderSpec(t *testing.T) {
+	raw, err := os.ReadFile(filepath.Join("testdata", "sorceress_items.xml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	same, err := ParseBuild(string(raw))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := same.Calculate(); err != nil {
+		t.Fatal(err)
+	}
+	if v, err := same.TreeConversion(); err != nil || v != (TreeConversionView{}) {
+		t.Fatalf("a spec on %s: TreeConversion = %+v, %v; want the zero view", TreeVersion, v, err)
+	}
+	old := specOn05.ReplaceAllString(string(raw), `${1}nodes="${2},999999999"${3}treeVersion="0_3"`)
+	if old == string(raw) {
+		t.Fatal("the fixture's spec was not rewritten")
+	}
+	calc, err := ParseBuild(old)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := calc.Calculate(); err != nil {
+		t.Fatal(err)
+	}
+	v, err := calc.TreeConversion()
+	if err != nil {
+		t.Fatal(err)
+	}
+	saved := strings.Count(specNodes.FindStringSubmatch(old)[1], ",") + 1
+	want := TreeConversionView{From: "0_3", To: TreeVersion, Saved: saved, Lost: 1}
+	if v != want {
+		t.Fatalf("TreeConversion = %+v, want %+v", v, want)
 	}
 }

@@ -1,6 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 import { deflateSync } from 'node:zlib';
 
 import { DATA_HOST, cachedAsset } from './support/data_cache';
@@ -326,5 +327,20 @@ test('F1 over a PoE2 item opens its poe2wiki.net page', async ({ page }) => {
   await expect
     .poll(() => page.evaluate(() => (window as unknown as { opened: string[] }).opened))
     .toEqual([`https://www.poe2wiki.net/wiki/${name!.replaceAll(' ', '_')}`]);
+  expect(errors).toEqual([]);
+});
+
+// TreeTab.lua:588-611 (PoB-PoE2): a build saved on an older tree opens on 0_5, the only PoE2 tree go-pob-data publishes,
+// and says how many saved passives that tree no longer allocates (here a node id no tree has)
+test('a PoE2 build saved on an older tree says it was converted and how many passives it lost', async ({ page }) => {
+  const xml = readFileSync(ITEMS_FIXTURE, 'utf8').replace(
+    /(<Spec [^>]*?)nodes="([^"]*)"([^>]*?)treeVersion="0_5"/,
+    '$1nodes="$2,999999999"$3treeVersion="0_3"'
+  );
+  expect(xml, 'the fixture spec was not rewritten').toContain('treeVersion="0_3"');
+  const file = join(mkdtempSync(join(tmpdir(), 'poe2-old-tree-')), 'build.xml');
+  writeFileSync(file, xml);
+  const { errors } = await open(page, file);
+  await expect(page.getByRole('status').filter({ hasText: 'converted to 0_5' })).toContainText(/saved on 0_3 .* 1 of its \d+ passives are no longer allocated/);
   expect(errors).toEqual([]);
 });

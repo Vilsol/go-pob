@@ -82,6 +82,7 @@ func Exports(r bind.Registry) {
 	r.Type(ParsedMod{}, bind.Plain())
 	r.Type(CustomBlock{}, bind.Plain())
 	r.Type(TreeSpecsView{}, bind.Plain())
+	r.Type(TreeConversionView{}, bind.Plain())
 	r.Type(TreeSpecRow{}, bind.Plain())
 	r.Type(TreeClassRow{}, bind.Plain())
 	r.Type(NodeCompareBlockView{}, bind.Plain())

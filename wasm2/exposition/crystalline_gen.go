@@ -4239,7 +4239,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 				switch field {
 				}
 			},
-			[]string{"AddDBItem", "AddDisplayItem", "AddGem", "AddPartyMember", "AddSkillsUndoState", "AllocateAttributeNode", "BuildItemCompare", "BuildPlannerExport", "BuildPlannerExportAll", "BuildPlannerLoadouts", "BuildPlannerSets", "BuySimilar", "BuySimilarURL", "CalcsBreakdownModList", "CalcsBreakdowns", "CalcsCompareModRows", "CalcsInputs", "CalcsModSection", "CalcsMods", "CalcsOutputs", "CalcsSectionCollapsed", "Calculate", "ChangeTreeAscendancy", "ChangeTreeClass", "ClearParty", "ClickNode", "ClickNodeConnectPath", "CloseDisplayItem", "CompareEquipItem", "CompareItemCards", "CompareItems", "CompareModsEqual", "CompareSkillBreakdown", "ConfigCompare", "ConfigPlaceholders", "ConfigRelevance", "ConfigSets", "CopyCompareItem", "CopyCompareSpec", "CopyConfigSet", "CopyItemSet", "CopySkillSet", "CopySocketGroup", "CopyTreeSpec", "CraftDisplayItem", "CraftItemCompare", "CustomModGroupCompare", "CustomModifierBlocks", "DBItemCompare", "DeleteAllSocketGroups", "DeleteConfigSet", "DeleteItem", "DeleteItemSet", "DeleteSkillSet", "DeleteSocketGroup", "DeleteTreeSpec", "DisablePartyEffects", "DisplayItemAffixRoll", "DisplayItemAffixes", "DisplayItemCompare", "DisplayItemRanges", "EditDisplayItemText", "EditItem", "EquippedItems", "ExportCode", "ExportParty", "ExportTreeLink", "GemOptions", "GemSortCache", "GemSortDPS", "HoverNode", "ImportParty", "ImportTreeLink", "ItemDBRows", "ItemText", "ItemsPage", "MoveConfigSet", "MoveItemSet", "MoveSocketGroup", "MoveTreeSpec", "NewComparePowerBuilder", "NewConfigSet", "NewItemSet", "NewSkillSet", "NewSocketGroup", "NewTreeSpec", "NodeCompare", "NodePower", "NodePowerReport", "NodeTip", "Notes", "OpenDBItem", "PartyBuffers", "PartyEffectsApplied", "PartyEffectsDisabled", "PartyExports", "PartyImpact", "PartyMembers", "PartyOptions", "PartySummaries", "PasteItem", "PasteSocketGroup", "RebuildParty", "Redo", "RemoveGem", "RemovePartyMember", "RenameConfigSet", "RenameItemSet", "RenameSkillSet", "RenameTreeSpec", "ResetTree", "RichNotesDoc", "RichNotesStatus", "SelectDisplayItemAffix", "Serialize", "SerializeWithStats", "SetActiveConfigSet", "SetActiveItemSet", "SetActiveSkillSet", "SetActiveTreeSpec", "SetCalcsBuffMode", "SetCalcsSectionCollapsed", "SetCalcsShowMinion", "SetCalcsSkillNumber", "SetCharacterLevelAutoMode", "SetCharacterRune", "SetCompareCalcsMinion", "SetConfigInput", "SetCustomModifierBlocks", "SetDisplayItemAffixRange", "SetDisplayItemQuality", "SetDisplayItemRangeLine", "SetDisplayItemRune", "SetDisplayItemSocketCount", "SetExportParty", "SetGem", "SetGemCorruption", "SetGemCount", "SetGemEnabled", "SetGemLevel", "SetGemOptions", "SetGemQuality", "SetLevel", "SetMainActiveSkill", "SetMainActiveSkillCalcs", "SetMainSocketGroup", "SetPartyBuffer", "SetPartyMemberActive", "SetPartyOptions", "SetRichNotes", "SetSkillMineCount", "SetSkillMinion", "SetSkillMinionSkill", "SetSkillMinionSkillStatSet", "SetSkillStageCount", "SetSkillStatSet", "SetSlotActive", "SetSlotItem", "SetSocketGroupCount", "SetSocketGroupEnabled", "SetSocketGroupIncludeInFullDPS", "SetSocketGroupLabel", "SetSocketGroupWeaponSet", "SetTreeNodeNote", "SetUseSecondWeaponSet", "SidebarBreakdownKey", "SidebarBreakdowns", "SidebarModSection", "SkillGroups", "SkillSets", "SkillsUndo", "StartNodePower", "StepNodePower", "SyncCalcsSkillSelection", "TraceNode", "TreeNodeNote", "TreeSpecAlloc", "TreeSpecRows", "TreeSpecs", "TreeState", "Undo"},
+			[]string{"AddDBItem", "AddDisplayItem", "AddGem", "AddPartyMember", "AddSkillsUndoState", "AllocateAttributeNode", "BuildItemCompare", "BuildPlannerExport", "BuildPlannerExportAll", "BuildPlannerLoadouts", "BuildPlannerSets", "BuySimilar", "BuySimilarURL", "CalcsBreakdownModList", "CalcsBreakdowns", "CalcsCompareModRows", "CalcsInputs", "CalcsModSection", "CalcsMods", "CalcsOutputs", "CalcsSectionCollapsed", "Calculate", "ChangeTreeAscendancy", "ChangeTreeClass", "ClearParty", "ClickNode", "ClickNodeConnectPath", "CloseDisplayItem", "CompareEquipItem", "CompareItemCards", "CompareItems", "CompareModsEqual", "CompareSkillBreakdown", "ConfigCompare", "ConfigPlaceholders", "ConfigRelevance", "ConfigSets", "CopyCompareItem", "CopyCompareSpec", "CopyConfigSet", "CopyItemSet", "CopySkillSet", "CopySocketGroup", "CopyTreeSpec", "CraftDisplayItem", "CraftItemCompare", "CustomModGroupCompare", "CustomModifierBlocks", "DBItemCompare", "DeleteAllSocketGroups", "DeleteConfigSet", "DeleteItem", "DeleteItemSet", "DeleteSkillSet", "DeleteSocketGroup", "DeleteTreeSpec", "DisablePartyEffects", "DisplayItemAffixRoll", "DisplayItemAffixes", "DisplayItemCompare", "DisplayItemRanges", "EditDisplayItemText", "EditItem", "EquippedItems", "ExportCode", "ExportParty", "ExportTreeLink", "GemOptions", "GemSortCache", "GemSortDPS", "HoverNode", "ImportParty", "ImportTreeLink", "ItemDBRows", "ItemText", "ItemsPage", "MoveConfigSet", "MoveItemSet", "MoveSocketGroup", "MoveTreeSpec", "NewComparePowerBuilder", "NewConfigSet", "NewItemSet", "NewSkillSet", "NewSocketGroup", "NewTreeSpec", "NodeCompare", "NodePower", "NodePowerReport", "NodeTip", "Notes", "OpenDBItem", "PartyBuffers", "PartyEffectsApplied", "PartyEffectsDisabled", "PartyExports", "PartyImpact", "PartyMembers", "PartyOptions", "PartySummaries", "PasteItem", "PasteSocketGroup", "RebuildParty", "Redo", "RemoveGem", "RemovePartyMember", "RenameConfigSet", "RenameItemSet", "RenameSkillSet", "RenameTreeSpec", "ResetTree", "RichNotesDoc", "RichNotesStatus", "SelectDisplayItemAffix", "Serialize", "SerializeWithStats", "SetActiveConfigSet", "SetActiveItemSet", "SetActiveSkillSet", "SetActiveTreeSpec", "SetCalcsBuffMode", "SetCalcsSectionCollapsed", "SetCalcsShowMinion", "SetCalcsSkillNumber", "SetCharacterLevelAutoMode", "SetCharacterRune", "SetCompareCalcsMinion", "SetConfigInput", "SetCustomModifierBlocks", "SetDisplayItemAffixRange", "SetDisplayItemQuality", "SetDisplayItemRangeLine", "SetDisplayItemRune", "SetDisplayItemSocketCount", "SetExportParty", "SetGem", "SetGemCorruption", "SetGemCount", "SetGemEnabled", "SetGemLevel", "SetGemOptions", "SetGemQuality", "SetLevel", "SetMainActiveSkill", "SetMainActiveSkillCalcs", "SetMainSocketGroup", "SetPartyBuffer", "SetPartyMemberActive", "SetPartyOptions", "SetRichNotes", "SetSkillMineCount", "SetSkillMinion", "SetSkillMinionSkill", "SetSkillMinionSkillStatSet", "SetSkillStageCount", "SetSkillStatSet", "SetSlotActive", "SetSlotItem", "SetSocketGroupCount", "SetSocketGroupEnabled", "SetSocketGroupIncludeInFullDPS", "SetSocketGroupLabel", "SetSocketGroupWeaponSet", "SetTreeNodeNote", "SetUseSecondWeaponSet", "SidebarBreakdownKey", "SidebarBreakdowns", "SidebarModSection", "SkillGroups", "SkillSets", "SkillsUndo", "StartNodePower", "StepNodePower", "SyncCalcsSkillSelection", "TraceNode", "TreeConversion", "TreeNodeNote", "TreeSpecAlloc", "TreeSpecRows", "TreeSpecs", "TreeState", "Undo"},
 			func(v *Calculator, method int, args []js.Value) any {
 				switch method {
 				case 0:
@@ -8266,6 +8266,23 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 						return crystallineMarshalExpositionTraceView(r0)
 					}))
 				case 175:
+					if len(args) != 0 {
+						return crystallineFail("TreeConversion: expected 0 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					r0, r1 := v.TreeConversion()
+
+					if r1 != nil {
+						return crystallineErr(r1)
+					}
+
+					return crystallineOk(crystallineJSON(func(b []byte, ok *bool) []byte {
+						b = crystallineAppendExpositionTreeConversionView(b, &r0, ok)
+						return b
+					}, func() any {
+						return crystallineMarshalExpositionTreeConversionView(&r0)
+					}))
+				case 176:
 					if len(args) != 1 {
 						return crystallineFail("TreeNodeNote: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -8278,7 +8295,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					r0 := v.TreeNodeNote(a0)
 
 					return string(r0)
-				case 176:
+				case 177:
 					if len(args) != 1 {
 						return crystallineFail("TreeSpecAlloc: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -8307,7 +8324,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 
 						return out
 					}())
-				case 177:
+				case 178:
 					if len(args) != 0 {
 						return crystallineFail("TreeSpecRows: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -8349,7 +8366,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 							return out
 						}()
 					}))
-				case 178:
+				case 179:
 					if len(args) != 0 {
 						return crystallineFail("TreeSpecs: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -8362,7 +8379,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalExpositionTreeSpecsView(&r0)
 					})
-				case 179:
+				case 180:
 					if len(args) != 0 {
 						return crystallineFail("TreeState: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -8379,7 +8396,7 @@ func crystallineMarshalExpositionCalculator(v *Calculator) any {
 					}, func() any {
 						return crystallineMarshalExpositionTreeState(r0)
 					}))
-				case 180:
+				case 181:
 					if len(args) != 0 {
 						return crystallineFail("Undo: expected 0 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -10723,6 +10740,21 @@ func crystallineMarshalExpositionTreeClassRow(v *TreeClassRow) any {
 			return out
 		}()
 	}))
+
+	return out
+}
+
+func crystallineMarshalExpositionTreeConversionView(v *TreeConversionView) any {
+	if v == nil {
+		return nil
+	}
+
+	out := crystallineObjects.New()
+
+	out.Set("From", string(v.From))
+	out.Set("To", string(v.To))
+	out.Set("Saved", float64(v.Saved))
+	out.Set("Lost", float64(v.Lost))
 
 	return out
 }
@@ -14027,6 +14059,23 @@ func crystallineAppendExpositionTreeClassRow(b []byte, v *TreeClassRow, ok *bool
 
 		b = append(b, ']')
 	}
+
+	return append(b, '}')
+}
+
+func crystallineAppendExpositionTreeConversionView(b []byte, v *TreeConversionView, ok *bool) []byte {
+	if v == nil {
+		return append(b, "null"...)
+	}
+
+	b = append(b, "{\"From\":"...)
+	b = crystallineAppendString(b, string(v.From))
+	b = append(b, ",\"To\":"...)
+	b = crystallineAppendString(b, string(v.To))
+	b = append(b, ",\"Saved\":"...)
+	b = crystallineAppendNumber(b, float64(v.Saved), ok)
+	b = append(b, ",\"Lost\":"...)
+	b = crystallineAppendNumber(b, float64(v.Lost), ok)
 
 	return append(b, '}')
 }
