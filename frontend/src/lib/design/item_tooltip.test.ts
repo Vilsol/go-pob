@@ -65,6 +65,16 @@ describe('ItemTooltip', () => {
     expect(getByRole('tooltip').querySelector('[data-influence]')?.textContent).toBe('Shaper');
   });
 
+  // ItemsTab.lua:3721-3727 (PoB-PoE2): the title lines carry the rarity's colour code, which PoB draws as colour
+  it('draws colour codes in the title lines as colour, not text', () => {
+    const tooltip: ItemTip = { influence: [], title: ['^xFFFF77Rapture Thirst', '^xFFFF77Expert Shortbow'], lines: [] };
+    const { getByRole } = render(ItemTooltip, { ...props, tooltip });
+    const titles = [...getByRole('tooltip').querySelectorAll('.item-head > span')];
+    expect(titles.map((el) => el.textContent)).toEqual(['Rapture Thirst', 'Expert Shortbow']);
+    const coloured = titles.map((el) => el.querySelector<HTMLElement>('[data-pob-color]')?.style.getPropertyValue('--tone'));
+    expect(coloured).toEqual(['#FFFF77', '#FFFF77']);
+  });
+
   it('keeps the plain mod list when Go gave no tooltip', () => {
     const { getByRole } = render(ItemTooltip, props);
     expect(getByRole('tooltip').querySelector('[data-item-lines]')).toBeNull();

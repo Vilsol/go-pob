@@ -45,6 +45,9 @@ test('the PoE2 Calcs page shows PoB-PoE2 values', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
+// a PoB colour code drawn as text
+const COLOR_CODE = /\^(x[0-9A-Fa-f]{6}|\d)/;
+
 const ITEMS_FIXTURE = resolve(import.meta.dirname, '../../wasm2/exposition/testdata/sorceress_items.xml');
 
 // PoB-PoE2's Skills and Items tabs for the fixture: testdata/oracle/poe2_pages_sorceress_items.json
@@ -78,6 +81,10 @@ test('the PoE2 Skills and Items pages show PoB-PoE2 groups and items, and the ma
   const ring = view.getByRole('button', { name: 'Ring 1: Gloom Loop' });
   await ring.hover();
   await expect(page.getByRole('tooltip')).toContainText('Corrupted');
+  // ItemsTab.lua:3721-3727 (PoB-PoE2): the title's rarity colour code is drawn as colour
+  await expect(page.getByRole('tooltip')).toContainText('Gloom Loop');
+  await expect(page.getByRole('tooltip')).not.toContainText(COLOR_CODE, { useInnerText: true });
+  await expect(page.locator('body')).not.toContainText(COLOR_CODE, { useInnerText: true });
   expect(errors).toEqual([]);
 });
 

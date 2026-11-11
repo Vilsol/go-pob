@@ -62,6 +62,8 @@ test("a PoE2 build compared with another: each side shows PoB-PoE2's numbers, an
   }
 
   await page.getByRole('tab', { name: 'Items' }).click();
+  await expect(page.getByRole('button', { name: 'Equip' }).first()).toBeVisible();
+  await expect(page.locator('body')).not.toContainText(/\^(x[0-9A-Fa-f]{6}|\d)/, { useInnerText: true });
   await page.getByRole('button', { name: 'Equip' }).first().click();
   await expect(page.getByRole('button', { name: 'Save (unsaved changes)' })).toBeVisible();
 

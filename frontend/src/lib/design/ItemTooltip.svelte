@@ -44,7 +44,7 @@
     {#if icon}<ItemIcon name={item} {base} rarity={iconRarity ?? rarity} size={48} decorative class="mb-1 self-center" />{/if}
     {#if tooltip}
       {#if tooltip.influence.length}<span data-influence class="text-11 text-text-2">{tooltip.influence[0]}</span>{/if}
-      {#each tooltip.title as t, i (i)}<span data-pob-color class={['toned', i === 0 && 'font-semibold']}>{t}</span>{/each}
+      {#each tooltip.title as t, i (i)}<span data-pob-color class={['toned', i === 0 && 'font-semibold']}><PobText text={t} /></span>{/each}
       {#if tooltip.influence.length > 1}<span data-influence class="text-11 text-text-2">{tooltip.influence[1]}</span>{/if}
     {:else}
       <span data-pob-color class="toned font-semibold">{item}</span><span data-pob-color class={['text-12 text-(--tone)', baseTone && toneClass(baseTone)]}
