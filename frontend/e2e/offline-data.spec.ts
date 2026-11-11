@@ -6,14 +6,18 @@ test.use({ serviceWorkers: 'block' });
 
 const alert = (page: Page) => page.getByRole('alert').filter({ hasText: 'The game data could not be loaded' });
 
-// the floating activity indicator and the notice share the bottom right corner: neither may cover the other
-const expectApart = async (page: Page, notice: Locator) => {
+// the failure shows once: no toast of the failed job beside its notice, and the activity indicator, when something
+// else is running, sits apart from it in the bottom right stack
+const expectOnce = async (page: Page, notice: Locator) => {
+  await expect(page.getByRole('status').filter({ hasText: /game data failed/ })).toHaveCount(0);
+  const n = (await notice.boundingBox())!;
+  const vw = page.viewportSize()!.width;
+  expect(vw - (n.x + n.width), 'the notice is not in the bottom right corner').toBeLessThan(40);
   const activity = page.getByRole('button', { name: /^Activity/ });
-  await expect(activity).toBeVisible();
-  const a = (await notice.boundingBox())!;
+  if (!(await activity.isVisible())) return;
   const b = (await activity.boundingBox())!;
-  const apart = a.x + a.width <= b.x || b.x + b.width <= a.x || a.y + a.height <= b.y || b.y + b.height <= a.y;
-  expect(apart, `the notice ${JSON.stringify(a)} and the activity indicator ${JSON.stringify(b)} overlap`).toBe(true);
+  const apart = n.x + n.width <= b.x || b.x + b.width <= n.x || n.y + n.height <= b.y || b.y + b.height <= n.y;
+  expect(apart, `the notice ${JSON.stringify(n)} and the activity indicator ${JSON.stringify(b)} overlap`).toBe(true);
 };
 
 test('game data the browser cannot fetch and has not kept shows the reason, with a retry', async ({ page, context }) => {
@@ -28,7 +32,7 @@ test('game data the browser cannot fetch and has not kept shows the reason, with
   await expect(alert(page)).toContainText('failed to fetch url');
   expect(await page.evaluate(() => performance.getEntriesByName('pob:data-loaded').length), 'data-loaded was marked for data that did not load').toBe(0);
   expect(refused.length, 'the test did not reach the data host, so it refused nothing').toBeGreaterThan(0);
-  await expectApart(page, alert(page));
+  await expectOnce(page, alert(page));
 
   const reloaded = page.waitForEvent('framenavigated');
   await alert(page).getByRole('button', { name: 'Retry' }).click();
@@ -59,7 +63,7 @@ test('PoE2 game data the browser cannot fetch and has not kept shows the reason,
   const poe2Alert = page.getByRole('alert').filter({ hasText: 'The PoE2 game data could not be loaded' });
   await expect(poe2Alert).toBeVisible({ timeout: 120_000 });
   await expect(poe2Alert).toContainText('tree2: fetching');
-  await expectApart(page, poe2Alert);
+  await expectOnce(page, poe2Alert);
   expect(refused.length, 'the test did not reach the PoE2 data, so it refused nothing').toBeGreaterThan(0);
   await expect(alert(page), 'the PoE1 game data was served, so it has no notice').toHaveCount(0);
 

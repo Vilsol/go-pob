@@ -4,7 +4,7 @@ import { browser, dev, version } from '$app/environment';
 import { ART_CACHE, isCdnAsset } from './hosts';
 import { DESKTOP } from './desktop';
 import { applyDesktopUpdate, checkDesktopUpdate } from './desktop_update';
-import { addToast } from '$lib/design/toast';
+import { addToast, removeToast, updateToast, type ToastOptions } from '$lib/design/toast';
 import { changesSince, parseChangelog, type ChangeVersion } from '$lib/design/help';
 
 const OFF_KEY = 'pob:sw-off';
@@ -29,6 +29,48 @@ export const updateAvailable = writable(false);
 /* Main.lua:1300-1320 */
 export const updateChanges = writable<ChangeVersion[]>([]);
 
+const UPDATE_KEY = 'update';
+const OFFLINE_KEY = 'offline';
+
+export const followConnection = () =>
+  online.subscribe((on) => {
+    if (on) removeToast(OFFLINE_KEY);
+    else addToast('Offline\nSaved builds and calculations work; importing from links needs the network.', { key: OFFLINE_KEY });
+  });
+
+let registration: ServiceWorkerRegistration | undefined;
+let reloading = false;
+
+export const applyUpdate = () => {
+  if (DESKTOP) {
+    void applyDesktopUpdate();
+    return;
+  }
+  const waiting = registration?.waiting;
+  if (!waiting) return;
+  reloading = true;
+  waiting.postMessage({ type: 'SKIP_WAITING' });
+};
+
+// Main.lua:1300-1320; the update's notice, with Reload and the changes since the running version, raised once, then
+// only kept current
+export const showUpdate = (raise = true) => {
+  const message = 'Update Available\nA new version of go-pob is available. Reloading discards unsaved changes.';
+  const opts: ToastOptions = {
+    key: UPDATE_KEY,
+    role: 'alert',
+    dismiss: 'Later',
+    actions: [{ label: 'Reload', run: () => applyUpdate(), primary: true }],
+    more: {
+      label: 'Changes…',
+      name: 'Changes since this version',
+      lines: get(updateChanges).flatMap((v) => [{ text: `Version ${v.version} (${v.date})`, head: true }, ...v.lines])
+    }
+  };
+  if (raise) addToast(message, opts);
+  else updateToast(UPDATE_KEY, message, opts);
+};
+
 const cachedText = async (cache: string, url: string) => (await (await caches.open(cache)).match(url))?.text();
 
 export const readUpdateChanges = async () => {
@@ -36,15 +78,13 @@ export const readUpdateChanges = async () => {
   const next = (await caches.keys()).find((k) => k.startsWith(APP_PREFIX) && k !== `${APP_PREFIX}${version}`);
   const [running, update] = await Promise.all([cachedText(`${APP_PREFIX}${version}`, url), next ? cachedText(next, url) : undefined]);
   updateChanges.set(running && update ? changesSince(update, parseChangelog(running)[0]?.version ?? '') : []);
+  showUpdate(false);
 };
 
 /* Main.lua:224-229 */
 export const updateCheckRunning = writable(false);
 
 export const storagePersistence = writable<'granted' | 'refused' | 'unsupported' | 'unknown'>('unknown');
-
-let registration: ServiceWorkerRegistration | undefined;
-let reloading = false;
 
 const storageGet = (key: string) => {
   try {
@@ -89,7 +129,7 @@ const watch = (reg: ServiceWorkerRegistration) => {
     if (ready) readUpdateChanges().catch((e: unknown) => console.warn('the update changelog could not be read', e));
     if (ready && !updateAvailableShown) {
       updateAvailableShown = true;
-      addToast('Update Available\nAn update has been downloaded and is ready\nto be applied.');
+      showUpdate();
     }
   };
   check();
@@ -123,7 +163,10 @@ export const checkForUpdate = async (reg = registration) => {
   updateCheckRunning.set(true);
   try {
     if (!reg) {
-      if (await checkDesktopUpdate()) updateAvailable.set(true);
+      if (await checkDesktopUpdate()) {
+        updateAvailable.set(true);
+        showUpdate();
+      }
       return;
     }
     await reg.update();
@@ -141,17 +184,6 @@ export const checkForUpdate = async (reg = registration) => {
   } finally {
     updateCheckRunning.set(false);
   }
-};
-
-export const applyUpdate = () => {
-  if (DESKTOP) {
-    void applyDesktopUpdate();
-    return;
-  }
-  const waiting = registration?.waiting;
-  if (!waiting) return;
-  reloading = true;
-  waiting.postMessage({ type: 'SKIP_WAITING' });
 };
 
 const requestPersistence = async () => {

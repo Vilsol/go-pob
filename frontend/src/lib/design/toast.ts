@@ -1,14 +1,23 @@
 import { get, writable } from 'svelte/store';
 
-// ToastNotification.lua:56-153; spinner, progress, an action and auto-dismiss are go-pob's, for activity toasts
-export type ToastAction = { label: string; run: () => void };
+// ToastNotification.lua:56-153; spinner, progress, actions, keys and auto-dismiss are go-pob's, for activity toasts
+export type ToastAction = { label: string; run: () => void; primary?: boolean };
+export type ToastLine = { text: string; head?: boolean; sub?: boolean };
 export type ToastOptions = {
   spinner?: boolean;
   // 0..1, or undefined for none
   progress?: number;
-  action?: ToastAction;
+  actions?: ToastAction[];
   // removes the toast this many ms after it was last set
   timeout?: number;
+  // the toast's id: raising a key that is shown replaces that toast instead of adding a second
+  key?: string;
+  role?: 'status' | 'alert';
+  tone?: 'error';
+  // the Dismiss button's label, or false for a notice that stays until its cause goes
+  dismiss?: string | false;
+  // lines a toggle button shows inside the toast, e.g. an update's changes
+  more?: { label: string; name: string; lines: ToastLine[] };
 };
 export type Toast = { id: string; message: string } & ToastOptions;
 
@@ -44,18 +53,19 @@ const schedule = (id: string, timeout: number | undefined) => {
     );
 };
 
-export const addToast = (message: string, opts: ToastOptions = {}): string => {
-  const id = `toast_${nextId++}`;
-  toasts.update((l) => [...l, { id, message, ...opts }]);
-  schedule(id, opts.timeout);
-  return id;
-};
-
 export const updateToast = (id: string, message: string, opts: ToastOptions = {}): boolean => {
   if (!toastExists(id)) return false;
   toasts.update((l) => l.map((t) => (t.id === id ? { id, message, ...opts } : t)));
   schedule(id, opts.timeout);
   return true;
+};
+
+export const addToast = (message: string, opts: ToastOptions = {}): string => {
+  if (opts.key !== undefined && updateToast(opts.key, message, opts)) return opts.key;
+  const id = opts.key ?? `toast_${nextId++}`;
+  toasts.update((l) => [...l, { id, message, ...opts }]);
+  schedule(id, opts.timeout);
+  return id;
 };
 
 export const clearToasts = () => {

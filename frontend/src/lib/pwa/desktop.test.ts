@@ -73,10 +73,14 @@ describe('desktop mode', () => {
     });
     await pwa.checkForUpdate(undefined);
     expect(get(pwa.updateAvailable)).toBe(true);
-    expect(get(toast.toasts).map((t) => t.message)).toEqual(['Update Available\nAn update has been downloaded and is ready\nto be applied.']);
+    expect(get(toast.toasts).map((t) => [t.message.split('\n')[0], t.actions?.map((a) => a.label)])).toEqual([['Update Available', ['Reload']]]);
+    await pwa.checkForUpdate(undefined);
+    expect(get(toast.toasts), 'a second check of the same update raises no second notice').toHaveLength(1);
     pwa.applyUpdate();
-    await vi.waitFor(() => expect(fetch).toHaveBeenCalledTimes(3));
+    await vi.waitFor(() => expect(fetch).toHaveBeenCalledTimes(5));
     expect(fetch.mock.calls.map((c) => [c[0], c[1]?.method ?? 'GET'])).toEqual([
+      ['/desktop/update/check', 'GET'],
+      ['/desktop/update/install', 'POST'],
       ['/desktop/update/check', 'GET'],
       ['/desktop/update/install', 'POST'],
       ['/desktop/update/restart', 'POST']

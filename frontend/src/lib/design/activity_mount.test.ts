@@ -137,6 +137,25 @@ describe('progress toasts', () => {
     stop();
   });
 
+  it('share the corner with the floating indicator, which shows only what no toast already says', async () => {
+    render(Toasts, { activity: true });
+    const stop = followLongJobs();
+    const boot = startJob('boot', 'Starting the engine', { long: true });
+    await advance(SHOW_AFTER_MS);
+    expect(screen.getByRole('status', { name: 'Starting the engine' })).toBeTruthy();
+    expect(indicator(), 'the job already has its toast').toBeNull();
+    const save = startJob('save', 'Saving');
+    await advance(SHOW_AFTER_MS);
+    expect(indicator()?.getAttribute('aria-label')).toBe('Activity: Saving');
+    save.end();
+    boot.end('error', 'offline');
+    await tick();
+    expect(indicator(), 'the failure is on its toast').toBeNull();
+    await fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }));
+    expect(indicator()?.getAttribute('aria-label')).toBe('Activity: 1 failed');
+    stop();
+  });
+
   it('leave a plain toast as it was: no timeout, no spinner, no progress', async () => {
     render(Toasts);
     addToast('Link copied\nhttps://example');

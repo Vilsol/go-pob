@@ -9,6 +9,9 @@ const text = (j: Job) => {
   return [j.label, [phase, count].filter(Boolean).join(' · ')].filter(Boolean).join('\n');
 };
 
+// the toast key of a job, so another notice for the same job (a failure with a retry) replaces its toast
+export const jobToastKey = (id: string) => `job:${id}`;
+
 // a long job (boot, import, data download) also shows as a toast while it runs, which goes when it finishes and stays
 // up if it fails, so nothing is left over the page after a success; one that fails before it is drawn says so where it
 // was started; dismissing the toast, or Details, leaves the job in the
@@ -29,20 +32,22 @@ export const followLongJobs = () => {
           ? {
               spinner: true,
               progress: j.total ? (j.done ?? 0) / j.total : undefined,
-              action: {
-                label: 'Details',
-                run: () => {
-                  collapsed.add(j.id);
-                  const shown = toastOf.get(j.id);
-                  if (shown !== undefined) removeToast(shown);
-                  activityPanelOpen.set(true);
+              actions: [
+                {
+                  label: 'Details',
+                  run: () => {
+                    collapsed.add(j.id);
+                    const shown = toastOf.get(j.id);
+                    if (shown !== undefined) removeToast(shown);
+                    activityPanelOpen.set(true);
+                  }
                 }
-              }
+              ]
             }
           : {};
       if (id === undefined) {
-        if (j.state === 'running') toastOf.set(j.id, addToast(text(j), opts));
-      } else if (j.state === 'running' || j.state === 'error') updateToast(id, text(j), opts);
+        if (j.state === 'running') toastOf.set(j.id, addToast(text(j), { ...opts, key: jobToastKey(j.id) }));
+      } else if (j.state === 'running' || j.state === 'error') updateToast(id, text(j), { ...opts, key: id });
       else removeToast(id);
       if (j.state !== 'running') collapsed.add(j.id);
     }

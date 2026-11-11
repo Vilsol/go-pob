@@ -1,12 +1,14 @@
 <script lang="ts">
   import { activityPanelOpen, jobs, runningJobs } from '$lib/activity/jobs';
+  import { jobToastKey } from '$lib/activity/job_toasts';
+  import { toasts } from './toast';
   import ActivityPanel from './ActivityPanel.svelte';
   import Dot from './Dot.svelte';
   import Icon from './Icon.svelte';
   import Spinner from './Spinner.svelte';
 
-  // the top bar's spinner with the current job, shown while something runs or a job failed; floating, it sits in the
-  // bottom corner of a page without a top bar
+  // the top bar's spinner with the current job, shown while something runs or a job failed; floating, it sits under
+  // the toasts of a page without a top bar, and stays away while each job it would show has its own toast
   let { floating = false, class: extra = '' }: { floating?: boolean; class?: string } = $props();
   let btn = $state<HTMLButtonElement>();
 
@@ -14,6 +16,9 @@
   const failed = $derived($jobs.filter((j) => j.state === 'error').length);
   const phase = $derived(current?.phases.at(-1)?.name);
   const text = $derived(current ? [current.label, phase].filter(Boolean).join(' · ') : failed ? `${failed} failed` : '');
+  const toasted = $derived(
+    floating && [...$runningJobs, ...$jobs.filter((j) => j.state === 'error')].every((j) => $toasts.some((t) => t.id === jobToastKey(j.id)))
+  );
   const percent = $derived(current?.total ? `${Math.round(Math.min(1, (current.done ?? 0) / current.total) * 100)}%` : '');
 
   const close = () => {
@@ -22,13 +27,8 @@
   };
 </script>
 
-{#if $runningJobs.length || failed || $activityPanelOpen}
-  <div
-    class={[
-      'flex items-center',
-      floating ? 'fixed right-3 bottom-3 z-toast max-phone:bottom-[calc(3.5rem+env(safe-area-inset-bottom)+0.75rem)]' : 'relative',
-      extra
-    ]}>
+{#if $activityPanelOpen || (($runningJobs.length || failed) && !toasted)}
+  <div class={['flex items-center', floating ? 'pointer-events-auto' : 'relative', extra]}>
     <button
       bind:this={btn}
       class={[
@@ -50,6 +50,6 @@
   {#if $activityPanelOpen}
     <ActivityPanel
       onclose={close}
-      class={floating ? 'fixed right-3 bottom-14 max-phone:bottom-[calc(6.5rem+env(safe-area-inset-bottom))]' : 'fixed top-14 right-4'} />
+      class={floating ? 'pointer-events-auto fixed right-3 bottom-14 max-phone:bottom-[calc(6.5rem+env(safe-area-inset-bottom))]' : 'fixed top-14 right-4'} />
   {/if}
 {/if}

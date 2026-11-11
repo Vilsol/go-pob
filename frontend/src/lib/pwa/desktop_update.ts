@@ -32,7 +32,7 @@ export const checkDesktopUpdate = async () => {
     return false;
   }
   if (!c.install) {
-    addToast(`Update Available\ngo-pob ${c.version} is out (running ${c.current ?? '?'}).${c.page ? `\n${c.page}` : ''}`);
+    addToast(`Update Available\ngo-pob ${c.version} is out (running ${c.current ?? '?'}).${c.page ? `\n${c.page}` : ''}`, { key: 'update' });
     return false;
   }
   const i = await fetch('/desktop/update/install', { method: 'POST' });
@@ -40,7 +40,6 @@ export const checkDesktopUpdate = async () => {
     addToast(`Update failed!\n${await failure(i)}`);
     return false;
   }
-  addToast('Update Available\nAn update has been downloaded and is ready\nto be applied.');
   return true;
 };
 

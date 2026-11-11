@@ -23,10 +23,14 @@ globalThis.caches = {
     Promise.resolve({ match: (url: string) => Promise.resolve(files[name]?.[url] === undefined ? undefined : new Response(files[name][url])) })
 } as unknown as CacheStorage;
 
-const { readUpdateChanges, updateAvailable, updateChanges } = await import('./index');
-const PwaStatus = (await import('./PwaStatus.svelte')).default;
+const { readUpdateChanges, showUpdate, updateChanges } = await import('./index');
+const { clearToasts, toasts } = await import('$lib/design/toast');
+const Toasts = (await import('$lib/design/Toasts.svelte')).default;
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  clearToasts();
+});
 
 describe('the update’s changes', () => {
   it('reads the waiting deployment’s changelog down to the running version', async () => {
@@ -36,19 +40,33 @@ describe('the update’s changes', () => {
     ]);
   });
 
-  it('Changes… beside Reload shows them above the prompt; none, no button', async () => {
-    updateAvailable.set(true);
-    const view = render(PwaStatus);
-    const prompt = view.getByRole('alert');
+  it('Changes… beside Reload shows them in the prompt; none, no button', async () => {
+    await readUpdateChanges();
+    showUpdate();
+    const view = render(Toasts);
+    const prompt = view.getByRole('alert', { name: 'Update Available' });
+    expect(prompt.textContent).toContain('A new version of go-pob is available.');
+    expect(view.getByRole('button', { name: 'Reload' })).toBeTruthy();
+    expect(view.getByRole('button', { name: 'Later' })).toBeTruthy();
     expect(prompt.textContent).not.toContain('Version 2.67.3');
     await fireEvent.click(view.getByRole('button', { name: 'Changes…' }));
     expect(prompt.textContent).toContain('Version 2.67.3 (2026/08/20)');
     expect(prompt.textContent).toContain('* Fix the thing (someone)');
     updateChanges.set([]);
+    showUpdate(false);
     await Promise.resolve();
     expect(view.getByRole('alert').textContent).not.toContain('Version');
     expect(view.queryByRole('button', { name: 'Changes…' })).toBeNull();
-    updateAvailable.set(false);
+  });
+
+  it('one update is one notice: raised again, or its changes read later, it stays a single prompt', async () => {
+    showUpdate();
+    await readUpdateChanges();
+    showUpdate();
+    expect(get(toasts).map((t) => t.message.split('\n')[0])).toEqual(['Update Available']);
+    clearToasts();
+    await readUpdateChanges();
+    expect(get(toasts), 'reading the changes raises nothing on its own').toEqual([]);
   });
 
   it("an update between two go-pob releases lists go-pob's changes, not Path of Building's", async () => {

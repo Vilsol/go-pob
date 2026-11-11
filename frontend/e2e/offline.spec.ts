@@ -128,7 +128,7 @@ test('offline after one online visit: reload, open a saved build, edit it', { ta
       }
     );
   }
-  await expect(page.getByRole('status').filter({ hasText: /^Offline/ }), 'no offline indicator').toBeVisible();
+  await expect(page.getByRole('status', { name: 'Offline' }), 'no offline indicator').toBeVisible();
   const fonts = await page.evaluate(async () => {
     await document.fonts.ready;
     const faces = [...document.fonts];
@@ -203,6 +203,9 @@ const expectUpdate = async (page: Page, version: string, next: string, change?: 
     .toBe('waiting');
   const prompt = page.getByRole('alert').filter({ hasText: 'A new version of go-pob is available' });
   await expect(prompt).toBeVisible({ timeout: 120_000 });
+  await expect(page.locator('[role=status], [role=alert]').filter({ hasText: /update|new version/i }), 'one update shows one notice').toHaveCount(1);
+  const box = (await prompt.boundingBox())!;
+  expect(page.viewportSize()!.width - (box.x + box.width), 'the prompt is not in the bottom right corner').toBeLessThan(40);
   await page.waitForTimeout(3_000);
   expect(await notReloaded(), 'the page reloaded without the click').toBe(true);
   expect(await page.evaluate(() => caches.keys())).toContain(`pob-app-${version}`);

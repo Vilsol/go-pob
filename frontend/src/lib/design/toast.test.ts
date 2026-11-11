@@ -28,6 +28,17 @@ describe('toasts', () => {
     expect(get(toasts)).toEqual([]);
   });
 
+  it('raising a shown key again replaces that toast instead of adding a second', async () => {
+    render(Toasts);
+    expect(addToast('Update Available\nfirst', { key: 'update' })).toBe('update');
+    expect(addToast('Update Available\nsecond', { key: 'update', role: 'alert' })).toBe('update');
+    addToast('No update available');
+    addToast('No update available');
+    expect(get(toasts).map((t) => t.message)).toEqual(['Update Available\nsecond', 'No update available', 'No update available']);
+    expect(await screen.findAllByRole('alert', { name: 'Update Available' })).toHaveLength(1);
+    expect(screen.getAllByRole('status')).toHaveLength(2);
+  });
+
   it('draws each toast with its title and Dismiss, which removes it and is remembered', async () => {
     render(Toasts);
     const id = addToast('Power builder\n10% done');

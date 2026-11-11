@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Notice from '$lib/design/Notice.svelte';
   import Button from '$lib/design/Button.svelte';
   import '$lib/design/styles/spec.css';
   import '$lib/display/appearance';
@@ -25,9 +24,8 @@
   import AppBuildList from '$lib/shell/AppBuildList.svelte';
   import { WASM_FALLBACK, WASM_FILE, engineFile } from '$lib/go/wasm_file';
   import { fallBackToGo, runningEngine, takeFallbackNotice } from '$lib/go/engine_choice';
-  import { addToast } from '$lib/design/toast';
-  import { checkForUpdate, startPwa } from '$lib/pwa';
-  import PwaStatus from '$lib/pwa/PwaStatus.svelte';
+  import { addToast, removeToast } from '$lib/design/toast';
+  import { checkForUpdate, followConnection, startPwa } from '$lib/pwa';
   import Toasts from '$lib/design/Toasts.svelte';
   import GameVersionDialog from '$lib/design/GameVersionDialog.svelte';
   import { buildName } from '$lib/shell/build_name.svelte';
@@ -39,10 +37,9 @@
   import AppImportModal from '$lib/shell/AppImportModal.svelte';
   import { openImport } from '$lib/shell/import_modal.svelte';
   import ActivityBar from '$lib/design/ActivityBar.svelte';
-  import ActivityIndicator from '$lib/design/ActivityIndicator.svelte';
   import { startJob, track } from '$lib/activity/jobs';
   import { stageReporter } from '$lib/activity/worker_jobs';
-  import { followLongJobs } from '$lib/activity/job_toasts';
+  import { followLongJobs, jobToastKey } from '$lib/activity/job_toasts';
   import type { WasmReport } from '$lib/activity/read_body';
 
   let {
@@ -145,12 +142,8 @@
 
   let wasmLoading = $state(true);
   let dataLoading = $state(false);
-  // the floating activity indicator sits in the bottom corner (ActivityIndicator.svelte); a notice there stands above it
+  // without a top bar, the activity indicator floats under the toasts (Toasts.svelte)
   const floatingActivity = $derived(!($game && !wasmLoading) || phone.current);
-  const noticeClass = $derived([
-    'fixed right-2 left-2 ml-auto max-w-160',
-    floatingActivity ? 'bottom-14 max-phone:bottom-[calc(6.5rem+env(safe-area-inset-bottom))]' : 'bottom-2'
-  ]);
 
   let loadingMessage = $state('Initializing...');
   let loadingStage = $state('');
@@ -159,13 +152,15 @@
   const BOOT_STUCK_MS = 30_000;
   let bootStuck = $state(false);
 
-  // without its game data a PoE1 build opens empty, so the reason stays on screen with a retry
-  let dataError = $state<string>();
+  // without its game data a build opens empty, so the reason stays on screen with a retry; a PoE1 one replaces the
+  // failed data job's toast
+  const dataErrorToast = (key: string, heading: string, error: string) =>
+    addToast(`${heading}\n${error}`, { key, role: 'alert', tone: 'error', dismiss: false, actions: [{ label: 'Retry', run: () => location.reload() }] });
   const failData = (e: Error) => {
     dataLoad?.end('error', e);
     logError(e);
     dataLoading = false;
-    dataError = dataErrorText(e.message);
+    dataErrorToast(dataLoad ? jobToastKey(dataLoad.id) : 'data-error', 'The game data could not be loaded', dataErrorText(e.message));
   };
 
   // the worker downloads the wasm itself, so the page never holds or copies it; the boot job follows the download
@@ -191,6 +186,8 @@
 
   if (browser) {
     followLongJobs();
+    followConnection();
+    poe2DataError.subscribe((e) => (e ? dataErrorToast('poe2-data-error', 'The PoE2 game data could not be loaded', e) : removeToast('poe2-data-error')));
     startPwa().catch(logError);
     const fellBack = takeFallbackNotice();
     if (fellBack) addToast(`Switched back to the Go engine\nThe TinyGo engine stopped: ${fellBack}.`);
@@ -338,18 +335,6 @@
 
 {#if !wasmLoading}<AppImportModal />{/if}
 
-{#if dataError}
-  <Notice float kind="error" title="The game data could not be loaded" class={noticeClass}>
-    <span class="break-all">{dataError}</span>
-    {#snippet actions()}<Button onclick={() => location.reload()}>Retry</Button>{/snippet}
-  </Notice>
-{:else if $poe2DataError}
-  <Notice float kind="error" title="The PoE2 game data could not be loaded" class={noticeClass}>
-    <span class="break-all">{$poe2DataError}</span>
-    {#snippet actions()}<Button onclick={() => location.reload()}>Retry</Button>{/snippet}
-  </Notice>
-{/if}
-
 <Dialog open={!!linkError} title="Build import" size="md" onclose={() => (linkError = undefined)}>
   <p role="alert" class="m-0 text-13">The linked build could not be opened: {linkError}</p>
   {#snippet actions()}
@@ -358,7 +343,5 @@
 </Dialog>
 
 <svelte:window onkeydown={updateKey} />
-<PwaStatus />
-<Toasts />
+<Toasts activity={floatingActivity} />
 <ActivityBar />
-{#if floatingActivity}<ActivityIndicator floating />{/if}
