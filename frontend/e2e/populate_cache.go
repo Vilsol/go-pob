@@ -1,9 +1,9 @@
 //go:build ignore
 
 // Fills the Go bundle cache with every data.pob.gg asset the wasm can ask for, so the e2e data route can serve all
-// of them: what raw.InitializeAll and raw.LoadDeferred load, every asset go-pob-data's field list names for the game
-// version (the tables only some pages read, such as the item art tables, included), and the tree of every tree
-// version. The lists are Go's own, so a new table is covered without touching this file.
+// of them: what raw.InitializeAll and raw.LoadDeferred load, the trade site stats list, every asset go-pob-data's
+// field list names for the game version (the tables only some pages read, such as the item art tables, included),
+// and the tree of every tree version. The lists are Go's own, so a new table is covered without touching this file.
 // Usage: go run frontend/e2e/populate_cache.go (GO_POB_CACHE_DIR picks the cache directory).
 package main
 
@@ -57,6 +57,9 @@ func main() {
 		refuse(err)
 	}
 	if err := raw.LoadDeferred(); err != nil {
+		refuse(err)
+	}
+	if _, err := raw.TradeStats(); err != nil {
 		refuse(err)
 	}
 

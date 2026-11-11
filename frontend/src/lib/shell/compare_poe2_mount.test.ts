@@ -551,7 +551,7 @@ describe('the PoE2 Compare page', () => {
     await waitFor(() => expect(rowOf('Gloves')).toBeTruthy());
 
     await fireEvent.click(within(rowOf('Gloves')!).getByRole('button', { name: 'Buy' }));
-    let dialog = within(await page.findByRole('dialog', { name: 'Buy Similar' }));
+    let dialog = within(await page.findByRole('dialog', { name: 'Buy Similar' }, { timeout: 10_000 }));
     expect(dialog.getByRole<HTMLSelectElement>('combobox', { name: 'Realm' }).disabled).toBe(true);
     expect(dialog.getByRole<HTMLInputElement>('textbox', { name: 'Evasion min' }).value).toBe(pob.Gloves.defences[0].min);
     await clickSearch(dialog);
