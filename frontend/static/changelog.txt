@@ -3,6 +3,9 @@ VERSION[0.7.0][2026/11/12]
 --- New ---
 * go-pob has its own logo, as the favicon, app and desktop icons and link card image, generated from one source by mise run logo
 
+--- Fixed ---
+* the link card's image URL carries the logo's hash, so chat apps fetch a changed logo instead of their cached one
+
 
 VERSION[0.6.0][2026/11/12]
 
