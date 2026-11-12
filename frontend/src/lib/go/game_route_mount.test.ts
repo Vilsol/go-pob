@@ -31,6 +31,7 @@ const open = vi.fn((xml: string) => Promise.resolve(xml ? VIEW : VIEW));
 const poe2Worker = vi.fn(() =>
   Promise.resolve({
     Open: open,
+    TreeConversion: () => Promise.resolve(undefined),
     TreeClassList: () => Promise.resolve([{ label: 'Sorceress', classId: 7, ascendancies: ['None'] }]),
     TreeData: () => new Promise(() => {})
   })
