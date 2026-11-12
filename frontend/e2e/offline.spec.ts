@@ -174,7 +174,7 @@ test('installable: Chrome finds the manifest and reports no installability error
     expect(manifest.errors, 'manifest parse errors').toEqual([]);
     const parsed = JSON.parse(manifest.data ?? '{}') as { display?: string; icons?: { sizes: string; purpose?: string }[] };
     expect(parsed.display).toBe('standalone');
-    expect(parsed.icons?.map((i) => `${i.sizes} ${i.purpose ?? 'any'}`)).toEqual(['192x192 any', '512x512 any', '512x512 maskable']);
+    expect(parsed.icons?.map((i) => `${i.sizes} ${i.purpose ?? 'any'}`)).toEqual(['any any', '192x192 any', '512x512 any', '512x512 maskable']);
 
     console.log(`persistent storage in a fresh Chromium profile: ${await page.evaluate(() => navigator.storage.persisted())}`);
     const { installabilityErrors } = (await cdp.send('Page.getInstallabilityErrors')) as { installabilityErrors: { errorId: string }[] };

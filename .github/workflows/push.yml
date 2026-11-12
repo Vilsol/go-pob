@@ -35,6 +35,9 @@ jobs:
       - name: mise task shape
         run: go test ./scripts/gopob/ -run 'TestMiseTasks|TestNoMiseTaskRunsADeletedOriginal' -v
 
+      - name: Logo outputs match their source
+        run: go run ./scripts/logo --check
+
       - name: Data fields guard
         run: OPERATOR=true go test ./scripts/gopob/internal/datafields/ -run '^TestReadFieldsAreInTheCommittedList$' -v
 

@@ -784,6 +784,10 @@ run = '{{vars.GOPOB}} data-fields'
 description = "Write go-pob's version history to frontend/static/changelog.txt from the v* tags, their commit subjects and the version semantic-release cuts next; commit it before merging to main"
 run = '{{vars.NICE}} go run ./scripts/changelog'
 
+[tasks.logo]
+description = "Regenerate the favicons, PWA and desktop icons from assets/logo/go-pob-logo.svg (needs nix; -- --review <dir> also writes every render); -- --check verifies assets/logo/outputs.sha256 without the tools"
+run = '{{vars.NICE}} go run ./scripts/logo'
+
 [tasks.pob-changelog]
 description = "Copy the pinned PoB's changelog.txt to frontend/static/pob-changelog.txt (the About dialog's Path of Building history); run after a PoB pin bump"
 usage = '''

@@ -28,8 +28,15 @@ describe('app.html head', () => {
     expect(meta('name', 'twitter:description')).toBe(description);
   });
 
-  it('carries no image tags', () => {
-    expect(head).not.toMatch(/og:image|twitter:image/);
+  it('shows the square logo on link cards', () => {
+    const alt = meta('property', 'og:image:alt');
+    expect(meta('property', 'og:image')).toBe('https://pob.gg/icon-512.png');
+    expect(meta('property', 'og:image:type')).toBe('image/png');
+    expect(meta('property', 'og:image:width')).toBe('512');
+    expect(meta('property', 'og:image:height')).toBe('512');
+    expect(alt).toMatch(/logo/);
+    expect(meta('name', 'twitter:image')).toBe('https://pob.gg/icon-512.png');
+    expect(meta('name', 'twitter:image:alt')).toBe(alt);
   });
 
   it('describes the app as a free WebApplication in JSON-LD', () => {
@@ -93,6 +100,67 @@ describe('static site files', () => {
   });
 });
 
+// width and height from a PNG's IHDR chunk
+const pngSize = (b: Buffer) => {
+  expect(b.subarray(0, 8).toString('latin1')).toBe('\x89PNG\r\n\x1a\n');
+  return [b.readUInt32BE(16), b.readUInt32BE(20)];
+};
+const staticFile = (path: string) => readFileSync(resolve(frontend, 'static', path));
+
+describe('icons', () => {
+  it('each PNG icon has its size', () => {
+    for (const [file, n] of [
+      ['favicon.png', 64],
+      ['apple-touch-icon.png', 180],
+      ['icon-192.png', 192],
+      ['icon-512.png', 512],
+      ['icon-maskable-512.png', 512]
+    ] as const)
+      expect([file, ...pngSize(staticFile(file))]).toEqual([file, n, n]);
+  });
+
+  it('favicon.ico holds 16, 32 and 48 px PNGs', () => {
+    const ico = staticFile('favicon.ico');
+    expect([ico.readUInt16LE(0), ico.readUInt16LE(2)]).toEqual([0, 1]);
+    const sizes = Array.from({ length: ico.readUInt16LE(4) }, (_, i) => {
+      const at = 6 + 16 * i;
+      const png = ico.subarray(ico.readUInt32LE(at + 12), ico.readUInt32LE(at + 12) + ico.readUInt32LE(at + 8));
+      const [w, h] = pngSize(png);
+      expect([ico[at] || 256, ico[at + 1] || 256]).toEqual([w, h]);
+      return w;
+    });
+    expect(sizes).toEqual([16, 32, 48]);
+  });
+
+  it('the apple-touch and maskable icons are opaque', () => {
+    // colour type 2 (RGB) or a palette without a tRNS chunk
+    for (const file of ['apple-touch-icon.png', 'icon-maskable-512.png']) {
+      const png = staticFile(file);
+      expect([file, png[25] === 2 || (png[25] === 3 && !png.includes('tRNS'))]).toEqual([file, true]);
+    }
+  });
+
+  it('the SVG favicon is the minified logo with its title', () => {
+    const svg = staticFile('favicon.svg').toString('utf8');
+    expect(svg).toMatch(/^<svg [^>]*viewBox="0 0 512 512"/);
+    expect(svg).toMatch(/<title>[^<]+<\/title>/);
+    expect(svg).not.toMatch(/<desc|<metadata|<!--|c2pa/);
+  });
+
+  it('the manifest and app.html name only files that exist', () => {
+    const manifest = JSON.parse(read('static/manifest.webmanifest')) as { icons: { src: string; sizes: string; type: string }[] };
+    expect(manifest.icons.map((i) => i.src)).toContain('favicon.svg');
+    for (const i of manifest.icons) {
+      if (i.sizes !== 'any') expect(pngSize(staticFile(i.src)).join('x')).toBe(i.sizes);
+      expect(i.type).toBe(i.src.endsWith('.svg') ? 'image/svg+xml' : 'image/png');
+    }
+    const links = [...head.matchAll(/href="%sveltekit\.assets%\/([^"]+)"/g)].map((m) => m[1]);
+    expect(links).toEqual(expect.arrayContaining(['favicon.png', 'favicon.svg', 'apple-touch-icon.png']));
+    for (const l of links) expect(() => staticFile(l)).not.toThrow();
+    for (const url of [meta('property', 'og:image'), meta('name', 'twitter:image')]) expect(() => staticFile(new URL(url!).pathname.slice(1))).not.toThrow();
+  });
+});
+
 describe('missing files answer 404', () => {
   const routes = JSON.parse(read('static/_routes.json')) as { version: number; include: string[]; exclude: string[] };
   const page = (type: string) => new Response('<!doctype html>', { headers: { 'Content-Type': type } });
@@ -121,7 +189,7 @@ describe('missing files answer 404', () => {
   });
 
   it('only a file path answered with the app page is missing', () => {
-    expect(missingFile('/apple-touch-icon.png', page('text/html; charset=utf-8'))).toBe(true);
+    expect(missingFile('/apple-touch-icon-precomposed.png', page('text/html; charset=utf-8'))).toBe(true);
     expect(missingFile('/.well-known/nothing.TXT', page('text/html'))).toBe(true);
     expect(missingFile('/robots.txt', page('text/plain; charset=utf-8'))).toBe(false);
     expect(missingFile('/manifest.webmanifest', page('application/manifest+json'))).toBe(false);

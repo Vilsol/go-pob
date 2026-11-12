@@ -1,0 +1,646 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" xmlns:c2pa="http://c2pa.org/manifest">
+  <title>Path of Building logo: le toucan, gone fishing</title>
+  <desc>A pixel-art toucan fishing with a LOGIN button as bait, in front of a section of the Path of Exile 3.29 passive tree on a starry stone tile.</desc>
+  <defs>
+    <!-- tile -->
+    <radialGradient id="bg" cx="48%" cy="42%" r="75%">
+      <stop offset="0" stop-color="#2A231C"/>
+      <stop offset="0.6" stop-color="#1A1511"/>
+      <stop offset="1" stop-color="#0E0B09"/>
+    </radialGradient>
+    <filter id="stone" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.014" numOctaves="4" seed="9" result="cloud"/>
+      <feColorMatrix in="cloud" type="matrix" result="mottle" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.6 0 0 0 -0.62"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" seed="4" result="fine"/>
+      <feColorMatrix in="fine" type="matrix" result="grain" values="0 0 0 0 0.86  0 0 0 0 0.74  0 0 0 0 0.56  1.0 0 0 0 -0.6"/>
+      <feTurbulence type="turbulence" baseFrequency="0.04 0.012" numOctaves="2" seed="21" result="vein"/>
+      <feColorMatrix in="vein" type="matrix" result="veins" values="0 0 0 0 0.55  0 0 0 0 0.45  0 0 0 0 0.32  -2.2 0 0 0 0.16"/>
+      <feMerge result="tex">
+        <feMergeNode in="SourceGraphic"/>
+        <feMergeNode in="mottle"/>
+        <feMergeNode in="veins"/>
+        <feMergeNode in="grain"/>
+      </feMerge>
+      <feComposite in="tex" in2="SourceAlpha" operator="in"/>
+    </filter>
+    <clipPath id="tile">
+      <rect width="512" height="512" rx="92"/>
+    </clipPath>
+    <!-- sky -->
+    <radialGradient id="nebA" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#4A3A86" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#4A3A86" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="nebB" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#1F5A63" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#1F5A63" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="starGlow" x="-200%" y="-200%" width="500%" height="500%">
+      <feGaussianBlur stdDeviation="1.6" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <path id="glint" d="M0 -6L1.2 -1.2L6 0L1.2 1.2L0 6L-1.2 1.2L-6 0L-1.2 -1.2Z" fill="#FFF4DC" fill-opacity="0.8"/>
+    <!-- skill tree -->
+    <radialGradient id="treeFade" cx="0.5" cy="0.5" r="0.95">
+      <stop offset="0" stop-color="#fff" stop-opacity="1"/>
+      <stop offset="0.55" stop-color="#fff" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0.2"/>
+    </radialGradient>
+    <mask id="treeMask">
+      <rect width="512" height="512" fill="url(#treeFade)"/>
+    </mask>
+    <filter id="allocGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="2.5" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- toucan -->
+    <filter id="pxShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="4" result="d"/>
+      <feFlood flood-color="#E8C47A"/>
+      <feComposite in2="d" operator="in" result="outline"/>
+      <feFlood flood-color="#000" flood-opacity="0.7"/>
+      <feComposite in2="d" operator="in"/>
+      <feOffset dx="7" dy="8" result="s"/>
+      <feMerge>
+        <feMergeNode in="s"/>
+        <feMergeNode in="outline"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <pattern id="shade" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="2" height="2" fill="#000"/>
+      <rect x="2" y="2" width="2" height="2" fill="#000"/>
+    </pattern>
+    <!-- fishing gear -->
+    <filter id="rodFx" x="-20%" y="-20%" width="140%" height="140%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="2" result="d"/>
+      <feFlood flood-color="#E8C47A"/>
+      <feComposite in2="d" operator="in" result="outline"/>
+      <feFlood flood-color="#000" flood-opacity="0.7"/>
+      <feComposite in2="d" operator="in"/>
+      <feOffset dx="5" dy="6" result="s"/>
+      <feMerge>
+        <feMergeNode in="s"/>
+        <feMergeNode in="outline"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <g id="hook">
+      <path fill="#E0B460" d="M454 368.8h5.5v5.5h-5.5z M454 374.2h5.5v5.5h-5.5z M454 379.8h5.5v5.5h-5.5z M454 385.2h5.5v5.5h-5.5z M454 390.8h5.5v5.5h-5.5z M454 396.2h5.5v5.5h-5.5z M454 401.8h5.5v5.5h-5.5z M454 407.2h5.5v5.5h-5.5z M454 412.8h5.5v5.5h-5.5z M432 401.8h5.5v5.5h-5.5z M432 407.2h5.5v5.5h-5.5z M437.5 401.8h5.5v5.5h-5.5z M432 412.8h5.5v5.5h-5.5z M448.5 418.2h5.5v5.5h-5.5z M443 418.2h5.5v5.5h-5.5z M437.5 418.2h5.5v5.5h-5.5z M432 396.2h5.5v5.5h-5.5z"/>
+    </g>
+    <mask id="hookFront" maskUnits="userSpaceOnUse" x="-1000" y="-1000" width="3000" height="3000">
+      <rect x="410.0" y="385.2" width="40.7" height="55.0" fill="#fff"/>
+      <rect x="410.0" y="418.2" width="60.5" height="22.0" fill="#fff"/>
+    </mask>
+    <!-- login button -->
+    <linearGradient id="btnFrame" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4A433C"/>
+      <stop offset="0.5" stop-color="#231E1A"/>
+      <stop offset="1" stop-color="#0E0B09"/>
+    </linearGradient>
+    <linearGradient id="btnFace" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#270902"/>
+      <stop offset="0.45" stop-color="#5E2200"/>
+      <stop offset="0.8" stop-color="#933D0A"/>
+      <stop offset="1" stop-color="#A7420A"/>
+    </linearGradient>
+    <linearGradient id="btnSides" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#000" stop-opacity="0.55"/>
+      <stop offset="0.14" stop-color="#000" stop-opacity="0"/>
+      <stop offset="0.86" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.55"/>
+    </linearGradient>
+    <linearGradient id="btnSilver" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#E7DDC9" stop-opacity="0.2"/>
+      <stop offset="0.12" stop-color="#E7DDC9"/>
+      <stop offset="0.88" stop-color="#E7DDC9"/>
+      <stop offset="1" stop-color="#E7DDC9" stop-opacity="0.2"/>
+    </linearGradient>
+    <linearGradient id="btnRim" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#E08A3A" stop-opacity="0.2"/>
+      <stop offset="0.15" stop-color="#E9A050"/>
+      <stop offset="0.85" stop-color="#E9A050"/>
+      <stop offset="1" stop-color="#E08A3A" stop-opacity="0.2"/>
+    </linearGradient>
+    <filter id="btnText" x="-10%" y="-30%" width="120%" height="160%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.2" result="b"/>
+      <feOffset in="b" dx="0" dy="1.2" result="o"/>
+      <feFlood flood-color="#1A0600" flood-opacity="0.9"/>
+      <feComposite in2="o" operator="in" result="sh"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.6" result="g"/>
+      <feComponentTransfer in="g" result="glow">
+        <feFuncA type="linear" slope="0.45"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode in="sh"/>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g id="tile">
+    <!-- stone tile with an engraved double frame -->
+    <rect width="512" height="512" rx="92" fill="url(#bg)" filter="url(#stone)"/>
+    <g id="frame" fill="none">
+      <rect x="20" y="20" width="472" height="472" rx="74" stroke="#000000" stroke-opacity="0.55" stroke-width="4"/>
+      <rect x="22" y="22" width="468" height="468" rx="72" stroke="#D4A24C" stroke-opacity="0.22" stroke-width="2"/>
+    </g>
+  </g>
+  <g id="sky" clip-path="url(#tile)">
+    <g id="nebula">
+      <ellipse cx="400" cy="130" rx="230" ry="170" fill="url(#nebA)"/>
+      <ellipse cx="100" cy="420" rx="220" ry="160" fill="url(#nebB)"/>
+    </g>
+    <g id="stars">
+      <g fill="#FFFFFF">
+        <circle cx="176.4" cy="98.2" r="0.6" fill-opacity="0.53"/>
+        <circle cx="72.5" cy="293.4" r="0.8" fill-opacity="0.23"/>
+        <circle cx="219" cy="138.8" r="1.2" fill-opacity="0.53"/>
+        <circle cx="274.4" cy="288.1" r="0.8" fill-opacity="0.43"/>
+        <circle cx="447.4" cy="193.4" r="0.8" fill-opacity="0.48"/>
+        <circle cx="298.7" cy="292.1" r="1.2" fill-opacity="0.54"/>
+        <circle cx="457" cy="244.3" r="0.6" fill-opacity="0.49"/>
+        <circle cx="82.9" cy="56.6" r="1" fill-opacity="0.5"/>
+        <circle cx="209.8" cy="444.4" r="1.2" fill-opacity="0.27"/>
+        <circle cx="462.9" cy="98.2" r="0.8" fill-opacity="0.29"/>
+        <circle cx="95.8" cy="271.6" r="1" fill-opacity="0.48"/>
+        <circle cx="76.8" cy="316.7" r="0.6" fill-opacity="0.23"/>
+        <circle cx="61.8" cy="124" r="1.2" fill-opacity="0.45"/>
+        <circle cx="461.9" cy="302.2" r="1.2" fill-opacity="0.25"/>
+        <circle cx="103" cy="40.4" r="1" fill-opacity="0.48"/>
+        <circle cx="344.7" cy="148" r="1" fill-opacity="0.34"/>
+        <circle cx="396.8" cy="475.2" r="0.8" fill-opacity="0.53"/>
+        <circle cx="76.2" cy="242.5" r="1" fill-opacity="0.39"/>
+        <circle cx="458" cy="357.6" r="0.8" fill-opacity="0.21"/>
+        <circle cx="473.1" cy="327.1" r="1" fill-opacity="0.42"/>
+        <circle cx="92.9" cy="475.9" r="0.8" fill-opacity="0.21"/>
+        <circle cx="281.5" cy="177.3" r="1.2" fill-opacity="0.55"/>
+        <circle cx="55.7" cy="116.5" r="0.6" fill-opacity="0.4"/>
+        <circle cx="63.1" cy="332.6" r="0.6" fill-opacity="0.58"/>
+        <circle cx="320.8" cy="195.5" r="1" fill-opacity="0.59"/>
+        <circle cx="312" cy="261.5" r="0.6" fill-opacity="0.59"/>
+        <circle cx="386.3" cy="469.2" r="0.6" fill-opacity="0.31"/>
+        <circle cx="47.9" cy="382.1" r="1" fill-opacity="0.53"/>
+        <circle cx="445.5" cy="287.9" r="1" fill-opacity="0.31"/>
+        <circle cx="60.1" cy="420" r="1.2" fill-opacity="0.34"/>
+        <circle cx="268.2" cy="137.8" r="0.6" fill-opacity="0.3"/>
+        <circle cx="38.2" cy="143.2" r="0.6" fill-opacity="0.49"/>
+        <circle cx="279.1" cy="115.6" r="1.2" fill-opacity="0.57"/>
+      </g>
+      <g fill="#DCE6FF">
+        <circle cx="86" cy="130.9" r="0.6" fill-opacity="0.43"/>
+        <circle cx="318.8" cy="198.3" r="0.6" fill-opacity="0.22"/>
+        <circle cx="160.1" cy="473" r="0.6" fill-opacity="0.37"/>
+        <circle cx="155.8" cy="217.7" r="1" fill-opacity="0.55"/>
+        <circle cx="124.4" cy="103.4" r="1" fill-opacity="0.22"/>
+        <circle cx="443.2" cy="372.7" r="1" fill-opacity="0.55"/>
+        <circle cx="130.7" cy="274.8" r="1" fill-opacity="0.29"/>
+        <circle cx="297" cy="240.3" r="0.8" fill-opacity="0.53"/>
+        <circle cx="89.2" cy="36.4" r="0.6" fill-opacity="0.5"/>
+        <circle cx="398.4" cy="263.6" r="0.8" fill-opacity="0.26"/>
+        <circle cx="260.8" cy="424.5" r="0.8" fill-opacity="0.2"/>
+        <circle cx="391.2" cy="107.9" r="1.2" fill-opacity="0.49"/>
+        <circle cx="470" cy="304" r="0.8" fill-opacity="0.31"/>
+        <circle cx="259.7" cy="394.9" r="0.8" fill-opacity="0.41"/>
+        <circle cx="85" cy="229.8" r="0.6" fill-opacity="0.3"/>
+        <circle cx="331.9" cy="131.1" r="1.2" fill-opacity="0.36"/>
+        <circle cx="220.4" cy="191.2" r="0.6" fill-opacity="0.35"/>
+        <circle cx="316.8" cy="392.3" r="0.6" fill-opacity="0.54"/>
+        <circle cx="280" cy="448.9" r="1" fill-opacity="0.25"/>
+        <circle cx="111.9" cy="451.4" r="1" fill-opacity="0.5"/>
+        <circle cx="78" cy="400.2" r="1.2" fill-opacity="0.4"/>
+        <circle cx="407.2" cy="207.7" r="1" fill-opacity="0.29"/>
+      </g>
+      <g fill="#FFF1D6">
+        <circle cx="52.4" cy="129.9" r="0.8" fill-opacity="0.37"/>
+        <circle cx="123.1" cy="337.5" r="1.2" fill-opacity="0.39"/>
+        <circle cx="140.3" cy="289.6" r="1.2" fill-opacity="0.49"/>
+        <circle cx="372.2" cy="98.7" r="1.2" fill-opacity="0.22"/>
+        <circle cx="332" cy="375.6" r="1" fill-opacity="0.48"/>
+        <circle cx="169.9" cy="291.2" r="1.2" fill-opacity="0.49"/>
+        <circle cx="430.9" cy="186.8" r="1.2" fill-opacity="0.27"/>
+        <circle cx="211.5" cy="155.6" r="0.8" fill-opacity="0.55"/>
+        <circle cx="135.5" cy="249.2" r="0.8" fill-opacity="0.31"/>
+        <circle cx="263" cy="309.2" r="0.6" fill-opacity="0.56"/>
+        <circle cx="382.5" cy="425.3" r="1.2" fill-opacity="0.36"/>
+        <circle cx="30.1" cy="98.4" r="0.6" fill-opacity="0.45"/>
+        <circle cx="250.6" cy="472" r="1.2" fill-opacity="0.32"/>
+        <circle cx="95.1" cy="368.9" r="1" fill-opacity="0.53"/>
+        <circle cx="364.4" cy="132.5" r="1.2" fill-opacity="0.49"/>
+        <circle cx="477.3" cy="387.1" r="1.2" fill-opacity="0.28"/>
+        <circle cx="303.5" cy="185.6" r="1" fill-opacity="0.23"/>
+        <circle cx="475.3" cy="305.8" r="0.6" fill-opacity="0.56"/>
+        <circle cx="185.5" cy="320.7" r="0.6" fill-opacity="0.51"/>
+        <circle cx="369.1" cy="246.1" r="0.8" fill-opacity="0.52"/>
+        <circle cx="180.3" cy="392" r="1.2" fill-opacity="0.36"/>
+        <circle cx="126.2" cy="256.5" r="1" fill-opacity="0.42"/>
+        <circle cx="407.1" cy="57.5" r="1" fill-opacity="0.46"/>
+        <circle cx="283.9" cy="373.5" r="0.6" fill-opacity="0.33"/>
+        <circle cx="425.9" cy="449.4" r="0.8" fill-opacity="0.25"/>
+        <circle cx="129.3" cy="460.5" r="1.2" fill-opacity="0.27"/>
+        <circle cx="182.8" cy="237.3" r="0.6" fill-opacity="0.33"/>
+        <circle cx="414" cy="335.5" r="1" fill-opacity="0.26"/>
+        <circle cx="391.4" cy="112.9" r="0.6" fill-opacity="0.58"/>
+        <circle cx="161.1" cy="256" r="0.8" fill-opacity="0.34"/>
+      </g>
+    </g>
+    <g id="glints" filter="url(#starGlow)">
+      <use href="#glint" x="440" y="250"/>
+      <use href="#glint" x="70" y="110"/>
+      <use href="#glint" x="460" y="420"/>
+      <use href="#glint" x="110" y="330"/>
+      <use href="#glint" x="330" y="60"/>
+    </g>
+    <g id="skill-tree" mask="url(#treeMask)">
+      <!-- real node coordinates and arcs from the PoE 3.29 tree, scaled and positioned for the tile -->
+      <g id="tree-edges" fill="none" stroke="#B08A4A" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round">
+        <line x1="268.5" y1="287.2" x2="325.6" y2="287.6"/>
+        <line x1="268.5" y1="287.2" x2="268.5" y2="342.9"/>
+        <line x1="268.5" y1="287.2" x2="198" y2="360.2"/>
+        <line x1="268.5" y1="287.2" x2="266.9" y2="238.5"/>
+        <line x1="268.5" y1="287.2" x2="329.3" y2="225.6"/>
+        <line x1="185.3" y1="148" x2="185.3" y2="204.9"/>
+        <line x1="424.6" y1="287.2" x2="453.9" y2="287.2"/>
+        <line x1="-131.8" y1="280.7" x2="50.2" y2="491.5"/>
+        <line x1="412.7" y1="178.2" x2="438" y2="224.1"/>
+        <line x1="50.2" y1="363.8" x2="50.2" y2="393"/>
+        <line x1="14.4" y1="128.7" x2="14.4" y2="158"/>
+        <line x1="407.8" y1="111.2" x2="438" y2="134.3"/>
+        <line x1="158" y1="349.5" x2="172.7" y2="374.8"/>
+        <line x1="591.6" y1="454.5" x2="533.5" y2="488.1"/>
+        <line x1="550.6" y1="77.7" x2="550.6" y2="48.4"/>
+        <line x1="81.6" y1="205.6" x2="110.8" y2="205.6"/>
+        <line x1="-50.6" y1="222.5" x2="-25.2" y2="207.8"/>
+        <line x1="450.2" y1="531.4" x2="479.4" y2="531.4"/>
+        <line x1="14.4" y1="99.5" x2="14.4" y2="38"/>
+        <line x1="435.5" y1="506.1" x2="435.5" y2="454.5"/>
+        <line x1="309.7" y1="454.5" x2="335.1" y2="439.9"/>
+        <line x1="187.3" y1="461.8" x2="158" y2="461.8"/>
+        <line x1="268.5" y1="401.3" x2="268.5" y2="372.1"/>
+        <line x1="435.5" y1="454.5" x2="487.6" y2="422.6"/>
+        <line x1="435.5" y1="454.5" x2="530.7" y2="287.2"/>
+        <line x1="435.5" y1="454.5" x2="267" y2="744.7"/>
+        <line x1="435.5" y1="454.5" x2="435.5" y2="392.6"/>
+        <line x1="435.5" y1="454.5" x2="342.4" y2="502.1"/>
+        <line x1="50.2" y1="491.5" x2="8" y2="532.4"/>
+        <line x1="50.2" y1="491.5" x2="128.8" y2="461.8"/>
+        <line x1="50.2" y1="491.5" x2="267" y2="744.7"/>
+        <line x1="50.2" y1="491.5" x2="50.2" y2="560.1"/>
+        <line x1="50.2" y1="491.5" x2="50.2" y2="422.3"/>
+        <line x1="50.2" y1="491.5" x2="132.7" y2="526.5"/>
+        <line x1="50.2" y1="491.5" x2="147.3" y2="389.5"/>
+        <line x1="50.2" y1="491.5" x2="-25.5" y2="491.5"/>
+        <line x1="616.3" y1="287.4" x2="530.7" y2="287.2"/>
+        <line x1="483.1" y1="287.2" x2="530.7" y2="287.2"/>
+        <line x1="110.5" y1="82.7" x2="135.8" y2="97.3"/>
+        <line x1="298.5" y1="527.4" x2="327.8" y2="527.4"/>
+        <line x1="530.7" y1="287.2" x2="607.3" y2="155.6"/>
+        <line x1="384.1" y1="287.6" x2="354.9" y2="287.6"/>
+        <line x1="235.2" y1="-51" x2="235.2" y2="38"/>
+        <line x1="275.3" y1="107.4" x2="289.9" y2="132.7"/>
+        <line x1="-16.4" y1="295.4" x2="8.9" y2="280.7"/>
+        <line x1="185.3" y1="89.5" x2="185.3" y2="118.7"/>
+        <line x1="140.1" y1="205.6" x2="185.3" y2="204.9"/>
+        <line x1="468.3" y1="111.5" x2="607.3" y2="155.6"/>
+        <line x1="468.3" y1="111.5" x2="235.2" y2="38"/>
+        <line x1="468.3" y1="111.5" x2="438" y2="134.3"/>
+        <line x1="15.7" y1="-20.8" x2="68.1" y2="-51"/>
+        <line x1="85.1" y1="68.1" x2="14.4" y2="38"/>
+        <line x1="438" y1="163.6" x2="438" y2="224.1"/>
+        <line x1="406.9" y1="38" x2="235.2" y2="38"/>
+        <line x1="130.7" y1="276.4" x2="159.9" y2="276.4"/>
+        <line x1="14.4" y1="38" x2="-35.2" y2="65.7"/>
+        <line x1="542.3" y1="175.3" x2="607.3" y2="155.6"/>
+        <line x1="266.9" y1="180.1" x2="266.9" y2="209.3"/>
+        <line x1="185.3" y1="204.9" x2="185.3" y2="261.8"/>
+        <line x1="463.3" y1="178.2" x2="438" y2="224.1"/>
+        <line x1="158" y1="541.1" x2="187.3" y2="541.1"/>
+        <path d="M-50.57 193.22A29.24 29.24 0 0 1 -25.25 207.84"/>
+        <path d="M214.51 118.75A29.24 29.24 0 0 1 185.27 147.99"/>
+        <path d="M354.88 316.85A29.24 29.24 0 0 1 325.64 287.61"/>
+        <path d="M453.85 316.4A29.24 29.24 0 0 1 424.61 287.15"/>
+        <path d="M50.24 363.79A29.24 29.24 0 0 1 79.48 393.04"/>
+        <path d="M79.48 393.04A29.24 29.24 0 0 1 50.24 422.28"/>
+        <path d="M412.7 178.2A29.24 29.24 0 0 1 438 134.34"/>
+        <path d="M268.5 342.86A29.24 29.24 0 0 1 297.74 372.1"/>
+        <path d="M21 393.04A29.24 29.24 0 0 1 50.24 363.79"/>
+        <path d="M197.98 360.22A29.24 29.24 0 0 1 187.29 400.17"/>
+        <path d="M438 224.05A60.47 60.47 0 0 1 407.77 111.2"/>
+        <path d="M147.35 389.46A29.24 29.24 0 0 1 158.05 349.52"/>
+        <path d="M128.54 -51.01A60.47 60.47 0 0 1 120.43 -20.78"/>
+        <path d="M525.29 63.06A29.24 29.24 0 0 1 550.62 48.44"/>
+        <path d="M525.29 92.3A29.24 29.24 0 0 1 525.29 63.06"/>
+        <path d="M495.91 -51.01A88.99 88.99 0 0 1 406.92 37.97"/>
+        <path d="M266.91 238.55A29.24 29.24 0 0 1 237.67 209.3"/>
+        <path d="M81.61 205.57A29.24 29.24 0 0 1 110.85 176.33"/>
+        <path d="M-14.8 128.75A29.24 29.24 0 0 1 14.44 99.51"/>
+        <path d="M14.44 99.51A29.24 29.24 0 0 1 43.68 128.75"/>
+        <path d="M-25.25 237.08A29.24 29.24 0 0 1 -50.57 251.7"/>
+        <path d="M237.67 209.3A29.24 29.24 0 0 1 266.91 180.06"/>
+        <path d="M-33.59 461.23A60.47 60.47 0 0 1 -25.48 491.46"/>
+        <path d="M-55.72 439.1A60.47 60.47 0 0 1 -33.59 461.23"/>
+        <path d="M435.55 556.77A29.24 29.24 0 0 1 435.55 506.12"/>
+        <path d="M-33.59 521.7A60.47 60.47 0 0 1 -55.72 543.83"/>
+        <path d="M-25.48 491.46A60.47 60.47 0 0 1 -33.59 521.7"/>
+        <path d="M172.67 436.52A29.24 29.24 0 0 1 187.29 461.84"/>
+        <path d="M187.29 461.84A29.24 29.24 0 0 1 172.67 487.17"/>
+        <path d="M297.74 372.1A29.24 29.24 0 0 1 268.5 401.34"/>
+        <path d="M143.43 487.17A29.24 29.24 0 0 1 128.81 461.84"/>
+        <path d="M172.67 487.17A29.24 29.24 0 0 1 143.43 487.17"/>
+        <path d="M128.81 461.84A29.24 29.24 0 0 1 143.43 436.52"/>
+        <path d="M143.43 436.52A29.24 29.24 0 0 1 172.67 436.52"/>
+        <path d="M376.42 -51.01A29.24 29.24 0 0 1 347.18 -21.77"/>
+        <path d="M483.09 287.15A29.24 29.24 0 0 1 453.85 316.4"/>
+        <path d="M110.85 176.33A29.24 29.24 0 0 1 140.09 205.57"/>
+        <path d="M185.25 261.79A29.24 29.24 0 0 1 174.57 301.72"/>
+        <path d="M174.57 301.72A29.24 29.24 0 0 1 145.32 301.72"/>
+        <path d="M384.13 287.61A29.24 29.24 0 0 1 354.88 316.85"/>
+        <path d="M-16.44 324.61A29.24 29.24 0 0 1 -41.76 280.75"/>
+        <path d="M8.88 280.75A29.24 29.24 0 0 1 -16.44 324.61"/>
+        <path d="M479.41 531.44A29.24 29.24 0 0 1 435.55 556.77"/>
+        <path d="M313.15 552.72A29.24 29.24 0 0 1 298.53 527.4"/>
+        <path d="M298.53 527.4A29.24 29.24 0 0 1 313.15 502.08"/>
+        <path d="M550.62 48.44A29.24 29.24 0 0 1 579.86 77.68"/>
+        <path d="M-75.14 55.03A29.24 29.24 0 0 1 -35.19 65.73"/>
+        <path d="M185.27 89.51A29.24 29.24 0 0 1 214.51 118.75"/>
+        <path d="M68.07 9.46A60.47 60.47 0 0 1 15.69 -20.78"/>
+        <path d="M120.43 -20.78A60.47 60.47 0 0 1 68.07 9.46"/>
+        <path d="M15.69 -20.78A60.47 60.47 0 0 1 7.6 -51.01"/>
+        <path d="M14.44 157.99A29.24 29.24 0 0 1 -14.8 128.75"/>
+        <path d="M43.68 128.75A29.24 29.24 0 0 1 14.44 157.99"/>
+        <path d="M85.15 68.06A29.24 29.24 0 0 1 125.09 57.36"/>
+        <path d="M132.73 555.7A29.24 29.24 0 0 1 132.73 526.46"/>
+        <path d="M187.29 541.08A29.24 29.24 0 0 1 132.73 555.7"/>
+        <path d="M565.24 103.01A29.24 29.24 0 0 1 525.29 92.3"/>
+        <path d="M50.24 422.28A29.24 29.24 0 0 1 21 393.04"/>
+        <path d="M342.39 502.08A29.24 29.24 0 0 1 342.39 552.72"/>
+        <path d="M313.15 502.08A29.24 29.24 0 0 1 342.39 502.08"/>
+        <path d="M130.7 276.41A29.24 29.24 0 0 1 159.94 247.17"/>
+        <path d="M145.32 301.72A29.24 29.24 0 0 1 130.7 276.41"/>
+        <path d="M-25.25 207.84A29.24 29.24 0 0 1 -25.25 237.08"/>
+        <path d="M14.44 37.97A88.99 88.99 0 0 1 -74.54 -51.01"/>
+        <path d="M438 134.34A29.24 29.24 0 0 1 463.33 178.2"/>
+        <path d="M159.94 247.17A29.24 29.24 0 0 1 185.25 261.79"/>
+        <path d="M187.29 400.17A29.24 29.24 0 0 1 147.35 389.46"/>
+        <path d="M125.09 57.36A29.24 29.24 0 0 1 135.79 97.3"/>
+        <path d="M347.18 -21.77A29.24 29.24 0 0 1 317.94 -51.01"/>
+      </g>
+      <g id="allocated-path" filter="url(#allocGlow)" fill="none" stroke="#F2CC7E" stroke-opacity="0.9" stroke-width="3.2" stroke-linecap="round">
+        <line x1="268.5" y1="287.2" x2="435.5" y2="454.5"/>
+        <line x1="268.5" y1="287.2" x2="185.3" y2="204.9"/>
+        <line x1="591.6" y1="454.5" x2="435.5" y2="454.5"/>
+        <line x1="435.5" y1="454.5" x2="360.4" y2="454.5"/>
+        <line x1="260.7" y1="82" x2="235.2" y2="38"/>
+        <line x1="14.4" y1="38" x2="185.3" y2="204.9"/>
+        <line x1="14.4" y1="38" x2="235.2" y2="38"/>
+        <path d="M260.7 82.03A29.24 29.24 0 0 1 289.94 82.03"/>
+        <path d="M289.94 82.03A29.24 29.24 0 0 1 304.56 107.36"/>
+        <path d="M335.07 469.17A29.24 29.24 0 0 1 309.74 454.55"/>
+        <path d="M309.74 454.55A29.24 29.24 0 0 1 320.45 414.61"/>
+        <path d="M250.01 121.98A29.24 29.24 0 0 1 260.7 82.03"/>
+        <path d="M360.39 454.55A29.24 29.24 0 0 1 335.07 469.17"/>
+        <path d="M289.94 132.68A29.24 29.24 0 0 1 250.01 121.98"/>
+        <path d="M304.56 107.36A29.24 29.24 0 0 1 289.94 132.68"/>
+        <path d="M349.69 414.61A29.24 29.24 0 0 1 360.39 454.55"/>
+        <path d="M320.45 414.61A29.24 29.24 0 0 1 349.69 414.61"/>
+      </g>
+      <g id="tree-nodes">
+        <g class="passive" fill="#1A1510" stroke="#8E7244" stroke-opacity="0.55" stroke-width="1.8">
+          <circle cx="185.3" cy="148" r="4"/>
+          <circle cx="325.6" cy="287.6" r="4"/>
+          <circle cx="424.6" cy="287.2" r="4"/>
+          <circle cx="79.5" cy="393" r="4"/>
+          <circle cx="412.7" cy="178.2" r="4"/>
+          <circle cx="268.5" cy="342.9" r="4"/>
+          <circle cx="198" cy="360.2" r="4"/>
+          <circle cx="14.4" cy="128.7" r="4"/>
+          <circle cx="407.8" cy="111.2" r="4"/>
+          <circle cx="158" cy="349.5" r="4"/>
+          <circle cx="525.3" cy="63.1" r="4"/>
+          <circle cx="550.6" cy="77.7" r="4"/>
+          <circle cx="266.9" cy="238.5" r="4"/>
+          <circle cx="81.6" cy="205.6" r="4"/>
+          <circle cx="450.2" cy="531.4" r="4"/>
+          <circle cx="237.7" cy="209.3" r="4"/>
+          <circle cx="-33.6" cy="461.2" r="4"/>
+          <circle cx="435.5" cy="506.1" r="4"/>
+          <circle cx="-33.6" cy="521.7" r="4"/>
+          <circle cx="268.5" cy="401.3" r="4"/>
+          <circle cx="143.4" cy="487.2" r="4"/>
+          <circle cx="143.4" cy="436.5" r="4"/>
+          <circle cx="483.1" cy="287.2" r="4"/>
+          <circle cx="110.8" cy="176.3" r="4"/>
+          <circle cx="174.6" cy="301.7" r="4"/>
+          <circle cx="487.6" cy="422.6" r="4"/>
+          <circle cx="354.9" cy="316.8" r="4"/>
+          <circle cx="-16.4" cy="324.6" r="4"/>
+          <circle cx="479.4" cy="531.4" r="4"/>
+          <circle cx="110.5" cy="82.7" r="4"/>
+          <circle cx="384.1" cy="287.6" r="4"/>
+          <circle cx="8" cy="532.4" r="4"/>
+          <circle cx="329.3" cy="225.6" r="4"/>
+          <circle cx="172.7" cy="374.8" r="4"/>
+          <circle cx="275.3" cy="107.4" r="4"/>
+          <circle cx="50.2" cy="393" r="4"/>
+          <circle cx="-16.4" cy="295.4" r="4"/>
+          <circle cx="185.3" cy="89.5" r="4"/>
+          <circle cx="140.1" cy="205.6" r="4"/>
+          <circle cx="68.1" cy="9.5" r="4"/>
+          <circle cx="85.1" cy="68.1" r="4"/>
+          <circle cx="438" cy="163.6" r="4"/>
+          <circle cx="435.5" cy="392.6" r="4"/>
+          <circle cx="525.3" cy="92.3" r="4"/>
+          <circle cx="453.9" cy="287.2" r="4"/>
+          <circle cx="335.1" cy="439.9" r="4"/>
+          <circle cx="21" cy="393" r="4"/>
+          <circle cx="406.9" cy="38" r="4"/>
+          <circle cx="297.7" cy="372.1" r="4"/>
+          <circle cx="327.8" cy="527.4" r="4"/>
+          <circle cx="-14.8" cy="128.7" r="4"/>
+          <circle cx="-25.2" cy="237.1" r="4"/>
+          <circle cx="354.9" cy="287.6" r="4"/>
+          <circle cx="542.3" cy="175.3" r="4"/>
+          <circle cx="266.9" cy="180.1" r="4"/>
+          <circle cx="132.7" cy="526.5" r="4"/>
+          <circle cx="463.3" cy="178.2" r="4"/>
+          <circle cx="43.7" cy="128.7" r="4"/>
+          <circle cx="135.8" cy="97.3" r="4"/>
+          <circle cx="125.1" cy="57.4" r="4"/>
+          <circle cx="8.9" cy="280.7" r="4"/>
+          <circle cx="347.2" cy="-21.8" r="4"/>
+          <circle cx="185.3" cy="118.7" r="4"/>
+          <circle cx="268.5" cy="372.1" r="4"/>
+          <circle cx="266.9" cy="209.3" r="4"/>
+          <circle cx="159.9" cy="247.2" r="4"/>
+          <circle cx="533.5" cy="488.1" r="4"/>
+          <circle cx="145.3" cy="301.7" r="4"/>
+          <circle cx="110.8" cy="205.6" r="4"/>
+          <circle cx="158" cy="461.8" r="4"/>
+          <circle cx="453.9" cy="316.4" r="4"/>
+          <circle cx="120.4" cy="-20.8" r="4"/>
+          <circle cx="158" cy="541.1" r="4"/>
+          <circle cx="159.9" cy="276.4" r="4"/>
+          <circle cx="-35.2" cy="65.7" r="4"/>
+          <circle cx="172.7" cy="436.5" r="4"/>
+          <circle cx="187.3" cy="541.1" r="4"/>
+          <circle cx="187.3" cy="400.2" r="4"/>
+          <circle cx="313.2" cy="502.1" r="4"/>
+          <circle cx="172.7" cy="487.2" r="4"/>
+          <circle cx="214.5" cy="118.7" r="4"/>
+        </g>
+        <g class="notable" fill="#1A1510" stroke="#8E7244" stroke-opacity="0.55" stroke-width="2.2">
+          <circle cx="50.2" cy="363.8" r="6.5"/>
+          <circle cx="14.4" cy="99.5" r="6.5"/>
+          <circle cx="187.3" cy="461.8" r="6.5"/>
+          <circle cx="298.5" cy="527.4" r="6.5"/>
+          <circle cx="530.7" cy="287.2" r="6.5"/>
+          <circle cx="128.8" cy="461.8" r="6.5"/>
+          <circle cx="550.6" cy="48.4" r="6.5"/>
+          <circle cx="468.3" cy="111.5" r="6.5"/>
+          <circle cx="15.7" cy="-20.8" r="6.5"/>
+          <circle cx="14.4" cy="158" r="6.5"/>
+          <circle cx="342.4" cy="502.1" r="6.5"/>
+          <circle cx="130.7" cy="276.4" r="6.5"/>
+          <circle cx="50.2" cy="422.3" r="6.5"/>
+          <circle cx="185.3" cy="261.8" r="6.5"/>
+          <circle cx="147.3" cy="389.5" r="6.5"/>
+          <circle cx="438" cy="134.3" r="6.5"/>
+          <circle cx="-25.2" cy="207.8" r="6.5"/>
+          <circle cx="-25.5" cy="491.5" r="6.5"/>
+          <circle cx="438" cy="224.1" r="6.5"/>
+        </g>
+        <g class="junction" fill="#1A1510" stroke="#8E7244" stroke-opacity="0.55" stroke-width="2.4">
+          <circle cx="50.2" cy="491.5" r="9"/>
+        </g>
+        <g class="passive-allocated" fill="#1A1510" stroke="#F2CC7E" stroke-opacity="0.95" stroke-width="1.8">
+          <circle cx="289.9" cy="82" r="4"/>
+          <circle cx="335.1" cy="469.2" r="4"/>
+          <circle cx="250" cy="122" r="4"/>
+          <circle cx="304.6" cy="107.4" r="4"/>
+          <circle cx="349.7" cy="414.6" r="4"/>
+          <circle cx="320.4" cy="414.6" r="4"/>
+        </g>
+        <g class="notable-allocated" fill="#1A1510" stroke="#F2CC7E" stroke-opacity="0.95" stroke-width="2.2">
+          <circle cx="309.7" cy="454.5" r="6.5"/>
+          <circle cx="260.7" cy="82" r="6.5"/>
+          <circle cx="289.9" cy="132.7" r="6.5"/>
+          <circle cx="360.4" cy="454.5" r="6.5"/>
+        </g>
+        <g class="junction-allocated" fill="#1A1510" stroke="#F2CC7E" stroke-opacity="0.95" stroke-width="2.4">
+          <circle cx="268.5" cy="287.2" r="9"/>
+          <circle cx="435.5" cy="454.5" r="9"/>
+          <circle cx="14.4" cy="38" r="9"/>
+          <circle cx="185.3" cy="204.9" r="9"/>
+          <circle cx="235.2" cy="38" r="9"/>
+        </g>
+        <g class="junction-centre" fill="#8E7244" fill-opacity="0.55">
+          <circle cx="50.2" cy="491.5" r="4"/>
+        </g>
+        <g class="junction-centre-allocated" fill="#F2CC7E" fill-opacity="0.95">
+          <circle cx="268.5" cy="287.2" r="4"/>
+          <circle cx="435.5" cy="454.5" r="4"/>
+          <circle cx="14.4" cy="38" r="4"/>
+          <circle cx="185.3" cy="204.9" r="4"/>
+          <circle cx="235.2" cy="38" r="4"/>
+        </g>
+        <g class="allocated-marker" fill="#FFE7A8">
+          <circle cx="289.9" cy="82" r="1.8"/>
+          <circle cx="309.7" cy="454.5" r="1.8"/>
+          <circle cx="260.7" cy="82" r="1.8"/>
+          <circle cx="335.1" cy="469.2" r="1.8"/>
+          <circle cx="250" cy="122" r="1.8"/>
+          <circle cx="304.6" cy="107.4" r="1.8"/>
+          <circle cx="289.9" cy="132.7" r="1.8"/>
+          <circle cx="360.4" cy="454.5" r="1.8"/>
+          <circle cx="349.7" cy="414.6" r="1.8"/>
+          <circle cx="320.4" cy="414.6" r="1.8"/>
+        </g>
+      </g>
+    </g>
+  </g>
+  <g id="toucan" filter="url(#pxShadow)" shape-rendering="crispEdges">
+    <!-- 11px pixel art: body colours, then top-edge highlights, eye glint and dithered shading -->
+    <g id="toucan-body">
+      <path fill="#231E1A" d="M179 168h11v11h-11z M190 168h11v11h-11z M201 168h11v11h-11z M212 168h11v11h-11z M223 168h11v11h-11z M168 179h11v11h-11z M179 179h11v11h-11z M190 179h11v11h-11z M201 179h11v11h-11z M212 179h11v11h-11z M223 179h11v11h-11z M234 179h11v11h-11z M157 190h11v11h-11z M168 190h11v11h-11z M179 190h11v11h-11z M190 190h11v11h-11z M157 201h11v11h-11z M168 201h11v11h-11z M179 201h11v11h-11z M399 201h11v11h-11z M157 212h11v11h-11z M168 212h11v11h-11z M179 212h11v11h-11z M388 212h11v11h-11z M399 212h11v11h-11z M410 212h11v11h-11z M146 223h11v11h-11z M157 223h11v11h-11z M168 223h11v11h-11z M179 223h11v11h-11z M366 223h11v11h-11z M377 223h11v11h-11z M135 234h11v11h-11z M146 234h11v11h-11z M157 234h11v11h-11z M168 234h11v11h-11z M179 234h11v11h-11z M124 245h11v11h-11z M135 245h11v11h-11z M146 245h11v11h-11z M157 245h11v11h-11z M168 245h11v11h-11z M179 245h11v11h-11z M113 256h11v11h-11z M124 256h11v11h-11z M135 256h11v11h-11z M146 256h11v11h-11z M157 256h11v11h-11z M168 256h11v11h-11z M179 256h11v11h-11z M190 256h11v11h-11z M113 267h11v11h-11z M124 267h11v11h-11z M135 267h11v11h-11z M146 267h11v11h-11z M157 267h11v11h-11z M168 267h11v11h-11z M179 267h11v11h-11z M190 267h11v11h-11z M201 267h11v11h-11z M113 278h11v11h-11z M124 278h11v11h-11z M135 278h11v11h-11z M146 278h11v11h-11z M157 278h11v11h-11z M168 278h11v11h-11z M179 278h11v11h-11z M190 278h11v11h-11z M201 278h11v11h-11z M212 278h11v11h-11z M223 278h11v11h-11z M124 289h11v11h-11z M135 289h11v11h-11z M146 289h11v11h-11z M157 289h11v11h-11z M168 289h11v11h-11z M179 289h11v11h-11z M190 289h11v11h-11z M201 289h11v11h-11z M212 289h11v11h-11z M223 289h11v11h-11z M124 300h11v11h-11z M135 300h11v11h-11z M146 300h11v11h-11z M157 300h11v11h-11z M168 300h11v11h-11z M179 300h11v11h-11z M190 300h11v11h-11z M201 300h11v11h-11z M212 300h11v11h-11z M113 311h11v11h-11z M124 311h11v11h-11z M135 311h11v11h-11z M146 311h11v11h-11z M102 322h11v11h-11z M113 322h11v11h-11z M124 322h11v11h-11z M91 333h11v11h-11z M102 333h11v11h-11z M113 333h11v11h-11z"/>
+      <path fill="#F5C33B" d="M245 179h11v11h-11z M256 179h11v11h-11z M267 179h11v11h-11z M278 179h11v11h-11z M289 179h11v11h-11z M300 179h11v11h-11z M311 179h11v11h-11z M322 179h11v11h-11z M333 179h11v11h-11z M344 179h11v11h-11z M234 190h11v11h-11z M245 190h11v11h-11z M256 190h11v11h-11z M267 190h11v11h-11z M278 190h11v11h-11z M289 190h11v11h-11z M300 190h11v11h-11z M311 190h11v11h-11z M322 190h11v11h-11z M333 190h11v11h-11z M344 190h11v11h-11z M355 190h11v11h-11z M366 190h11v11h-11z M377 190h11v11h-11z M234 201h11v11h-11z M245 201h11v11h-11z M256 201h11v11h-11z M267 201h11v11h-11z M278 201h11v11h-11z M289 201h11v11h-11z M300 201h11v11h-11z M311 201h11v11h-11z M322 201h11v11h-11z M333 201h11v11h-11z M344 201h11v11h-11z M355 201h11v11h-11z M366 201h11v11h-11z M377 201h11v11h-11z M388 201h11v11h-11z"/>
+      <path fill="#3E8EDB" d="M201 190h11v11h-11z M212 190h11v11h-11z M223 190h11v11h-11z M190 201h11v11h-11z M223 201h11v11h-11z M190 212h11v11h-11z M201 212h11v11h-11z M212 212h11v11h-11z"/>
+      <path fill="#0A0A0A" d="M201 201h11v11h-11z M212 201h11v11h-11z"/>
+      <path fill="#EE7A22" d="M223 212h11v11h-11z M234 212h11v11h-11z M245 212h11v11h-11z M256 212h11v11h-11z M267 212h11v11h-11z M278 212h11v11h-11z M289 212h11v11h-11z M300 212h11v11h-11z M311 212h11v11h-11z M322 212h11v11h-11z M333 212h11v11h-11z M344 212h11v11h-11z M355 212h11v11h-11z M366 212h11v11h-11z M377 212h11v11h-11z M223 223h11v11h-11z M234 223h11v11h-11z M245 223h11v11h-11z M256 223h11v11h-11z M267 223h11v11h-11z M278 223h11v11h-11z M289 223h11v11h-11z M300 223h11v11h-11z M311 223h11v11h-11z M322 223h11v11h-11z M333 223h11v11h-11z M344 223h11v11h-11z M355 223h11v11h-11z M234 234h11v11h-11z M245 234h11v11h-11z M256 234h11v11h-11z M267 234h11v11h-11z M278 234h11v11h-11z M289 234h11v11h-11z M300 234h11v11h-11z M311 234h11v11h-11z"/>
+      <path fill="#F3EBD6" d="M190 223h11v11h-11z M201 223h11v11h-11z M212 223h11v11h-11z M190 234h11v11h-11z M201 234h11v11h-11z M212 234h11v11h-11z M223 234h11v11h-11z M190 245h11v11h-11z M201 245h11v11h-11z M212 245h11v11h-11z M223 245h11v11h-11z M234 245h11v11h-11z M201 256h11v11h-11z M212 256h11v11h-11z M223 256h11v11h-11z M234 256h11v11h-11z"/>
+      <path fill="#C8322A" d="M212 267h11v11h-11z M223 267h11v11h-11z M234 267h11v11h-11z M234 278h11v11h-11z"/>
+      <path fill="#6C7A89" d="M168 311h11v11h-11z M179 311h11v11h-11z M201 311h11v11h-11z M212 311h11v11h-11z"/>
+    </g>
+    <g id="toucan-highlights" fill-opacity="0.7">
+      <path fill="#3A332C" d="M179 168h11v3h-11z M190 168h11v3h-11z M201 168h11v3h-11z M212 168h11v3h-11z M223 168h11v3h-11z M168 179h11v3h-11z M234 179h11v3h-11z M157 190h11v3h-11z M399 201h11v3h-11z M388 212h11v3h-11z M410 212h11v3h-11z M146 223h11v3h-11z M366 223h11v3h-11z M377 223h11v3h-11z M135 234h11v3h-11z M124 245h11v3h-11z M113 256h11v3h-11z M190 256h11v3h-11z M201 267h11v3h-11z M212 278h11v3h-11z M223 278h11v3h-11z M113 311h11v3h-11z M102 322h11v3h-11z M91 333h11v3h-11z"/>
+      <path fill="#FFE07A" d="M245 179h11v3h-11z M256 179h11v3h-11z M267 179h11v3h-11z M278 179h11v3h-11z M289 179h11v3h-11z M300 179h11v3h-11z M311 179h11v3h-11z M322 179h11v3h-11z M333 179h11v3h-11z M344 179h11v3h-11z M234 190h11v3h-11z M355 190h11v3h-11z M366 190h11v3h-11z M377 190h11v3h-11z M388 201h11v3h-11z"/>
+      <path fill="#7FB8F0" d="M201 190h11v3h-11z M212 190h11v3h-11z M223 190h11v3h-11z M190 201h11v3h-11z M201 212h11v3h-11z M212 212h11v3h-11z"/>
+      <path fill="#F7A050" d="M223 212h11v3h-11z M234 212h11v3h-11z M245 212h11v3h-11z M256 212h11v3h-11z M267 212h11v3h-11z M278 212h11v3h-11z M289 212h11v3h-11z M300 212h11v3h-11z M311 212h11v3h-11z M322 212h11v3h-11z M333 212h11v3h-11z M344 212h11v3h-11z M355 212h11v3h-11z M366 212h11v3h-11z M377 212h11v3h-11z"/>
+      <path fill="#FFFFFF" d="M190 223h11v3h-11z M201 223h11v3h-11z M212 223h11v3h-11z M223 234h11v3h-11z M234 245h11v3h-11z"/>
+      <path fill="#E86050" d="M212 267h11v3h-11z M223 267h11v3h-11z M234 267h11v3h-11z"/>
+      <path fill="#9AA6B2" d="M168 311h11v3h-11z M179 311h11v3h-11z M201 311h11v3h-11z M212 311h11v3h-11z"/>
+    </g>
+    <rect id="toucan-eye-glint" x="203" y="203" width="4" height="4" fill="#FFFFFF"/>
+    <path id="toucan-shading" fill="url(#shade)" fill-opacity="0.5" d="M113 267h11v11h-11z M124 267h11v11h-11z M135 267h11v11h-11z M146 267h11v11h-11z M157 267h11v11h-11z M113 278h11v11h-11z M124 278h11v11h-11z M135 278h11v11h-11z M146 278h11v11h-11z M157 278h11v11h-11z M124 289h11v11h-11z M135 289h11v11h-11z M146 289h11v11h-11z M157 289h11v11h-11z M124 300h11v11h-11z M135 300h11v11h-11z M146 300h11v11h-11z M157 300h11v11h-11z"/>
+  </g>
+  <g id="fishing-gear">
+    <g id="fishing-line">
+      <!-- two-tone line: dark edge so it reads over the beak, pale core -->
+      <line x1="387.35" y1="111.62" x2="387.35" y2="297.25" stroke="#1A1510" stroke-opacity="0.8" stroke-width="3"/>
+      <line x1="387.35" y1="313.75" x2="387.35" y2="338.5" stroke="#1A1510" stroke-opacity="0.8" stroke-width="3"/>
+      <line x1="387.35" y1="111.62" x2="387.35" y2="297.25" stroke="#E9E4D8" stroke-opacity="0.95" stroke-width="1.2"/>
+      <line x1="387.35" y1="313.75" x2="387.35" y2="338.5" stroke="#E9E4D8" stroke-opacity="0.95" stroke-width="1.2"/>
+    </g>
+    <g id="rod" transform="translate(44.75 72.25) scale(0.75)">
+      <!-- rod, cork handle, wing grip, reel and bobber; 5.5px pixels before scaling -->
+      <g filter="url(#rodFx)" shape-rendering="crispEdges">
+        <path fill="#C9A26B" d="M179 289h5.5v5.5h-5.5z M184.5 283.5h5.5v5.5h-5.5z M190 278h5.5v5.5h-5.5z"/>
+        <path fill="#A88350" d="M184.5 289h5.5v5.5h-5.5z M190 283.5h5.5v5.5h-5.5z M195.5 278h5.5v5.5h-5.5z"/>
+        <path fill="#5C3618" d="M212 267h5.5v5.5h-5.5z M217.5 261.5h5.5v5.5h-5.5z M223 256h5.5v5.5h-5.5z M228.5 250.5h5.5v5.5h-5.5z M234 245h5.5v5.5h-5.5z M239.5 239.5h5.5v5.5h-5.5z M245 234h5.5v5.5h-5.5z M256 228.5h5.5v5.5h-5.5z M261.5 223h5.5v5.5h-5.5z M267 217.5h5.5v5.5h-5.5z M272.5 212h5.5v5.5h-5.5z M278 206.5h5.5v5.5h-5.5z M283.5 201h5.5v5.5h-5.5z M289 195.5h5.5v5.5h-5.5z M300 190h5.5v5.5h-5.5z M305.5 184.5h5.5v5.5h-5.5z M311 179h5.5v5.5h-5.5z M316.5 173.5h5.5v5.5h-5.5z M322 168h5.5v5.5h-5.5z M327.5 162.5h5.5v5.5h-5.5z M333 157h5.5v5.5h-5.5z M338.5 151.5h5.5v5.5h-5.5z"/>
+        <path fill="#E2C48E" d="M217.5 267h5.5v5.5h-5.5z"/>
+        <path fill="#BD8444" d="M212 261.5h5.5v5.5h-5.5z M245 228.5h5.5v5.5h-5.5z M278 201h5.5v5.5h-5.5z M311 173.5h5.5v5.5h-5.5z M344 146h5.5v5.5h-5.5z M377 113h5.5v5.5h-5.5z M410 85.5h5.5v5.5h-5.5z M443 58h5.5v5.5h-5.5z"/>
+        <path fill="#7A4A22" d="M217.5 256h5.5v5.5h-5.5z M223 250.5h5.5v5.5h-5.5z M228.5 245h5.5v5.5h-5.5z M234 239.5h5.5v5.5h-5.5z M239.5 234h5.5v5.5h-5.5z M250.5 228.5h5.5v5.5h-5.5z M256 223h5.5v5.5h-5.5z M261.5 217.5h5.5v5.5h-5.5z M267 212h5.5v5.5h-5.5z M272.5 206.5h5.5v5.5h-5.5z M283.5 195.5h5.5v5.5h-5.5z M289 190h5.5v5.5h-5.5z M294.5 190h5.5v5.5h-5.5z M300 184.5h5.5v5.5h-5.5z M305.5 179h5.5v5.5h-5.5z M316.5 168h5.5v5.5h-5.5z M322 162.5h5.5v5.5h-5.5z M327.5 157h5.5v5.5h-5.5z M333 151.5h5.5v5.5h-5.5z M338.5 146h5.5v5.5h-5.5z M349.5 140.5h5.5v5.5h-5.5z M355 135h5.5v5.5h-5.5z M360.5 129.5h5.5v5.5h-5.5z M366 124h5.5v5.5h-5.5z M371.5 118.5h5.5v5.5h-5.5z M382.5 107.5h5.5v5.5h-5.5z M388 107.5h5.5v5.5h-5.5z M393.5 102h5.5v5.5h-5.5z M399 96.5h5.5v5.5h-5.5z M404.5 91h5.5v5.5h-5.5z M415.5 80h5.5v5.5h-5.5z M421 74.5h5.5v5.5h-5.5z M426.5 69h5.5v5.5h-5.5z M432 69h5.5v5.5h-5.5z M437.5 63.5h5.5v5.5h-5.5z M448.5 52.5h5.5v5.5h-5.5z M454 47h5.5v5.5h-5.5z"/>
+        <path fill="#231E1A" d="M195.5 267h5.5v5.5h-5.5z M195.5 272.5h5.5v5.5h-5.5z M201 261.5h5.5v5.5h-5.5z M206.5 261.5h5.5v5.5h-5.5z M201 267h5.5v5.5h-5.5z"/>
+        <path fill="#3A332C" d="M201 272.5h5.5v5.5h-5.5z M206.5 267h5.5v5.5h-5.5z"/>
+        <path fill="#8A949E" d="M239.5 250.5h5.5v5.5h-5.5z M245 250.5h5.5v5.5h-5.5z M234 256h5.5v5.5h-5.5z M245 256h5.5v5.5h-5.5z M234 261.5h5.5v5.5h-5.5z M239.5 261.5h5.5v5.5h-5.5z M245 261.5h5.5v5.5h-5.5z"/>
+        <path fill="#2A2E33" d="M239.5 256h5.5v5.5h-5.5z"/>
+        <path fill="#C7CED6" d="M250.5 256h5.5v5.5h-5.5z M234 250.5h5.5v5.5h-5.5z"/>
+        <path fill="#D93A2B" d="M454 300h5.5v5.5h-5.5z M448.5 305.5h5.5v5.5h-5.5z M459.5 305.5h5.5v5.5h-5.5z"/>
+        <path fill="#F05A48" d="M454 305.5h5.5v5.5h-5.5z"/>
+        <path fill="#F3EBD6" d="M448.5 311h5.5v5.5h-5.5z M459.5 311h5.5v5.5h-5.5z M454 316.5h5.5v5.5h-5.5z"/>
+        <path fill="#FFFFFF" d="M454 311h5.5v5.5h-5.5z"/>
+      </g>
+    </g>
+    <g id="hook-back" transform="translate(-38.84 -7.21) scale(0.9375)">
+      <!-- whole hook, behind the button -->
+      <g filter="url(#rodFx)" shape-rendering="crispEdges">
+        <use href="#hook"/>
+      </g>
+    </g>
+    <g id="login-button" transform="translate(379.1 353.9) rotate(7) scale(0.6) translate(-80 0)">
+      <!-- 160x44 button units: iron frame, ember gradient face, LOGIN label -->
+      <path d="M9 0 H151 Q155 5 159 6 Q155 13 157 22 Q155 31 159 38 Q155 39 151 44 H9 Q5 39 1 38 Q5 31 3 22 Q5 13 1 6 Q5 5 9 0 Z" fill="url(#btnFrame)" stroke="#050403" stroke-width="1.2"/>
+      <path d="M8.5 1.2 H151.5" stroke="#8A8178" stroke-width="1" stroke-opacity="0.6"/>
+      <rect x="10" y="4.5" width="140" height="35" rx="1.5" fill="url(#btnFace)"/>
+      <rect x="10" y="17" width="140" height="7" fill="#1A0500" fill-opacity="0.25"/>
+      <rect x="10" y="4.5" width="140" height="35" rx="1.5" fill="url(#btnSides)"/>
+      <rect x="10" y="4" width="140" height="2.2" fill="url(#btnSilver)"/>
+      <rect x="10" y="37.2" width="140" height="2.3" fill="url(#btnRim)"/>
+      <rect x="10" y="4.5" width="140" height="35" rx="1.5" fill="none" stroke="#000" stroke-opacity="0.6" stroke-width="0.8"/>
+      <path id="login-label" fill="#DAA374" filter="url(#btnText)" d="M43.78 13.75V29.25H40.83V13.75ZM49.65 28.35 50.08 29.25H43.71V28.35ZM51.21 24.91 50.14 29.25H45.93L46.73 28.35Q47.85 28.35 48.67 27.93Q49.5 27.51 50.07 26.73Q50.65 25.96 50.99 24.91ZM40.9 27.63V29.25H39.13V29.03Q39.13 29.03 39.27 29.03Q39.41 29.03 39.41 29.03Q39.99 29.03 40.4 28.62Q40.81 28.21 40.83 27.63ZM40.9 15.37H40.83Q40.81 14.79 40.4 14.38Q39.99 13.97 39.41 13.97Q39.41 13.97 39.27 13.97Q39.13 13.97 39.13 13.97V13.75H40.9ZM43.71 15.37V13.75H45.48V13.97Q45.46 13.97 45.32 13.97Q45.19 13.97 45.19 13.97Q44.62 13.97 44.21 14.38Q43.8 14.79 43.78 15.37ZM62.59 13.44Q65.19 13.44 67.12 14.43Q69.05 15.41 70.11 17.22Q71.16 19.02 71.16 21.5Q71.16 23.97 70.11 25.78Q69.05 27.59 67.12 28.57Q65.19 29.56 62.59 29.56Q59.99 29.56 58.07 28.57Q56.15 27.59 55.09 25.78Q54.04 23.98 54.04 21.5Q54.04 19.03 55.09 17.22Q56.15 15.41 58.07 14.43Q59.99 13.44 62.59 13.44ZM62.59 28.68Q64.22 28.68 65.41 27.8Q66.61 26.92 67.26 25.31Q67.91 23.7 67.91 21.5Q67.91 19.3 67.26 17.69Q66.61 16.08 65.41 15.2Q64.22 14.32 62.59 14.32Q60.98 14.32 59.79 15.2Q58.6 16.08 57.94 17.69Q57.29 19.3 57.29 21.5Q57.29 23.7 57.94 25.31Q58.6 26.92 59.79 27.8Q60.98 28.68 62.59 28.68ZM89.98 23.05V26.7Q89.46 27.37 88.45 28.03Q87.43 28.7 86.01 29.13Q84.59 29.56 82.82 29.56Q80.34 29.55 78.48 28.56Q76.62 27.58 75.58 25.77Q74.54 23.96 74.54 21.48Q74.54 19.02 75.57 17.22Q76.59 15.41 78.49 14.43Q80.38 13.44 82.93 13.44Q84.14 13.44 85.26 13.61Q86.38 13.79 87.32 14.07Q88.26 14.35 88.9 14.71L89.02 18.37H88.82Q88.42 16.9 87.63 16.02Q86.84 15.13 85.77 14.73Q84.7 14.32 83.46 14.32Q81.65 14.32 80.37 15.21Q79.09 16.1 78.42 17.72Q77.76 19.34 77.76 21.59Q77.76 23.74 78.39 25.33Q79.02 26.93 80.2 27.8Q81.39 28.67 83.06 28.68Q83.91 28.68 84.69 28.43Q85.48 28.18 86.1 27.7Q86.72 27.22 87.04 26.54L87.06 23.05Q87.06 22.05 85.93 22.05H85.58V21.83H91.42V22.05H91.09Q89.94 22.05 89.98 23.05ZM98.82 13.75V29.25H95.87V13.75ZM95.94 27.63V29.25H94.17V29.03Q94.17 29.03 94.31 29.03Q94.45 29.03 94.45 29.03Q95.03 29.03 95.44 28.62Q95.85 28.21 95.87 27.63ZM95.94 15.37H95.87Q95.85 14.79 95.44 14.38Q95.03 13.97 94.45 13.97Q94.45 13.97 94.31 13.97Q94.17 13.97 94.17 13.97V13.75H95.94ZM98.75 27.63H98.82Q98.84 28.21 99.25 28.62Q99.66 29.03 100.23 29.03Q100.23 29.03 100.37 29.03Q100.5 29.03 100.52 29.03V29.25H98.75ZM98.75 15.37V13.75H100.52V13.97Q100.5 13.97 100.37 13.97Q100.23 13.97 100.23 13.97Q99.66 13.97 99.25 14.38Q98.84 14.79 98.82 15.37ZM105.31 13.42 119.19 26.93 119.43 29.56 105.56 16.07ZM105.4 27.68V29.25H103.56V29.03Q103.56 29.03 103.76 29.03Q103.96 29.03 103.98 29.03Q104.54 29.03 104.94 28.63Q105.33 28.23 105.33 27.68ZM108.07 27.68Q108.07 28.23 108.47 28.63Q108.87 29.03 109.42 29.03Q109.45 29.03 109.64 29.03Q109.84 29.03 109.84 29.03V29.25H108.01V27.68ZM105.31 13.42 108.05 16.38 108.07 29.25H105.33V16.19Q105.33 14.97 105.21 14.2Q105.09 13.42 105.09 13.42ZM119.39 13.75V26.73Q119.39 27.53 119.45 28.18Q119.51 28.83 119.57 29.19Q119.63 29.56 119.63 29.56H119.43L116.67 26.46V13.75ZM121.16 13.75V13.97Q121.16 13.97 120.96 13.97Q120.76 13.97 120.76 13.97Q120.21 13.97 119.81 14.36Q119.41 14.75 119.39 15.32H119.32V13.75ZM114.88 13.75H116.71V15.32H116.67Q116.65 14.75 116.26 14.36Q115.87 13.97 115.3 13.97Q115.3 13.97 115.1 13.97Q114.9 13.97 114.88 13.97Z"/>
+    </g>
+    <g id="hook-front" transform="translate(-38.84 -7.21) scale(0.9375)">
+      <!-- same hook, masked to the point and bend that wrap in front of the button -->
+      <g mask="url(#hookFront)">
+        <g filter="url(#rodFx)" shape-rendering="crispEdges">
+          <use href="#hook"/>
+        </g>
+      </g>
+    </g>
+  </g>
+<metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYToxNGMzYTQwNS1jZjgxLTQ4ZDgtODA5MC0wZmRkNzc5ZWQxZmIAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaBrYK+KLjg0uDvWX0b8IDHwAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDo4NzYyZTRlOC1lMzEyLTRmNjItOGY4ZS1mYzBkYjU3ZDg5ZjFscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNoFiGuPw8o4r1PZk5A5/fmrwAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFgg36mLxpgFRwUSHdMFOI4Y1Nmg/K768wLG2oJWdSGtdsekZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaOcy6/XYrrRUEHYRrNW8Y8sAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRMAAAAAAAAAAAAAAAAZGhhc2hYILrx/lfImTHziQzSdTRvojKsvW0MncZaYau+EuRoTRDbZG5hbWVuanVtYmYgbWFuaWZlc3RqZXhjbHVzaW9uc4GiZXN0YXJ0GbXTZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjE0YzNhNDA1LWNmODEtNDhkOC04MDkwLTBmZGQ3NzllZDFmYi9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOmM3ODQ4MzM0LWQ0YzUtNDU3NS1hZTZlLTBhODRkZjRiZjBhMXJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCDfqYvGmAVHBRId0wU4jhjU2aD8rvrzAsbaglZ1Ia12x6JjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFgganqUtKTJBOjljAcKniYLmPEE1MR7fulzdEFcUdFJP3WiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggXLN/u89Gj/yp4bq/kotxG4PZgPyjKbJlrYHVrzjNETd0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQBomvOVLVBOpI5d2Tu0rd2fGojPjz533YeebMI5PL5a5NZGM4cGzgYUHHFj8rWb7zj5++/u/6cGSDVr4WphkGJE=</c2pa:manifest></metadata></svg>
