@@ -1,3 +1,5 @@
+import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -29,13 +31,18 @@ describe('app.html head', () => {
   });
 
   it('shows the square logo on link cards', () => {
+    // chat apps cache a card image by URL, so the URL carries icon-512.png's hash (mise run logo writes it)
+    const cardImage = `https://pob.gg/icon-512.png?v=${createHash('sha256')
+      .update(readFileSync(resolve(frontend, 'static/icon-512.png')))
+      .digest('hex')
+      .slice(0, 8)}`;
     const alt = meta('property', 'og:image:alt');
-    expect(meta('property', 'og:image')).toBe('https://pob.gg/icon-512.png');
+    expect(meta('property', 'og:image')).toBe(cardImage);
     expect(meta('property', 'og:image:type')).toBe('image/png');
     expect(meta('property', 'og:image:width')).toBe('512');
     expect(meta('property', 'og:image:height')).toBe('512');
     expect(alt).toMatch(/logo/);
-    expect(meta('name', 'twitter:image')).toBe('https://pob.gg/icon-512.png');
+    expect(meta('name', 'twitter:image')).toBe(cardImage);
     expect(meta('name', 'twitter:image:alt')).toBe(alt);
   });
 
@@ -181,11 +188,13 @@ describe('missing files answer 404', () => {
   // every real file and folder the app serves bypasses the function, so a page load costs no invocation; the wasm
   // files are listed by their compressed names, as the deploy serves them
   it('_routes.json skips every file and folder in static/', () => {
-    const entries = readdirSync(resolve(frontend, 'static'), { withFileTypes: true }).filter(
-      (d) => !d.name.startsWith('_') && !/\.wasm(\.gz|\.br)?$/.test(d.name)
-    );
+    // what git tracks in static/: a local build artifact (a gitignored .wasm.br.sha256) is never deployed
+    const tracked = execFileSync('git', ['ls-files', 'static'], { cwd: frontend, encoding: 'utf8' }).split('\n').filter(Boolean);
+    const entries = [...new Set(tracked.map((f) => f.slice('static/'.length).split('/')[0]))]
+      .filter((n) => !n.startsWith('_') && !/\.wasm(\.gz|\.br)?$/.test(n))
+      .map((n) => (tracked.some((f) => f.startsWith(`static/${n}/`)) ? `/${n}/*` : `/${n}`));
     expect(entries.length).toBeGreaterThan(0);
-    for (const d of entries) expect(routes.exclude).toContain(d.isDirectory() ? `/${d.name}/*` : `/${d.name}`);
+    for (const e of entries) expect(routes.exclude).toContain(e);
   });
 
   it('only a file path answered with the app page is missing', () => {

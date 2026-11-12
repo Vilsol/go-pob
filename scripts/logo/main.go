@@ -22,6 +22,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 )
@@ -120,6 +121,9 @@ func regenerate(ctx context.Context, review string) error {
 		if err := os.WriteFile(p, out[p], 0o644); err != nil { //nolint:gosec // committed assets are world-readable
 			return fmt.Errorf("write: %w", err)
 		}
+	}
+	if err := versionCardImage(appHTML, out[cardIcon]); err != nil {
+		return err
 	}
 	sums, err := hashes(append(append([]string{}, inputs...), paths...))
 	if err != nil {
@@ -508,4 +512,35 @@ func sortedKeys[K cmp.Ordered, V any](m map[K]V) []K {
 	}
 	slices.Sort(k)
 	return k
+}
+
+const (
+	appHTML  = "frontend/src/app.html"
+	cardIcon = "frontend/static/icon-512.png"
+)
+
+// chat apps cache a link card's image by its URL, so the card's icon-512.png URL carries the file's hash
+var cardImage = regexp.MustCompile(`https://pob\.gg/icon-512\.png(\?v=[0-9a-f]+)?`)
+
+// versionCardImage points every card image URL in the page at icon's content; it refuses a page with none
+func versionCardImage(page string, icon []byte) error {
+	if len(icon) == 0 {
+		return fmt.Errorf("card image: no %s was generated", cardIcon)
+	}
+	b, err := os.ReadFile(page) //nolint:gosec // the repository's own page
+	if err != nil {
+		return fmt.Errorf("card image: %w", err)
+	}
+	if !cardImage.Match(b) {
+		return fmt.Errorf("card image: %s names no https://pob.gg/icon-512.png", page)
+	}
+	sum := sha256.Sum256(icon)
+	next := cardImage.ReplaceAll(b, []byte("https://pob.gg/icon-512.png?v="+hex.EncodeToString(sum[:])[:8]))
+	if bytes.Equal(next, b) {
+		return nil
+	}
+	if err := os.WriteFile(page, next, 0o644); err != nil { //nolint:gosec // committed page is world-readable
+		return fmt.Errorf("card image: %w", err)
+	}
+	return nil
 }

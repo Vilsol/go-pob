@@ -82,3 +82,27 @@ func TestICNSEntriesDecode(t *testing.T) {
 		}
 	}
 }
+
+func TestVersionCardImage(t *testing.T) {
+	page := filepath.Join(t.TempDir(), "app.html")
+	html := `<meta property="og:image" content="https://pob.gg/icon-512.png" /><meta name="twitter:image" content="https://pob.gg/icon-512.png?v=00000000" />`
+	if err := os.WriteFile(page, []byte(html), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := versionCardImage(page, []byte("logo")); err != nil {
+		t.Fatal(err)
+	}
+	got, _ := os.ReadFile(page)
+	// sha256("logo") starts 3598ce6f
+	want := `<meta property="og:image" content="https://pob.gg/icon-512.png?v=3598ce6f" /><meta name="twitter:image" content="https://pob.gg/icon-512.png?v=3598ce6f" />`
+	if string(got) != want {
+		t.Fatalf("got %s", got)
+	}
+	// the control: a page with no card image is refused, not silently left
+	if err := os.WriteFile(page, []byte("<title>x</title>"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := versionCardImage(page, []byte("logo")); err == nil {
+		t.Fatal("a page with no card image was accepted")
+	}
+}
