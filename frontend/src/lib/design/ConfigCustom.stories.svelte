@@ -1,6 +1,6 @@
 <script module lang="ts">
   import { defineMeta } from '@storybook/addon-svelte-csf';
-  import { userEvent, within } from 'storybook/test';
+  import { userEvent, waitFor, within } from 'storybook/test';
   import ConfigCustom from './ConfigCustom.svelte';
   import type { CustomOps } from './config';
   import type { CustomGroup } from './fixtures';
@@ -40,7 +40,8 @@
     await userEvent.hover(last);
     const tip = await c.findByRole('tooltip', { name: 'Group toggle what-if' });
     await within(tip).findByText('Stat 14');
-    await expectFloating(last, tip);
+    // the lines arrive after the tooltip opened, so the placement settles a frame later
+    await waitFor(() => expectFloating(last, tip));
   }}>
   <div class="flex h-screen flex-col justify-end">
     <ConfigCustom {groups} selected={0} {ops} />
