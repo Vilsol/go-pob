@@ -1,32 +1,197 @@
-VERSION[0.5.0][2026/10/25]
+VERSION[0.5.0][2026/11/12]
 
 --- New ---
+* calculator2: a PoE2 minion that takes an item set, like Manifest Weapon's, uses the set its gem chooses, as PoB-PoE2 does
+* calculator2: every PoB-PoE2 config option applies its mods, conditions and enemy mods
+* calculator2: PoE2 boss skill presets set enemy damage, penetration, speed and damage type, and Pinnacle and Uber enemies take armour and evasion from the boss means
+* calculator2: PoE2 builds estimate enemy damage, damage taken, pools, maximum hit and EHP as PoB-PoE2 does
+* calculator2: PoE2 builds report extra passive points and the tree's increases to life, mana and defences
+* calculator2: PoE2 charges, curse and mark limits, chill and shock, attribute requirements and per-weapon damage are calculated as PoB-PoE2 does
+* calculator2: PoE2 config options apply their default values, enemy modifiers reach the enemy, and item conditions read the equipped items
+* calculator2: PoE2 defence computes recovery rates, leech caps, regeneration, energy shield recharge, avoidances, ailment threshold and ailment effects on self
+* calculator2: PoE2 explosion gems find their item or passive source, offence keeps weapon ranges on the actor, and Default Attack comes from go-pob-data's CharacterMeleeSkills
+* calculator2: PoE2 main skills build their mod list as PoB-PoE2 does, with gem level and quality and recent-action conditions
+* calculator2: PoE2 main skills run the ailment half of PoB-PoE2's offence calculation: bleed, poison, ignite, shock, chill, buildups, stun and damage over time
+* calculator2: PoE2 main skills run the hit half of PoB-PoE2's offence calculation: conversion, accuracy, speed, crit, hit damage, leech and DPS
+* calculator2: PoE2 main skills run the setup half of PoB-PoE2's offence calculation: limits, area, projectiles, durations, cooldowns and costs
+* calculator2: PoE2 minions are created from go-pob-data's monster rows and PoB-PoE2's templates, reserve spirit, and pool companion and spectre life for EHP
+* calculator2: PoE2 minions get their skill lists and apply the buffs, auras, curses and debuffs those skills carry
+* calculator2: PoE2 minions run their offence pass with the weapon PoB-PoE2 gives them, and minion always-hit and Umbral Well flags apply
 * calculator2: PoE2 radius jewels apply their effects to the passives in their radius, and the parser reads every jewel radius row
+* calculator2: PoE2 skill groups on the other weapon set are set up in that set's context, actors carry their weapon data, and Explode groups and sources are built
+* calculator2: PoE2 skills reserve spirit, life and mana, and their buffs, auras, curses and guards apply as PoB-PoE2 does
+* calculator2: PoE2 socket groups set up active skills, supports, the main skill and gem attribute requirements
+* calculator2: PoE2 totem life, item mod lines with their ranges, kept item sets, boolean outputs and damage-over-time settings follow PoB-PoE2
 * calculator2: ring bonus effect, Mageblood, common buffs and weapon-type conditions apply in the PoE2 perform pass
+* calculator2: the PoE2 main skill's minion is an actor with the passes PoB-PoE2 runs for it
+* data: PoE2 skill data is built from go-pob-data's skill tables and PoB-PoE2's skill overlay
+* data: PoE2 skill overlay, global stat map and skill type enums generated from PoB-PoE2, with offence and skills-on accuracy gates
+* data: the seven hand-written PoE2 granted effects carry their full skill tables from PoB-PoE2
+* frontend: a hidden PoE2 setting opens PoE2 builds in a second worker running the PoE2 wasm
+* frontend: a PoE2 passive tree with vector nodes, tooltips and allocation along PoB-PoE2's paths
 * frontend: go-pob's own Help replaces Path of Building's, its hotkeys are checked against the code, and shortcuts no longer fire twice
+* frontend: IBM Plex is served from the app itself and preloaded, so the first page draws in the app font with no request to Google
+* frontend: Import / Export is a dialog over any page, an import always opens as a new build, and the build list filters by game
+* frontend: loading shows progress: a top progress bar, an activity indicator and panel, and progress toasts for boot, game data, imports, saves, page switches and recalculations
+* frontend: loading shows real progress: the PoE2 engine download in bytes, game data as files and tables loaded, and PoE2 boot and game data phases
+* frontend: PoE2 build links import, PoE2 builds save to the build list and reopen, and Compare refuses mixing games
+* frontend: PoE2 builds open in the same top bar, sidebar, page routes and phone layout as PoE1 builds
+* frontend: PoE2 builds show PoB-PoE2's sidebar stats and Config page, and config and main skill edits recalculate
+* frontend: PoE2 saves carry PoB-PoE2's PlayerStat rows, the build list filters PoE2 classes, settings apply across tabs without a reload, and PoE2 imports are refused clearly when PoE2 is off
+* frontend: several tabs share browser storage safely: one tab writes it, the others forward their writes and see each change, and the build list updates live
+* frontend: the Calcs pop-out is gone, the undo history menu fits its longest step, and a sidebar value covering its label sits on a half-opaque backdrop that fades out
+* frontend: the PoE2 build has Calcs, Skills and Items pages, with the Calcs sections generated from PoB-PoE2
+* frontend: the PoE2 passive tree has PoB-PoE2's node search, and its undo keys, weapon-set mode and jewel radius rings are ready for the calculator side
+* frontend: the tree's images and a PoE1 import's calculation phases show as progress, and every PoE2 engine start shows its boot
 * frontend: the version history shows go-pob's own releases first and Path of Building's below, and the update notice lists go-pob's changes
+* poe2: a build saved on an older PoE2 tree says it was converted to 0.5 and how many of its passives that tree no longer allocates
+* poe2: a PoE2 build code imports as a comparison, and the Export tab saves a .build file for the in-game build planner
+* poe2: a PoE2 build with Export support writes the party export another member imports, and damage conversion applies every row's base before any addition again
+* poe2: active PoE2 flasks and charms apply their effects, conditions and recovery as PoB-PoE2 does
+* poe2: Alchemist's Genius raises flask effect and flask charges gained, and Necromantic Talisman takes the amulet out of the item list, as in PoB-PoE2
+* poe2: Buy Similar on the Compare page filters by the item's mods, matched to the trade site's stats as PoB-PoE2 does
+* poe2: one Config page and one Calcs page serve both games
+* poe2: PoE2 builds export as a code and keep editable notes, and a character import always opens as a new build
+* poe2: PoE2 builds have the top bar's undo history, and PoE1 worker calls wait for a running calculation instead of stopping the engine
+* poe2: PoE2 builds show Full DPS and Full DPS by skill, save their Full DPS rows, and include Full DPS in item and node compares
+* poe2: PoE2 builds use the shared Items page: paste, equip, delete and edit items, add runes, switch item sets and swap weapon sets
+* poe2: PoE2 builds use the shared Skills page, with socket groups and gems that can be added, removed, moved and edited as in PoB-PoE2
+* poe2: PoE2 builds work without unlocking anything first; Settings can still turn them off
+* poe2: PoE2 Calcs cells show their mod tables and sidebar stats their breakdowns on hover, with gem level, requirement, buildup, uptime and crit breakdowns
+* poe2: PoE2 Compare has a power report, config impact, item and jewel rows with equip comparison, and tree take and drop
+* poe2: PoE2 crafting adds and removes prefixes and suffixes with their tiers and ranges, and the rare item database is available
+* poe2: PoE2 items can be crafted from any base, browsed in the unique database and compared before equipping
+* poe2: PoE2 rolled item values round as PoB-PoE2 rounds them, and crafting's affix list shows PoB-PoE2's hover tooltips
+* poe2: the Calcs tab's buff, combat buff and curse lists are calculated as PoB-PoE2 writes them, and damage conversion rounds as PoB-PoE2 does
+* poe2: the calculator keeps the texts PoB-PoE2 writes, such as an unmet attribute requirement and Cannot chain, and the Calcs page shows them
+* poe2: the Compare page works for PoE2 builds through the shared compare view
+* poe2: the Config page shows PoB-PoE2's placeholders and what changing an option or a custom modifier group gives
+* poe2: the engine of the last-used game boots at startup, and a setting can boot both, so a PoE2 import after a PoE2 session opens at once
+* poe2: the Party page works for PoE2: import a party member's export, and their auras, curses and buffs apply to the build
+* poe2: the PoE2 Calcs page has Stat Set, Skill Stages and Show Minion Stats, and Compare's items have Buy Similar on the PoE2 trade site
+* poe2: the PoE2 Calcs page has the Minion, Minion Skill and Minion Skill Stat Set controls, Stat Set is on the sidebar and in Compare, and the planner exports all loadouts
+* poe2: the PoE2 Calcs page runs its own calculation over its socket group, active skill and calculation mode, and Compare's Calcs view has those controls for both builds
+* poe2: the PoE2 Calcs page shows its buff, combat buff and curse lists, skill buff mod lists, and damage type and ailment breakdowns
+* poe2: the PoE2 Calcs page shows PoB-PoE2's breakdowns for defences, effective hit pool, accuracy, speed and damage
+* poe2: the PoE2 Calcs page shows PoB-PoE2's flag-gated rows, main- and off-hand tables and damage-over-time values, and items show their mod ranges
+* poe2: the PoE2 Calcs tab writes every breakdown PoB-PoE2 writes, graded on its own calculation
+* poe2: the PoE2 calculator computes a node's stat differences, the path to it and every node's power, matching PoB-PoE2's tree tooltips and power report
+* poe2: the PoE2 gem list can sort by Full DPS, PoB-PoE2's first sort option
+* poe2: the PoE2 passive tree allocates on the chosen weapon set, has undo and redo, rings jewel sockets with their radii, and follows PoB-PoE2's intuitive-leap paths
+* poe2: the PoE2 passive tree draws the game's art, compares two trees, zooms with PageUp/PageDown and Ctrl+click, and offers Connect Path
+* poe2: the PoE2 passive tree shows the gold to unallocate a node and to switch trees, as PoB-PoE2 does
+* poe2: the PoE2 tree exports and imports tree links as PoB-PoE2 does, and F1 opens a node's poe2wiki page
+* poe2: the PoE2 tree sets the character level and shows its points, Reset Tree clears it, and PoE2 Config has config sets and custom modifier groups
+* poe2: the PoE2 tree shows stat differences, path lines, the heat map and the power report, traces paths with Shift, and pans smoothly without a GPU
+* poe2: the PoE2 tree uses the shared tree page, with a tree list, Manage trees, class and ascendancy choices that connect the path, node notes and copying a node's text
 * tools: a second PoB pin for PoE2, checked by task pob-pin GAME=poe2, and //pob2: citations that resolve against it
+* tools: task data-regen GAME=poe2 generates PoE2 constants and legion passives from go-pob-data's dumps
 * tools: task data-regen GAME=poe2 generates PoE2 item bases, rune slots, constants and gems from the pinned PoB-PoE2
 * tools: task oracle-poe2 builds a local PoE2 corpus and skills-on/skills-off oracle from the pinned PoB-PoE2
+* tree2: the PoE2 passive tree loads from go-pob-data, with PoB-PoE2's tree.json kept as a test oracle
+* wasm2: a second wasm entry exposes the PoE2 calculator with its own generated typings
+* an experimental TinyGo engine for both games, chosen in Settings, with a smaller download and a fallback to the standard engine
+* Buy Similar on PoE1 Compare and Items filters by the item's mods, matched to the trade site's stats as PoB does
 * PoB-PoE2's defence calculations and a PoE2 accuracy gate over the local PoE2 builds
 * PoB-PoE2's item code in the PoE2 calc package, matching PoB-PoE2 on the local PoE2 builds' items
 * PoB-PoE2's mod parser in the PoE2 calc package, graded against PoB-PoE2's own parse of each line
 * PoE2 build XML reads and writes in its own package, and builds.DetectGame tells PoE1, PoE2 and older PoE2 saves apart
+* PoE2 game constants and legion passives are dumped from go-pob-data 0.5 instead of read from PoB-PoE2's tables
+* PoE2 gems are dumped from go-pob-data 0.5's skill tables instead of read from PoB-PoE2's tables
+* PoE2 item bases are dumped from go-pob-data 0.5 instead of read from PoB-PoE2's tables, and soul cores are ported pending three tables
 * PoE2 items reach the PoE2 calc environment, merged per slot as PoB-PoE2 does
+* PoE2 soul cores and charm buffs are dumped from go-pob-data 0.5 instead of read from PoB-PoE2's tables
 * PoE2 tree allocation keeps the nodes From Nothing and Timeless jewels allocate, and Timeless jewels conquer passives as PoB-PoE2 does
+* Settings has an Appearance section, and PoE2 Skills gain skill sets, a DPS-sorted gem list, copy and paste, undo and redo, and the Corrupt dropdown
 * the mod kernel evaluates PoE2's tags and takes per-game rules from its caller
 * the PoE2 0.5 passive tree and a build's allocation load in their own package
 * the PoE2 calc environment builds a PoE2 build's tree and config into its player and enemy, with PoB-PoE2's ModCache as the mod source
+* the PoE2 wasm ships compressed, is fetched only when a PoE2 build needs it, caches its game data, and is embedded in the desktop app
 
 --- Fixed ---
+* calculator: a special mod whose capture is a name, like a curse or skill name, no longer logs a parse warning each time it is read
+* calculator: the mod parser rows PoB parses and go-pob did not: four PoE2 rows and one PoE1 row
+* calculator2: a PoE2 build whose skill data cannot load returns an error instead of panicking
+* calculator2: a PoE2 skill tagged as creating a companion keeps the tag, so companion attack speed reaches the player as in PoB-PoE2
+* calculator2: Jarngreipr lets Strength satisfy the Dexterity and Intelligence requirements of melee skill gems too, as in PoB-PoE2
+* calculator2: PoE2 ammunition gem tags, the no-items main-skill restart, cached timeless seeds and skill stats, Facebreaker, nested mod scaling and specific-type avoidance follow PoB-PoE2
+* calculator2: PoE2 global conversion applies all conversions at once, so skill-converted damage no longer loses what other conversions added to it
+* calculator2: PoE2 Integrated Efficiency and Bloodbarrier lines parse as PoB-PoE2 does, and socket groups reconcile their weapon sets
+* calculator2: PoE2 minion damage applies PoB-PoE2's minion damage and fixup multipliers, and the main socket group follows an override as PoB-PoE2 does
+* calculator2: PoE2 minion gems keep the minion the build saved, so spectres and companions reserve and pool as in PoB-PoE2
+* calculator2: PoE2 ModCache mod values stored as numeric strings are read as numbers
+* calculator2: PoE2 ModCache tag numbers stored as strings, such as a PercentStat percent, are read as numbers
+* calculator2: PoE2 rune gem levels scale with rune effect, gem-requirement skill levels reach the right gems, and Hollow Palm adds its physical damage
+* calculator2: PoE2 skills get their own skill mod list over the base one at the start of perform, so offence no longer writes into the base list
+* calculator2: PoE2 skills' own exposure chance counts as an exposure source, each companion's buff is its own, and minion skills write their limit
+* calculator2: PoE2 warcries empower attacks and apply their buffs scaled by uptime and warcry power, as PoB-PoE2 does
+* calculator2: the PoE2 Bleed keyword flag is PoB-PoE2's, so aggravated bleeding gets its more magnitude
+* calculator2: the PoE2 parser reads Abyssal Wasting's inflicted conditions and its instant leech lines, as PoB-PoE2 does
+* calculator2: the PoE2 parser's skill-name list leaves out hidden and item-granted effects, as PoB-PoE2's does
+* frontend: a calculation worker that never starts shows an error with Retry after 30 s, and a save forwarded to a tab that does not answer says so after 15 s
+* frontend: a finished long job's toast closes at once instead of lingering over the page
+* frontend: a refused import leaves the open build as it was, a PoE2 character is refused clearly, and shared item sets and the account history update across tabs
+* frontend: a save forwarded from another tab no longer waits behind the writing tab's idle item list parse
+* frontend: an item slot's tile stops before its Change menu, so the two no longer overlap on a phone
 * frontend: an undo step keeps the tree view where the user left it
+* frontend: Compare and Party show plain-words import errors, the parser refuses XML whose root is not PathOfBuilding, and the Compare picker, Save As folders, build sort and panel widths follow other tabs
+* frontend: Compare's better-build pills take their line height from the font, so their text fits on every renderer
+* frontend: every notification shows in one stack in the bottom right, and an update shows one prompt
+* frontend: F1 over a PoE2 item or gem opens its poe2wiki.net page, as PoB-PoE2 does
 * frontend: item art is no longer kept in the service worker's cache, whose opaque entries counted far above their size against storage
+* frontend: item names on the Items board, list and pool draw PoB colour codes as colour, and screen readers hear the name without them
+* frontend: item tooltip titles draw PoB colour codes as colour, so PoE2 item names no longer show ^x codes
+* frontend: opening a PoE2 build asks the PoE2 engine once, and the tree conversion notice passes lint
+* frontend: power workers read the shared browser storage without writing to it, so cached files are no longer overwritten, and Clear cached data also clears the PoE2 cache
 * frontend: the phone's Undo toast counts its time from when the tree shows the change, and the first tree fit is centred
+* frontend: the PoE2 passive tree's data is not wrapped in reactive proxies, so building the tree no longer freezes the page for tens of seconds
+* frontend: the PoE2 tree's undo keys are in the hotkey inventory and its weapon-set banner text uses the theme's text colour
+* frontend: the sidebar's pin stars and the custom modifier buttons are icons, so they fit their rows at any font size
 * frontend: the Skills page's Socketed in tooltip shows the slot item's base art, not a fossil
 * frontend: tree art and fonts still load when browser storage is full, and clicking the open page's tab no longer steals focus from what you type
+* items: a socket edit made before the item's update arrives builds on the previous edit instead of the old sockets
+* poe2: a breakdown's whole-number line prints NaN and infinities as PoB does on every platform, not 0 on arm64 and wasm
+* poe2: a minion uses the minion skill and stat set picked for it, as PoB-PoE2 does
+* poe2: a skill's saved stage count reaches the calculation, so the Skill Stages box changes DPS as in PoB-PoE2
+* poe2: a warcry with no cooldown has full uptime instead of NaN, as in PoB-PoE2
+* poe2: item comparisons run asynchronously, so one that is the first to need a minion table no longer stalls the worker
+* poe2: item, passive and compare tooltips see the build's yes/no outputs, so the stat lines they gate show as in PoB-PoE2
+* poe2: PoE2 calculations round as PoB does on Apple Silicon and other ARM machines, with no fused multiply-adds left unchecked
+* poe2: PoE2 Full DPS reuses one calculation for later skills as PoB-PoE2 does, so skills after the first lose what PoB-PoE2's reuse drops
+* poe2: Skills page edits reach the gem and group shown even while a refresh is on its way, and the PoE2 power report hides Show Masteries and rings a hovered row's node
+* poe2: the PoE2 Calcs page's output includes the calculator's texts, so an unmet attribute requirement shows
+* poe2: the PoE2 tree has one search box, the shared page's, and highlights its matches
+* poe2: the PoE2 worker runs one calculator call at a time, and a gem added before the group list refreshes goes into a new slot instead of replacing the last gem
+* poe2skills: a Barbs gem grants its triggered effect once when go-pob-data already lists it
+* sidebar: a value covering its label sits on an 80% backdrop that spans the whole value and fades out past both ends
+* storage: a tab whose storage writer closes while it is still mounting no longer stays at Booting, and a boot that fails or stalls shows why with a Retry
 * storage: on Windows, game-data cache reads and writes retry briefly while another process holds the file
+* storage: the desktop build list reads each save's summary as the browser list does, so a PoE2 save or a file that is not a build no longer empties the folder
+* tools: scripts/gopob builds for js as well as unix and windows
+* tree: a passive tree version with no data is refused by name instead of crashing, and tree calls no longer hang on a tree that is still loading
+* a PoE2 item's tooltip shows its latest edit, the enemy damage breakdown matches PoB-PoE2 on arm64, and the sidebar value's fade no longer counts as overflow
+* a tree download with an error status is never cached, and failed game data or wasm loads say why with Retry instead of hanging
+* an offline first visit says why the data did not load and offers Retry, and the PoE2 canvas tree pans at full frame rate when zoomed in
+* Buy Similar's Search opens the trade site within the click, so browsers do not block it as a popup
+* Items Buy Similar compares against the slot PoB picks, and symbols the app font lacks draw as icons
 * PoE2 bases whose armour table is empty keep their armour data
 * task dropped-keys and task overapplied-census run their censuses again
+* the PoE2 TinyGo engine has a 1 MB stack, so opening Skills or Party on a larger build no longer overflows it and falls back to Go
+
+--- Performance Improvements ---
+* frontend: a PoE2 build code is read in the page, so its import starts the PoE2 engine at once instead of after the PoE1 game data
+* frontend: checking and importing a build code decodes it about 25 times faster, and a mise task runs the frontend lint CI runs
+* frontend: each engine's worker downloads its own wasm, so the page never holds or copies it, and a PoE2 build's first page draws its glyphs as icons
+* frontend: opening the PoE2 passive tree paints and uploads its art in slices, so no step blocks the page for more than a frame
+* frontend: the first page layout no longer waits on system font lookups, and the Items page opens without blocking
+* frontend: the passive tree keeps its renderer while another page is open, so returning to it draws the full art at once
+* frontend: the PoE2 tree uploads its sheets in a shared per-frame time budget and builds mipmaps after, so its first open is about 40% faster in Chromium and twice as fast in Firefox
+* frontend: tree sprite sheets decode off the main thread and the item database draws in slices, so opening the tree or the item list no longer freezes the page
+* poe2: PoE2 game data loads from go-pob-data v0.5.12's msgpack tables, so a PoE2 build's first calculation is more than twice as fast
+* poe2: PoE2 item bases, item mods and mod scalability load from go-pob-data v0.5.16 instead of being compiled in, so the PoE2 download is about 400 KB smaller
+* poe2: PoE2 minion data loads from go-pob-data v0.5.13's single .ot bundle, so a first PoE2 calculation fetches one asset instead of hundreds
+* poe2: the PoE2 tree draws through Canvas 2D when WebGL is software-rendered, as the PoE1 tree does
+* poe2: the PoE2 worker loads its game data as soon as it boots and keeps the tables it reads in a pruned cache, so opening a saved PoE2 build takes under a second
 
 
 VERSION[0.4.0][2026/10/24]
