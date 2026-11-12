@@ -114,6 +114,7 @@
 
   type Probe = {
     frame?: (f: unknown) => void;
+    phase?: (name: string) => void;
     screenOf?: (id: number) => { x: number; y: number } | undefined;
     focus?: (id: number) => void;
     // the art a test probes the canvas against: a sprite's sheet and place, and the sprites drawn from each sheet
@@ -244,6 +245,7 @@
   });
 
   onMount(() => {
+    probe()?.phase?.('mount');
     let entry = kept;
     if (entry && entry.scene !== scene) {
       entry.renderer.destroy();
@@ -296,6 +298,7 @@
             }
             const fresh: Parked<Tree2Renderer, Scene2> = { key: treeKey(), canvas: canvas!, scene, onDraw: afterDraw, renderer: undefined! };
             fresh.renderer = createTree2Renderer(canvas!, scene, (ms) => fresh.onDraw(ms), force, gl ?? undefined);
+            probe()?.phase?.('renderer');
             attach(fresh);
           });
         });

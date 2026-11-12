@@ -123,9 +123,21 @@ void main() {
 }`;
 
 const MAX_SHEETS = 16;
-// the most pixels of a sheet uploaded in one frame
+// the most pixels of a sheet uploaded in one call, and the time a frame spends on uploads before it starts no more bands
 const BAND_PIXELS = 1024 * 1024;
+const UPLOAD_MS = 8;
+// a first band slower than this says the browser reads the whole bitmap for each call, as Firefox does, so more bands
+// cost more without holding the page any less: the rest of the sheet goes up in one call
+const WHOLE_BAND_MS = 15;
+// the copy to the GPU costs more than the call: a frame after one that took longer than SLOW_FRAME_MS uploads half the
+// bands, one after a frame shorter than FAST_FRAME_MS a band more
+const SLOW_FRAME_MS = 40;
+const FAST_FRAME_MS = 25;
+const MAX_FRAME_BANDS = 4;
 const ARRIVAL_MS = 200;
+
+// a test times the load's phases: each sheet decoded, uploaded and mipmapped, with the GL time each took
+const phase = (name: string, ms?: number) => (globalThis as { __tree2Probe?: { phase?: (n: string, t?: number) => void } }).__tree2Probe?.phase?.(name, ms);
 
 const SPRITE_VS = `${HEAD}
 layout(location=1) in vec2 a_o;
@@ -205,6 +217,10 @@ const DISC_ATTRS: [number, number, number][] = [
 ];
 
 type Tex = { tex: WebGLTexture; ready: boolean; w: number; h: number };
+// a decoded sheet on its way up: the next row of level 0 to upload, and the GL time its bands have taken
+type Upload = { t: Tex; bmp: ImageBitmap; unit: number; y: number; spent: number; bands: number; longest: number };
+// a sheet whose mip chain is being made: the level being drawn from the one above it, and the next row of it to draw
+type Mip = { t: Tex; unit: number; level: number; levels: number; y: number; spent: number };
 
 export class GlTree2Renderer implements Tree2Renderer {
   readonly kind = 'webgl';
@@ -221,8 +237,19 @@ export class GlTree2Renderer implements Tree2Renderer {
     over: WebGLVertexArrayObject;
   };
   private sheets: Tex[] = [];
+  private uploads: Upload[] = [];
+  private mips: Mip[] = [];
+  // the framebuffers a mip level is drawn through, from the level above it
+  private mipFrom!: WebGLFramebuffer;
+  private mipTo!: WebGLFramebuffer;
+  private pumping = 0;
+  private frameBands = 1;
+  // when the last frame that uploaded began, 0 after a frame that did not
+  private lastPump = 0;
   // bound to every unit whose sheet is not up yet
   private empty!: WebGLTexture;
+  // the framebuffer a sheet's level 0 is cleared through before its first band
+  private fill!: WebGLFramebuffer;
   private view: View2 = { zoomLevel: 3, zoomX: 0, zoomY: 0, width: 1, height: 1, dpr: 1 };
   private state?: Scene2State;
   private dirty = true;
@@ -247,6 +274,7 @@ export class GlTree2Renderer implements Tree2Renderer {
   private setup() {
     const { gl } = this;
     this.generation++;
+    this.dropUploads();
     this.sheets = [];
     this.dirty = true;
     this.discProg = this.program(DISC_VS, DISC_FS);
@@ -271,6 +299,9 @@ export class GlTree2Renderer implements Tree2Renderer {
       lines: this.vao(corners, this.bufs.lines, SPRITE2_FLOATS, SPRITE_ATTRS),
       over: this.vao(corners, this.bufs.over, SPRITE2_FLOATS, SPRITE_ATTRS)
     };
+    this.mipFrom = gl.createFramebuffer();
+    this.mipTo = gl.createFramebuffer();
+    this.fill = gl.createFramebuffer();
     const empty = (this.empty = this.texture(0));
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
@@ -304,7 +335,9 @@ export class GlTree2Renderer implements Tree2Renderer {
 
   destroy() {
     cancelAnimationFrame(this.frame);
+    cancelAnimationFrame(this.pumping);
     this.frame = -1;
+    this.dropUploads();
     const canvas = this.gl.canvas as HTMLCanvasElement;
     canvas.removeEventListener('webglcontextlost', this.onLost);
     canvas.removeEventListener('webglcontextrestored', this.onRestored);
@@ -335,64 +368,126 @@ export class GlTree2Renderer implements Tree2Renderer {
     if (!t) {
       t = this.sheets[i] = { tex: this.texture(i), ready: false, w: 1, h: 1 };
       this.gl.bindTexture(this.gl.TEXTURE_2D, this.empty);
+      phase(`sheet ${i} asked`);
       this.load(t, `${art.base}/${sheetPath2(art.atlas.sheets[i])}`, i);
     }
     return t.ready;
   };
 
-  // each upload waits for a frame of its own: uploads queued between two frames are all done before the second is shown
-  private slot = Promise.resolve();
-  private nextFrame() {
-    const turn = this.slot.then(() => new Promise<void>((r) => requestAnimationFrame(() => r())));
-    this.slot = turn;
-    return turn;
-  }
-
-  // a sheet goes up in bands of rows, a frame each: a whole large sheet in one call holds the page for about 100 ms.
-  // The sheet stays off its unit until level 0 is whole, so no draw samples a level not yet filled; it draws from level 0
-  // at once and from its mipmaps once a later frame has made them
+  // a sheet goes up in bands of rows, as many as fit a frame's upload budget: a whole large sheet in one call holds the
+  // page for about 100 ms. Sheets decoded together share a frame's budget, in the order they arrived. A sheet stays off
+  // its unit until level 0 is whole, so no draw samples a level not yet filled; it draws from level 0 at once and from
+  // its mipmaps once a later frame has made them
   private load(t: Tex, url: string, unit: number) {
     const generation = this.generation;
-    const gone = () => this.frame === -1 || this.lost || this.generation !== generation;
     void loadBitmap(url)
-      .then(async (bmp) => {
-        const { gl } = this;
-        const [w, h] = [bmp.width, bmp.height];
-        const bind = (tex: WebGLTexture) => {
-          gl.activeTexture(gl.TEXTURE0 + unit);
-          gl.bindTexture(gl.TEXTURE_2D, tex);
-        };
-        const rows = Math.max(1, Math.floor(BAND_PIXELS / w));
-        for (let y = 0; y < h; y += rows) {
-          await this.nextFrame();
-          if (gone()) return bmp.close();
-          bind(t.tex);
-          if (!y) {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAX_LEVEL, 0);
-            gl.texStorage2D(gl.TEXTURE_2D, Math.floor(Math.log2(Math.max(w, h))) + 1, gl.RGBA8, w, h);
-          }
-          if (h <= rows) gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, bmp);
-          else {
-            gl.pixelStorei(gl.UNPACK_SKIP_ROWS, y);
-            gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, y, w, Math.min(rows, h - y), gl.RGBA, gl.UNSIGNED_BYTE, bmp);
-            gl.pixelStorei(gl.UNPACK_SKIP_ROWS, 0);
-          }
-          if (y + rows < h) bind(this.empty);
-        }
-        bmp.close();
-        [t.w, t.h, t.ready] = [w, h, true];
-        this.dirty = true;
-        this.request();
-        await this.nextFrame();
-        if (gone()) return;
-        bind(t.tex);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAX_LEVEL, 1000);
-        gl.generateMipmap(gl.TEXTURE_2D);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-        this.request();
+      .then((bmp) => {
+        phase(`sheet ${unit} decoded`);
+        if (this.frame === -1 || this.generation !== generation) return bmp.close();
+        this.uploads.push({ t, bmp, unit, y: 0, spent: 0, bands: 0, longest: 0 });
+        this.pump();
       })
       .catch(() => undefined);
+  }
+
+  private pump() {
+    if (!this.pumping) this.pumping = requestAnimationFrame((now) => this.uploadFrame(now));
+  }
+
+  private bind(unit: number, tex: WebGLTexture) {
+    const { gl } = this;
+    gl.activeTexture(gl.TEXTURE0 + unit);
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+  }
+
+  private uploadFrame(now: number) {
+    this.pumping = 0;
+    if (this.lost) return;
+    const { gl } = this;
+    const end = performance.now() + UPLOAD_MS;
+    if (this.lastPump) {
+      const dt = now - this.lastPump;
+      if (dt > SLOW_FRAME_MS) this.frameBands = Math.max(1, this.frameBands >> 1);
+      else if (dt < FAST_FRAME_MS) this.frameBands = Math.min(MAX_FRAME_BANDS, this.frameBands + 1);
+    }
+    this.lastPump = this.uploads.length || this.mips.length ? now : 0;
+    let bands = this.frameBands;
+    while (this.uploads.length && bands-- > 0 && performance.now() < end) {
+      const u = this.uploads[0];
+      const { t, bmp } = u;
+      const [w, h] = [bmp.width, bmp.height];
+      const rows = Math.max(1, Math.floor(BAND_PIXELS / w));
+      const t0 = performance.now();
+      this.bind(u.unit, t.tex);
+      if (!u.y) {
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAX_LEVEL, 0);
+        gl.texStorage2D(gl.TEXTURE_2D, Math.floor(Math.log2(Math.max(w, h))) + 1, gl.RGBA8, w, h);
+        // Firefox fills an image's first partial upload with zeros copied from a buffer the image's size
+        // (WebGLTextureUpload.cpp EnsureImageDataInitializedForUpload); a clear through a framebuffer marks it filled on
+        // the GPU instead (WebGLFramebuffer.cpp ResolveAttachmentData)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.fill);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t.tex, 0);
+        gl.clearBufferfv(gl.COLOR, 0, [0, 0, 0, 0]);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, null, 0);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      }
+      const band = u.bands === 1 && u.longest > WHOLE_BAND_MS ? h - u.y : rows;
+      if (h <= band) gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, bmp);
+      else {
+        gl.pixelStorei(gl.UNPACK_SKIP_ROWS, u.y);
+        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, u.y, w, Math.min(band, h - u.y), gl.RGBA, gl.UNSIGNED_BYTE, bmp);
+        gl.pixelStorei(gl.UNPACK_SKIP_ROWS, 0);
+      }
+      u.y += band;
+      if (u.y < h) this.bind(u.unit, this.empty);
+      u.spent += performance.now() - t0;
+      u.bands++;
+      u.longest = Math.max(u.longest, performance.now() - t0);
+      if (u.y < h) continue;
+      this.uploads.shift();
+      bmp.close();
+      [t.w, t.h, t.ready] = [w, h, true];
+      phase(`sheet ${u.unit} uploaded, ${w}x${h} in ${u.bands} bands, the longest ${u.longest.toFixed(1)} ms`, u.spent);
+      this.mips.push({ t, unit: u.unit, level: 1, levels: Math.floor(Math.log2(Math.max(w, h))) + 1, y: 0, spent: 0 });
+      this.dirty = true;
+      this.request();
+    }
+    // a sheet's mipmaps cost the GPU more than its bands, and generateMipmap makes a sheet's in one call, which holds the
+    // page as long as a whole sheet's upload: each level is drawn from the one above it in bands of rows, once every
+    // sheet asked for is up
+    while (!this.uploads.length && this.mips.length && bands-- > 0 && performance.now() < end) {
+      const m = this.mips[0];
+      const t0 = performance.now();
+      const [sw, sh] = [Math.max(1, m.t.w >> (m.level - 1)), Math.max(1, m.t.h >> (m.level - 1))];
+      const [w, h] = [Math.max(1, m.t.w >> m.level), Math.max(1, m.t.h >> m.level)];
+      const y1 = Math.min(h, m.y + Math.max(1, Math.floor(BAND_PIXELS / w)));
+      gl.bindFramebuffer(gl.READ_FRAMEBUFFER, this.mipFrom);
+      gl.framebufferTexture2D(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, m.t.tex, m.level - 1);
+      gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, this.mipTo);
+      gl.framebufferTexture2D(gl.DRAW_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, m.t.tex, m.level);
+      gl.blitFramebuffer(0, (m.y * sh) / h, sw, (y1 * sh) / h, 0, m.y, w, y1, gl.COLOR_BUFFER_BIT, gl.LINEAR);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      m.y = y1;
+      m.spent += performance.now() - t0;
+      if (m.y < h) continue;
+      [m.level, m.y] = [m.level + 1, 0];
+      if (m.level < m.levels) continue;
+      this.mips.shift();
+      this.bind(m.unit, m.t.tex);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAX_LEVEL, 1000);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+      phase(`sheet ${m.unit} mipmapped`, m.spent);
+      this.request();
+    }
+    if (this.uploads.length || this.mips.length) this.pump();
+  }
+
+  // the bitmaps a lost or destroyed context will never upload
+  private dropUploads() {
+    for (const u of this.uploads) u.bmp.close();
+    this.uploads = [];
+    this.mips = [];
   }
 
   private texture(unit: number) {
