@@ -339,7 +339,7 @@ description = "Tier 2: the AUTHORITATIVE accuracy gate alone (~16s, GREEN at bas
 run = 'CORPUS=true {{vars.NICE}} go test ./calculator/ -run TestCorpus3_29VsOracle -count=1 -v -timeout 60m'
 
 [tasks.gate-poe2]
-description = "The PoE2 corpus tests' summary lines (every TestCorpusPoE2* by default, --run <pattern> for one), cached by the committed tree and the local corpus; a dirty tree is measured fresh and never stored, --force re-runs"
+description = "The PoE2 corpus tests' summary lines (every TestCorpusPoE2* by default, --run <pattern> for one), cached by the committed gate inputs (all but frontend, desktop, CI, Nix, docs) and the local corpus; a dirty tree is measured fresh and never stored, --force re-runs"
 usage = '''
 flag "--run <run>" env="RUN" default="TestCorpusPoE2"
 flag "--force" env="FORCE"

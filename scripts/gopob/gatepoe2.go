@@ -15,7 +15,7 @@ import (
 	"github.com/Vilsol/go-pob/scripts/gopob/internal/root"
 )
 
-// The PoE2 corpus gate's summary lines, cached by the committed tree and the corpus and oracle it read, so a base is
+// The PoE2 corpus gate's summary lines, cached by the committed gate inputs (every tracked file but the frontend, desktop, CI, Nix and docs) and the corpus and oracle it read, so a base is
 // measured once per commit rather than once per change on top of it. A dirty tree is measured fresh and never stored: the tree hash
 // cannot see uncommitted work.
 
@@ -107,9 +107,9 @@ func gp2RunGoTest(repo, pattern string) func() (string, error) {
 }
 
 func (e gp2Env) gate(force bool) int {
-	tree, err := gp2Git(e.repo, "rev-parse", "HEAD^{tree}")
+	tree, err := gateInputsKey(e.repo)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "REFUSING: gate-poe2: no HEAD tree: "+err.Error())
+		fmt.Fprintln(os.Stderr, "REFUSING: gate-poe2: no HEAD inputs: "+err.Error())
 		return root.RefusalCode
 	}
 	data, err := gp2DataKey(e.repo)
@@ -135,7 +135,7 @@ func (e gp2Env) gate(force bool) int {
 	if !dirty && !force {
 		if b, err := os.ReadFile(file); err == nil && len(b) > 0 { //nolint:gosec // this repository's own cache
 			_, _ = e.out.Write(b)
-			_, _ = fmt.Fprintf(e.out, "(cached) -run %s measured at tree %s; FORCE_GATES=1 or --force re-runs; whole output %s\n", e.pattern, tree[:12], filepath.Join(dir, key+".log"))
+			_, _ = fmt.Fprintf(e.out, "(cached) -run %s measured at gate inputs %s; FORCE_GATES=1 or --force re-runs; whole output %s\n", e.pattern, tree[:12], filepath.Join(dir, key+".log"))
 			return 0
 		}
 	}
