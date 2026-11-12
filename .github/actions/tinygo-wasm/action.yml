@@ -1,0 +1,40 @@
+name: TinyGo wasm
+description: >-
+  Both games' TinyGo wasm builds in $RUNNER_TEMP/tinygo-wasm, from the cache when no Go source, module, TinyGo pin or
+  build script changed since they were last built with these tags, else built side by side and cached. Needs Go set up.
+inputs:
+  tags:
+    description: extra tinygo build flags, e.g. -tags=timetzdata
+    default: ''
+outputs:
+  dir:
+    description: the directory holding go-pob-tiny.wasm and go-pob2-tiny.wasm
+    value: ${{ runner.temp }}/tinygo-wasm
+runs:
+  using: composite
+  steps:
+    # one fixed path for every job: actions/cache keys a cache by its paths as well as its key
+    - id: cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ runner.temp }}/tinygo-wasm
+        key: tinygo-wasm-${{ inputs.tags }}-${{ hashFiles('go.mod', 'go.sum', 'mise.lock', '.github/tinygo_build.sh', '.github/tinygo_install.sh', '**/*.go', '!**/*_test.go') }}
+
+    - if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: ./.github/tinygo_install.sh
+
+    # each TinyGo build is mostly single-threaded, so the two run side by side
+    - if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        TAGS: ${{ inputs.tags }}
+        OUT: ${{ runner.temp }}/tinygo-wasm
+      run: |
+        mkdir -p "$OUT"
+        # shellcheck disable=SC2086 # TAGS is zero or more flags
+        ./.github/tinygo_build.sh wasm "$OUT/go-pob-tiny.wasm" $TAGS & one=$!
+        # shellcheck disable=SC2086
+        ./.github/tinygo_build.sh wasm2 "$OUT/go-pob2-tiny.wasm" $TAGS & two=$!
+        wait "$one"
+        wait "$two"

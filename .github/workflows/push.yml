@@ -305,9 +305,6 @@ jobs:
         with:
           node-version-file: .node-version
 
-      - name: Set up TinyGo
-        run: ./.github/tinygo_install.sh
-
       - name: Cache test data
         uses: actions/cache@v4
         with:
@@ -324,11 +321,13 @@ jobs:
         run: |
           GOOS=js GOARCH=wasm go build -o frontend/static/go-pob.wasm ./wasm
           GOOS=js GOARCH=wasm go build -o frontend/static/go-pob2.wasm ./wasm2
-          # each TinyGo build is mostly single-threaded, so the two run side by side
-          ./.github/tinygo_build.sh wasm frontend/static/go-pob-tiny.wasm & one=$!
-          ./.github/tinygo_build.sh wasm2 frontend/static/go-pob2-tiny.wasm & two=$!
-          wait "$one"
-          wait "$two"
+
+      - name: TinyGo wasm
+        id: tinygo
+        uses: ./.github/actions/tinygo-wasm
+
+      - name: Copy the TinyGo wasm
+        run: cp "${{ steps.tinygo.outputs.dir }}"/go-pob*-tiny.wasm frontend/static/
 
       # both engines over the same builds; every output must be bit-identical
       - name: PoE1 corpus sample, TinyGo vs Go

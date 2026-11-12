@@ -87,19 +87,23 @@ jobs:
         run: pnpm i
         working-directory: frontend
 
-      - name: Set up TinyGo
-        run: ./.github/tinygo_install.sh
+      - name: TinyGo wasm
+        id: tinygo
+        uses: ./.github/actions/tinygo-wasm
+        with:
+          tags: -tags=timetzdata
 
-      # four wasm files, each built then compressed in its own process: the TinyGo builds and brotli are mostly
-      # single-threaded, so side by side the step takes about as long as the slowest file
+      # four wasm files, each built (the TinyGo two came from the step above) then compressed in its own process:
+      # brotli is single-threaded, so side by side the step takes about as long as the slowest file
       - name: Build and compress wasm
         run: |
           static=frontend/static
           pack() { gzip -k9 "$static/$1" && node frontend/scripts/compress-wasm.mjs "$1" && rm "$static/$1" "$static/$1.br.sha256"; }
           (GOOS=js GOARCH=wasm go build -trimpath -tags=timetzdata -v -o $static/go-pob.wasm ./wasm && pack go-pob.wasm) & p1=$!
           (GOOS=js GOARCH=wasm go build -trimpath -tags=timetzdata -v -o $static/go-pob2.wasm ./wasm2 && pack go-pob2.wasm) & p2=$!
-          (./.github/tinygo_build.sh wasm $static/go-pob-tiny.wasm -tags=timetzdata && pack go-pob-tiny.wasm) & p3=$!
-          (./.github/tinygo_build.sh wasm2 $static/go-pob2-tiny.wasm -tags=timetzdata && pack go-pob2-tiny.wasm) & p4=$!
+          cp "${{ steps.tinygo.outputs.dir }}"/go-pob*-tiny.wasm $static/
+          pack go-pob-tiny.wasm & p3=$!
+          pack go-pob2-tiny.wasm & p4=$!
           for p in "$p1" "$p2" "$p3" "$p4"; do wait "$p"; done
           ls -la $static/*.wasm.*
 

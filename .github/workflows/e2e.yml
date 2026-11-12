@@ -111,15 +111,16 @@ jobs:
           GOOS: js
           GOARCH: wasm
 
-      - name: Set up TinyGo
+      - name: TinyGo wasm
+        id: tinygo
         if: matrix.shard == 'tinygo'
-        run: ./.github/tinygo_install.sh
+        uses: ./.github/actions/tinygo-wasm
 
-      - name: Build TinyGo wasm
+      - name: Copy the TinyGo wasm
         if: matrix.shard == 'tinygo'
         run: |
-          ./.github/tinygo_build.sh wasm frontend/static/go-pob-tiny.wasm && gzip -kf9 frontend/static/go-pob-tiny.wasm
-          ./.github/tinygo_build.sh wasm2 frontend/static/go-pob2-tiny.wasm && gzip -kf9 frontend/static/go-pob2-tiny.wasm
+          cp "${{ steps.tinygo.outputs.dir }}"/go-pob*-tiny.wasm frontend/static/
+          gzip -kf9 frontend/static/go-pob-tiny.wasm frontend/static/go-pob2-tiny.wasm
 
       - name: Build frontend
         run: pnpm exec vite build --logLevel warn
