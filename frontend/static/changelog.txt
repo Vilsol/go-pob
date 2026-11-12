@@ -1,3 +1,12 @@
+VERSION[0.6.0][2026/11/12]
+
+--- New ---
+* frontend: pob.gg tells bots, chats and browsers what it is: a title, description, Open Graph and JSON-LD, a sitemap, security.txt, and real 404s for missing files
+
+--- Fixed ---
+* frontend: PoE2 tree sockets on the Items page list and show their jewels, whose bases are named Diamond, Sapphire or Ruby rather than Jewel
+
+
 VERSION[0.5.0][2026/11/12]
 
 --- New ---
