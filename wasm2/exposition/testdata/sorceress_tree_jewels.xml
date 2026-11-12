@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding2>
+	<Build ascendClassName="None" characterLevelAutoMode="false" className="Sorceress" level="80" mainSocketGroup="1" targetVersion="0_1" viewMode="TREE">
+	</Build>
+	<Config activeConfigSet="1">
+		<ConfigSet id="1" title="Default">
+		</ConfigSet>
+	</Config>
+	<Items activeItemSet="1" useSecondWeaponSet="false">
+		<Item id="1">
+			Rarity: RARE
+Storm Shell
+Vaal Cuirass
+Armour: 900
+Item Level: 80
+LevelReq: 60
+Implicits: 0
++90 to maximum Life
+		</Item>
+		<Item id="2">
+			Rarity: UNIQUE
+Prism of Belief
+Diamond
+Item Level: 76
+LevelReq: 0
+Limited to: 1
+Implicits: 0
++1 to Level of all Arc Skills
+Corrupted
+		</Item>
+		<Item id="3">
+			Rarity: RARE
+Doom Ornament
+Sapphire
+Item Level: 68
+LevelReq: 0
+Implicits: 0
+15% increased Spell Damage
+12% increased Critical Hit Chance
+20% increased Critical Damage Bonus
+Corrupted
+		</Item>
+		<Item id="4">
+			Rarity: UNIQUE
+Split Personality
+Ruby
+Item Level: 84
+LevelReq: 0
+Limited to: 1
+Implicits: 0
+Can Allocate Passive Skills from the Templar's starting point
+Corrupted
+		</Item>
+		<Item id="5">
+			Rarity: UNIQUE
+Heart of the Well
+Diamond
+Item Level: 81
+LevelReq: 0
+Limited to: 1
+Implicits: 0
+{desecrated}Gain 12% of Damage as Extra Lightning Damage
+{desecrated}7% increased Critical Hit Chance for Spells
+{desecrated}8% increased Critical Spell Damage Bonus
+{desecrated}24% chance for Lightning Damage with Hits to be Lucky
+		</Item>
+		<Item id="6">
+			Rarity: RARE
+Gale Stone
+Sapphire
+Item Level: 80
+LevelReq: 0
+Implicits: 0
+13% increased Critical Hit Chance
+14% increased Elemental Damage
+{crafted}20% increased Critical Spell Damage Bonus
+		</Item>
+		<Item id="7">
+			Rarity: RARE
+Rune Spark
+Emerald
+Item Level: 81
+LevelReq: 0
+Implicits: 0
+7% increased Spell Damage
+2% increased Cast Speed
+15% increased Elemental Damage
+		</Item>
+		<ItemSet id="1" title="Default" useSecondWeaponSet="false">
+			<Slot itemId="1" name="Body Armour"/>
+		</ItemSet>
+	</Items>
+	<Skills activeSkillSet="1" defaultGemLevel="normalMaximum" defaultGemQuality="0">
+		<SkillSet id="1">
+			<Skill enabled="true" includeInFullDPS="nil" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gems/SkillGemArc" level="20" nameSpec="Arc" quality="0" skillId="ArcPlayer" variantId="Arc"/>
+			</Skill>
+		</SkillSet>
+	</Skills>
+	<Tree activeSpec="1">
+		<Spec ascendClassId="0" classId="7" masteryEffects="" nodes="1433,3041,3251,4739,5314,7960,10131,11248,11741,14446,15782,18407,19240,21568,21984,22419,26196,28982,29009,29611,30979,31238,31765,32474,39131,41768,44733,44872,45885,46358,46554,46628,47168,47555,47931,47976,48552,50104,51741,53697,54521,55190,57821,59362,59538,61403,61419,61834,62677" secondaryAscendClassId="nil" treeVersion="0_5">
+			<Sockets>
+				<Socket itemId="2" nodeId="7960"/>
+				<Socket itemId="3" nodeId="21984"/>
+				<Socket itemId="4" nodeId="26196"/>
+				<Socket itemId="5" nodeId="55190"/>
+				<Socket itemId="6" nodeId="61419"/>
+				<Socket itemId="7" nodeId="61834"/>
+			</Sockets>
+		</Spec>
+	</Tree>
+</PathOfBuilding2>

@@ -315,7 +315,8 @@
   const options = $derived(Object.entries(data.items).map(([id, it]) => ({ id: Number(id), label: it.name, tone: it.rarity, it })));
   const fitting = (slot: string) =>
     !equipFromList ? [] : slotItems ? options.filter((o) => slotItems[slot]?.includes(o.id)) : options.filter((o) => o.it.fits.includes(baseSlot(slot)));
-  const jewelOptions = $derived(options.filter((o) => /Jewel$/.test(o.it.base)));
+  // a socket's own list is the engine's IsItemValidForSlot; PoE2 jewel bases (Sapphire, Time-Lost Ruby…) are not "… Jewel"
+  const jewelOptions = $derived(options.filter((o) => /Jewel$/.test(o.it.base) || jewels.some((j) => j.choices?.includes(o.id))));
   const jewelRows = $derived(jewels.map((j) => ({ node: j.node, id: j.item, item: data.items[j.item], choices: j.choices })));
   // ItemSlotControl.lua:48-56
   const tipFor = (id: number, slot: string) => {
@@ -344,7 +345,7 @@
       return {
         key: String(s.item),
         tip: itemTip(it, s.impact, 'candidate'),
-        slot: s.impact?.slot ?? it.fits[0] ?? (/Jewel$/.test(it.base) ? 'Jewel' : '—'),
+        slot: s.impact?.slot ?? (jewelOptions.some((o) => o.id === s.item) ? 'Jewel' : (it.fits[0] ?? '—')),
         col: s.used ?? 'Unused'
       };
     })

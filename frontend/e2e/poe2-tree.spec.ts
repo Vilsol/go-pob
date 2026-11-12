@@ -137,6 +137,8 @@ test('a socketed radius jewel draws its radius ring on the PoE2 tree', async ({ 
   await page.mouse.click(at.x, at.y, { button: 'right' });
   await expect(page).toHaveURL(/\/items\?socket=26725/);
   await expect(page.locator('[data-socket-node="26725"] [role="combobox"]')).toBeFocused();
+  // the slot holds its Time-Lost Ruby, a base not named "… Jewel"
+  await expect(page.locator('[data-socket-node="26725"] [role="combobox"]')).toHaveText('Sol Spark');
   expect(errors).toEqual([]);
 });
 

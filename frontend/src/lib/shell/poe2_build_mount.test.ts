@@ -1175,6 +1175,24 @@ describe('the PoE2 Skills and Items pages', () => {
       for (const line of i.lines.flat()) expect(tip.textContent).toContain(pobPlain(line));
       await fireEvent.mouseLeave(shown);
     }
+    // ItemSlotControl.lua:117-131 (PoB-PoE2): a tree socket's list holds its jewel, whose base is not named "… Jewel"
+    const jewels = oracle.items.filter((x) => x.slot.startsWith('Jewel'));
+    expect(jewels.length).toBeGreaterThan(0);
+    for (const i of jewels) {
+      const socket = page.container.querySelector<HTMLElement>(`[data-socket-node="${i.slot.slice('Jewel '.length)}"]`)!;
+      expect(within(socket).getByRole('combobox').textContent).toContain(pobPlain(i.name[0]));
+      await fireEvent.mouseEnter(socket);
+      const tip = await vi.waitFor(() => page.getByRole('tooltip'));
+      for (const line of i.lines.flat()) expect(tip.textContent).toContain(pobPlain(line));
+      await fireEvent.mouseLeave(socket);
+    }
+    // the stash files a tree jewel under Jewel, as a PoE1 build's does, not under the first socket's slot name
+    await fireEvent.click(page.getByRole('tab', { name: /^Stash/ }));
+    for (const i of jewels) {
+      const row = await vi.waitFor(() => page.getAllByRole('row').find((r) => r.textContent?.includes(pobPlain(i.name[0])))!);
+      expect(within(row).getAllByRole('cell')[2].textContent).toBe('Jewel');
+    }
+    await fireEvent.click(page.getByRole('tab', { name: /^Equipped/ }));
     expect(
       within(page.getByRole('group', { name: 'Weapon set' }))
         .getByRole('button', { name: 'II' })
