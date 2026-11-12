@@ -1,2 +1,8 @@
 User-agent: *
 Allow: /
+# a build carried in the address is someone's character, not a page of the site
+Disallow: /*?import=
+Disallow: /*&import=
+Disallow: /import
+
+Sitemap: https://pob.gg/sitemap.xml

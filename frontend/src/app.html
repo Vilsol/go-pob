@@ -7,6 +7,37 @@
     <link rel="manifest" href="%sveltekit.assets%/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="%sveltekit.assets%/icon-192.png" />
     <meta name="theme-color" content="#1b1d21" />
+    <title>go-pob: Path of Building in your browser</title>
+    <meta
+      name="description"
+      content="Plan Path of Exile and Path of Exile 2 builds online with Path of Building's calculations: passive tree, items, skills and build comparison. No install." />
+    <link rel="canonical" href="https://pob.gg/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="go-pob" />
+    <meta property="og:url" content="https://pob.gg/" />
+    <meta property="og:title" content="go-pob: Path of Building in your browser" />
+    <meta
+      property="og:description"
+      content="Plan Path of Exile and Path of Exile 2 builds online with Path of Building's calculations: passive tree, items, skills and build comparison. No install." />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="go-pob: Path of Building in your browser" />
+    <meta
+      name="twitter:description"
+      content="Plan Path of Exile and Path of Exile 2 builds online with Path of Building's calculations: passive tree, items, skills and build comparison. No install." />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "go-pob",
+        "description": "Plan Path of Exile and Path of Exile 2 builds online with Path of Building's calculations: passive tree, items, skills and build comparison. No install.",
+        "url": "https://pob.gg/",
+        "applicationCategory": "GameApplication",
+        "operatingSystem": "Any",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "sameAs": ["https://github.com/Vilsol/go-pob"]
+      }
+    </script>
 
     <link rel="preload" href="%sveltekit.assets%/fonts/ibmplexsans-1f7173377ca9.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="%sveltekit.assets%/fonts/ibmplexmono-840be1da9149.woff2" as="font" type="font/woff2" crossorigin />
@@ -63,6 +94,17 @@
     %sveltekit.head%
   </head>
   <body>
+    <noscript>
+      <div style="max-width: 40rem; margin: 3rem auto; padding: 0 1rem; font-family: sans-serif; line-height: 1.5">
+        <h1>go-pob: Path of Building in your browser</h1>
+        <p>
+          Plan Path of Exile and Path of Exile 2 builds online with Path of Building's calculations: the passive tree, items, skills, configuration and build
+          comparison, with nothing to install.
+        </p>
+        <p>go-pob needs JavaScript and WebAssembly. Enable JavaScript to use it.</p>
+        <p>Source code: <a href="https://github.com/Vilsol/go-pob">github.com/Vilsol/go-pob</a></p>
+      </div>
+    </noscript>
     <div style="display: contents">%sveltekit.body%</div>
   </body>
 </html>

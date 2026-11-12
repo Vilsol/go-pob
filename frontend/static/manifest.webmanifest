@@ -1,7 +1,10 @@
 {
   "name": "go-pob",
   "short_name": "go-pob",
-  "description": "Path of Building in the browser: plan and calculate Path of Exile builds, online or offline.",
+  "description": "Path of Building in the browser: plan and calculate Path of Exile and Path of Exile 2 builds, online or offline.",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["games", "utilities"],
   "id": "./",
   "start_url": "./",
   "scope": "./",
