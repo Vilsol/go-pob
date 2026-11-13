@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Vilsol/go-pob-data/loader"
 	"github.com/Vilsol/go-pob-data/poe"
 
 	"github.com/Vilsol/go-pob/data/raw"
@@ -230,9 +229,9 @@ type otStat struct {
 }
 
 type minionExport struct {
-	cache    loader.AssetCache
 	statMap  *luaTable
 	ot       map[string]string
+	ots      map[string][]byte
 	missing  []string
 	refusals []string
 }
@@ -248,8 +247,8 @@ func (e *minionExport) getOTStats(otFile string, modList []any) []any {
 	file := otFile + ".ot"
 	text, ok := e.ot[file]
 	if !ok {
-		b, err := loader.LoadFile(gameDataContext(), raw.LatestVersion, file, e.cache)
-		if err != nil {
+		b, ok := e.ots[file]
+		if !ok {
 			e.missing = append(e.missing, file)
 			return modList
 		}
@@ -864,7 +863,11 @@ func dumpMinionData() (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	e := &minionExport{cache: cache, statMap: statMap, ot: map[string]string{}}
+	ots, err := gameFiles(raw.LatestVersion, ".ot", cache)
+	if err != nil {
+		return nil, err
+	}
+	e := &minionExport{statMap: statMap, ot: map[string]string{}, ots: ots}
 	files := map[string]string{}
 	for _, name := range []string{"Spectres", "Minions"} {
 		text, err := e.processTemplate(pobDir, name)

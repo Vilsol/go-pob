@@ -18,9 +18,13 @@ func f32(v float64) string { return luaNumStr(float64(float32(v))) }
 
 //pob:block:src/Export/Scripts/miscdata.lua:56-72
 func otConstants(version, path string, blocks []string, out *strings.Builder) error {
-	b, err := loader.LoadFile(gameDataContext(), version, path, assetCache())
+	ots, err := gameFiles(version, ".ot", assetCache())
 	if err != nil {
-		return fmt.Errorf("%s: %w", path, err)
+		return err
+	}
+	b, ok := ots[path]
+	if !ok {
+		return fmt.Errorf("%s: %w", path, loader.ErrAssetNotFound)
 	}
 	inWantedBlock := false
 	for _, line := range strings.FieldsFunc(string(b), func(r rune) bool { return r == '\r' || r == '\n' }) {

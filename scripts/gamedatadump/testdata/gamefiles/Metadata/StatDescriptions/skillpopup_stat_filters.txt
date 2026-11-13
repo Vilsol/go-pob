@@ -1,0 +1,4 @@
+group "main"
+{
+	skill_area_of_effect = "skill"
+}

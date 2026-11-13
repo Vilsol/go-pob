@@ -1,0 +1,13 @@
+version 2
+abstract
+
+Stats
+{
+	base_maximum_life = 38
+	base_movement_velocity = 100
+}
+
+Positioned
+{
+	radius = 3
+}

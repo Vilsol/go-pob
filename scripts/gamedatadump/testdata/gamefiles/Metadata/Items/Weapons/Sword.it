@@ -1,0 +1,8 @@
+version 2
+extends "Metadata/Items/Item"
+
+Base
+{
+	tag = "sword"
+	remove_tag = "default"
+}

@@ -84,9 +84,13 @@ func newSkillsExport() (*skillsExport, error) {
 	for _, row := range poe.ActiveSkillTypes {
 		e.skillTypeMap = append(e.skillTypeMap, row.ID)
 	}
-	b, err := loader.LoadFile(gameDataContext(), raw.LatestVersion, "Metadata/StatDescriptions/skillpopup_stat_filters.txt", assetCache())
+	txts, err := gameFiles(raw.LatestVersion, ".txt", assetCache())
 	if err != nil {
-		return nil, fmt.Errorf("skillpopup_stat_filters.txt: %w", err)
+		return nil, err
+	}
+	b, ok := txts["Metadata/StatDescriptions/skillpopup_stat_filters.txt"]
+	if !ok {
+		return nil, fmt.Errorf("skillpopup_stat_filters.txt: %w", loader.ErrAssetNotFound)
 	}
 	text := convertUTF16to8(b)
 	for _, m := range skillStatScopeRe.FindAllStringSubmatch(text, -1) {

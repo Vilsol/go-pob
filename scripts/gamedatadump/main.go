@@ -69,6 +69,23 @@ func gameDataContext() context.Context {
 	return context.Background()
 }
 
+// fileBundles holds each loaded file bundle by version and extension, so a run fetches each once.
+var fileBundles = map[string]map[string][]byte{}
+
+// gameFiles is every game text file of version with extension ext (".ot"), by game path.
+func gameFiles(version, ext string, cache loader.AssetCache) (map[string][]byte, error) {
+	key := version + " " + ext
+	if files, ok := fileBundles[key]; ok {
+		return files, nil
+	}
+	files, err := loader.LoadFileBundle(gameDataContext(), version, ext, cache)
+	if err != nil {
+		return nil, fmt.Errorf("%s files of %s: %w", ext, version, err)
+	}
+	fileBundles[key] = files
+	return files, nil
+}
+
 func assetCache() loader.AssetCache {
 	return assetcache.AssetLoaderWrapper{Storage: storage.Get()}
 }

@@ -8,7 +8,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Vilsol/go-pob-data/loader"
 	"github.com/Vilsol/go-pob-data/poe"
 
 	"github.com/Vilsol/go-pob/data/raw"
@@ -40,6 +39,7 @@ type basesExport struct {
 	x     *modsExport
 	tags  map[string][]string
 	bases map[string]craftBase
+	its   map[string][]byte
 }
 
 var (
@@ -58,8 +58,8 @@ func (b *basesExport) baseItemTags(baseItemType string) []string {
 	if tags, ok := b.tags[baseItemType]; ok {
 		return tags
 	}
-	file, err := loader.LoadFile(gameDataContext(), raw.LatestVersion, baseItemType+".it", assetCache())
-	if err != nil {
+	file, ok := b.its[baseItemType+".it"]
+	if !ok {
 		b.tags[baseItemType] = nil
 		return nil
 	}
@@ -215,7 +215,11 @@ func dumpItemBases(pobDir string) (map[string]craftBase, error) {
 	if err != nil {
 		return nil, err
 	}
-	b := &basesExport{x: &modsExport{describer: describer}, tags: map[string][]string{}, bases: map[string]craftBase{}}
+	its, err := gameFiles(raw.LatestVersion, ".it", cache)
+	if err != nil {
+		return nil, err
+	}
+	b := &basesExport{x: &modsExport{describer: describer}, tags: map[string][]string{}, bases: map[string]craftBase{}, its: its}
 	for _, name := range baseItemTypes {
 		text, err := os.ReadFile(filepath.Join(pobDir, "src", "Export", "Bases", name+".txt")) //nolint:gosec // the pinned PoB checkout
 		if err != nil {

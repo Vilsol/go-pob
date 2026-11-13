@@ -8,8 +8,6 @@ import (
 	"regexp"
 	"sort"
 	"strings"
-
-	"github.com/Vilsol/go-pob-data/loader"
 )
 
 // The row structs name go-pob-data's columns; where PoB-PoE2's spec.lua names the same bytes otherwise,
@@ -185,6 +183,7 @@ type poe2BasesExport struct {
 	componentCharge []poe2ComponentCharges
 	attributeReqs   []poe2AttributeRequirement
 	itFiles         map[string]*string
+	its             map[string][]byte
 }
 
 type poe2BaseState struct {
@@ -248,7 +247,7 @@ func (x *poe2BasesExport) itFile(name string) *string {
 		return f
 	}
 	var out *string
-	if b, err := loader.LoadFile(gameDataContext(), poe2Version, name+".it", assetCache()); err == nil {
+	if b, ok := x.its[name+".it"]; ok {
 		s := string(b)
 		out = &s
 	}
@@ -835,6 +834,9 @@ func newPoE2BasesExport() (*poe2BasesExport, error) {
 		return nil, err
 	}
 	var err error
+	if x.its, err = gameFiles(poe2Version, ".it", assetCache()); err != nil {
+		return nil, err
+	}
 	if x.describer, err = poe2LoadStatFile("stat_descriptions"); err != nil {
 		return nil, err
 	}
