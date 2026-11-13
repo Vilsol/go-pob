@@ -65,6 +65,10 @@ func main() {
 
 	list, ok := fields.For(raw.LatestVersion)
 	if !ok {
+		// a version with no list has no .min assets; its full assets are named by the same reads
+		list, ok = fields.For(raw.DefaultVersion)
+	}
+	if !ok {
 		refuse("go-pob-data has no field list for", raw.LatestVersion)
 	}
 	ctx := raw.DataContext(context.Background())

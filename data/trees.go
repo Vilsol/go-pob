@@ -18,4 +18,10 @@ func init() {
 		Num:     3.29,
 		URL:     "https://www.pathofexile.com/passive-skill-tree/3.29.0/",
 	}
+
+	TreeVersions[TreeVersion3_30] = &TreeVersionData{
+		Display: "3.30",
+		Num:     3.30,
+		URL:     "https://www.pathofexile.com/passive-skill-tree/3.30.0/",
+	}
 }

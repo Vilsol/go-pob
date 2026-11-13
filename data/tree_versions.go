@@ -36,6 +36,7 @@ const (
 	TreeVersion3_18 = pob.TreeVersion("3_18")
 	TreeVersion3_20 = pob.TreeVersion("3_20")
 	TreeVersion3_29 = pob.TreeVersion("3_29")
+	TreeVersion3_30 = pob.TreeVersion("3_30")
 )
 
 var LatestTreeVersion = treeForGameData(raw.LatestVersion)
@@ -50,6 +51,8 @@ func treeForGameData(version string) pob.TreeVersion {
 		return TreeVersion3_20
 	case "3.29":
 		return TreeVersion3_29
+	case "3.30":
+		return TreeVersion3_30
 	default:
 		return TreeVersion3_18
 	}

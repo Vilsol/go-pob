@@ -9,6 +9,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/Vilsol/go-pob/scripts/gopob/internal/gateversions"
 )
 
 type rdGenerator struct {
@@ -472,6 +474,18 @@ func regenData(argv []string) int {
 		}
 	}
 	r.pob = cdrRealpathM(rdExpandUser(pobArg))
+
+	// the compiled tables follow the game data the graded corpus and the pinned PoB belong to, not the app's newer one
+	if r.game != "poe2" && os.Getenv("POE_VERSION") == "" {
+		row, err := gateversions.Authoritative()
+		if err == nil {
+			err = os.Setenv("POE_VERSION", row.Version)
+		}
+		if err != nil {
+			fmt.Fprintf(rdStderr, "REFUSING: %v\n", err)
+			return 3
+		}
+	}
 
 	if err := r.main(); err != nil {
 		var ref *rdRefusalError

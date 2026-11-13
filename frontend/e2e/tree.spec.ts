@@ -261,12 +261,12 @@ test('tree sets: the select and the manage list switch passive trees as Go does'
   const m = await go.model();
   const trees = treeSelect(page);
   const select = trees.box;
-  expect(await trees.entries()).toEqual(['Until Lab', 'Lab 2', 'White maps', 'Manage trees…']);
-  await expect(select).toHaveText('Lab 2');
+  expect(await trees.entries()).toEqual(['[3.29] Until Lab', '[3.29] Lab 2', '[3.29] White maps', 'Manage trees…']);
+  await expect(select).toHaveText('[3.29] Lab 2');
 
   await app.act(
     'switch-tree',
-    () => trees.choose('White maps'),
+    () => trees.choose('[3.29] White maps'),
     async () => {
       await m.exposition.SetActiveTreeSpec(build, 3);
       return expectedLines(await go.outputs(build));
@@ -900,14 +900,14 @@ test('tree sets: a tree’s tooltip shows its details and what switching to it g
 
   // TreeTab.lua:51-104
   await select.click();
-  await select.locator('xpath=..').getByRole('option', { name: 'Until Lab', exact: true }).hover();
+  await select.locator('xpath=..').getByRole('option', { name: '[3.29] Until Lab', exact: true }).hover();
   await expect(onSelect.locator('[aria-label="Details"] > span')).toHaveText(details(0));
   await select.press('Escape');
   await page.mouse.move(0, 0);
 
   await treeSelect(page).choose('Manage trees…');
   const dialog = page.getByRole('dialog', { name: 'Manage passive trees' });
-  await dialog.getByRole('option', { name: /^Until Lab/ }).hover();
+  await dialog.getByRole('option', { name: /^\[3\.29\] Until Lab/ }).hover();
   const tip = dialog.locator('[aria-label="Tree tooltip"]');
   await expect(tip.locator('[aria-label="Details"] > span')).toHaveText(details(0));
   const region = tip.getByRole('group', { name: 'Stat differences' });
@@ -971,7 +971,7 @@ test('tree links: Export Tree gives the tree’s link; Import Tree adds a tree f
       return expectedLines(await go.outputs(build));
     }
   );
-  await expect(dialog.getByRole('option', { name: /^From a link/ })).toContainText('current');
+  await expect(dialog.getByRole('option', { name: /^\[3\.29\] From a link/ })).toContainText('current');
   expect(go.fresh(build, (b) => b.Tree.ActiveSpec)).toBe(4);
   app.assertNoErrors();
 });
@@ -1015,7 +1015,7 @@ test('tree links: Shrink with PoEURL, and a PoEURL link imported as the link it 
       return expectedLines(await go.outputs(build));
     }
   );
-  await expect(dialog.getByRole('option', { name: /^From PoEURL/ })).toContainText('current');
+  await expect(dialog.getByRole('option', { name: /^\[3\.29\] From PoEURL/ })).toContainText('current');
   expect(asked).toEqual([`shrink ${link}`, 'bad', 'dABz']);
   expect(app.errors.filter((e) => !e.includes('status of 502') || !e.includes('/api/poeurl?id=bad'))).toEqual([]);
 });
@@ -1039,13 +1039,13 @@ test('tree versions: an older tree converts to the latest as Go does', async ({ 
   const before = (await m.exposition.GetTreeSpecs(build)).Specs!.length;
   await app.act(
     'convert-tree',
-    () => banner.getByRole('button', { name: 'Convert to 3.29' }).click(),
+    () => banner.getByRole('button', { name: 'Convert to 3.30' }).click(),
     async () => {
-      expect(await m.exposition.ConvertTreeSpec(build, '3_29', false)).toBe('');
+      expect(await m.exposition.ConvertTreeSpec(build, '3_30', false)).toBe('');
       return expectedLines(await go.outputs(build));
     }
   );
-  await expect(page.getByRole('dialog', { name: 'Tree Converted' })).toContainText('The tree has been converted to 3.29.');
+  await expect(page.getByRole('dialog', { name: 'Tree Converted' })).toContainText('The tree has been converted to 3.30.');
   await page.getByRole('dialog', { name: 'Tree Converted' }).getByRole('button', { name: 'OK' }).click();
   expect(await treeSelect(page).entries()).toHaveLength(before + 2);
   await expect(treeSelect(page).box).toHaveText((await m.exposition.GetTreeSpecs(build)).Specs![1].Title);

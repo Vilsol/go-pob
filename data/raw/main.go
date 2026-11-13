@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"testing"
 
 	"github.com/Vilsol/go-pob-data/fields"
 	"github.com/Vilsol/go-pob-data/loader"
@@ -15,15 +16,22 @@ import (
 	"github.com/Vilsol/go-pob/storage"
 )
 
+// DefaultVersion is the game data testdata's corpus and oracle belong to; a test binary loads it unless POE_VERSION says otherwise.
 const DefaultVersion = "3.29"
 
-var LatestVersion = gameDataVersion(os.Getenv)
+// AppVersion is the game data every other binary loads unless POE_VERSION says otherwise.
+const AppVersion = "3.30"
 
-func gameDataVersion(getenv func(string) string) string {
+var LatestVersion = gameDataVersion(os.Getenv, testing.Testing())
+
+func gameDataVersion(getenv func(string) string, test bool) string {
 	if v := getenv("POE_VERSION"); v != "" {
 		return v
 	}
-	return DefaultVersion
+	if test {
+		return DefaultVersion
+	}
+	return AppVersion
 }
 
 // UpdateFunc reports a loading stage; with a total, done of total within it.
