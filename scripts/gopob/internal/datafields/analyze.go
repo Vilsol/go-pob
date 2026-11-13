@@ -339,7 +339,7 @@ func (a *analyzer) owned(fn *ssa.Function) bool {
 	if isDataPackage(path) {
 		return filepath.Base(file) != a.game.GeneratedFile && !strings.HasSuffix(file, "_test.go")
 	}
-	return inModule(path) && path != selfPkg && path != generatorPkg
+	return inModule(path) && path != selfPkg && path != generatorPkg && path != generatorPkg+".test"
 }
 
 func inModule(path string) bool {
