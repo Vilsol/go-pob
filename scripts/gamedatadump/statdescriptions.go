@@ -43,7 +43,7 @@ var (
 	gggMarkupRe = regexp.MustCompile(`<[^>]+>\{([^}]+)\}`)
 	gggLinkRe   = regexp.MustCompile(`\[([^|\]]+)\]`)
 	gggAliasRe  = regexp.MustCompile(`\[[^|]+\|([^|]+)\]`)
-	includeRe   = regexp.MustCompile(`^Metadata/StatDescriptions/(.+)\.txt$`)
+	includeRe   = regexp.MustCompile(`^Metadata/StatDescriptions/(.+)\.(?:txt|csd)$`)
 )
 
 //pob:src/Modules/Common.lua:1110-1116
