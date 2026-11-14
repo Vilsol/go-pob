@@ -894,30 +894,31 @@
   // PassiveTreeView.lua:83-111
   let viewRequested: unknown;
   let viewRestored: unknown;
+  // the canvas the view was asked for and restored on: a tree remounted on the build's own version starts unrestored
+  let viewRequestedOn: unknown;
+  let viewRestoredOn: unknown;
   let savedView: pob.TreeView | undefined;
   $effect(() => {
     const b = $currentBuild;
     const el = canvasEl;
-    if (!b || !el || !view || viewRequested === b) return;
+    if (!b || !el || !view || (viewRequested === b && viewRequestedOn === el)) return;
     // PassiveSpec.lua:2361-2388: an undo step restores the allocations, not the view
-    if (viewRequested && restoredBuilds.has(b)) {
+    if (viewRequested && viewRequested !== b && restoredBuilds.has(b)) {
       if (viewRestored === viewRequested) viewRestored = b;
       viewRequested = b;
       return;
     }
     viewRequested = b;
+    viewRequestedOn = el;
     syncWrap
       ?.GetTreeViewState()
       .then((t) => {
-        if (!t || viewRequested !== b) return;
-        // the tree may have remounted on the build's own version meanwhile; without one up, ask again when it is
+        // the tree may have remounted on the build's own version meanwhile; it asks again when it is up
         const cur = canvasEl;
-        if (!cur) {
-          viewRequested = undefined;
-          return;
-        }
+        if (!t || viewRequested !== b || cur !== el) return;
         savedView = t;
         viewRestored = b;
+        viewRestoredOn = cur;
         if (t.ShowHeatMap) setHeat(true);
         if (phone.current) cur.fitActive();
         else if (t.ZoomLevel || t.ZoomX || t.ZoomY) cur.setPobView({ zoomLevel: t.ZoomLevel, zoomX: t.ZoomX, zoomY: t.ZoomY });
@@ -951,7 +952,7 @@
     const heatMap = heatOn;
     const diffs = showDiff;
     const el = canvasEl;
-    if (!el || viewRestored !== $currentBuild) return;
+    if (!el || viewRestored !== $currentBuild || viewRestoredOn !== el) return;
     clearTimeout(viewSave);
     viewSave = setTimeout(() => {
       if (el !== canvasEl) return;
