@@ -385,10 +385,12 @@ jobs:
           GOOS: js
           GOARCH: wasm
 
+      # the Go tests cache the corpus's game data; the mounted pages' wasm loads the app's, which populate_cache adds
       - name: Populate the bundle cache
         run: |
           go test -count=1 ./wasm/exposition/
           go test -count=1 -run TestLoadTreeGraph ./data/
+          go run ./frontend/e2e/populate_cache.go
 
       - name: Test
         run: pnpm exec vitest run --project unit --exclude 'e2e/**'
