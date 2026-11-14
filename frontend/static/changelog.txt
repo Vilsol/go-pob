@@ -1,3 +1,10 @@
+VERSION[0.8.1][2026/11/14]
+
+--- Fixed ---
+* pwa: the app updates again: the service worker no longer precaches the host's _routes.json, which Cloudflare never serves, and a failed install is reported instead of 'No update available'
+* a mastery with no effect chosen no longer grants every option's stats, as Path of Building does
+
+
 VERSION[0.8.0][2026/11/14]
 
 --- New ---
