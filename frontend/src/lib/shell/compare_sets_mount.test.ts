@@ -22,7 +22,7 @@ vi.mock('$lib/go/worker', async () => {
   return { syncWrap: remoteWorker(), syncWorker: undefined };
 });
 
-const { bootWorker, loadCorpusBuild } = await import('../../../harness/component/go_runtime');
+const { bootWorker } = await import('../../../harness/component/go_runtime');
 const { currentBuild } = await import('$lib/global');
 const { workerInstance } = await import('$lib/go/sync_worker');
 const types = await import('$lib/types');
@@ -42,15 +42,20 @@ const parts = (b: Build) => {
   }
 };
 
+// a tree older than the newest names its loadout "[3.29] Final", which matches no set (Build.lua:812,847); these
+// loadouts are about sets, so both builds' trees are moved to the newest version
+const onLatestTree = async (file: string) =>
+  (await readFile(`${CORPUS}/${file}`, 'utf8')).replaceAll('treeVersion="3_29"', `treeVersion="${workerInstance.GetLatestTreeVersion()}"`);
+
 let info: CompareInfo;
 let bBuild: Build;
 
 beforeAll(async () => {
   await bootWorker(currentBuild);
-  await loadCorpusBuild(A);
+  workerInstance.currentBuild = types.builds.ParseBuildStr(await onLatestTree(A)).unwrap()!;
   vi.spyOn(workerInstance, 'Tick').mockResolvedValue(undefined);
   vi.spyOn(workerInstance as unknown as { compareSide: () => Promise<unknown> }, 'compareSide').mockResolvedValue({ outputs: {} });
-  const code = types.pob.CompressEncode(await readFile(`${CORPUS}/${B}`, 'utf8')).unwrap();
+  const code = types.pob.CompressEncode(await onLatestTree(B)).unwrap();
   info = await workerInstance.LoadCompareCode(code, 'B');
   bBuild = (workerInstance as unknown as { compareB: { build: Build } }).compareB.build;
 }, 120_000);

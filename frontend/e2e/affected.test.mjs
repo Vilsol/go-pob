@@ -40,17 +40,17 @@ const recorded = (files) => ({
   ...m,
   coverage: {
     commit: 'fixture',
-    files: new Set(['frontend/src/lib/shell/Poe2Page.svelte', 'frontend/src/lib/types/index.js', 'frontend/src/lib/types2/index.js']),
+    files: new Set(['frontend/src/lib/shell/AppAbout.svelte', 'frontend/src/lib/types/index.js', 'frontend/src/lib/types2/index.js']),
     specs: files
   }
 });
 const cov = recorded({
   'e2e/notes.spec.ts': new Set(['frontend/src/lib/types/index.js']),
-  'e2e/items.spec.ts': new Set(['frontend/src/lib/types/index.js', 'frontend/src/lib/shell/Poe2Page.svelte', 'frontend/src/lib/types2/index.js'])
+  'e2e/items.spec.ts': new Set(['frontend/src/lib/types/index.js', 'frontend/src/lib/shell/AppAbout.svelte', 'frontend/src/lib/types2/index.js'])
 });
 
 test('a recorded spec is picked by what it ran, an unrecorded one by its imports', () => {
-  const r = select(['frontend/src/lib/shell/Poe2Page.svelte'], cov, { max: Infinity, go: noGo });
+  const r = select(['frontend/src/lib/shell/AppAbout.svelte'], cov, { max: Infinity, go: noGo });
   expect(r.specs).toContain('e2e/items.spec.ts');
   expect(r.specs).not.toContain('e2e/notes.spec.ts');
   // tree.spec is not in the map, and the file is in the shell's closure

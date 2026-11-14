@@ -27,6 +27,8 @@ const { workerInstance } = await import('$lib/go/sync_worker');
 const types = await import('$lib/types');
 
 const BUILD = '0280-elementalist-fireball.xml';
+// BUILD's trees are 3.29, older than the newest tree, so the lists name them with their version (TreeTab.lua:492-498)
+const OLD = '[3.29] ';
 
 const info = () => {
   const i = workerInstance.GetBuildInfo()!;
@@ -333,6 +335,7 @@ describe('the Tree page converts tree versions', () => {
       { value: '3_20', label: '3.20' },
       { value: '3_29', label: '3.29' }
     ]);
+    vi.spyOn(workerInstance, 'GetLatestTreeVersion').mockReturnValue('3_29');
     const view = await mount();
     const version = (await view.findByRole('combobox', { name: 'Version' })) as HTMLSelectElement;
     await vi.waitFor(() => expect(version.value).toBe('3_29'));
@@ -381,8 +384,10 @@ describe('the Tree page switches and manages passive trees', () => {
     await loadCorpusBuild(BUILD);
     const view = await mount();
     const select = await view.findByRole('combobox', { name: 'Tree set' }, { timeout: 10_000 });
-    await vi.waitFor(async () => expect(await treeEntries(select)).toEqual(['Until Lab', 'Lab 2', 'White maps', 'Manage trees…']), { timeout: 10_000 });
-    expect(select.textContent).toBe('Lab 2');
+    await vi.waitFor(async () => expect(await treeEntries(select)).toEqual([`${OLD}Until Lab`, `${OLD}Lab 2`, `${OLD}White maps`, 'Manage trees…']), {
+      timeout: 10_000
+    });
+    expect(select.textContent).toBe(`${OLD}Lab 2`);
     const before = nodes();
     tick.mockClear();
     await chooseTree(select, 0);
@@ -404,7 +409,7 @@ describe('the Tree page switches and manages passive trees', () => {
         within(dlg)
           .getAllByRole('option')
           .map((o) => o.textContent?.replace(/( \(.*\))?(current)?$/, ''))
-      ).toEqual(['Until Lab', 'Lab 2', 'White maps'])
+      ).toEqual([`${OLD}Until Lab`, `${OLD}Lab 2`, `${OLD}White maps`])
     );
     expect(get(treeManageRequest)).toBe(false);
   }, 60_000);
@@ -419,10 +424,10 @@ describe('the Tree page switches and manages passive trees', () => {
       const select = await view.findByRole('combobox', { name: 'Tree set' }, { timeout: 10_000 });
       await vi.waitFor(async () => expect(await treeEntries(select)).toHaveLength(4), { timeout: 10_000 });
       await fireEvent.click(select);
-      await fireEvent.mouseEnter(within(select.parentElement!).getByRole('option', { name: 'White maps' }));
+      await fireEvent.mouseEnter(within(select.parentElement!).getByRole('option', { name: `${OLD}White maps` }));
       await vi.waitFor(() => expect(view.getByLabelText('Tree tooltip').textContent).toContain('White maps'), { timeout: 10_000 });
       await vi.waitFor(() => expect(compare).toHaveBeenCalledWith(3));
-      await fireEvent.mouseEnter(within(select.parentElement!).getByRole('option', { name: 'Until Lab' }));
+      await fireEvent.mouseEnter(within(select.parentElement!).getByRole('option', { name: `${OLD}Until Lab` }));
       await vi.waitFor(() => expect(view.getByLabelText('Tree tooltip').textContent).toContain('Until Lab'), { timeout: 10_000 });
       await fireEvent.keyDown(select, { key: 'Escape' });
     } finally {
@@ -463,7 +468,7 @@ describe('the Tree page switches and manages passive trees', () => {
     await new Promise((r) => setTimeout(r, 100));
     expect((await specs()).active).toBe(2);
 
-    const first = within(list).getByRole('group', { name: 'Until Lab' });
+    const first = within(list).getByRole('group', { name: `${OLD}Until Lab` });
     await fireEvent.keyDown(first, { key: 'ArrowDown', altKey: true });
     await vi.waitFor(async () => expect(await specs()).toEqual({ active: 1, titles: ['Lab 2', 'Until Lab', 'White maps'] }), { timeout: 10_000 });
   }, 60_000);
@@ -477,15 +482,15 @@ describe('the Tree page switches and manages passive trees', () => {
     await chooseTree(select, 3);
     const list = await view.findByRole('listbox', { name: 'Passive trees' });
     const rowOf = (name: string) => [...list.querySelectorAll<HTMLElement>('[data-reorder-item]')].find((o) => o.textContent!.startsWith(name))!;
-    await vi.waitFor(() => expect(rowOf('White maps')).toBeDefined());
+    await vi.waitFor(() => expect(rowOf(`${OLD}White maps`)).toBeDefined());
     const before = await specs();
     const current = before.titles[before.active - 1];
 
-    await fireEvent.keyDown(rowOf('Until Lab'), { key: 'F2' });
+    await fireEvent.keyDown(rowOf(`${OLD}Until Lab`), { key: 'F2' });
     expect((view.getByRole('textbox', { name: 'Name for this passive tree' }) as HTMLInputElement).value).toBe('Until Lab');
     await fireEvent.click(view.getByRole('button', { name: 'Cancel' }));
 
-    await fireEvent.keyDown(rowOf('Until Lab'), { key: 'Delete' });
+    await fireEvent.keyDown(rowOf(`${OLD}Until Lab`), { key: 'Delete' });
     const confirm = view.getByRole('group', { name: 'Confirm delete' });
     expect(confirm.textContent).toContain("'Until Lab'");
     await fireEvent.click(within(confirm).getByRole('button', { name: 'Delete' }));
@@ -514,7 +519,7 @@ describe('the Tree page switches and manages passive trees', () => {
     const xml = new TextDecoder().decode(types.builds.SerializeBuild(workerInstance.currentBuild).unwrap());
     const specNodes = [...xml.matchAll(/<Spec [^>]*\bnodes="([^"]*)"/g)].map((m) => m[1]);
     expect(specNodes[3], 'the copy has the original tree’s nodes').toBe(specNodes[1]);
-    await fireEvent.click(row('Until Lab'));
+    await fireEvent.click(row(`${OLD}Until Lab`));
     await named('Rename', 'Leveling');
     await vi.waitFor(async () => expect((await specs()).titles).toEqual(['Leveling', 'Lab 2', 'White maps', 'Lab 2 again']), { timeout: 10_000 });
     await fireEvent.click(view.getByRole('button', { name: 'Rename' }));
@@ -522,8 +527,8 @@ describe('the Tree page switches and manages passive trees', () => {
     expect((view.getByRole('button', { name: 'Save' }) as HTMLButtonElement).disabled).toBe(true);
     await fireEvent.click(view.getByRole('button', { name: 'Cancel' }));
     tick.mockClear();
-    await vi.waitFor(() => expect(row('Lab 2 (')).toBeDefined());
-    await fireEvent.click(row('Lab 2 ('));
+    await vi.waitFor(() => expect(row(`${OLD}Lab 2 (`)).toBeDefined());
+    await fireEvent.click(row(`${OLD}Lab 2 (`));
     await fireEvent.click(view.getByRole('button', { name: 'Delete' }));
     await fireEvent.click(within(view.getByRole('group', { name: 'Confirm delete' })).getByRole('button', { name: 'Delete' }));
     await vi.waitFor(async () => expect(await specs()).toEqual({ active: 1, titles: ['Leveling', 'White maps', 'Lab 2 again'] }), { timeout: 10_000 });

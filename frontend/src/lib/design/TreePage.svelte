@@ -1058,7 +1058,7 @@
     sets={tree.specs}
     current={spec}
     nameOf={bareTitle}
-    deleteMessage={(i: number) => `Delete '${tree.specs[i] ?? ''}'?`}
+    deleteMessage={(i: number) => `Delete '${bareTitle(i)}'?`}
     note="Double-click a tree to switch to it; drag to reorder."
     activateHint="Enter switches to the tree"
     rowProps={(i: number) => ({ onmouseenter: () => onspechover?.(i), onfocus: () => onspechover?.(i) })}
