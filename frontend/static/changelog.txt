@@ -1,3 +1,19 @@
+VERSION[0.8.0][2026/11/14]
+
+--- New ---
+* an MCP server for AI assistants: go-pob mcp builds, edits, compares and optimises PoE1 builds over stdio
+* PoE1 3.30 support: new builds use 3.30 game data and the 3.30 passive tree
+
+--- Fixed ---
+* scripts: the data fields guard ignores the game data dumper's test binary, as it ignores the dumper itself
+* scripts: the PoE1 game data dumper follows stat description includes written as .csd, as 3.30's files are
+* tree: deleting a passive tree asks by its title, without the tree version prefix, as Path of Building does
+* tree: switching to a build on another tree version keeps its saved tree view instead of saving the default over it
+* 3.30 tree text shows granted skills and keyword names without GGG's markup, and the phone convert banner no longer covers Fit tree
+* a build is calculated and drawn on its own passive tree version, as Path of Building does
+* socket group labels and set names render Path of Building colour codes, and label-only groups show as heading and blank rows as in PoB
+
+
 VERSION[0.7.0][2026/11/12]
 
 --- New ---
