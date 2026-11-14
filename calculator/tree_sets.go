@@ -111,9 +111,9 @@ func TreeSpecs(build *pob.PathOfBuilding) []TreeSpecRow {
 
 //pob:block:src/Classes/PassiveSpecListControl.lua:78
 func TreeSpecsPoints(build *pob.PathOfBuilding) []TreeSpecPoints {
-	tree := data.TreeVersions[data.LatestTreeVersion].Tree()
 	out := make([]TreeSpecPoints, 0, len(build.Tree.Specs))
 	for i, spec := range build.Tree.Specs {
+		tree := data.TreeVersions[hostedTreeVersion(spec.TreeVersion)].Tree()
 		subgraph := specSubgraph(build, i+1, spec)
 		used, ascUsed := specAllocCounts(tree, subgraph, spec)
 		out = append(out, TreeSpecPoints{Used: used, AscendUsed: ascUsed, Sockets: specSocketCount(tree, subgraph, spec)})
@@ -128,7 +128,7 @@ func specSubgraph(build *pob.PathOfBuilding, specID int, spec pob.Spec) map[stri
 	}
 	other := *build
 	other.Tree.ActiveSpec = specID
-	nodes, _ := buildClusterJewelLayout(&Environment{Build: &other}, data.LatestTreeVersion, false)
+	nodes, _ := buildClusterJewelLayout(&Environment{Build: &other}, hostedTreeVersion(spec.TreeVersion), false)
 	return nodes
 }
 

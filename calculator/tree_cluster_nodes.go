@@ -4,7 +4,6 @@ import (
 	"slices"
 	"strconv"
 
-	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/pob"
 )
 
@@ -24,8 +23,8 @@ type TreeClusterNode struct {
 
 //pob:block:src/Classes/PassiveSpec.lua:2313-2356
 func TreeClusterNodes(build *pob.PathOfBuilding) []TreeClusterNode {
-	nodes, layout := buildClusterJewelLayout(&Environment{Build: build}, data.LatestTreeVersion, true)
-	tree := specTree()
+	nodes, layout := buildClusterJewelLayout(&Environment{Build: build}, CalcTreeVersion(build), true)
+	tree := specTree(build)
 	out := make([]TreeClusterNode, 0, len(layout))
 	for key, l := range layout {
 		id, err := strconv.ParseInt(key, 10, 64)

@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/pob"
 )
 
@@ -25,7 +24,7 @@ func activeMasterySelections(build *pob.PathOfBuilding) []pob.MasterySelection {
 
 //pob:block:src/Classes/TreeTab.lua:1026-1032
 func MasteryOptions(build *pob.PathOfBuilding, nodeID int64) []MasteryOption {
-	node, ok := data.TreeVersions[data.LatestTreeVersion].Tree().Nodes[strconv.FormatInt(nodeID, 10)]
+	node, ok := specTree(build).Nodes[strconv.FormatInt(nodeID, 10)]
 	if !ok || !isMasteryNode(node) {
 		return nil
 	}

@@ -19,7 +19,7 @@ func sortedIDs(ids []int64) []int64 {
 // TestTreeURLsRoundTripPoBsOwn: PoB writes every spec's official link beside its node list.
 func TestTreeURLsRoundTripPoBsOwn(t *testing.T) {
 	_, names := corpusNamesForLoadedData(t)
-	tree := specTree()
+	tree := latestSpecTree()
 	checked, masteries := 0, 0
 	for i, name := range names {
 		if i%25 != 0 {
@@ -174,7 +174,7 @@ func poePlannerLink(version, class, ascendancy int, nodes, cluster, ascNodes []i
 func TestDecodePoePlannerURL(t *testing.T) {
 	build := parseCorpusBuild(t, "0280-elementalist-fireball.xml")
 	spec := build.Tree.Specs[build.ActiveSpecIndex()]
-	tree := specTree()
+	tree := latestSpecTree()
 	var main, asc []int64
 	for _, id := range pob.SpecNodes(spec) {
 		n, ok := tree.Nodes[nodeKey(id)]
@@ -217,7 +217,7 @@ func TestDecodePoePlannerURL(t *testing.T) {
 func mustStart(t *testing.T, class pob.ClassName, ascendancy pob.AscendancyName) int64 {
 	t.Helper()
 	classID, _ := pob.ClassIDByName(class)
-	id, err := strconv.ParseInt(classAscendancyStartNodeID(specTree(), classID, ascendancy), 10, 64)
+	id, err := strconv.ParseInt(classAscendancyStartNodeID(latestSpecTree(), classID, ascendancy), 10, 64)
 	if err != nil {
 		t.Fatal(err)
 	}

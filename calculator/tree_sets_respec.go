@@ -3,7 +3,6 @@ package calculator
 import (
 	"strconv"
 
-	"github.com/Vilsol/go-pob/data"
 	raw2 "github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/pob"
 )
@@ -24,8 +23,8 @@ func TreeSpecRespecCost(build *pob.PathOfBuilding, index int) TreeSpecRespec {
 	if cur.ClassID != other.ClassID {
 		return TreeSpecRespec{}
 	}
-	tree := data.TreeVersions[data.LatestTreeVersion].Tree()
-	clusters := clusterNodeMap(data.LatestTreeVersion)
+	tree := specTree(build)
+	clusters := clusterNodeMap(CalcTreeVersion(build))
 	target := map[int64]bool{}
 	for _, id := range pob.SpecNodes(other) {
 		target[id] = true

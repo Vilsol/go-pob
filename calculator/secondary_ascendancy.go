@@ -29,7 +29,7 @@ func SecondaryAscendancyList(build *pob.PathOfBuilding) SecondaryAscendancyDropd
 		out.Selected = *sec
 	}
 	var sortable []SecondaryAscendOption
-	for k, a := range specTree().AlternateAscendancies {
+	for k, a := range specTree(build).AlternateAscendancies {
 		if a.ID != "" && !legacyAlternateAscendancies[string(a.ID)] {
 			sortable = append(sortable, SecondaryAscendOption{Label: string(a.Name), AscendClassID: k + 1})
 		}

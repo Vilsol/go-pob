@@ -399,7 +399,7 @@ test('export the code, import it back: Go holds the identical build', { tag: '@s
 
 test('allocate a passive node from the tree search, then deallocate it', { tag: '@smoke' }, async ({ page }) => {
   const { app, build, want } = await open(page, '0339-reliquarian-shield-crush-of-the-chieftain-2');
-  await tree.prepareTree();
+  await tree.prepareTree(build);
   await app.openTree(tree.treeVersion());
 
   const before = tree.treeState(build);

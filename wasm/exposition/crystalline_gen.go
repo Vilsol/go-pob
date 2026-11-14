@@ -132,6 +132,7 @@ func init() {
 	crystallineNamespace("go-pob", "storage").Set("DeleteBuild", crystallineWrap(js.FuncOf(crystallineFnStorageDeleteBuild)))
 	crystallineNamespace("go-pob", "exposition").Set("GetSkillGems", crystallineWrap(js.FuncOf(crystallineFnExpositionGetSkillGems)))
 	crystallineNamespace("go-pob", "exposition").Set("CalcTreeVersion", crystallineWrap(js.FuncOf(crystallineFnExpositionCalcTreeVersion)))
+	crystallineNamespace("go-pob", "exposition").Set("LatestTreeVersion", crystallineWrap(js.FuncOf(crystallineFnExpositionLatestTreeVersion)))
 	crystallineNamespace("go-pob", "exposition").Set("GetRawTree", crystallineWrap(js.FuncOf(crystallineFnExpositionGetRawTree)))
 	crystallineNamespace("go-pob", "exposition").Set("TreeLoaded", crystallineWrap(js.FuncOf(crystallineFnExpositionTreeLoaded)))
 	crystallineNamespace("go-pob", "exposition").Set("GetStatByIndex", crystallineWrap(js.FuncOf(crystallineFnExpositionGetStatByIndex)))
@@ -4850,11 +4851,28 @@ func crystallineFnExpositionGetSkillGems(this js.Value, args []js.Value) (result
 func crystallineFnExpositionCalcTreeVersion(this js.Value, args []js.Value) (result any) {
 	defer crystallineRecover(&result)
 
-	if len(args) != 0 {
-		return crystallineFail("CalcTreeVersion: expected 0 arguments, got " + strconv.Itoa(len(args)))
+	if len(args) != 1 {
+		return crystallineFail("CalcTreeVersion: expected 1 arguments, got " + strconv.Itoa(len(args)))
 	}
 
-	r0 := CalcTreeVersion()
+	a0, err := crystallineToPtrPobPathOfBuilding(args[0])
+	if err != nil {
+		return crystallineFail(err.Error())
+	}
+
+	r0 := CalcTreeVersion(a0)
+
+	return string(r0)
+}
+
+func crystallineFnExpositionLatestTreeVersion(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 0 {
+		return crystallineFail("LatestTreeVersion: expected 0 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	r0 := LatestTreeVersion()
 
 	return string(r0)
 }

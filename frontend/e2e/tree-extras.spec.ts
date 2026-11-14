@@ -107,7 +107,7 @@ const openTree = async (page: Page, file = FILE) => {
   const build = await go.loadXml(xml);
   const app = await App.open(page, file);
   await app.importCode(await go.encode(xml), async () => expectedLines(await go.outputs(build)));
-  await tree.prepareTree();
+  await tree.prepareTree(build);
   const active = go.fresh(build, (b) => [...(b.Build.PassiveNodes ?? [])]);
   await app.goTo('Tree');
   await waitFrame(page, 0, `(f) => f.className !== undefined && f.active === ${active.length}`, 60_000);

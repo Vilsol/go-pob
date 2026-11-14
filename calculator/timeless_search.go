@@ -93,7 +93,7 @@ type TimelessSocket struct {
 
 //pob:block:src/Classes/TreeTab.lua:1305-1346
 func TimelessSockets(build *pob.PathOfBuilding) []TimelessSocket {
-	tree := specTree()
+	tree := specTree(build)
 	alloc := allocSet(build, tree)
 	var out []TimelessSocket
 	for key, n := range tree.Nodes {
@@ -425,7 +425,7 @@ func timelessConqueror(jewelType tjdata.JewelType) tjdata.Conqueror {
 
 //pob:block:src/Classes/TreeTab.lua:2442-2729
 func (m *MiscCalculator) timelessSearchSocket(q TimelessSearchQuery, socketID int64) *timelessSocketSearch {
-	tree := specTree()
+	tree := specTree(m.build)
 	socket, ok := tree.Nodes[strconv.FormatInt(socketID, 10)]
 	if !ok || socket.IsJewelSocket == nil || !*socket.IsJewelSocket {
 		return nil
@@ -738,7 +738,7 @@ func (m *MiscCalculator) timelessSearchSocket(q TimelessSearchQuery, socketID in
 
 //pob:block:src/Classes/TreeTab.lua:1603-1635
 func (m *MiscCalculator) timelessAllocatedNotablesInRadius(socketID int64) int {
-	tree := specTree()
+	tree := specTree(m.build)
 	alloc := allocSet(m.build, tree)
 	count := 0
 	for id := range tree.NodesInRadiusOf(socketID, 2) {
@@ -753,7 +753,7 @@ func (m *MiscCalculator) timelessAllocatedNotablesInRadius(socketID int64) int {
 
 //pob:block:src/Classes/TreeTab.lua:1603-1635
 func (m *MiscCalculator) TimelessProtectableNodes(socketID int64) []TimelessMod {
-	tree := specTree()
+	tree := specTree(m.build)
 	if _, ok := tree.Nodes[strconv.FormatInt(socketID, 10)]; !ok || socketID == -1 {
 		return nil
 	}
@@ -772,7 +772,7 @@ func (m *MiscCalculator) TimelessProtectableNodes(socketID int64) []TimelessMod 
 
 func (m *MiscCalculator) timelessPaths(tree *data.Tree) map[int64]int64 {
 	classID, _ := pob.ClassIDByName(m.build.Build.ClassName)
-	return data.TreeVersions[data.LatestTreeVersion].CalculateAllocationPaths(m.build.Build.PassiveNodes, specRoots(tree, classID))
+	return data.TreeVersions[CalcTreeVersion(m.build)].CalculateAllocationPaths(m.build.Build.PassiveNodes, specRoots(tree, classID))
 }
 
 var (
@@ -964,7 +964,7 @@ func TimelessSocketJewel(build *pob.PathOfBuilding, socketID int, itemID int) bo
 	if socketID == -1 || itemID == 0 {
 		return false
 	}
-	tree := specTree()
+	tree := specTree(build)
 	node, ok := tree.Nodes[nodeKey(int64(socketID))]
 	if !ok || node.IsJewelSocket == nil || !*node.IsJewelSocket || !allocSet(build, tree)[int64(socketID)] {
 		return false

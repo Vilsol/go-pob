@@ -6,7 +6,7 @@ import (
 
 // TestClickBloodlineNode: A click on another bloodline's node selects that bloodline.
 func TestClickBloodlineNode(t *testing.T) {
-	tree := specTree()
+	tree := latestSpecTree()
 	altIndex := func(id string) int {
 		for i, a := range tree.AlternateAscendancies {
 			if string(a.ID) == id {

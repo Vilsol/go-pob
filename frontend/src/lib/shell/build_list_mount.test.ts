@@ -113,6 +113,7 @@ const fake = {
   }),
   GameDataVersion: vi.fn(() => Promise.resolve('3.28')),
   GetTreeVersion: vi.fn(() => Promise.resolve('3_29')),
+  GetLatestTreeVersion: vi.fn(() => Promise.resolve('3_29')),
   BuildInfo: vi.fn(() =>
     Promise.resolve({
       GoVersion: 'go1.26.2',

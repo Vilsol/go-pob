@@ -22,7 +22,7 @@ func TestResetTreeAndRemoveAllTattoos(t *testing.T) {
 		t.Fatalf("%d overrides, %d nodes (was %d)", len(build.Tree.Specs[i].Overrides), len(build.Build.PassiveNodes), nodes)
 	}
 	ResetTree(build)
-	tree := specTree()
+	tree := latestSpecTree()
 	for _, id := range build.Build.PassiveNodes {
 		if n := tree.Nodes[nodeKey(id)]; !isClassStartNode(n) && !isAscendClassStartNode(n) {
 			t.Fatalf("node %d kept", id)

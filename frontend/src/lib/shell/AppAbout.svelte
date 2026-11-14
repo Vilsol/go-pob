@@ -44,7 +44,7 @@
 
   $effect(() => {
     if (!open) return;
-    Promise.all([syncWrap.BuildInfo(), syncWrap.GameDataVersion(), syncWrap.GetTreeVersion()])
+    Promise.all([syncWrap.BuildInfo(), syncWrap.GameDataVersion(), syncWrap.GetLatestTreeVersion()])
       .then(([bi, gameData, tree]) => {
         info = {
           version: (import.meta.env.VITE_VERSION as string | undefined) || bi?.Main?.Version || '(devel)',

@@ -30,7 +30,7 @@ func EncodeTreeURL(build *pob.PathOfBuilding, prefix string) string {
 		return ""
 	}
 	spec := build.Tree.Specs[i]
-	tree := specTree()
+	tree := specTree(build)
 	selections := map[int64]int64{}
 	for _, s := range pob.SpecMasterySelections(spec) {
 		selections[s.Node] = s.Effect
@@ -100,7 +100,7 @@ func DecodeTreeURL(url string) (DecodedTree, error) {
 	if ver > 6 {
 		return DecodedTree{}, fmt.Errorf("Invalid tree link (unknown version number '%d')", ver) //nolint:staticcheck // PoB's message
 	}
-	tree := specTree()
+	tree := data.TreeVersions[data.LatestTreeVersion].Tree()
 	out := DecodedTree{ClassID: int(b[4]), MasterySelection: map[int64]int64{}}
 	if ver >= 4 {
 		out.AscendClassID = int(b[5]) & 3
@@ -293,7 +293,7 @@ func DecodePoePlannerURL(url string) (DecodedTree, error) {
 	if !known {
 		return DecodedTree{}, fmt.Errorf("Invalid tree version found in link.") //nolint:staticcheck // PoB's message
 	}
-	tree := specTree()
+	tree := data.TreeVersions[data.LatestTreeVersion].Tree()
 	out := DecodedTree{ClassID: int(b[8]), AscendClassID: int(b[9]), MasterySelection: map[int64]int64{}, Version: data.LatestTreeVersion}
 	if _, ok := data.TreeVersions[pob.TreeVersion(name)]; ok {
 		out.Version = pob.TreeVersion(name)

@@ -399,7 +399,7 @@ func TestTimelessResultItemKeepsTheRowsRoll(t *testing.T) {
 func TestTimelessSocketJewel(t *testing.T) {
 	initItemsTabData(t)
 	build := loadCorpusBuild(t, "0028-occultist-forbidden-rite-of-soul-sacrifice.xml")
-	tree := specTree()
+	tree := latestSpecTree()
 	alloc := allocSet(build, tree)
 	free := -1
 	for key, n := range tree.Nodes {

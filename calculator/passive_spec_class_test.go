@@ -5,8 +5,13 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/pob"
 )
+
+func latestSpecTree() *data.Tree {
+	return data.TreeVersions[data.LatestTreeVersion].Tree()
+}
 
 func hasNode(build *pob.PathOfBuilding, id int64) bool {
 	return slices.Contains(build.Build.PassiveNodes, id)
@@ -15,7 +20,7 @@ func hasNode(build *pob.PathOfBuilding, id int64) bool {
 func startOf(t *testing.T, class pob.ClassName) int64 {
 	t.Helper()
 	classID, _ := pob.ClassIDByName(class)
-	id, err := strconv.ParseInt(classStartNodeID(specTree(), classID), 10, 64)
+	id, err := strconv.ParseInt(classStartNodeID(latestSpecTree(), classID), 10, 64)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -23,7 +28,7 @@ func startOf(t *testing.T, class pob.ClassName) int64 {
 }
 
 func ascendancyNodes(build *pob.PathOfBuilding) int {
-	tree := specTree()
+	tree := specTree(build)
 	n := 0
 	for _, id := range build.Build.PassiveNodes {
 		if node, ok := tree.Nodes[nodeKey(id)]; ok && node.AscendancyName != nil && *node.AscendancyName != "" {
@@ -116,7 +121,7 @@ func TestSelectAscendClassPrunesTheOldAscendancy(t *testing.T) {
 
 // TestClickAscendancyNode: Clicking a node of another of the class's ascendancies switches to it and allocates its path.
 func TestClickAscendancyNode(t *testing.T) {
-	tree := specTree()
+	tree := latestSpecTree()
 	pick := func(ascendancy string) int64 {
 		for _, n := range tree.Nodes {
 			if n.AscendancyName != nil && *n.AscendancyName == ascendancy && !isAscendClassStartNode(n) && n.Skill != nil &&
@@ -183,7 +188,7 @@ func TestWardenIsTheRangersAscendancy(t *testing.T) {
 	build := parseCorpusBuild(t, "0243-necromancer-raise-spectre.xml")
 	ChangeClass(build, "Ranger", ClassContinue)
 	SelectAscendClass(build, "Warden")
-	tree := specTree()
+	tree := latestSpecTree()
 	var starts []string
 	for _, id := range build.Build.PassiveNodes {
 		if n := tree.Nodes[nodeKey(id)]; isAscendClassStartNode(n) {

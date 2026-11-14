@@ -12,7 +12,7 @@ import (
 
 //pob:block:src/Classes/PassiveTreeView.lua:1626-1646
 func NodeSkillTooltips(build *pob.PathOfBuilding, nodeID int64, ctx ItemTooltipContext) [][]TooltipLine {
-	node, ok := specTree().Nodes[strconv.FormatInt(nodeID, 10)]
+	node, ok := specTree(build).Nodes[strconv.FormatInt(nodeID, 10)]
 	if !ok {
 		return nil
 	}
@@ -81,7 +81,7 @@ func TreeSpecCompare(build *pob.PathOfBuilding, specID int) TreeCompareSpec {
 	}
 	spec := build.Tree.Specs[specID-1]
 	out := TreeCompareSpec{Nodes: pob.SpecNodes(spec)}
-	tree := specTree()
+	tree := specTree(build)
 	for _, m := range pob.SpecMasterySelections(spec) {
 		c := TreeCompareMastery{Node: m.Node, Effect: m.Effect}
 		if n, ok := tree.Nodes[strconv.FormatInt(m.Node, 10)]; ok {
@@ -130,7 +130,7 @@ func (m *MiscCalculator) SplitPersonalityPath() []int64 {
 		return nil
 	}
 	sockets, byID := overrideSockets(env, specs[idx].Sockets, itemTextByID(env))
-	tree := specTree()
+	tree := specTree(m.build)
 	on := map[int64]bool{}
 	for _, socket := range sockets {
 		text, ok := byID[socket.ItemID]

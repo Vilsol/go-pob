@@ -75,11 +75,11 @@ func displayGemIndexes(group *pob.Skill, list []*ActiveSkill) []int {
 	return out
 }
 
-func explodeSourceName(source *ExplodeSource) string {
+func explodeSourceName(build *pob.PathOfBuilding, source *ExplodeSource) string {
 	if source.ModSource != "" {
 		return strings.TrimPrefix(source.ModSource, "Item:-1:")
 	}
-	node := resolveTreeNode(data.TreeVersions[data.LatestTreeVersion].Tree(), source.NodeID)
+	node := resolveTreeNode(specTree(build), source.NodeID)
 	if node.Name != nil {
 		return *node.Name
 	}
@@ -140,7 +140,7 @@ func (env *Environment) skillSelectControls(calcs bool) *MainSkillControls {
 	}
 	for _, activeSkill := range displaySkillList {
 		if source := activeSkill.ActiveEffect.ExplodeSource; source != nil {
-			controls.Skills = append(controls.Skills, "From "+explodeSourceName(source))
+			controls.Skills = append(controls.Skills, "From "+explodeSourceName(env.Build, source))
 			continue
 		}
 		controls.Skills = append(controls.Skills, activeSkill.ActiveEffect.GrantedEffect.Name())
@@ -268,7 +268,7 @@ func (env *Environment) CountAllocNodes() (int, int, int, int) {
 		return used, ascUsed, secondaryAscUsed, sockets
 	}
 	secondaryAscendNameMap := make(map[string]bool)
-	for _, ascendClass := range data.TreeVersions[data.LatestTreeVersion].Tree().AlternateAscendancies {
+	for _, ascendClass := range specTree(env.Build).AlternateAscendancies {
 		secondaryAscendNameMap[string(ascendClass.ID)] = true
 	}
 	seen := make(map[int64]bool, len(env.Build.Build.PassiveNodes))

@@ -216,10 +216,15 @@
 
   // TreeTab.lua:156-175, 588-680
   let versionOptions = $state.raw<{ value: string; label: string }[]>([]);
+  let latestVersion = $state<string>();
   $effect(() => {
     syncWrap
       ?.GetTreeVersionOptions()
       .then((v) => (versionOptions = v ?? []))
+      .catch(logError);
+    syncWrap
+      ?.GetLatestTreeVersion()
+      .then((v) => (latestVersion = v))
       .catch(logError);
   });
   const convertTree = async (to: string, replace: boolean) => {
@@ -905,13 +910,19 @@
       ?.GetTreeViewState()
       .then((t) => {
         if (!t || viewRequested !== b) return;
+        // the tree may have remounted on the build's own version meanwhile; without one up, ask again when it is
+        const cur = canvasEl;
+        if (!cur) {
+          viewRequested = undefined;
+          return;
+        }
         savedView = t;
         viewRestored = b;
         if (t.ShowHeatMap) setHeat(true);
-        if (phone.current) el.fitActive();
-        else if (t.ZoomLevel || t.ZoomX || t.ZoomY) el.setPobView({ zoomLevel: t.ZoomLevel, zoomX: t.ZoomX, zoomY: t.ZoomY });
+        if (phone.current) cur.fitActive();
+        else if (t.ZoomLevel || t.ZoomX || t.ZoomY) cur.setPobView({ zoomLevel: t.ZoomLevel, zoomX: t.ZoomX, zoomY: t.ZoomY });
         else {
-          const p = el.pobView();
+          const p = cur.pobView();
           savedView = { ...t, ZoomLevel: p.zoomLevel, ZoomX: p.zoomX, ZoomY: p.zoomY };
         }
       })
@@ -943,6 +954,7 @@
     if (!el || viewRestored !== $currentBuild) return;
     clearTimeout(viewSave);
     viewSave = setTimeout(() => {
+      if (el !== canvasEl) return;
       const was = savedView;
       // phone: the fitted view stays off the build's saved view
       const p = phone.current && was ? { zoomLevel: was.ZoomLevel, zoomX: was.ZoomX, zoomY: was.ZoomY } : el.pobView();
@@ -1119,6 +1131,7 @@
   onspechover={(i: number | null) => void hoverSpec(i).catch(logError)}
   versions={versionOptions}
   specVersion={info?.recordedTreeVersion}
+  {latestVersion}
   onconvert={convertTree}
   onconvertall={convertAllTrees}
   onexporttree={async () => (await syncWrap?.ExportTreeLink()) ?? ''}

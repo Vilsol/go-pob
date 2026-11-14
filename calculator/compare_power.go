@@ -168,7 +168,7 @@ func (b *ComparePowerBuilder) Report() []ComparePowerEntry {
 
 //pob:block:src/Classes/CompareTab.lua:2659-2712
 func (b *ComparePowerBuilder) treeTasks() {
-	tree := data.TreeVersions[data.LatestTreeVersion].Tree()
+	tree := specTree(b.primary)
 	primaryNodes := map[int64]bool{}
 	for _, id := range b.primary.Build.PassiveNodes {
 		primaryNodes[id] = true
@@ -182,7 +182,7 @@ func (b *ComparePowerBuilder) treeTasks() {
 			}
 		}
 	}
-	paths := data.TreeVersions[data.LatestTreeVersion].CalculateAllocationPaths(b.primary.Build.PassiveNodes, roots)
+	paths := data.TreeVersions[CalcTreeVersion(b.primary)].CalculateAllocationPaths(b.primary.Build.PassiveNodes, roots)
 	ids := slices.Clone(b.compare.Build.PassiveNodes)
 	slices.Sort(ids)
 	ids = slices.Compact(ids)

@@ -280,11 +280,7 @@ func specShadow(build *pob.PathOfBuilding, k int) (*pob.PathOfBuilding, *data.Tr
 	shadow := *build
 	shadow.Tree.Specs = slices.Clone(build.Tree.Specs)
 	shadow.SetActiveSpec(k + 1)
-	version := build.Tree.Specs[k].TreeVersion
-	if _, ok := data.TreeVersions[version]; !ok {
-		version = data.LatestTreeVersion
-	}
-	return &shadow, data.TreeVersions[version].Tree()
+	return &shadow, data.TreeVersions[hostedTreeVersion(build.Tree.Specs[k].TreeVersion)].Tree()
 }
 
 //pob:block:src/Classes/ItemListControl.lua:37-48,src/Classes/ItemsTab.lua:1857-1904
@@ -315,7 +311,7 @@ func activeSocketed(build *pob.PathOfBuilding, itemID int) bool {
 
 //pob:block:src/Classes/PassiveSpec.lua:1806-1875
 func dropClusterRemnants(build *pob.PathOfBuilding, socketed bool) {
-	version := data.LatestTreeVersion
+	version := CalcTreeVersion(build)
 	tree := data.TreeVersions[version].Tree()
 	gone := clusterRemnants(build, build.Build.PassiveNodes, version)
 	if len(gone) > 0 || socketed {

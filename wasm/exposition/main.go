@@ -77,6 +77,7 @@ func Exports(r bind.Registry) {
 
 	r.Func(GetSkillGems)
 	r.Func(CalcTreeVersion)
+	r.Func(LatestTreeVersion)
 	r.Func(GetRawTree, bind.AsPromise())
 	r.Func(TreeLoaded)
 	r.Func(GetStatByIndex)

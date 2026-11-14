@@ -11,7 +11,7 @@ func TestCalcMasteryEffectIsTheBuildWithThatEffect(t *testing.T) {
 	build := parseCorpusBuild(t, "0280-elementalist-fireball.xml")
 	spec := build.Tree.Specs[build.ActiveSpecIndex()]
 	saved := spec.MasteryEffects
-	tree := specTree()
+	tree := latestSpecTree()
 	var node, other int64
 	for _, s := range pob.SpecMasterySelections(spec) {
 		for _, e := range tree.Nodes[nodeKey(s.Node)].MasteryEffects {

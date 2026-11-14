@@ -33,7 +33,7 @@ const setup = async (page: Page, file: string) => {
   const build = await go.loadXml(xml);
   const app = await App.open(page, file);
   await app.importCode(await go.encode(xml), async () => expectedLines(await go.outputs(build)));
-  await tree.prepareTree();
+  await tree.prepareTree(build);
   const active = go.fresh(build, (b) => [...(b.Build.PassiveNodes ?? [])]);
   return { app, build, active, gpu: await gpuName(page) };
 };

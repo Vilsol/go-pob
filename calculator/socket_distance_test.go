@@ -8,9 +8,9 @@ import (
 func TestSocketDistanceToClassStart(t *testing.T) {
 	build := loadCorpusBuild(t, "0052-juggernaut-cleave.xml")
 	m := GetMiscCalculator(build)
-	alloc := allocSet(build, specTree())
+	alloc := allocSet(build, latestSpecTree())
 	near, far := 0, 0
-	for _, s := range treeSockets(specTree()) {
+	for _, s := range treeSockets(latestSpecTree()) {
 		d := m.SocketDistanceToClassStart(int(s))
 		switch {
 		case !alloc[s] && d != 0:

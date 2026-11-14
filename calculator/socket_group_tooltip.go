@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Vilsol/go-pob/data"
 	raw2 "github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/pob"
 )
@@ -33,7 +32,7 @@ func (env *Environment) socketGroupSourceLine(source string) (string, bool) {
 		}
 		return "^7Source: " + color + parts[2], true
 	case strings.HasPrefix(source, "Tree:"):
-		node := resolveTreeNode(data.TreeVersions[data.LatestTreeVersion].Tree(), strings.TrimPrefix(source, "Tree:"))
+		node := resolveTreeNode(specTree(env.Build), strings.TrimPrefix(source, "Tree:"))
 		if node.Name == nil {
 			return "", false
 		}
@@ -86,7 +85,7 @@ func (env *Environment) SocketGroupTooltip(group int) []TooltipLine {
 				if !ok {
 					color = colorNormal
 				}
-				t.addLine("^7Source: " + color + explodeSourceName(source))
+				t.addLine("^7Source: " + color + explodeSourceName(env.Build, source))
 			}
 		}
 		return t.Lines

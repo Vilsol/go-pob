@@ -5,18 +5,24 @@ import * as go from './go_model';
 
 type Build = Awaited<ReturnType<typeof go.loadXml>>;
 
+let model: Awaited<ReturnType<typeof go.model>> | undefined;
+const trees = new Map<string, Tree>();
 let loaded: { tree: Tree; version: string; m: Awaited<ReturnType<typeof go.model>> } | undefined;
 
-export const prepareTree = async () => {
-  if (loaded) return;
-  const m = await go.model();
-  const version = m.exposition.CalcTreeVersion();
-  const raw = (await m.exposition.GetRawTree(version)).unwrap();
-  if (!raw) {
-    throw new Error(`REFUSING: the model has no ${version} tree`);
+// TreeTab.lua:517: a build is drawn on its active spec's tree; no build is a new build, on the latest tree
+export const prepareTree = async (build?: Build) => {
+  const m = (model ??= await go.model());
+  const version = m.exposition.CalcTreeVersion(build);
+  let tree = trees.get(version);
+  if (!tree) {
+    const raw = (await m.exposition.GetRawTree(version)).unwrap();
+    if (!raw) {
+      throw new Error(`REFUSING: the model has no ${version} tree`);
+    }
+    tree = JSON.parse(new TextDecoder().decode(raw)) as Tree;
+    removeLegacyAlternateAscendancies(tree);
+    trees.set(version, tree);
   }
-  const tree = JSON.parse(new TextDecoder().decode(raw)) as Tree;
-  removeLegacyAlternateAscendancies(tree);
   loaded = { tree, version, m };
 };
 
@@ -56,7 +62,10 @@ export const treeState = (build: Build, cluster?: { ID: number; Type: string; Li
   if (!loaded) {
     throw new Error('treeState() before prepareTree()');
   }
-  const { tree: t, version, m } = loaded;
+  const { m } = loaded;
+  const version = m.exposition.CalcTreeVersion(build);
+  const t = trees.get(version);
+  if (!t) throw new Error(`treeState(build) before prepareTree(build): the build is drawn on ${version}`);
   const className = go.fresh(build, (b) => b.Build.ClassName);
   const active = go.fresh(build, (b) => [...(b.Build.PassiveNodes ?? [])]);
   const roots = classStartNodes(t)[t.classes.findIndex((c) => c.name === className)];

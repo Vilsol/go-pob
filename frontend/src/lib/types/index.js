@@ -180,6 +180,7 @@ export const initializeCrystalline = () => {
     ItemSetTooltips: wrap('exposition.ItemSetTooltips', globalThis['go']['go-pob']['exposition']['ItemSetTooltips']),
     ItemSourceTooltip: wrap('exposition.ItemSourceTooltip', globalThis['go']['go-pob']['exposition']['ItemSourceTooltip']),
     ItemsTabSlots: wrap('exposition.ItemsTabSlots', globalThis['go']['go-pob']['exposition']['ItemsTabSlots']),
+    LatestTreeVersion: wrap('exposition.LatestTreeVersion', globalThis['go']['go-pob']['exposition']['LatestTreeVersion']),
     LeapHeldNodes: wrap('exposition.LeapHeldNodes', globalThis['go']['go-pob']['exposition']['LeapHeldNodes']),
     LiveHeapMB: wrap('exposition.LiveHeapMB', globalThis['go']['go-pob']['exposition']['LiveHeapMB']),
     MergePowerAscendancy: wrap('exposition.MergePowerAscendancy', globalThis['go']['go-pob']['exposition']['MergePowerAscendancy']),

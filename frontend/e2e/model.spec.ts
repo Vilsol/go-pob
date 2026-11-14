@@ -217,6 +217,7 @@ for (const file of ['0339-reliquarian-shield-crush-of-the-chieftain-2', '0444-re
     await tree.prepareTree();
     const app = await App.open(page, file);
     await app.openTree(tree.treeVersion());
+    await tree.prepareTree(await go.loadXml(xml));
     const before = await app.memory('before-sequences');
 
     await fc.assert(

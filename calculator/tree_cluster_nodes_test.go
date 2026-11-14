@@ -33,7 +33,7 @@ func TestTreeClusterNodesMatchPoB(t *testing.T) {
 	scanner := bufio.NewScanner(f)
 	scanner.Buffer(make([]byte, 1<<20), 1<<22)
 	builds := 0
-	tree := specTree()
+	tree := latestSpecTree()
 	for scanner.Scan() {
 		var want struct {
 			File  string              `json:"file"`
@@ -113,7 +113,7 @@ func TestTreeSpecClusterNodesMatchPoB(t *testing.T) {
 	scanner := bufio.NewScanner(f)
 	scanner.Buffer(make([]byte, 1<<20), 1<<22)
 	rows := 0
-	tree := specTree()
+	tree := latestSpecTree()
 	for scanner.Scan() {
 		var want struct {
 			File  string `json:"file"`

@@ -315,7 +315,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 		override = &CalcOverride{}
 	}
 
-	currentTreeVersion := data.LatestTreeVersion
+	currentTreeVersion := CalcTreeVersion(build)
 
 	if env != nil {
 		wipeEnv(env, accelerate)
@@ -330,7 +330,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 		env.Build = build
 		env.Mode = mode
 		env.override = override
-		env.Spec = NewPassiveSpec(build, data.LatestTreeVersion)
+		env.Spec = NewPassiveSpec(build, currentTreeVersion)
 
 		env.ModDB = moddb.NewModDBSized(384)
 		env.EnemyModDB = moddb.NewModDBSized(192)
@@ -549,13 +549,13 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 	counts := env.specAllocCounts
 	//pob:block:src/Modules/CalcSetup.lua:711-776
 	if !accelerate.nodeAlloc {
-		var tree = data.TreeVersions[data.LatestTreeVersion].Tree()
+		var tree = data.TreeVersions[currentTreeVersion].Tree()
 		env.AllocatedNodes = make(map[string]data.Node, len(env.Build.Build.PassiveNodes)+len(override.AddNodes))
 		var clusterNodes map[string]data.Node
 		if specEnv != nil && specEnv.clusterNodesSet {
 			clusterNodes = specEnv.clusterNodes
 		} else {
-			clusterNodes = buildClusterJewelGraphs(env, data.LatestTreeVersion)
+			clusterNodes = buildClusterJewelGraphs(env, currentTreeVersion)
 		}
 		env.clusterNodes = clusterNodes
 		resolveNodes := func(nodeIDs []int64, into map[string]data.Node) {
@@ -1736,7 +1736,7 @@ func collectItemExplodeSources(env *Environment, treeVersion pob.TreeVersion) ([
 		specSockets, socketItems := overrideSockets(env, specs[idx].Sockets, byID)
 		sockets := append([]pob.Socket(nil), specSockets...)
 		sort.SliceStable(sockets, func(a, b int) bool { return sockets[a].NodeID < sockets[b].NodeID })
-		tree := data.TreeVersions[data.LatestTreeVersion].Tree()
+		tree := data.TreeVersions[treeVersion].Tree()
 		for _, socket := range sockets {
 			node, ok := tree.Nodes[strconv.Itoa(socket.NodeID)]
 			if !ok || node.IsJewelSocket == nil || !*node.IsJewelSocket || socket.ItemID == 0 {

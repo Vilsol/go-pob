@@ -66,7 +66,7 @@ func treeSockets(tree *data.Tree) []int64 {
 
 //pob:block:src/Classes/PassiveTreeView.lua:1167-1214,src/Classes/PassiveTreeView.lua:1245-1256
 func TreeJewelRings(build *pob.PathOfBuilding, compared []int64) []TreeJewelRing {
-	tree := specTree()
+	tree := specTree(build)
 	alloc := allocSet(build, tree)
 	for _, id := range compared {
 		alloc[id] = true
@@ -116,7 +116,7 @@ func TreeJewelRings(build *pob.PathOfBuilding, compared []int64) []TreeJewelRing
 
 //pob:block:src/Classes/PassiveTreeView.lua:1223-1244,src/Classes/PassiveTreeView.lua:987-1013
 func TreeSocketRadii(build *pob.PathOfBuilding, nodeID int64) []TreeSocketRadius {
-	tree := specTree()
+	tree := specTree(build)
 	if !slices.Contains(treeSockets(tree), nodeID) {
 		return nil
 	}
@@ -192,7 +192,7 @@ func jewelSocketOverlay(jewel *Item, isExpansion bool) string {
 
 //pob:block:src/Classes/PassiveTreeView.lua:850-856
 func TreeJewelOverlays(build *pob.PathOfBuilding) []TreeJewelOverlay {
-	tree := specTree()
+	tree := specTree(build)
 	alloc := allocSet(build, tree)
 	i := build.ActiveSpecIndex()
 	if i < 0 {

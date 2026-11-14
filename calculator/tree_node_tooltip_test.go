@@ -17,7 +17,7 @@ func TestNodeSkillTooltips(t *testing.T) {
 	initItemsTabData(t)
 	build := loadCorpusBuild(t, "0005-occultist-vaal-double-strike.xml")
 	graded := 0
-	for key, n := range specTree().Nodes {
+	for key, n := range latestSpecTree().Nodes {
 		for _, line := range n.Stats {
 			m := grantsSkillRe.FindStringSubmatch(line)
 			if m == nil {

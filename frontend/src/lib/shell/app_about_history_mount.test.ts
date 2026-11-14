@@ -36,7 +36,7 @@ afterEach(() => {
 const fake = {
   BuildInfo: vi.fn(() => Promise.resolve({ GoVersion: 'go1.27.2', Main: { Version: '(devel)' } })),
   GameDataVersion: vi.fn(() => Promise.resolve('3.29')),
-  GetTreeVersion: vi.fn(() => Promise.resolve('3_29'))
+  GetLatestTreeVersion: vi.fn(() => Promise.resolve('3_29'))
 };
 vi.mock('$lib/go/worker', () => ({ syncWrap: fake, syncWorker: undefined }));
 

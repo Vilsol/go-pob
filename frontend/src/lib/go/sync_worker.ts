@@ -961,7 +961,11 @@ class PoBWorker {
   }
 
   GetTreeVersion(): string {
-    return exposition.CalcTreeVersion();
+    return exposition.CalcTreeVersion(this.currentBuild);
+  }
+
+  GetLatestTreeVersion(): string {
+    return exposition.LatestTreeVersion();
   }
 
   GameDataVersion(): string {

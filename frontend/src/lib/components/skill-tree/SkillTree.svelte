@@ -106,8 +106,10 @@
       ?.GetLeapHeldNodes()
       .then((held) => (leapHeld = new Set(held ?? [])))
       .catch(logError);
-    Promise.all([syncWrap?.GetBuildInfo(), syncWrap?.GetPassiveNodes()])
-      .then(([info, nodes]) => {
+    Promise.all([syncWrap?.GetBuildInfo(), syncWrap?.GetPassiveNodes(), syncWrap?.GetTreeVersion()])
+      .then(([info, nodes, version]) => {
+        // TreeTab.lua:517: a build's nodes belong to its own tree; the page remounts on that tree
+        if (version && version !== skillTreeVersion) return;
         currentClass = info?.className;
         currentAscendancy = info?.ascendClassName;
         currentSecondaryAscendancy = secondaryAscendancy(skillTree, info?.secondaryAscendClassId ?? 0);

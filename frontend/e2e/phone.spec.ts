@@ -142,7 +142,7 @@ test.describe('phone shell at 390×769', () => {
     test.setTimeout(10 * 60_000);
     await holdCalcWorker(page);
     const { app, build } = await openPhoneBuild(page);
-    await tree.prepareTree();
+    await tree.prepareTree(build);
     const active = go.fresh(build, (b) => [...(b.Build.PassiveNodes ?? [])]);
     await bar(page).getByRole('link', { name: 'Tree' }).click();
     await waitLastFrame(page, `(f) => f.className !== undefined && f.active === ${active.length}`, 60_000);

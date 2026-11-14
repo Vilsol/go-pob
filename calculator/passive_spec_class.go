@@ -26,8 +26,8 @@ type ClassChange struct {
 	Handled      bool
 }
 
-func specTree() *data.Tree {
-	return data.TreeVersions[data.LatestTreeVersion].Tree()
+func specTree(build *pob.PathOfBuilding) *data.Tree {
+	return data.TreeVersions[CalcTreeVersion(build)].Tree()
 }
 
 func nodeKey(id int64) string {
@@ -110,7 +110,7 @@ func connectedToStart(tree *data.Tree, alloc map[int64]bool, starts []int64) map
 
 //pob:block:src/Classes/PassiveSpec.lua:846-859
 func CountAllocNodes(build *pob.PathOfBuilding) int {
-	tree := specTree()
+	tree := specTree(build)
 	used := 0
 	for id := range allocSet(build, tree) {
 		node, ok := tree.Nodes[nodeKey(id)]
@@ -124,7 +124,7 @@ func CountAllocNodes(build *pob.PathOfBuilding) int {
 
 //pob:src/Classes/PassiveSpec.lua:668-691
 func IsClassConnected(build *pob.PathOfBuilding, classID pob.ClassID) bool {
-	tree := specTree()
+	tree := specTree(build)
 	start, ok := tree.Nodes[classStartNodeID(tree, classID)]
 	if !ok {
 		return false
@@ -318,7 +318,7 @@ func allocatedStarts(tree *data.Tree, alloc map[int64]bool) []int64 {
 
 //pob:block:src/Classes/PassiveSpec.lua:1548-1582
 func pruneOrphans(build *pob.PathOfBuilding) {
-	pruneOrphansOn(build, specTree())
+	pruneOrphansOn(build, specTree(build))
 }
 
 func pruneOrphansOn(build *pob.PathOfBuilding, tree *data.Tree) {
@@ -359,7 +359,7 @@ func setStartNodes(build *pob.PathOfBuilding, tree *data.Tree, old []int64) {
 
 //pob:src/Classes/PassiveSpec.lua:573-596
 func SelectClass(build *pob.PathOfBuilding, className pob.ClassName) {
-	tree := specTree()
+	tree := specTree(build)
 	old := startNodeIDs(build, tree)
 	build.SetClass(className)
 	build.SetAscendancy("None")
@@ -369,7 +369,7 @@ func SelectClass(build *pob.PathOfBuilding, className pob.ClassName) {
 
 //pob:src/Classes/PassiveSpec.lua:610-628
 func SelectAscendClass(build *pob.PathOfBuilding, name pob.AscendancyName) {
-	tree := specTree()
+	tree := specTree(build)
 	old := startNodeIDs(build, tree)
 	build.SetAscendancy(name)
 	setStartNodes(build, tree, old)
@@ -378,7 +378,7 @@ func SelectAscendClass(build *pob.PathOfBuilding, name pob.AscendancyName) {
 
 //pob:src/Classes/PassiveSpec.lua:630-666
 func SelectSecondaryAscendClass(build *pob.PathOfBuilding, ascendClassID int) {
-	tree := specTree()
+	tree := specTree(build)
 	i := build.ActiveSpecIndex()
 	if len(tree.AlternateAscendancies) == 0 || i < 0 {
 		return
@@ -406,7 +406,7 @@ func isMainTreeNode(node data.Node) bool {
 
 //pob:src/Classes/PassiveSpec.lua:693-765
 func ConnectToClass(build *pob.PathOfBuilding, classID pob.ClassID) bool {
-	tree := specTree()
+	tree := specTree(build)
 	targetKey := classStartNodeID(tree, classID)
 	target, ok := tree.Nodes[targetKey]
 	if !ok || target.Skill == nil {
@@ -455,7 +455,7 @@ func ConnectToClass(build *pob.PathOfBuilding, classID pob.ClassID) bool {
 
 //pob:block:src/Classes/PassiveSpec.lua:781-818
 func allocPathTo(build *pob.PathOfBuilding, nodeID int64) {
-	tree := specTree()
+	tree := specTree(build)
 	alloc := allocSet(build, tree)
 	if alloc[nodeID] {
 		return
@@ -465,7 +465,7 @@ func allocPathTo(build *pob.PathOfBuilding, nodeID int64) {
 		active = append(active, id)
 	}
 	slices.Sort(active)
-	hops := data.TreeVersions[data.LatestTreeVersion].CalculateAllocationPaths(active, nil)
+	hops := data.TreeVersions[CalcTreeVersion(build)].CalculateAllocationPaths(active, nil)
 	var path []int64
 	for cur := nodeID; !alloc[cur]; {
 		next, ok := hops[cur]
@@ -511,7 +511,7 @@ func ascendancyOwner(tree *data.Tree, ascendancyID string) (pob.ClassID, pob.Asc
 
 //pob:block:src/Classes/PassiveTreeView.lua:400-507
 func ClickAscendancyNode(build *pob.PathOfBuilding, nodeID int64, decision ClassDecision) ClassChange {
-	tree := specTree()
+	tree := specTree(build)
 	node, ok := tree.Nodes[nodeKey(nodeID)]
 	if !ok || node.AscendancyName == nil || *node.AscendancyName == "" || allocSet(build, tree)[nodeID] {
 		return ClassChange{}
@@ -564,7 +564,7 @@ func socketOrphans(build *pob.PathOfBuilding, socketID int, item *Item) []int64 
 	if i < 0 {
 		return nil
 	}
-	tree := specTree()
+	tree := specTree(build)
 	texts := make(map[int]string, len(build.Items.Items))
 	for _, it := range build.Items.Items {
 		texts[it.ID] = it.Text
@@ -590,7 +590,7 @@ func socketOrphans(build *pob.PathOfBuilding, socketID int, item *Item) []int64 
 
 //pob:block:src/Classes/PassiveSpec.lua:1143-1187
 func LeapHeldNodes(build *pob.PathOfBuilding) []int64 {
-	tree := specTree()
+	tree := specTree(build)
 	held := leapHeld(build, tree, allocSet(build, tree))
 	out := make([]int64, 0, len(held))
 	for id := range held {

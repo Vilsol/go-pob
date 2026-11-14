@@ -11,7 +11,7 @@ import (
 func TestTreeJewelRings(t *testing.T) {
 	build := parseCorpusBuild(t, "0005-occultist-vaal-double-strike.xml")
 	rings := TreeJewelRings(build, nil)
-	tree := specTree()
+	tree := latestSpecTree()
 	var arts []string
 	onKeystone := 0
 	for _, r := range rings {
@@ -74,7 +74,7 @@ func TestTreeSocketRadii(t *testing.T) {
 		t.Fatalf("Thread of Hope: %+v", annuli)
 	}
 	empty := int64(0)
-	for _, s := range treeSockets(specTree()) {
+	for _, s := range treeSockets(latestSpecTree()) {
 		if _, ok := socketedJewel(build, s); !ok && s != other {
 			empty = s
 			break

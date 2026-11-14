@@ -57,7 +57,8 @@ export const emptySpot = (tree: Tree, placed: Placed[], view: TreeView): Point =
   let bestD = -1;
   for (let x = 20; x < view.width - 20; x += 20) {
     for (let y = 20; y < view.height - 20; y += 20) {
-      if ((x < 420 && y < 420) || (x > view.width - 70 && y < 140)) continue;
+      // the older-tree banner sits across the top centre
+      if ((x < 420 && y < 420) || (x > view.width - 70 && y < 140) || y < 80) continue;
       let d = Infinity;
       for (const p of placed) {
         const s = screenOf(tree, view, p.at);

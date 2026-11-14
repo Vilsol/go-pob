@@ -247,7 +247,7 @@ func (b *PowerBuilder) depends(id int64) []int64 {
 				}
 			}
 		}
-		version := data.TreeVersions[data.LatestTreeVersion]
+		version := data.TreeVersions[CalcTreeVersion(b.misc.build)]
 		node := func(id int64) (data.DependsNode, bool) {
 			d, ok := version.SpecDependsNode(id)
 			if !ok {
@@ -279,7 +279,7 @@ func (b *PowerBuilder) depends(id int64) []int64 {
 func (m *MiscCalculator) NewPowerBuilder(stat PowerStat, maxDepth int) *PowerBuilder {
 	b := &PowerBuilder{
 		misc: m, stat: stat, maxDepth: maxDepth,
-		tree:      data.TreeVersions[data.LatestTreeVersion].Tree(),
+		tree:      specTree(m.build),
 		alloc:     map[int64]bool{},
 		granted:   map[int64]bool{},
 		dependsOf: map[int64][]int64{},
@@ -341,14 +341,14 @@ func (m *MiscCalculator) NewPowerBuilder(stat PowerStat, maxDepth int) *PowerBui
 		if b.graph != nil {
 			unconnected = b.graph.prunable(seeds, roots)
 		} else {
-			unconnected = data.TreeVersions[data.LatestTreeVersion].CalculatePrunableNodes(seeds, roots)
+			unconnected = data.TreeVersions[CalcTreeVersion(m.build)].CalculatePrunableNodes(seeds, roots)
 		}
 		seeds = slices.DeleteFunc(slices.Clone(seeds), func(id int64) bool { return leap[id] && slices.Contains(unconnected, id) })
 	}
 	if b.graph != nil {
 		b.paths = b.graph.allocationPaths(seeds, b.roots)
 	} else {
-		b.paths = data.TreeVersions[data.LatestTreeVersion].CalculateAllocationPaths(seeds, b.roots)
+		b.paths = data.TreeVersions[CalcTreeVersion(m.build)].CalculateAllocationPaths(seeds, b.roots)
 	}
 	b.rewrites = nodeRewrites(m.base)
 	selections := map[int64]int64{}

@@ -3,11 +3,19 @@ package exposition
 import (
 	"fmt"
 
+	"github.com/Vilsol/go-pob/calculator"
 	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/pob"
 )
 
-func CalcTreeVersion() pob.TreeVersion {
+func CalcTreeVersion(build *pob.PathOfBuilding) pob.TreeVersion {
+	if build == nil {
+		return data.LatestTreeVersion
+	}
+	return calculator.CalcTreeVersion(build)
+}
+
+func LatestTreeVersion() pob.TreeVersion {
 	return data.LatestTreeVersion
 }
 

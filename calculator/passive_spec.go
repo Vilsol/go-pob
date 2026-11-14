@@ -45,6 +45,24 @@ type PassiveSpec struct {
 	DistanceToClassStart map[string]int
 }
 
+// CalcTreeVersion is the tree the active spec is calculated and drawn on.
+//
+//pob:block:src/Classes/TreeTab.lua:517
+func CalcTreeVersion(build *pob.PathOfBuilding) pob.TreeVersion {
+	if i := build.ActiveSpecIndex(); i >= 0 {
+		return hostedTreeVersion(build.Tree.Specs[i].TreeVersion)
+	}
+	return data.LatestTreeVersion
+}
+
+// a tree version go-pob does not host falls back to the latest tree
+func hostedTreeVersion(v pob.TreeVersion) pob.TreeVersion {
+	if data.TreeVersions[v] != nil {
+		return v
+	}
+	return data.LatestTreeVersion
+}
+
 //pob:src/Classes/PassiveSpec.lua:22-37,src/Classes/PassiveSpec.lua:39-101
 func NewPassiveSpec(build *pob.PathOfBuilding, treeVersion pob.TreeVersion) *PassiveSpec {
 	passiveSpec := &PassiveSpec{

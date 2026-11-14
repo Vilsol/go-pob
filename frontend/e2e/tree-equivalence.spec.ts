@@ -86,7 +86,7 @@ for (const b of BUILDS)
         await app.importCode(await go.encode(xml), async () => expectedLines(await go.outputs(build!)));
         active = go.fresh(build, (x) => [...(x.Build.PassiveNodes ?? [])]);
       }
-      await tree.prepareTree();
+      await tree.prepareTree(build);
       await app.openTree(tree.treeVersion());
       const first = await waitFrame(page, 0, `(f) => f.className !== undefined && f.active === ${active.length}`, 60_000);
       expect(first.renderer, 'the tree drew with another renderer than the one asked for').toBe(renderer);

@@ -2327,7 +2327,7 @@ export declare namespace exposition {
   function CalcGemStats(m: exposition.MiscCalculator | undefined, socketGroup: number, gemIndex: number, gem: pob.Gem): Promise<exposition.StatOutputs>;
   function CalcMasteryEffect(m: exposition.MiscCalculator | undefined, nodeID: number, effect: number, addNodes: Array<number> | undefined): Promise<exposition.StatOutputs>;
   function CalcTreeSpec(m: exposition.MiscCalculator | undefined, specID: number): Promise<exposition.StatOutputs>;
-  function CalcTreeVersion(): string;
+  function CalcTreeVersion(build: pob.PathOfBuilding | undefined): string;
   function CalculateAllocationPaths(version: string, activeNodes: Array<number> | undefined, rootNodes: Array<number> | undefined): Result<(Record<number, number> | undefined)>;
   function CalculateDependentNodes(version: string, activeNodes: Array<number> | undefined, target: number, rootNodes: Array<number> | undefined): Result<(Array<number> | undefined)>;
   function CalculateDependentNodesWith(version: string, activeNodes: Array<number> | undefined, target: number, rootNodes: Array<number> | undefined, subgraph: Array<data.SubgraphNode> | undefined): Result<(Array<number> | undefined)>;
@@ -2414,6 +2414,7 @@ export declare namespace exposition {
   function ItemSetTooltips(build: pob.PathOfBuilding | undefined): Promise<(Array<exposition.ItemSetTip> | undefined)>;
   function ItemSourceTooltip(build: pob.PathOfBuilding | undefined, name: string, stats: calculator.ItemTooltipStats): Promise<[calculator.ItemTooltip, boolean]>;
   function ItemsTabSlots(build: pob.PathOfBuilding | undefined): Promise<exposition.ItemsTabSlotList>;
+  function LatestTreeVersion(): string;
   function LeapHeldNodes(build: pob.PathOfBuilding | undefined): Promise<(Array<number> | undefined)>;
   function LiveHeapMB(): number;
   function MergePowerAscendancy(shards: Array<calculator.PowerShardRows> | undefined): (Array<calculator.PowerReportEntry> | undefined);

@@ -3,7 +3,6 @@ package calculator
 import (
 	"strings"
 
-	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/pob"
 )
 
@@ -23,7 +22,7 @@ func SocketGroupSourceNames(build *pob.PathOfBuilding, setIndex int, groupIndex 
 		source = *group.SourceAttr
 	}
 	if id, ok := strings.CutPrefix(source, "Tree:"); ok {
-		return []GroupSourceName{{Name: treeNodeName(id), Rarity: "NORMAL"}}
+		return []GroupSourceName{{Name: treeNodeName(build, id), Rarity: "NORMAL"}}
 	}
 	if source != "Explode" {
 		return nil
@@ -41,14 +40,14 @@ func SocketGroupSourceNames(build *pob.PathOfBuilding, setIndex int, groupIndex 
 			}
 			out = append(out, GroupSourceName{Name: name, Rarity: buildItemRarity(build, name)})
 		} else {
-			out = append(out, GroupSourceName{Name: treeNodeName(key), Rarity: "NORMAL"})
+			out = append(out, GroupSourceName{Name: treeNodeName(build, key), Rarity: "NORMAL"})
 		}
 	}
 	return out
 }
 
-func treeNodeName(id string) string {
-	if node, ok := data.TreeVersions[data.LatestTreeVersion].Tree().Nodes[id]; ok && node.Name != nil {
+func treeNodeName(build *pob.PathOfBuilding, id string) string {
+	if node, ok := specTree(build).Nodes[id]; ok && node.Name != nil {
 		return *node.Name
 	}
 	return "???"

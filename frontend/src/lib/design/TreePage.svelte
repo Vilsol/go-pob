@@ -94,6 +94,7 @@
     /* TreeTab.lua:156-175 */
     versions?: { value: string; label: string }[];
     specVersion?: string;
+    latestVersion?: string;
     /* TreeTab.lua:588-612, 649-666 */
     onconvert?: (version: string, replace: boolean) => Promise<string>;
     /* TreeTab.lua:614-627, 668-680 */
@@ -198,6 +199,7 @@
     wikiUrl = (name: string) => `https://www.poewiki.net/wiki/${name.replace(/ /g, '_')}`,
     versions = [],
     specVersion,
+    latestVersion,
     onresettree,
     onremovetattoos,
     onconvert,
@@ -218,6 +220,7 @@
   // TreeTab.lua:156-175, 322-340, 588-680
   const versionLabel = (v: string) => versions.find((o) => o.value === v)?.label ?? v.replace('_', '.');
   const shownVersion = $derived(specVersion ?? tree.version);
+  const latest = $derived(latestVersion ?? tree.version);
   const versionOptions = $derived(
     versions.some((o) => o.value === shownVersion) ? versions : [...versions, { value: shownVersion, label: versionLabel(shownVersion) }]
   );
@@ -672,14 +675,14 @@
     bind:clientWidth={boxW}
     bind:clientHeight={boxH}>
     {@render canvas(api)}
-    {#if onconvert && specVersion && specVersion !== tree.version}
+    {#if onconvert && specVersion && specVersion !== latest}
       <div
         role="status"
         aria-label="Convert older tree"
         class="absolute top-2.5 left-1/2 z-map-tip flex -translate-x-1/2 items-center gap-2 rounded-md border border-line bg-surface-1/95 px-3 py-1.5 text-12 max-phone:right-12 max-phone:left-2.5 max-phone:translate-x-0 max-phone:flex-wrap">
         <span>This is an older tree version, which may not be fully compatible with the current game version.</span>
-        <Button size="sm" variant="primary" onclick={() => void convert(tree.version, false, true)}>Convert to {versionLabel(tree.version)}</Button>
-        {#if onconvertall}<Button size="sm" onclick={() => (convertingAll = true)}>Convert all trees to {versionLabel(tree.version)}</Button>{/if}
+        <Button size="sm" variant="primary" onclick={() => void convert(latest, false, true)}>Convert to {versionLabel(latest)}</Button>
+        {#if onconvertall}<Button size="sm" onclick={() => (convertingAll = true)}>Convert all trees to {versionLabel(latest)}</Button>{/if}
       </div>
     {/if}
     {#each markers as m (m.side)}
@@ -1122,10 +1125,10 @@
   {/snippet}
 </Dialog>
 
-<Dialog phone="centred" bind:open={convertingAll} title="Convert all to Version {versionLabel(tree.version)}" size="md">
+<Dialog phone="centred" bind:open={convertingAll} title="Convert all to Version {versionLabel(latest)}" size="md">
   <div class="flex flex-col gap-3 text-13">
     <p class="m-0">Warning: some or all of the passives may be de-allocated due to changes in the tree.</p>
-    <p class="m-0">Convert will replace all trees that are not Version {versionLabel(tree.version)}.<br />This action cannot be undone.</p>
+    <p class="m-0">Convert will replace all trees that are not Version {versionLabel(latest)}.<br />This action cannot be undone.</p>
   </div>
   {#snippet actions()}
     <DialogActions
@@ -1133,7 +1136,7 @@
       oncancel={() => (convertingAll = false)}
       onconfirm={async () => {
         convertingAll = false;
-        convertMsg = (await onconvertall?.(tree.version)) ?? '';
+        convertMsg = (await onconvertall?.(latest)) ?? '';
       }} />
   {/snippet}
 </Dialog>

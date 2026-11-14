@@ -350,7 +350,7 @@ func (env *Environment) modSourceName(source string) (string, string, string, in
 			}
 			node, ok := env.clusterNodes[m[1]]
 			if !ok {
-				node = resolveTreeNode(data.TreeVersions[data.LatestTreeVersion].Tree(), m[1])
+				node = resolveTreeNode(specTree(env.Build), m[1])
 			}
 			if node.Name != nil {
 				return sourceType, *node.Name, "", id

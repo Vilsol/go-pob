@@ -14,7 +14,7 @@ func ResetTree(build *pob.PathOfBuilding) {
 	if i < 0 {
 		return
 	}
-	tree := specTree()
+	tree := specTree(build)
 	var drop []int64
 	for _, id := range build.Build.PassiveNodes {
 		if n, ok := tree.Nodes[nodeKey(id)]; ok && (isClassStartNode(n) || isAscendClassStartNode(n)) {
