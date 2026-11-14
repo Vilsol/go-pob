@@ -5,6 +5,7 @@ VERSION[0.8.0][2026/11/14]
 * PoE1 3.30 support: new builds use 3.30 game data and the 3.30 passive tree
 
 --- Fixed ---
+* ci: Windows builds the MCP test binary with .exe, the frontend job caches the game data the app loads, and tree draw-list references follow the current 3.30 tree
 * scripts: the data fields guard ignores the game data dumper's test binary, as it ignores the dumper itself
 * scripts: the PoE1 game data dumper follows stat description includes written as .csd, as 3.30's files are
 * tree: deleting a passive tree asks by its title, without the tree version prefix, as Path of Building does
