@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { pobPlain } from './pob_text';
   import Checkbox from './Checkbox.svelte';
   import Input from './Input.svelte';
   import Select from './Select.svelte';
@@ -56,7 +57,7 @@
           aria-label="Socket Group"
           value={String(Math.max(0, Math.min(s.skillNumber, s.groups.length) - 1))}
           onchange={(e: Event & { currentTarget: HTMLSelectElement }) => oncontrol(side, 'group', Number(e.currentTarget.value) + 1)}
-          >{#each s.groups.length ? s.groups : ['<No skills added yet>'] as g, k (k)}<option value={String(k)}>{g}</option>{/each}</Select
+          >{#each s.groups.length ? s.groups : ['<No skills added yet>'] as g, k (k)}<option value={String(k)}>{pobPlain(g)}</option>{/each}</Select
         ></Field>
       {#if c?.Skills?.length}
         <Field label="Active Skill:" inline>

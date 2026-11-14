@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import type { HTMLSelectAttributes } from 'svelte/elements';
+  import { pobPlain } from './pob_text';
 
   type Option = string | { value: string; label: string; title?: string };
   type Props = Omit<HTMLSelectAttributes, 'size' | 'value'> & {
@@ -26,6 +27,6 @@
 <select class={['select', sizes[size], extra]} bind:value bind:this={ref} onchange={change} {...rest}>
   {#if children}{@render children()}{:else}
     <!-- Build.lua:849 -->
-    {#each norm as o, i (i)}<option value={o.value} title={o.title}>{o.label}</option>{/each}
+    {#each norm as o, i (i)}<option value={o.value} title={o.title}>{pobPlain(o.label)}</option>{/each}
   {/if}
 </select>

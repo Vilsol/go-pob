@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { pobPlain } from './pob_text';
   import Input from './Input.svelte';
   import Select from './Select.svelte';
   import Button from './Button.svelte';
@@ -98,7 +99,7 @@
               disabled={ps.tree.labels.length < 2}
               value={String(ps.tree.active)}
               onchange={(e: Event & { currentTarget: HTMLSelectElement }) => onprimary('tree', Number(e.currentTarget.value))}
-              >{#each ps.tree.labels as l, i (i)}<option value={String(i)}>{l}</option>{/each}</Select
+              >{#each ps.tree.labels as l, i (i)}<option value={String(i)}>{pobPlain(l)}</option>{/each}</Select
             ></Field>
           <Field label="Item set:" inline>
             <Select
@@ -108,7 +109,7 @@
               disabled={ps.item.labels.length < 2}
               value={String(ps.item.active)}
               onchange={(e: Event & { currentTarget: HTMLSelectElement }) => onprimary('item', Number(e.currentTarget.value))}
-              >{#each ps.item.labels as l, i (i)}<option value={String(i)}>{l}</option>{/each}</Select
+              >{#each ps.item.labels as l, i (i)}<option value={String(i)}>{pobPlain(l)}</option>{/each}</Select
             ></Field>
         {/if}
         <Field label="Config set:" inline>
@@ -158,7 +159,7 @@
                 disabled={list.labels.length < 2}
                 value={String(list.active)}
                 onchange={(e: Event & { currentTarget: HTMLSelectElement }) => onset(sel.kind, Number(e.currentTarget.value))}
-                >{#each list.labels as l, i (i)}<option value={String(i)}>{l}</option>{/each}</Select
+                >{#each list.labels as l, i (i)}<option value={String(i)}>{pobPlain(l)}</option>{/each}</Select
               ></Field>
           {/if}
         {/each}
@@ -193,7 +194,7 @@
                   ((sel.kind === 'minion' || sel.kind === 'minionSkill') && !cur[sel.kind]?.enabled)}
                 value={String(list.active)}
                 onchange={(e: Event & { currentTarget: HTMLSelectElement }) => onset(sel.kind, Number(e.currentTarget.value))}
-                >{#each list.labels as l, i (i)}<option value={String(i)}>{l}</option>{/each}</Select
+                >{#each list.labels as l, i (i)}<option value={String(i)}>{pobPlain(l)}</option>{/each}</Select
               ></Field>
           {/if}
         {/each}

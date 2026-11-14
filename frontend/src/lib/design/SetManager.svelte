@@ -1,4 +1,6 @@
 <script lang="ts">
+  import PobText from './PobText.svelte';
+  import { pobPlain } from './pob_text';
   import Input from './Input.svelte';
   import Badge from './Badge.svelte';
   import type { Snippet } from 'svelte';
@@ -99,7 +101,7 @@
   const dragState = $state(reorderState());
   const drag = new Reorder(dragState, {
     box: () => box,
-    name: (i) => sets[i] ?? '',
+    name: (i) => pobPlain(sets[i] ?? ''),
     onmove: (from, to) => {
       onop({ op: 'move', from, to });
       sel = to;
@@ -135,7 +137,8 @@
     {...rowProps?.(i)}
     onclick={() => select(i)}
     ondblclick={() => activate(i)}
-    >{#if row}{@render row(i)}{:else}<span class="truncate">{label}</span>{/if}{#if i === current}<Badge tone="accent">current</Badge>{/if}</button>
+    >{#if row}{@render row(i)}{:else}<span class="truncate"><PobText text={label} /></span>{/if}{#if i === current}<Badge tone="accent">current</Badge
+      >{/if}</button>
 {/snippet}
 
 <Dialog bind:open {title} class={extra} {onclose}>

@@ -5,6 +5,7 @@
   import LiveMobile from '../stories/LiveMobile.svelte';
   import LivePhoneSkills from '../stories/LivePhoneSkills.svelte';
   import { spectreBuild, fireballBuild } from '../fixtures';
+  import { colourLabelBuild } from '../fixtures/colour_labels';
   import { phone, expectPhoneFits } from '../stories/mobile_checks';
 
   const { Story } = defineMeta({
@@ -64,4 +65,18 @@
     await expect(getComputedStyle(grip).display).toBe('none');
   }}>
   <LiveMobile fx={fireballBuild} current="#skills" label="Skills" mainClass="overflow-hidden"><LivePhoneSkills fx={fireballBuild} pane={1} /></LiveMobile>
+</Story>
+
+<Story
+  name="Colour-coded labels"
+  asChild
+  parameters={{ a11y: { config: { rules: [{ id: 'color-contrast', selector: '*:not([data-pob-color])' }] } } }}
+  play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await expectPhoneFits(canvasElement, 'Skills');
+    const list = within(canvasElement).getByRole('region', { name: 'Socket groups' });
+    await expect(list.textContent).not.toMatch(/\^(x[0-9A-Fa-f]{6}|\d)/);
+    for (const row of list.querySelectorAll<HTMLElement>('[data-label-row]')) await expect(inView(row)).toBe(true);
+    await expect(list.querySelectorAll('[data-label-row="blank"]').length).toBeGreaterThan(0);
+  }}>
+  <LiveMobile fx={colourLabelBuild} current="#skills" label="Skills" mainClass="overflow-hidden"><LivePhoneSkills fx={colourLabelBuild} /></LiveMobile>
 </Story>

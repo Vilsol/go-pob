@@ -7,6 +7,8 @@
   import LiveSidebar from './stories/LiveSidebar.svelte';
   import LiveSkills from './stories/LiveSkills.svelte';
   import { spectreBuild, fireballBuild, novaBuild, type BuildFixture } from './fixtures';
+  import { colourLabelBuild } from './fixtures/colour_labels';
+  import { pobPlain } from './pob_text';
   import { expectPageFits, expectFloating, expectValuesVisible, expectDarkCheckboxes, expectSelectsFloating } from './stories/layout_checks';
 
   const { Story } = defineMeta({
@@ -456,4 +458,34 @@
     await expect(gemOrder(ed)).toEqual(moved);
   }}>
   {@render frame(spectreBuild)}
+</Story>
+
+<Story
+  name="Colour-coded labels"
+  asChild
+  parameters={{ a11y: { config: { rules: [{ id: 'color-contrast', selector: '*:not([data-pob-color])' }] } } }}
+  globals={vp('target')}
+  play={async ({ canvasElement }) => {
+    const { c, main } = page(canvasElement as HTMLElement);
+    await expectPageFits(main);
+    const list = c.getByRole('region', { name: 'Socket groups' });
+    await expect(list.textContent).not.toMatch(/\^(x[0-9A-Fa-f]{6}|\d)/);
+    await expect(c.getByRole('combobox', { name: 'Skill set' }).textContent).not.toMatch(/\^\d/);
+    const groups = groupsOf(colourLabelBuild);
+    const rows = [...list.querySelectorAll<HTMLElement>('button[data-reorder-press]')];
+    const blank = groups.findIndex((g) => !g.gems.length && /\S/.test(g.label) && !/\S/.test(pobPlain(g.label)));
+    const heading = groups.findIndex((g) => !g.gems.length && /\S/.test(pobPlain(g.label)) && g.label.startsWith('^4'));
+    await expect(rows[blank]).toHaveAttribute('data-label-row', 'blank');
+    await expect(rows[heading]).toHaveAttribute('data-label-row', 'label');
+    const card = rows.findIndex((r) => !r.hasAttribute('data-label-row'));
+    const h = (i: number) => rows[i].getBoundingClientRect().height;
+    await expect(h(blank), 'a blank row keeps a line of height').toBeGreaterThanOrEqual(16);
+    await expect(h(heading), 'a label row is shorter than a group card').toBeLessThan(h(card));
+    await expect(getComputedStyle(rows[heading].querySelector('[data-pob-color]')!).color).not.toBe(getComputedStyle(rows[heading]).color);
+    await userEvent.click(rows[blank]);
+    await expect(rows[blank]).toHaveAttribute('aria-current', 'true');
+    const ed = c.getByRole('region', { name: 'Selected group' });
+    await expect(within(ed).getByRole('textbox', { name: 'Label' })).toHaveValue(groups[blank].label);
+  }}>
+  {@render frame(colourLabelBuild, 0)}
 </Story>

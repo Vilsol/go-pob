@@ -2,6 +2,8 @@
   import SearchField from './SearchField.svelte';
   import { tick } from 'svelte';
   import { float, pressedOutside, raise } from './floating';
+  import PobText from './PobText.svelte';
+  import { pobPlain } from './pob_text';
 
   type Option = { value: string; label: string; title?: string };
   type Props = {
@@ -47,7 +49,8 @@
   let touched = false;
   const shown = $derived.by(() => {
     const words = q.toLowerCase().split(/\s+/).filter(Boolean);
-    return options.flatMap((o, i) => (words.every((w) => o.label.toLowerCase().includes(w)) ? [i] : []));
+    // DropDownControl.lua:24-33, 325, 397
+    return options.flatMap((o, i) => (words.every((w) => pobPlain(o.label).toLowerCase().includes(w)) ? [i] : []));
   });
 
   const optionEl = (i: number) => list?.querySelector<HTMLElement>(`#${uid}-o${i}`) ?? null;
@@ -73,7 +76,7 @@
     q = to;
     open = true;
     await tick();
-    const exact = shown.find((i) => options[i].label.toLowerCase() === q.trim().toLowerCase());
+    const exact = shown.find((i) => pobPlain(options[i].label).toLowerCase() === q.trim().toLowerCase());
     const first = exact ?? (shown.includes(active) ? active : shown[0]);
     if (first === undefined) {
       active = -1;
@@ -148,7 +151,7 @@
     {disabled}
     {...aria}
     onclick={() => (open ? close() : show())}
-    onkeydown={(e) => onkeydown(e)}>{options[chosen]?.label ?? ''}</button>
+    onkeydown={(e) => onkeydown(e)}><PobText text={options[chosen]?.label ?? ''} /></button>
   {#if open}
     <div class="menu fixed top-(--y) right-auto left-(--x) w-max max-w-[min(40rem,calc(100vw-16px))] gap-1" use:placed>
       {#if searchable}
@@ -180,7 +183,7 @@
             role="option"
             aria-selected={i === chosen}
             class={['menu-item shrink-0 cursor-pointer aria-selected:font-semibold', i === active && 'bg-hover']}
-            title={o.title ?? o.label}
+            title={o.title ?? pobPlain(o.label)}
             onmouseenter={() => {
               if (!(previewOnTap && touched)) void moveTo(i);
             }}
@@ -200,7 +203,7 @@
               }
               choose(i);
             }}>
-            <span class="min-w-0 truncate">{o.label}</span>
+            <span class="min-w-0 truncate"><PobText text={o.label} /></span>
           </li>
         {:else}
           <li role="presentation" class="note shrink-0 px-2 py-1">No entry matches “{q}”</li>

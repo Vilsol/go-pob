@@ -1,4 +1,7 @@
 <script lang="ts">
+  import PobText from './PobText.svelte';
+  import { pobPlain } from './pob_text';
+  import { tone as toneClass } from './tone';
   import Glyphs from './Glyphs.svelte';
   import GemIcon from './GemIcon.svelte';
   import Tooltip from './Tooltip.svelte';
@@ -221,10 +224,34 @@
   const socketCount = (g: SocketGroupFixture) => socketLine(g.sockets).colours.length;
   const groupLabel = (g: (SocketGroupFixture & { display?: string }) | undefined) => g?.display || g?.label || '<No active skills>';
   let groupBox = $state<HTMLElement>();
+  const rowEvents = (i: number, g: SocketGroupFixture) => ({
+    'data-reorder-press': '',
+    tabindex: reorderable ? -1 : undefined,
+    'aria-current': i === selected,
+    onmouseenter: () => showGroupTip(i),
+    onmouseleave: () => (groupTip = groupTip?.i === i ? undefined : groupTip),
+    onclick: (e: MouseEvent) => {
+      onselect(i);
+      // SkillListControl.lua:218-224
+      if (e.ctrlKey) ongroup(i, { enabled: !g.enabled });
+    },
+    onkeydown: (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key.toLowerCase() === 'c' && oncopygroup) {
+        e.preventDefault();
+        oncopygroup(i);
+      }
+    },
+    oncontextmenu: (e: MouseEvent) => {
+      e.preventDefault();
+      // SkillListControl.lua:202-217
+      if (e.ctrlKey) ongroup(i, { inFull: !g.inFull });
+      else onmain?.(i);
+    }
+  });
   const dragState = $state(reorderState());
   const drag = new Reorder(dragState, {
     box: () => groupBox,
-    name: (i) => groupLabel(groups[i]),
+    name: (i) => pobPlain(groupLabel(groups[i])).trim() || 'Blank row',
     onmove: (f, t) => onreordergroups?.(f, t),
     onactivate: (i) => onselect(i)
   });
@@ -261,51 +288,49 @@
   <SectionHeading class="mt-0.5 uppercase">Socket groups</SectionHeading>
   {#each groups as g, i (i)}
     {@const lead = g.gems.find((m) => !m.support && m.name)}
+    {@const label = groupLabel(g)}
+    {@const bare = !g.gems.length && /\S/.test(g.label)}
+    {@const blank = !/\S/.test(pobPlain(label))}
     <div {...reorderable ? drag.row(i) : {}} class="relative flex items-stretch gap-1" title={reorderable ? undefined : groupsLocked}>
       <span aria-hidden="true" class={['flex w-4 shrink-0 items-center text-text-3', !reorderable && 'invisible']}><Icon name="grip" /></span>
-      <button
-        data-reorder-press
-        tabindex={reorderable ? -1 : undefined}
-        class={[
-          'flex min-w-0 grow flex-col items-start gap-0.5 rounded-md border border-line bg-surface-1 px-2.5 py-2 text-left font-sans text-13 text-text aria-[current=true]:border-accent aria-[current=true]:bg-row-current',
-          reorderable && 'cursor-grab'
-        ]}
-        aria-current={i === selected}
-        onmouseenter={() => showGroupTip(i)}
-        onmouseleave={() => (groupTip = groupTip?.i === i ? undefined : groupTip)}
-        onclick={(e: MouseEvent) => {
-          onselect(i);
-          // SkillListControl.lua:218-224
-          if (e.ctrlKey) ongroup(i, { enabled: !g.enabled });
-        }}
-        onkeydown={(e: KeyboardEvent) => {
-          if (e.ctrlKey && e.key.toLowerCase() === 'c' && oncopygroup) {
-            e.preventDefault();
-            oncopygroup(i);
-          }
-        }}
-        oncontextmenu={(e: MouseEvent) => {
-          e.preventDefault();
-          // SkillListControl.lua:202-217
-          if (e.ctrlKey) ongroup(i, { inFull: !g.inFull });
-          else onmain?.(i);
-        }}>
-        <span class="flex w-full justify-between gap-1.5"
-          ><span class={['font-semibold', !g.enabled && 'text-text-2 line-through']}
-            >{#if g.slot && groupicon?.(g.slot)}<img
-                src={groupicon(g.slot)}
-                alt=""
-                data-slot-icon
-                class="mr-1 inline size-4 align-[-2px]" />{/if}{#if lead}<GemIcon
-                name={lead.name}
-                size={16}
-                decorative
-                class="mr-1 align-[-3px]" />{/if}{groupLabel(g)}{#if i === mainGroup}<span class="text-10 font-semibold tracking-caps text-accent">
-                <Glyphs text="★ MAIN" /></span
-              >{/if}</span
-          ><span class="font-mono text-11 text-text-2">{g.gems.length}/{socketCount(g) || '–'}{g.slot ? ' · ' + g.slot : ''}</span></span>
-        <span class="max-w-full truncate text-11 text-text-2">{g.gems.map((m) => m.name.replace(/ Support$/, '')).join(', ') || 'No gems'}</span>
-      </button>
+      {#if bare}
+        <!-- SkillListControl.lua:79-116: a group with no gems is its label alone; a label of colour codes alone is a blank row -->
+        <button
+          {...rowEvents(i, g)}
+          data-label-row={blank ? 'blank' : 'label'}
+          aria-label={blank ? 'Blank row' : undefined}
+          class={[
+            'flex min-h-6 min-w-0 grow items-center gap-1.5 rounded-md border border-transparent px-2.5 py-0.5 text-left font-sans text-13 text-text hover:bg-hover aria-[current=true]:border-accent aria-[current=true]:bg-row-current',
+            reorderable && 'cursor-grab'
+          ]}
+          ><span class={['truncate', !g.enabled && 'opacity-60']}><PobText text={label} /></span>{#if i === mainGroup}<span
+              class="shrink-0 text-10 font-semibold tracking-caps text-accent"><Glyphs text="★ MAIN" /></span
+            >{/if}</button>
+      {:else}
+        <button
+          {...rowEvents(i, g)}
+          class={[
+            'flex min-w-0 grow flex-col items-start gap-0.5 rounded-md border border-line bg-surface-1 px-2.5 py-2 text-left font-sans text-13 text-text aria-[current=true]:border-accent aria-[current=true]:bg-row-current',
+            reorderable && 'cursor-grab'
+          ]}>
+          <span class="flex w-full justify-between gap-1.5"
+            ><span class={['font-semibold', !g.enabled && 'text-text-2 line-through']}
+              >{#if g.slot && groupicon?.(g.slot)}<img
+                  src={groupicon(g.slot)}
+                  alt=""
+                  data-slot-icon
+                  class="mr-1 inline size-4 align-[-2px]" />{/if}{#if lead}<GemIcon
+                  name={lead.name}
+                  size={16}
+                  decorative
+                  class="mr-1 align-[-3px]" />{/if}<PobText text={label} />{#if i === mainGroup}<span class="text-10 font-semibold tracking-caps text-accent">
+                  <Glyphs text="★ MAIN" /></span
+                >{/if}</span
+            ><span class="font-mono text-11 text-text-2">{g.gems.length}/{socketCount(g) || '–'}{g.slot ? ' · ' + g.slot : ''}</span></span>
+          <span class="max-w-full truncate text-11 text-text-2"
+            >{#each g.gems as m, k (k)}{k ? ', ' : ''}<span class={['toned', toneClass(m.attr)]}>{m.name.replace(/ Support$/, '')}</span>{:else}No gems{/each}</span>
+        </button>
+      {/if}
       {#if groupTip?.i === i && groupTip.lines?.length}
         <Tooltip label="Socket group tooltip" size="lg" interactive textSize={11} class="absolute top-0 left-full z-sticky ml-2 w-80">
           <TooltipLines lines={groupTip.lines} />

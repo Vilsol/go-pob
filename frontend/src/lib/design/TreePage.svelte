@@ -1,4 +1,5 @@
 <script lang="ts">
+  import PobText from './PobText.svelte';
   import { followOtherTabs } from '$lib/storage/tabs';
   import Input from './Input.svelte';
   import Checkbox from './Checkbox.svelte';
@@ -1071,7 +1072,7 @@
     }}
     onop={onspecs}>
     {#snippet row(i: number)}<span class="truncate"
-        >{tree.specs[i]}{#if specDetails[i]}<span class="text-text-3">{` (${specDetails[i]})`}</span>{/if}</span
+        ><PobText text={tree.specs[i]} />{#if specDetails[i]}<span class="text-text-3">{` (${specDetails[i]})`}</span>{/if}</span
       >{/snippet}
     {#snippet aside()}
       <div class="scroll h-64 shrink-0">

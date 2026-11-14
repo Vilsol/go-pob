@@ -1,4 +1,5 @@
 <script lang="ts">
+  import PobText from './PobText.svelte';
   import Input from './Input.svelte';
   import Button from './Button.svelte';
   import InlineConfirm from './InlineConfirm.svelte';
@@ -80,7 +81,7 @@
             onmouseenter={() => (sharedTip = i)}
             onmouseleave={() => (sharedTip = null)}
             onfocus={() => (sharedTip = i)}
-            onblur={() => (sharedTip = null)}>{s.title}</button>
+            onblur={() => (sharedTip = null)}><PobText text={s.title} /></button>
         {:else}
           <span class="note">Item sets shared here are kept for all your builds: share one of this build's sets to add it.</span>
         {/each}

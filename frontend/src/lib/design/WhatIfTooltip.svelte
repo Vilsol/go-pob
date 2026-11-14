@@ -1,4 +1,5 @@
 <script lang="ts">
+  import PobText from './PobText.svelte';
   import Glyphs from './Glyphs.svelte';
   import type { Snippet } from 'svelte';
   import { tone as toneClass } from './tone';
@@ -51,7 +52,7 @@
     translucent && 'bg-surface-2/88'
   ]}>
   <div class="flex items-baseline justify-between">
-    <span class="text-15 font-semibold">{title}</span>{#if kind}<span class="note">{kind}</span>{/if}
+    <span class="text-15 font-semibold"><PobText text={title} /></span>{#if kind}<span class="note">{kind}</span>{/if}
   </div>
   {#if info.length}
     <div class="flex flex-col gap-0.5" aria-label="Details">
