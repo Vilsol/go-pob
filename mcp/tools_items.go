@@ -125,6 +125,7 @@ type itemOp struct {
 	Text    string          `json:"text"`
 	Active  *bool           `json:"active"`
 	Node    json.RawMessage `json:"node"`
+	Strict  bool            `json:"strict"`
 }
 
 type editItemsIn struct {
@@ -191,11 +192,20 @@ func applyItemOp(ec *editCtx, op itemOp, dryRun bool) *ToolError {
 		text, _ := calculator.ItemDBText(calculator.ItemDBUnique, name)
 		return equip(text, "equip_unique")
 	case "craft":
-		text, e := craftItem(op.Base, op.Affixes, op.Sockets)
+		text, chosen, skipped, e := craftItem(op.Base, op.Affixes, op.Sockets, op.Strict)
 		if e != nil {
 			return e
 		}
-		return equip(text, "craft")
+		if e := equip(text, "craft"); e != nil {
+			return e
+		}
+		if len(chosen) > 0 {
+			ec.applied[len(ec.applied)-1] += ": " + strings.Join(chosen, ", ")
+		}
+		for _, sk := range skipped {
+			ec.add("skipped", sk)
+		}
+		return nil
 	case "equip_text":
 		if strings.TrimSpace(op.Text) == "" {
 			return invalidArg("equip_text needs text.", nil)
@@ -300,28 +310,138 @@ type affixChoice struct {
 	typ    string
 }
 
-// craftItem builds a rare through PoB's crafting path: CraftItemText, then each affix at the top of its slider.
-func craftItem(baseName string, affixes []string, sockets string) (string, *ToolError) {
+// affixIntents maps a short intent word to the labels it means, in order of preference; the first one the base can
+// roll is used.
+var affixIntents = map[string][]string{
+	"life":           {"+# to maximum Life"},
+	"mana":           {"+# to maximum Mana"},
+	"energy shield":  {"+# to maximum Energy Shield", "#% increased Energy Shield"},
+	"es":             {"+# to maximum Energy Shield", "#% increased Energy Shield"},
+	"armour":         {"+# to Armour", "#% increased Armour", "#% increased Armour and Energy Shield", "#% increased Armour and Evasion"},
+	"evasion":        {"+# to Evasion Rating", "#% increased Evasion Rating", "#% increased Armour and Evasion", "#% increased Evasion and Energy Shield"},
+	"fire res":       {"+#% to Fire Resistance"},
+	"cold res":       {"+#% to Cold Resistance"},
+	"lightning res":  {"+#% to Lightning Resistance"},
+	"chaos res":      {"+#% to Chaos Resistance"},
+	"all res":        {"+#% to all Elemental Resistances"},
+	"elemental res":  {"+#% to all Elemental Resistances"},
+	"str":            {"+# to Strength"},
+	"dex":            {"+# to Dexterity"},
+	"int":            {"+# to Intelligence"},
+	"attributes":     {"+# to all Attributes"},
+	"attack speed":   {"#% increased Attack Speed"},
+	"cast speed":     {"#% increased Cast Speed"},
+	"move speed":     {"#% increased Movement Speed"},
+	"movement speed": {"#% increased Movement Speed"},
+}
+
+func intentNames() []string {
+	out := make([]string, 0, len(affixIntents))
+	for k := range affixIntents {
+		out = append(out, strings.ReplaceAll(k, " ", "_"))
+	}
+	sort.Strings(out)
+	return out
+}
+
+// resolveIntent picks the first label of an intent the base rolls; a label's ranged variant ("(5-7)% increased
+// Attack Speed") counts when no exact one exists.
+func resolveIntent(want string, options []affixChoice) (string, bool, bool) {
+	labels, ok := affixIntents[norm(want)]
+	if !ok {
+		return "", false, false
+	}
+	for _, l := range labels {
+		for _, o := range options {
+			if norm(o.label) == norm(l) {
+				return o.label, true, true
+			}
+		}
+	}
+	for _, l := range labels {
+		core := norm(strings.TrimLeft(l, "+#% "))
+		for _, o := range options {
+			if !strings.Contains(o.label, "/") && strings.HasSuffix(norm(o.label), core) {
+				return o.label, true, true
+			}
+		}
+	}
+	return "", true, false
+}
+
+var affixFiller = map[string]bool{"to": true, "of": true, "and": true, "increased": true, "maximum": true, "the": true, "a": true}
+
+// affixesLike lists the base's affixes ("Prefix: label") sharing a word with label, most shared words first; with
+// none sharing, the first n.
+func affixesLike(label string, options []affixChoice, n int) []string {
+	words := strings.Fields(norm(label))
+	type scored struct {
+		text  string
+		score int
+	}
+	var list []scored
+	seen := map[string]bool{}
+	for _, o := range options {
+		t := o.typ + ": " + o.label
+		if seen[t] {
+			continue
+		}
+		seen[t] = true
+		have := strings.Fields(norm(o.label))
+		score := 0
+		for _, w := range words {
+			if !affixFiller[w] && slices.Contains(have, w) {
+				score++
+			}
+		}
+		list = append(list, scored{t, score})
+	}
+	sort.SliceStable(list, func(i, j int) bool { return list[i].score > list[j].score })
+	var out []string
+	for _, l := range list {
+		if len(out) == n || (l.score == 0 && len(out) > 0 && list[0].score > 0) {
+			break
+		}
+		out = append(out, l.text)
+	}
+	return out
+}
+
+func freeSlots(ctl calculator.AffixControls, used map[int]bool) string {
+	free := map[string]int{}
+	for si, c := range ctl.Controls {
+		if !used[si] {
+			free[c.Type]++
+		}
+	}
+	return fmt.Sprintf("free: %d prefix, %d suffix", free["Prefix"], free["Suffix"])
+}
+
+// craftItem builds a rare through PoB's crafting path: CraftItemText, then each affix at the top of its slider. An
+// affix may be a label or an intent word (life, fire_res...). Unless strict, an affix the base cannot take is
+// skipped and reported instead of failing the craft.
+func craftItem(baseName string, affixes []string, sockets string, strict bool) (string, []string, []any, *ToolError) {
 	if baseName == "" {
-		return "", invalidArg("craft needs base.", nil)
+		return "", nil, nil, invalidArg("craft needs base.", nil)
 	}
 	base, e := resolveBase(baseName)
 	if e != nil {
-		return "", e
+		return "", nil, nil, e
 	}
 	text, ok := calculator.CraftItemText(2, "", base)
 	if !ok {
-		return "", errf(CodeInvalidValue, "%s cannot be crafted.", base)
+		return "", nil, nil, errf(CodeInvalidValue, "%s cannot be crafted.", base)
 	}
 	if sockets != "" {
 		text = setSockets(text, sockets)
 	}
 	used := map[int]bool{}
 	var chosen []string
+	var skipped []any
 	for _, label := range affixes {
 		ctl, ok := calculator.ItemAffixControls(text)
 		if !ok {
-			return "", errf(CodeAffixLimit, "%s takes no crafted affixes.", base)
+			return "", nil, nil, errf(CodeAffixLimit, "%s takes no crafted affixes.", base)
 		}
 		var options []affixChoice
 		for si, c := range ctl.Controls {
@@ -332,13 +452,39 @@ func craftItem(baseName string, affixes []string, sockets string) (string, *Tool
 				options = append(options, affixChoice{slot: si, series: k, label: ser.Label, typ: c.Type})
 			}
 		}
-		pick, ok, _ := resolveName(label, options, func(a affixChoice) string { return a.label }, nil)
+		fail := func(e *ToolError, reason string) *ToolError {
+			e.Chosen = chosen
+			e.Hint = freeSlots(ctl, used) + ". Use search_data kind=affix base=<base> to list labels, or an intent word: " + strings.Join(intentNames(), ", ") + "."
+			if strict {
+				return e
+			}
+			sk := map[string]any{"affix": label, "reason": reason}
+			if len(e.AllowedBase) > 0 {
+				sk["can_roll"] = e.AllowedBase[:min(len(e.AllowedBase), 5)]
+			}
+			skipped = append(skipped, sk)
+			return nil
+		}
+		want := label
+		if l, isIntent, found := resolveIntent(label, options); isIntent {
+			if !found {
+				e := errf(CodeAffixLimit, "%s rolls none of the affixes for %q.", base, label)
+				e.AllowedBase = affixesLike(strings.Join(affixIntents[norm(label)], " "), options, 10)
+				if e := fail(e, "base cannot roll it"); e != nil {
+					return "", nil, nil, e
+				}
+				continue
+			}
+			want = l
+		}
+		pick, ok, _ := resolveName(want, options, func(a affixChoice) string { return a.label }, nil)
 		if !ok {
 			e := errf(CodeAffixLimit, "%q is not an affix %s can roll.", label, base)
-			e.Chosen = chosen
-			e.AllowedBase = suggest(label, uniqStrings(options), 10)
-			e.Hint = "Use search_data kind=affix base=<base> to list labels."
-			return "", e
+			e.AllowedBase = affixesLike(label, options, 10)
+			if e := fail(e, "base cannot roll it"); e != nil {
+				return "", nil, nil, e
+			}
+			continue
 		}
 		slot := -1
 		for si, c := range ctl.Controls {
@@ -357,30 +503,24 @@ func craftItem(baseName string, affixes []string, sockets string) (string, *Tool
 		}
 		if slot < 0 {
 			e := errf(CodeAffixLimit, "No free %s slot left for %q (at most 3 prefixes and 3 suffixes).", strings.ToLower(pick.typ), label)
-			e.Chosen = chosen
-			return "", e
+			if e := fail(e, "no free "+strings.ToLower(pick.typ)+" slot"); e != nil {
+				return "", nil, nil, e
+			}
+			continue
 		}
 		next, ok := calculator.AffixEditText(text, slot, pick.series, 1)
 		if !ok {
-			return "", errf(CodeAffixLimit, "%q could not be applied to %s.", label, base)
+			e := errf(CodeAffixLimit, "%q could not be applied to %s.", label, base)
+			if e := fail(e, "could not be applied"); e != nil {
+				return "", nil, nil, e
+			}
+			continue
 		}
 		used[slot] = true
 		text = next
 		chosen = append(chosen, pick.typ+": "+pick.label)
 	}
-	return text, nil
-}
-
-func uniqStrings(options []affixChoice) []string {
-	seen := map[string]bool{}
-	var out []string
-	for _, o := range options {
-		if !seen[o.label] {
-			seen[o.label] = true
-			out = append(out, o.label)
-		}
-	}
-	return out
+	return text, chosen, skipped, nil
 }
 
 func setSockets(text, sockets string) string {

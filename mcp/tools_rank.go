@@ -16,7 +16,7 @@ import (
 
 const (
 	rankBudget = 30 * time.Second
-	capRank    = 2 * 1024
+	capRank    = 3 * 1024
 )
 
 type rankIn struct {
@@ -29,6 +29,48 @@ type rankIn struct {
 	Slot        string   `json:"slot"`
 	MaxLevelReq *int     `json:"max_level_req"`
 	Limit       int      `json:"limit"`
+	Watch       []string `json:"watch"`
+}
+
+var resistElems = []string{"Fire", "Cold", "Lightning", "Chaos"}
+
+// headroom is each resistance's total minus its cap: negative is how far below the cap it sits.
+func headroom(env *calculator.Environment) map[string]float64 {
+	out := make(map[string]float64, len(resistElems))
+	for _, el := range resistElems {
+		total, _ := statValue(env, el+"ResistTotal")
+		capV, _ := statValue(env, el+"ResistMax")
+		out[el] = round(total - capV)
+	}
+	return out
+}
+
+// watchSnap is the compact per-candidate view a ranking row carries: the watched stats after the change and the
+// resistance headroom.
+func watchSnap(env *calculator.Environment, watch []string) map[string]any {
+	return map[string]any{"after": statsOf(env, watch), "headroom": headroom(env)}
+}
+
+func rankWatch(env *calculator.Environment, key string, ps calculator.PowerStat, extra []string) ([]string, []string) {
+	watch := []string{"Life", "TotalEHP"}
+	if !ps.Combined && !slices.Contains(watch, key) {
+		watch = append([]string{key}, watch...)
+	}
+	var unknown []string
+	for _, w := range extra {
+		if !knownStat(env, w) {
+			unknown = append(unknown, w)
+		} else if !slices.Contains(watch, w) {
+			watch = append(watch, w)
+		}
+	}
+	return watch, unknown
+}
+
+func addSnap(row map[string]any, env *calculator.Environment, watch []string) {
+	for k, v := range watchSnap(env, watch) {
+		row[k] = v
+	}
 }
 
 // powerStat maps a stat key to PoB's power stat; MainDPS is PoB's CombinedDPS entry, which already adds minion DPS.
@@ -94,7 +136,11 @@ func (s *Server) rankCandidates(args json.RawMessage) (any, *ToolError) {
 	}
 	limit = min(limit, 25)
 	start := time.Now()
-	res := map[string]any{"handle": h.id, "revision": h.cur, "stat": key}
+	watch, unknown := rankWatch(env, key, ps, in.Watch)
+	res := map[string]any{"handle": h.id, "revision": h.cur, "stat": key, "base_stats": statsOf(env, watch), "base_headroom": headroom(env)}
+	if len(unknown) > 0 {
+		res["unknown_watch"] = unknown
+	}
 	if !ps.Combined {
 		res["base"] = round(statOf(env, key))
 	}
@@ -103,16 +149,16 @@ func (s *Server) rankCandidates(args json.RawMessage) (any, *ToolError) {
 	partial := false
 	switch in.Kind {
 	case "nodes":
-		rows, considered, partial, e = rankNodes(b, ps, key, in)
+		rows, considered, partial, e = rankNodes(b, ps, key, in, limit, watch)
 		res["hint"] = "Allocate with edit_tree op=allocate node=<id>; re-rank after each pick (gains interact)."
 	case "remove_nodes":
-		rows, considered, partial = rankRemoveNodes(b, env, key, start)
+		rows, considered, partial = rankRemoveNodes(b, key, start, watch)
 		res["hint"] = "Remove with edit_tree op=deallocate node=<id>."
 	case "supports":
-		rows, considered, partial, e = rankSupports(b, env, key, in.Group, start)
+		rows, considered, partial, e = rankSupports(b, env, key, in.Group, start, watch)
 		res["hint"] = "Apply with edit_skills op=add_gem or op=set_gems."
 	case "uniques":
-		rows, considered, partial, e = rankUniques(b, key, in, start)
+		rows, considered, partial, e = rankUniques(b, key, in, start, limit, watch)
 		res["hint"] = "Equip with edit_items op=equip_unique name=<name> slot=<slot>."
 	default:
 		return nil, invalidArg(fmt.Sprintf("Unknown kind %q.", in.Kind), []string{"nodes", "remove_nodes", "supports", "uniques"})
@@ -137,7 +183,7 @@ func (s *Server) rankCandidates(args json.RawMessage) (any, *ToolError) {
 	return res, nil
 }
 
-func rankNodes(b *pob.PathOfBuilding, ps calculator.PowerStat, key string, in rankIn) ([]map[string]any, int, bool, *ToolError) {
+func rankNodes(b *pob.PathOfBuilding, ps calculator.PowerStat, key string, in rankIn, limit int, watch []string) ([]map[string]any, int, bool, *ToolError) {
 	v := specTreeVersion(b)
 	if v != data.LatestTreeVersion {
 		e := errf(CodeTreeNotLatest, "Node ranking needs the %s tree; this build uses %s.", data.LatestTreeVersion, v)
@@ -187,10 +233,15 @@ func rankNodes(b *pob.PathOfBuilding, ps calculator.PowerStat, key string, in ra
 		rows = append(rows, row)
 	}
 	sort.SliceStable(rows, func(i, j int) bool { return rows[i]["per_point"].(float64) > rows[j]["per_point"].(float64) })
+	for _, row := range rows[:min(limit, len(rows))] {
+		if p, ok := row["path"].([]int64); ok {
+			addSnap(row, misc.Calc(&calculator.CalcOverride{AddNodes: p}), watch)
+		}
+	}
 	return rows, len(report), partial, nil
 }
 
-func rankRemoveNodes(b *pob.PathOfBuilding, env *calculator.Environment, key string, start time.Time) ([]map[string]any, int, bool) {
+func rankRemoveNodes(b *pob.PathOfBuilding, key string, start time.Time, watch []string) ([]map[string]any, int, bool) {
 	v := specTreeVersion(b)
 	misc := calculator.GetMiscCalculator(b)
 	base := statOf(misc.Base(), key)
@@ -212,11 +263,13 @@ func rankRemoveNodes(b *pob.PathOfBuilding, env *calculator.Environment, key str
 			break
 		}
 		cut := append([]int64{id}, data.TreeVersions[v].CalculateDependentNodes(slices.Clone(b.Build.PassiveNodes), id, roots)...)
-		after := statOf(misc.Calc(&calculator.CalcOverride{RemoveNodes: cut}), key)
+		afterEnv := misc.Calc(&calculator.CalcOverride{RemoveNodes: cut})
 		considered++
-		loss := base - after
-		rows = append(rows, map[string]any{"id": id, "name": n.Name, "type": n.Type, "loss": round(loss), "points_freed": len(cut),
-			"loss_per_point": round(loss / float64(len(cut)))})
+		loss := base - statOf(afterEnv, key)
+		row := map[string]any{"id": id, "name": n.Name, "type": n.Type, "loss": round(loss), "points_freed": len(cut),
+			"loss_per_point": round(loss / float64(len(cut)))}
+		addSnap(row, afterEnv, watch)
+		rows = append(rows, row)
 	}
 	sort.SliceStable(rows, func(i, j int) bool {
 		return rows[i]["loss_per_point"].(float64) < rows[j]["loss_per_point"].(float64)
@@ -263,7 +316,7 @@ func evalBuild(b *pob.PathOfBuilding, mutate func(c *pob.PathOfBuilding)) (*calc
 	return calcEnv(c), nil
 }
 
-func rankSupports(b *pob.PathOfBuilding, env *calculator.Environment, key string, group int, start time.Time) ([]map[string]any, int, bool, *ToolError) {
+func rankSupports(b *pob.PathOfBuilding, env *calculator.Environment, key string, group int, start time.Time, watch []string) ([]map[string]any, int, bool, *ToolError) {
 	group, e := mainGroup(b, group)
 	if e != nil {
 		return nil, 0, false, e
@@ -318,6 +371,7 @@ func rankSupports(b *pob.PathOfBuilding, env *calculator.Environment, key string
 			return nil, 0, false, e
 		}
 		row := map[string]any{"name": ge.Name, "gain_added": round(statOf(added, key) - base)}
+		addSnap(row, added, watch)
 		if weakest >= 0 {
 			swapped, e := evalBuild(b, func(c *pob.PathOfBuilding) {
 				gg := &(*groupsOf(c))[group-1]
@@ -329,6 +383,7 @@ func rankSupports(b *pob.PathOfBuilding, env *calculator.Environment, key string
 			}
 			row["gain_swapped"] = round(statOf(swapped, key) - base)
 			row["swaps_out"] = g.Gems[weakest].NameSpec
+			addSnap(row, swapped, watch)
 		}
 		rows = append(rows, row)
 	}
@@ -342,7 +397,13 @@ func rankSupports(b *pob.PathOfBuilding, env *calculator.Environment, key string
 	return rows, considered, partial, nil
 }
 
-func rankUniques(b *pob.PathOfBuilding, key string, in rankIn, start time.Time) ([]map[string]any, int, bool, *ToolError) {
+// uniqueTitle is an item name without its base type ("Kaom's Heart, Glorious Plate" -> "Kaom's Heart").
+func uniqueTitle(name string) string {
+	t, _, _ := strings.Cut(name, ",")
+	return norm(t)
+}
+
+func rankUniques(b *pob.PathOfBuilding, key string, in rankIn, start time.Time, limit int, watch []string) ([]map[string]any, int, bool, *ToolError) {
 	if in.Slot == "" {
 		e := invalidArg("kind=uniques needs slot.", nil)
 		e.Valid = slotNames()
@@ -353,14 +414,16 @@ func rankUniques(b *pob.PathOfBuilding, key string, in rankIn, start time.Time) 
 		return nil, 0, false, e
 	}
 	misc := calculator.GetMiscCalculator(b)
-	baseEnv := misc.Base()
-	base := statOf(baseEnv, key)
-	resists := []string{"FireResist", "ColdResist", "LightningResist", "ChaosResist"}
+	base := statOf(misc.Base(), key)
+	equippedNames := map[string]bool{}
+	for _, eq := range equippedItems(b) {
+		equippedNames[uniqueTitle(eq.name)] = true
+	}
 	var rows []map[string]any
 	considered := 0
 	partial := false
 	for _, it := range calculator.ItemDB(calculator.ItemDBUnique) {
-		if !calculator.IsItemValidForSlot(b, it, slot) {
+		if !calculator.IsItemValidForSlot(b, it, slot) || equippedNames[uniqueTitle(it.Name)] {
 			continue
 		}
 		if in.MaxLevelReq != nil && int(it.Requirements["Level"]) > *in.MaxLevelReq {
@@ -377,18 +440,23 @@ func rankUniques(b *pob.PathOfBuilding, key string, in rankIn, start time.Time) 
 		if base != 0 {
 			row["gain_pct"] = round(gain / math.Abs(base) * 100)
 		}
-		var rd []string
-		for _, r := range resists {
-			d := statOf(after, r) - statOf(baseEnv, r)
-			if math.Abs(d) >= 1 {
-				rd = append(rd, fmt.Sprintf("%s %+d", strings.TrimSuffix(r, "Resist"), int(math.Round(d))))
-			}
-		}
-		if len(rd) > 0 {
-			row["resists"] = rd
-		}
+		addSnap(row, after, watch)
 		rows = append(rows, row)
 	}
 	sort.SliceStable(rows, func(i, j int) bool { return rows[i]["gain"].(float64) > rows[j]["gain"].(float64) })
+	for _, row := range rows[:min(limit, len(rows))] {
+		text, _ := calculator.ItemDBText(calculator.ItemDBUnique, row["name"].(string))
+		item := calculator.ParseItem(text)
+		links := 0
+		for i, run := 0, 0; i < len(item.Sockets); i++ {
+			if i == 0 || item.Sockets[i].Group != item.Sockets[i-1].Group {
+				run = 0
+			}
+			run++
+			links = max(links, run)
+		}
+		row["sockets"] = len(item.Sockets)
+		row["links"] = links
+	}
 	return rows, considered, partial, nil
 }

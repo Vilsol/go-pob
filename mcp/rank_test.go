@@ -83,3 +83,75 @@ func TestRankCandidatesRemoveSupportsAndUniques(t *testing.T) {
 		t.Fatalf("uniques without slot: %s", e.Code)
 	}
 }
+
+func num(m any, key string) float64 {
+	v, _ := m.(map[string]any)[key].(float64)
+	return v
+}
+
+// TestRankRowsCarryWatchedStatsAndHeadroom checks each row's after-stats and resistance headroom against the build
+// with that candidate committed.
+func TestRankRowsCarryWatchedStatsAndHeadroom(t *testing.T) {
+	s := testServer(t)
+	h := importFixture(t, s)
+	committed := func(ops []any, tool string) map[string]any {
+		call(t, s, tool, map[string]any{"handle": h, "ops": ops})
+		st := call(t, s, "get_stats", map[string]any{"handle": h, "stats": []string{"Life", "TotalEHP", "Armour", "FireResistTotal", "FireResistMax", "ChaosResistTotal", "ChaosResistMax"}})
+		call(t, s, "revert_build", map[string]any{"handle": h, "to_revision": 0})
+		return st["stats"].(map[string]any)
+	}
+	check := func(kind string, row map[string]any, st map[string]any, keys ...string) {
+		t.Helper()
+		for _, k := range keys {
+			if num(row["after"], k) != num(st, k) {
+				t.Fatalf("%s %v: row says %s %v, committed %v", kind, row["name"], k, num(row["after"], k), num(st, k))
+			}
+		}
+		hr := row["headroom"].(map[string]any)
+		if len(hr) != 4 || hr["Fire"] != round(num(st, "FireResistTotal")-num(st, "FireResistMax")) ||
+			hr["Chaos"] != round(num(st, "ChaosResistTotal")-num(st, "ChaosResistMax")) {
+			t.Fatalf("%s %v: headroom %v, committed %v", kind, row["name"], hr, st)
+		}
+	}
+
+	res := assertSize(t, s, "rank_candidates", map[string]any{"handle": h, "kind": "uniques", "slot": "Ring 1", "stat": "Life", "watch": []string{"Armour"}}, capRank)
+	if res["base_headroom"] == nil || num(res["base_stats"], "Life") == 0 {
+		t.Fatalf("no base view: %v", res)
+	}
+	top := rows(res)[0]
+	check("uniques", top, committed(ops(map[string]any{"op": "equip_unique", "name": top["name"], "slot": "Ring 1"}), "edit_items"), "Life", "TotalEHP", "Armour")
+
+	node := rows(assertSize(t, s, "rank_candidates", map[string]any{"handle": h, "kind": "nodes", "stat": "Life", "max_points": 3}, capRank))[0]
+	check("nodes", node, committed(ops(map[string]any{"op": "allocate", "node": node["id"]}), "edit_tree"), "Life", "TotalEHP")
+
+	gone := rows(assertSize(t, s, "rank_candidates", map[string]any{"handle": h, "kind": "remove_nodes", "stat": "Life"}, capRank))[0]
+	check("remove_nodes", gone, committed(ops(map[string]any{"op": "deallocate", "node": gone["id"]}), "edit_tree"), "Life", "TotalEHP")
+}
+
+// TestRankUniquesSkipsEquippedAndCountsSockets equips the best-ranked ring in the other ring slot, after which it
+// must no longer be ranked; body armour rows carry socket and link counts.
+func TestRankUniquesSkipsEquippedAndCountsSockets(t *testing.T) {
+	s := testServer(t)
+	h := importFixture(t, s)
+	ranking := func() []map[string]any {
+		return rows(call(t, s, "rank_candidates", map[string]any{"handle": h, "kind": "uniques", "slot": "Ring 1", "stat": "Life", "limit": 25}))
+	}
+	best := ranking()[0]["name"].(string)
+	call(t, s, "edit_items", map[string]any{"handle": h, "ops": ops(map[string]any{"op": "equip_unique", "name": best, "slot": "Ring 2"})})
+	for _, r := range ranking() {
+		if r["name"] == best {
+			t.Fatalf("%s is equipped in Ring 2 but still ranked for Ring 1", best)
+		}
+	}
+	body := rows(call(t, s, "rank_candidates", map[string]any{"handle": h, "kind": "uniques", "slot": "Body Armour", "stat": "Life", "limit": 25}))
+	sawSix := false
+	for _, r := range body {
+		if r["sockets"] == nil || r["links"].(float64) > r["sockets"].(float64) {
+			t.Fatalf("row %v has no socket count", r)
+		}
+		sawSix = sawSix || r["sockets"] == float64(6)
+	}
+	if !sawSix {
+		t.Fatalf("no body armour with 6 sockets in %d rows", len(body))
+	}
+}

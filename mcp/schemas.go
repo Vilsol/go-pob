@@ -11,11 +11,11 @@ func tools() []toolDef {
 		{"edit_items", "Edit equipment with a batch of ops (equip_unique, craft, equip_text, unequip, set_flask_active, socket_jewel). Returns a stat delta; dry_run previews.", schemaEditItems, (*Server).editItems},
 		{"edit_skills", "Edit socket groups and gems with a batch of ops (add_group, set_gems, add_gem, remove_gem, set_main, enable/disable/remove_group, set_gem_level). Returns a stat delta; dry_run previews.", schemaEditSkills, (*Server).editSkills},
 		{"edit_build", "Edit level, bandit, pantheon, configuration options and notes with a batch of ops. Returns a stat delta; dry_run previews.", schemaEditBuild, (*Server).editBuild},
-		{"rank_candidates", "Rank what to take by PoB's power calculation: passive nodes, nodes to remove, support gems, or uniques for a slot.", schemaRankCandidates, (*Server).rankCandidates},
+		{"rank_candidates", "Rank what to take by PoB's power calculation: passive nodes, nodes to remove, support gems, or uniques for a slot (not already equipped). Each row shows the watched stats after the change and resistance headroom (total minus cap).", schemaRankCandidates, (*Server).rankCandidates},
 		{"compare_builds", "Compare two builds or two revisions (handle or handle@revision): stat differences and what changed.", schemaCompareBuilds, (*Server).compareBuilds},
 		{"revert_build", "Move a handle back (or forward) to another revision. Returns the stat delta.", schemaRevertBuild, (*Server).revertBuild},
 		{"export_build", "Export a build as a PoB code (or XML). The code can be pasted into Path of Building.", schemaExportBuild, (*Server).exportBuild},
-		{"optimize", "Search combinations of listed choices (items per slot, support sets, node sets) for the best objective under constraints. Nothing is applied unless apply:true.", schemaOptimize, (*Server).optimize},
+		{"optimize", "Search combinations of listed choices (items per slot, support sets, nodes to add or remove) for the best objective under constraints; large spaces use local search (add/remove/swap moves). Nothing is applied unless apply:true.", schemaOptimize, (*Server).optimize},
 	}
 }
 
@@ -74,7 +74,8 @@ const schemaEditItems = `{"type":"object","required":["handle","ops"],"additiona
     "slot":{"type":"string","description":"Helmet, Body Armour, Gloves, Boots, Amulet, Ring 1, Ring 2, Belt, Weapon 1, Weapon 2, Flask 1-5"},
     "name":{"type":"string","description":"equip_unique: unique name; variant chosen as PoB's default"},
     "base":{"type":"string","description":"craft: base type, e.g. Astral Plate"},
-    "affixes":{"type":"array","maxItems":6,"items":{"type":"string"},"description":"craft: affix labels, e.g. \"+# to maximum Life\"; best tier the base's item level allows, max roll"},
+    "affixes":{"type":"array","maxItems":6,"items":{"type":"string"},"description":"craft: affix labels, e.g. \"+# to maximum Life\", or intent words resolved per base (life, mana, es, armour, evasion, fire_res, cold_res, lightning_res, chaos_res, all_res, str, dex, int, attributes, attack_speed, cast_speed, move_speed); best tier the base's item level allows, max roll"},
+    "strict":{"type":"boolean","default":false,"description":"craft: fail the batch on an affix the base cannot take; by default it is skipped and listed in skipped"},
     "sockets":{"type":"string","description":"craft: e.g. R-R-G-G-B-B; default = PoB's crafted default"},
     "text":{"type":"string","description":"equip_text: full PoB item text"},
     "active":{"type":"boolean"},
@@ -113,7 +114,8 @@ const schemaRankCandidates = `{"type":"object","required":["handle","kind"],"add
   "group":{"type":"integer","description":"supports: socket group, default main"},
   "slot":{"type":"string","description":"uniques: slot to fill"},
   "max_level_req":{"type":"integer"},
-  "limit":{"type":"integer","default":8,"maximum":25}}}`
+  "limit":{"type":"integer","default":8,"maximum":25},
+  "watch":{"type":"array","items":{"type":"string"},"description":"extra stat keys each row reports after the change (always: the ranked stat, Life, TotalEHP and resistance headroom)"}}}`
 
 const schemaCompareBuilds = `{"type":"object","required":["a","b"],"additionalProperties":false,"properties":{
   "a":{"type":"string","description":"handle, or handle@revision"},
@@ -141,13 +143,14 @@ const schemaOptimize = `{"type":"object","required":["handle","slots","objective
     "group":{"type":"integer","description":"supports: socket group, default main"},
     "candidates":{"type":"array","items":{"type":"string"},"description":"supports: support gem names; nodes: node names or ids"},
     "replace":{"type":"array","items":{"type":"string"},"description":"supports: current supports that may be swapped out (default: all current supports)"},
-    "k":{"type":"integer","description":"supports: number of replaceable sockets to fill (default = len(replace)); nodes: up to k nodes"},
+    "remove":{"type":"array","items":{"type":"string"},"description":"nodes: allocated nodes that may be removed (with the nodes that depend on them), freeing points"},
+    "k":{"type":"integer","description":"supports: number of replaceable sockets to fill (default = len(replace)); nodes: add up to k of candidates"},
     "path":{"type":"boolean","default":true,"description":"nodes: count path points to each chosen node"}}}},
   "objective":{"type":"object","required":["stat"],"additionalProperties":false,"properties":{
     "stat":{"type":"string","description":"any stat key, e.g. MainDPS, TotalEHP, Life"},
     "goal":{"type":"string","enum":["maximize","minimize"],"default":"maximize"}}},
   "constraints":{"type":"array","maxItems":10,"items":{"type":"object","required":["stat","op","value"],"additionalProperties":false,"properties":{
-    "stat":{"type":"string","description":"stat key, or \"points\" (passive points added), \"level_needed\""},
+    "stat":{"type":"string","description":"stat key, or \"points_added\" (passive points added, net of removals; a mastery costs 1), \"points_total\" (points used after the change), \"level_needed\""},
     "op":{"type":"string","enum":[">=","<=","=="]},
     "value":{"type":"number"},
     "relative":{"type":"boolean","default":false,"description":"value is a fraction of the current value, e.g. Life >= 0.95"}}}},

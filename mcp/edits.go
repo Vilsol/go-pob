@@ -2,6 +2,7 @@ package mcp
 
 import (
 	"encoding/json"
+	"slices"
 
 	"github.com/Vilsol/go-pob/calculator"
 	"github.com/Vilsol/go-pob/pob"
@@ -37,16 +38,37 @@ func diffStrings(a, b []string) []string {
 }
 
 // deltaResult is the stat delta every write and dry run returns (spec §2).
+// MainDPS and the watch keys always appear: as a delta row when they moved, else in "unchanged" with their value.
+// Every resistance always appears with its total and headroom (total minus cap).
 func deltaResult(h *handle, rev int, before, after *calculator.Environment, dryRun bool, applied []string, watch []string) map[string]any {
-	rows, more := statDelta(before, after, append(append([]string{}, summaryKeys...), watch...), nil, 12)
+	must := []string{mainDPS}
+	for _, w := range watch {
+		if knownStat(after, w) && !slices.Contains(must, w) {
+			must = append(must, w)
+		}
+	}
+	all, more := statDelta(before, after, append(append([]string{}, summaryKeys...), watch...), must, 12)
+	rows := []deltaRow{}
+	unchanged := map[string]float64{}
+	for _, r := range all {
+		if slices.Contains(must, r.Stat) && r.Before == r.After {
+			unchanged[r.Stat] = r.After
+			continue
+		}
+		rows = append(rows, r)
+	}
 	wb, wa := cachedWarnings(before), cachedWarnings(after)
 	res := map[string]any{
 		"handle": h.id, "revision": rev, "dry_run": dryRun,
 		"applied":          nonNil(applied),
-		"delta":            nonNil(rows),
+		"delta":            rows,
+		"resists":          resistBlock(before, after),
 		"points":           pointsOf(after),
 		"warnings_added":   diffStrings(wb, wa),
 		"warnings_removed": diffStrings(wa, wb),
+	}
+	if len(unchanged) > 0 {
+		res["unchanged"] = unchanged
 	}
 	if more > 0 {
 		res["more"] = more
@@ -55,6 +77,28 @@ func deltaResult(h *handle, rev int, before, after *calculator.Environment, dryR
 }
 
 const capWrite = 1536
+
+type resistRow struct {
+	Resist         float64  `json:"resist"`
+	Total          float64  `json:"total"`
+	Headroom       float64  `json:"headroom"`
+	HeadroomChange *float64 `json:"headroom_change,omitempty"`
+}
+
+func resistBlock(before, after *calculator.Environment) map[string]resistRow {
+	hb, ha := headroom(before), headroom(after)
+	out := make(map[string]resistRow, len(resistElems))
+	for _, el := range resistElems {
+		r, _ := statValue(after, el+"Resist")
+		total, _ := statValue(after, el+"ResistTotal")
+		row := resistRow{Resist: round(r), Total: round(total), Headroom: ha[el]}
+		if d := round(ha[el] - hb[el]); d != 0 {
+			row.HeadroomChange = &d
+		}
+		out[el] = row
+	}
+	return out
+}
 
 func shorten(list []string, n int) []string {
 	out := make([]string, len(list))

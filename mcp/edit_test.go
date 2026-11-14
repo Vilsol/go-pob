@@ -2,6 +2,7 @@ package mcp
 
 import (
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/Vilsol/go-pob/data"
@@ -136,7 +137,7 @@ func TestEditItemsEquipsUniquesCraftsAndUnequips(t *testing.T) {
 	if res["applied"].([]any)[0] == "" {
 		t.Fatal("craft applied nothing")
 	}
-	e = callErr(t, s, "edit_items", map[string]any{"handle": h, "ops": ops(map[string]any{"op": "craft", "base": "Two-Stone Ring", "affixes": prefixes})})
+	e = callErr(t, s, "edit_items", map[string]any{"handle": h, "ops": ops(map[string]any{"op": "craft", "base": "Two-Stone Ring", "affixes": prefixes, "strict": true})})
 	if e.Code != CodeAffixLimit || len(e.Chosen) != 3 {
 		t.Fatalf("a fourth prefix: %s %v", e.Code, e.Chosen)
 	}
@@ -278,5 +279,79 @@ func TestCompareBuildsReportsWhatChanged(t *testing.T) {
 	}
 	if e := callErr(t, s, "compare_builds", map[string]any{"a": h + "@x", "b": h}); e.Code != CodeInvalidArgument {
 		t.Fatalf("bad ref: %s", e.Code)
+	}
+}
+
+// TestDeltaAlwaysShowsResistsWatchAndObjective dry-runs an edit that moves nothing and one that moves Life: every
+// resistance comes back with its total and headroom, and MainDPS and watch keys either as a row or in unchanged.
+func TestDeltaAlwaysShowsResistsWatchAndObjective(t *testing.T) {
+	s := testServer(t)
+	h := importFixture(t, s)
+	st := call(t, s, "get_stats", map[string]any{"handle": h, "stats": []string{"FireResist", "FireResistTotal", "FireResistMax", "Armour", mainDPS}})["stats"].(map[string]any)
+	noop := assertSize(t, s, "edit_build", map[string]any{"handle": h, "dry_run": true, "watch": []string{"Armour"},
+		"ops": ops(map[string]any{"op": "append_notes", "text": "x"})}, capWrite)
+	if len(noop["delta"].([]any)) != 0 {
+		t.Fatalf("a notes edit moved stats: %v", noop["delta"])
+	}
+	un := noop["unchanged"].(map[string]any)
+	if un[mainDPS] != num(st, mainDPS) || un["Armour"] != num(st, "Armour") {
+		t.Fatalf("unchanged = %v, stats %v", un, st)
+	}
+	fire := noop["resists"].(map[string]any)["Fire"].(map[string]any)
+	if len(noop["resists"].(map[string]any)) != 4 || fire["resist"] != num(st, "FireResist") || fire["total"] != num(st, "FireResistTotal") ||
+		fire["headroom"] != round(num(st, "FireResistTotal")-num(st, "FireResistMax")) || fire["headroom_change"] != nil {
+		t.Fatalf("resists = %v, stats %v", noop["resists"], st)
+	}
+
+	moved := assertSize(t, s, "edit_tree", map[string]any{"handle": h, "dry_run": true, "watch": []string{"Armour"},
+		"ops": ops(map[string]any{"op": "allocate", "node": "Heart of Oak"})}, capWrite)
+	seen := map[string]bool{}
+	for _, r := range moved["delta"].([]any) {
+		seen[r.(map[string]any)["stat"].(string)] = true
+	}
+	movedUn, _ := moved["unchanged"].(map[string]any)
+	for _, k := range []string{mainDPS, "Armour"} {
+		_, same := movedUn[k]
+		if seen[k] == same {
+			t.Fatalf("%s: in delta %v, in unchanged %v", k, seen[k], same)
+		}
+	}
+	if !seen["Life"] || len(moved["resists"].(map[string]any)) != 4 {
+		t.Fatalf("allocate Heart of Oak: %v", moved)
+	}
+}
+
+// TestCraftSkipsWhatTheBaseCannotRollAndResolvesIntents crafts Martyr Gloves, which roll no plain "+# to Armour": strict
+// fails listing the armour affixes it can roll, the default skips it, and intent words pick per-base labels.
+func TestCraftSkipsWhatTheBaseCannotRollAndResolvesIntents(t *testing.T) {
+	s := testServer(t)
+	h := importFixture(t, s)
+	craft := func(base string, affixes []string, strict bool) map[string]any {
+		return call(t, s, "edit_items", map[string]any{"handle": h, "dry_run": true, "ops": ops(map[string]any{"op": "craft", "base": base, "slot": "Gloves", "affixes": affixes, "strict": strict})})
+	}
+	e := callErr(t, s, "edit_items", map[string]any{"handle": h, "ops": ops(map[string]any{"op": "craft", "base": "Martyr Gloves", "affixes": []string{"+# to Armour"}, "strict": true})})
+	if e.Code != CodeAffixLimit || !slices.Contains(e.AllowedBase, "Prefix: +# to Armour/+# to maximum Life") || !strings.Contains(e.Hint, "free: 3 prefix, 3 suffix") {
+		t.Fatalf("strict: %s %v %q", e.Code, e.AllowedBase, e.Hint)
+	}
+
+	res := craft("Martyr Gloves", []string{"+# to Armour", "life", "fire_res", "armour"}, false)
+	skipped := res["skipped"].([]any)
+	if len(skipped) != 1 || skipped[0].(map[string]any)["affix"] != "+# to Armour" || len(skipped[0].(map[string]any)["can_roll"].([]any)) == 0 {
+		t.Fatalf("skipped = %v", res["skipped"])
+	}
+	note := res["applied"].([]any)[0].(string)
+	for _, want := range []string{"Prefix: +# to maximum Life", "Suffix: +#% to Fire Resistance", "Prefix: #% increased Armour and Energy Shield"} {
+		if !strings.Contains(note, want) {
+			t.Fatalf("applied %q lacks %q", note, want)
+		}
+	}
+	feet := call(t, s, "edit_items", map[string]any{"handle": h, "dry_run": true, "ops": ops(map[string]any{"op": "craft", "base": "Titan Greaves", "affixes": []string{"armour"}})})
+	if note := feet["applied"].([]any)[0].(string); !strings.HasSuffix(note, ": Prefix: +# to Armour") {
+		t.Fatalf("armour on Titan Greaves: %q", note)
+	}
+
+	full := craft("Martyr Gloves", []string{"life", "mana", "+# to maximum Energy Shield/+# to maximum Life", "armour"}, false)
+	if sk := full["skipped"].([]any); len(sk) != 1 || sk[0].(map[string]any)["reason"] != "no free prefix slot" {
+		t.Fatalf("a fourth prefix: %v", full["skipped"])
 	}
 }
