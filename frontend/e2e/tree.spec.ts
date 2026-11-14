@@ -11,7 +11,19 @@ import { expectedLines } from './support/stats';
 import * as tree from './support/tree_model';
 import { TREE_ASSET_PATTERN } from './support/tree_assets';
 import { frameCount, framesSince, installTreeProbe, lastFrame, pointerAt, waitFrame } from './support/tree_probe';
-import { canvasBox, clusterPlaced, emptySpot, hitTest, parkPointer, placedNodes, screenOf, touchDistance, treeSelect, wheelAt } from './support/tree_view';
+import {
+  canvasBox,
+  clusterPlaced,
+  emptySpot,
+  hitTest,
+  parkPointer,
+  placedNodes,
+  screenOf,
+  touchDistance,
+  treeSelect,
+  waitSavedView,
+  wheelAt
+} from './support/tree_view';
 import { showPowerRows, type PowerRow } from '../src/lib/design/tree';
 import { displayStats } from '../src/lib/display/stats';
 import { formatNumSep, luaFormat } from '../src/lib/display/format_stat';
@@ -223,6 +235,11 @@ const openOnTree = async (page: Page, file: string) => {
   const opened = await setup(page, file);
   await opened.app.goTo('Tree');
   await waitFrame(page, 0, `(f) => f.className !== undefined && f.active === ${opened.active.length}`, 60_000);
+  await waitSavedView(
+    page,
+    tree.rawTree(),
+    go.fresh(opened.build, (b) => b.GetTreeView())
+  );
   return opened;
 };
 

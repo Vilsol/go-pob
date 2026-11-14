@@ -46,6 +46,18 @@ export const touchDistance = (n: Node) => {
 
 export const screenOf = (tree: Tree, view: TreeView, p: Point) => toScreen(tree, p, view.offsetX, view.offsetY, view.scaling);
 
+// PassiveTreeView.lua:83-111: a build opens on its saved view, which the page applies once Go answers, after the tree
+// has drawn; a point taken from a frame before that lands elsewhere
+export const waitSavedView = async (page: Page, tree: Tree, saved: { ZoomLevel: number; ZoomX: number; ZoomY: number }) => {
+  if (!saved.ZoomLevel && !saved.ZoomX && !saved.ZoomY) return;
+  const [mx, my] = [Math.abs(tree.min_x), Math.abs(tree.min_y)];
+  await waitLastFrame(
+    page,
+    `(f) => Math.abs((${mx} + f.view.offsetX) / f.view.scaling - f.view.width / 2 - (${saved.ZoomX})) < 1 &&
+      Math.abs((${my} + f.view.offsetY) / f.view.scaling - f.view.height / 2 - (${saved.ZoomY})) < 1`
+  );
+};
+
 export const hitTest = (tree: Tree, placed: Placed[], view: TreeView, at: Point) =>
   placed.find((p) => {
     const s = screenOf(tree, view, p.at);
