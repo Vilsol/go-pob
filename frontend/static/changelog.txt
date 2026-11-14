@@ -1,3 +1,10 @@
+VERSION[0.9.0][2026/11/14]
+
+--- New ---
+* mcp: optimize searches large spaces by moves and counts points, rankings and deltas always show watched stats and resist headroom, and crafting skips affixes a base cannot roll
+* New build can start a Path of Exile 2 build, with PoB-PoE2's defaults
+
+
 VERSION[0.8.1][2026/11/14]
 
 --- Fixed ---
