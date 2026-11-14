@@ -1,6 +1,7 @@
 package calculator
 
 import (
+	"math"
 	"slices"
 	"strconv"
 	"testing"
@@ -82,5 +83,32 @@ func TestSelectMasteryEffectAllocatesAndMovesTheChoice(t *testing.T) {
 	build.DeallocateNodes([]int64{other})
 	if slices.ContainsFunc(pob.SpecMasterySelections(build.Tree.Specs[1]), func(s pob.MasterySelection) bool { return s.Node == other }) {
 		t.Fatal("a deallocated mastery kept its effect")
+	}
+}
+
+// TestMasteryWithoutAnEffectGrantsNothing: PoB leaves a mastery with no selected effect unallocated, so it adds no stats.
+func TestMasteryWithoutAnEffectGrantsNothing(t *testing.T) {
+	life := func(extra []int64, effect int64) float64 {
+		build := parseCorpusBuild(t, "0056-saboteur-ice-trap.xml")
+		build.AllocateNodes(append([]int64{9877, 25067, 31315}, extra...))
+		if effect != 0 {
+			build.SetMasteryEffect(44316, effect)
+		}
+		return (&Calculator{PoB: build}).BuildOutput(OutputModeMain).Player.Output["Life"]
+	}
+	// PoB at the pin: 3544 without the mastery, 3544 with it allocated and no effect, 3619 with "+30 to maximum Life".
+	for _, c := range []struct {
+		name   string
+		extra  []int64
+		effect int64
+		want   float64
+	}{
+		{"no mastery", nil, 0, 3544},
+		{"mastery without an effect", []int64{44316}, 0, 3544},
+		{"mastery with +30 to maximum Life", []int64{44316}, 47642, 3619},
+	} {
+		if got := life(c.extra, c.effect); math.Round(got) != c.want {
+			t.Errorf("%s: Life = %v, PoB %v", c.name, got, c.want)
+		}
 	}
 }

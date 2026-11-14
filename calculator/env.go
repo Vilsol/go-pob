@@ -569,13 +569,19 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 			}
 		}
 
+		//pob:block:src/Classes/PassiveSpec.lua:290-297,src/Classes/PassiveSpec.lua:1447-1451
+		specNodeIDs := slices.DeleteFunc(slices.Clone(env.Build.Build.PassiveNodes), func(id int64) bool {
+			node, ok := tree.Nodes[strconv.FormatInt(id, 10)]
+			return ok && node.IsMastery != nil && *node.IsMastery && !masteryEffectSelected(env.Spec, id, node)
+		})
+
 		//pob:block:src/Modules/CalcSetup.lua:714-774
-		nodeIDs := env.Build.Build.PassiveNodes
+		nodeIDs := specNodeIDs
 		overridesNodes := len(override.AddNodes) > 0 || len(override.RemoveNodes) > 0
 		if overridesNodes {
-			nodeIDs = make([]int64, 0, len(override.AddNodes)+len(env.Build.Build.PassiveNodes))
+			nodeIDs = make([]int64, 0, len(override.AddNodes)+len(specNodeIDs))
 			nodeIDs = append(nodeIDs, override.AddNodes...)
-			for _, id := range env.Build.Build.PassiveNodes {
+			for _, id := range specNodeIDs {
 				if !override.removesNode(id) {
 					nodeIDs = append(nodeIDs, id)
 				}
@@ -588,8 +594,8 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 		} else {
 			specNodes := env.AllocatedNodes
 			if overridesNodes {
-				specNodes = make(map[string]data.Node, len(env.Build.Build.PassiveNodes))
-				resolveNodes(env.Build.Build.PassiveNodes, specNodes)
+				specNodes = make(map[string]data.Node, len(specNodeIDs))
+				resolveNodes(specNodeIDs, specNodes)
 			}
 			env.Spec.DistanceToClassStart = buildDistanceToClassStart(
 				specNodes, classStartNodeID(tree, env.Spec.ClassID))
@@ -602,8 +608,8 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 
 		env.specAllocCounts = counts
 		if overridesNodes {
-			specNodes := make(map[string]data.Node, len(env.Build.Build.PassiveNodes))
-			resolveNodes(env.Build.Build.PassiveNodes, specNodes)
+			specNodes := make(map[string]data.Node, len(specNodeIDs))
+			resolveNodes(specNodeIDs, specNodes)
 			env.specAllocCounts = countAllocatedNodes(env, specNodes, masteryOverrides)
 		}
 	}
