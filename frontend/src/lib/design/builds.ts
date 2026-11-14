@@ -8,6 +8,7 @@ export const countIn = (builds: SavedBuild[], f: string) => builds.filter((b) =>
 export const leaf = (f: string) => f.split('/').pop() ?? f;
 
 export type GameFilter = 'all' | 'poe1' | 'poe2';
+export type BuildGame = Exclude<GameFilter, 'all'>;
 export const GAME_FILTERS: { id: GameFilter; label: string }[] = [
   { id: 'all', label: 'All' },
   { id: 'poe1', label: 'PoE1' },

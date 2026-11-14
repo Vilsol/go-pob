@@ -4,8 +4,9 @@
   import BuildTable from './BuildTable.svelte';
   import FolderTree from './FolderTree.svelte';
   import Segmented from './Segmented.svelte';
-  import { GAME_FILTERS, buildId, byGame, leaf, type ColKey, type Drag, type GameFilter, type Sort } from './builds';
+  import { GAME_FILTERS, buildId, byGame, leaf, type BuildGame, type ColKey, type Drag, type GameFilter, type Sort } from './builds';
   import Icon from './Icon.svelte';
+  import Menu from './Menu.svelte';
   import Sheet from './mobile/Sheet.svelte';
   import { phoneMedia } from './mobile/mobile';
   import type { SavedBuild } from './fixtures/app';
@@ -39,7 +40,8 @@
     onpaste?: (id: string, cut: boolean) => void;
     onnewfolder?: () => void;
     onimport?: () => void;
-    onnew?: () => void;
+    /** with the game toggle shown, New build makes the toggle's game (All makes PoE1) and its menu either */
+    onnew?: (game: BuildGame) => void;
     onrecalc?: () => void;
     onabout?: () => void;
     onsettings?: () => void;
@@ -93,6 +95,10 @@
   // the tree's own New folder button lives in the folders sheet on a phone; this one sits beside the sheet's button
   const phone = phoneMedia();
   const listed = $derived(game ? byGame(builds, game) : builds);
+  // New build makes the listed game's build; the menu makes either
+  const GAME_NAMES: Record<BuildGame, string> = { poe1: 'Path of Exile 1', poe2: 'Path of Exile 2' };
+  const newGame = $derived<BuildGame>(game === 'poe2' ? 'poe2' : 'poe1');
+  const newItems = $derived((['poe1', 'poe2'] as const).map((g) => ({ label: GAME_NAMES[g], current: g === newGame, onselect: () => onnew?.(g) })));
 </script>
 
 <div class="page max-phone:h-dvh">
@@ -102,7 +108,20 @@
     <div class="grow"></div>
     {#if game}<Segmented label="Show builds of" options={GAME_FILTERS} value={game} onchange={(id: string) => (game = id as GameFilter)} />{/if}
     {#if onimport}<Button size="md" onclick={onimport}>Import build</Button>{:else}<Button href={importHref} size="md">Import build</Button>{/if}
-    {#if onnew}<Button size="md" variant="primary" class="px-4" onclick={onnew}>New build</Button>{:else}<Button
+    {#if onnew && game}<div class="flex">
+        <Button size="md" variant="primary" class="rounded-r-none px-4" title="Make a new {GAME_NAMES[newGame]} build" onclick={() => onnew(newGame)}
+          >New build</Button
+        ><Menu label="New build for" items={newItems} class="top-full right-0 mt-1 w-max">
+          {#snippet trigger(attrs)}<Button
+              size="md"
+              variant="primary"
+              icon
+              class="rounded-l-none border-l-surface-1"
+              aria-label="New build for another game"
+              {...attrs}><Icon name="chevron-down" size={12} /></Button
+            >{/snippet}
+        </Menu>
+      </div>{:else if onnew}<Button size="md" variant="primary" class="px-4" onclick={() => onnew('poe1')}>New build</Button>{:else}<Button
         href={newHref}
         size="md"
         variant="primary"

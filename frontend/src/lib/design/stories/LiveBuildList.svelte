@@ -24,7 +24,7 @@
     app
       ? {
           columns: ['name', 'cls', 'level', 'edited'] as ColKey[],
-          onnew: log('new'),
+          onnew: (g: string) => actions.push(`new ${g}`),
           onimport: log('import'),
           onnewfolder: log('new folder'),
           oncopy: (id: string) => actions.push(`copy ${id}`),

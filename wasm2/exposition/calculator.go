@@ -93,8 +93,57 @@ func ParseBuild(xml string) (*Calculator, error) {
 	return &Calculator{build: build}, nil
 }
 
+// NewBuild is the build Build:Init makes with no file, given Main's default level and gem quality.
+//
+//pob2:block:src/Modules/Build.lua:52-55
+//pob2:block:src/Classes/SkillsTab.lua:75-80
+//pob2:block:src/Classes/TreeTab.lua:47-49
+//pob2:block:src/Modules/Main.lua:1138
+func NewBuild(defaultCharLevel, defaultGemQuality int) (*Calculator, error) {
+	t, err := loadTree()
+	if err != nil {
+		return nil, err
+	}
+	spec := newSpecElement(tree2.NewPassiveSpec(t), "", nil)
+	spec.Title = nil
+	level := min(max(defaultCharLevel, 1), 100)
+	gemLevel, supportTypes, sortField := "normalMaximum", "ALL", "CombinedDPS"
+	build := &pob2.PathOfBuilding2{
+		Build: pob2.Build{
+			TargetVersion:          "0_1",
+			ViewMode:               "TREE",
+			Level:                  level,
+			MainSocketGroup:        1,
+			CharacterLevelAutoMode: defaultCharLevel == 1,
+		},
+		Skills: pob2.Skills{
+			ActiveSkillSet:      1,
+			DefaultGemLevel:     &gemLevel,
+			DefaultGemQuality:   pob2.Nil[int]{V: min(defaultGemQuality, 23)},
+			SortGemsByDPS:       true,
+			ShowSupportGemTypes: &supportTypes,
+			SortGemsByDPSField:  &sortField,
+			SkillSets:           []pob2.SkillSet{{ID: 1}},
+		},
+		Tree:   pob2.Tree{ActiveSpec: 1, Specs: []pob2.Spec{spec}},
+		Items:  pob2.Items{ActiveItemSet: 1, ItemSets: []pob2.ItemSet{{ID: 1}}},
+		Config: pob2.Config{ActiveConfigSet: 1, ConfigSets: []pob2.ConfigSet{{ID: 1}}},
+	}
+	return &Calculator{build: build}, nil
+}
+
+// syncClass is Save's className and ascendClassName, read from the calculated spec.
+//
+//pob2:block:src/Modules/Build.lua:1185-1186
+func (c *Calculator) syncClass() {
+	if c.env != nil && c.env.Spec != nil {
+		c.build.Build.ClassName, c.build.Build.AscendClassName = c.env.Spec.CurClassName, c.env.Spec.CurAscendClassName
+	}
+}
+
 func (c *Calculator) Serialize() (string, error) {
 	c.syncSkills()
+	c.syncClass()
 	out, err := pob2.SerializeBuild(c.build)
 	if err != nil {
 		return "", err
@@ -121,6 +170,7 @@ type SavedFullDPS struct {
 //pob2:block:src/Modules/Build.lua:1196-1244
 func (c *Calculator) SerializeWithStats(player []SavedStat, fullDPS []SavedFullDPS, minion []SavedStat) (string, error) {
 	c.syncSkills()
+	c.syncClass()
 	out := *c.build
 	// Save writes every row afresh, after Spectre and BeastCompanion and before Buffs
 	out.Build.Order = nil

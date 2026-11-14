@@ -3,6 +3,8 @@ import { currentBuild, poe2Build, poe2Enabled } from '$lib/global';
 import { logError } from '$lib/utils';
 import { addToast } from '$lib/design/toast';
 import { poe2Xml } from './game_detect';
+import type { Remote } from 'comlink';
+import type { Poe2Calc, Worker2Type } from './sync_worker2';
 
 // a build the PoE1 worker declined to open because it belongs to another game
 export type ForeignBuild = { game: 'poe2' | 'poe2-legacy'; xml: string };
@@ -18,25 +20,36 @@ export const treeConversionNotice = (c: { from: string; to: string; saved: numbe
     ? `${c.lost} of its ${c.saved} passives are no longer allocated due to changes in the tree.`
     : `All ${c.saved} of its passives are still allocated.`);
 
-// true when the build was another game's and is now open; throws when it cannot be opened
-export const openForeign = async (foreign: ForeignBuild | undefined, clearPoE1: () => unknown) => {
-  if (!foreign) return false;
-  if (foreign.game === 'poe2-legacy') throw new Error(POE2_LEGACY);
+// the PoE2 worker opens a build and the app shows it in place of the PoE1 one
+const openInPoe2 = async (open: (w: Remote<Worker2Type>) => Promise<Poe2Calc>, clearPoE1: () => unknown) => {
   if (!get(poe2Enabled)) throw new Error(POE2_DISABLED);
   // through the engine's boot, which runs as a job
   const { poe2Worker } = await import('./engine_poe2.svelte');
   const worker = await poe2Worker();
-  const view = await worker.Open(foreign.xml);
+  const view = await open(worker);
   // with no PoE1 build open the clear is not waited for: the PoE1 worker may still be loading its game data
   const cleared = Promise.resolve(clearPoE1());
   if (get(currentBuild)) await cleared;
   else cleared.catch(logError);
   poe2Build.set(view);
+  return worker;
+};
+
+// true when the build was another game's and is now open; throws when it cannot be opened
+export const openForeign = async (foreign: ForeignBuild | undefined, clearPoE1: () => unknown) => {
+  if (!foreign) return false;
+  if (foreign.game === 'poe2-legacy') throw new Error(POE2_LEGACY);
+  const worker = await openInPoe2((w) => w.Open(foreign.xml), clearPoE1);
   void worker
     .TreeConversion()
     .then((c) => c && addToast(treeConversionNotice(c), { key: 'tree-conversion', role: 'status' }))
     .catch(logError);
   return true;
+};
+
+// Build.lua:34-55 (PoB-PoE2): a new build with no file
+export const openNewPoe2 = async (defaults: { level: number; gemQuality: number }, clearPoE1: () => unknown) => {
+  await openInPoe2((w) => w.New(defaults), clearPoE1);
 };
 
 // a code that is a PoE2 build opens in the PoE2 worker without the PoE1 one; false for any other code, which goes the

@@ -308,6 +308,38 @@
 </Story>
 
 <Story
+  name="New build for either game · min"
+  asChild
+  globals={vp('min')}
+  play={async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await shows(canvasElement);
+    const c = within(canvasElement);
+    const log = () => c.getByRole('status', { name: 'Actions taken' }).textContent;
+    const games = within(c.getByRole('group', { name: 'Show builds of' }));
+    await expectSingleLine([...canvasElement.querySelectorAll<HTMLElement>('header .btn, header .seg-btn')]);
+    await userEvent.click(c.getByRole('button', { name: 'New build' }));
+    await expect(log()).toBe('new poe1');
+    await userEvent.click(games.getByRole('button', { name: 'PoE2' }));
+    await expect(c.getByRole('button', { name: 'New build' })).toHaveAttribute('title', 'Make a new Path of Exile 2 build');
+    await userEvent.click(c.getByRole('button', { name: 'New build' }));
+    await expect(log()).toBe('new poe1; new poe2');
+    const more = c.getByRole('button', { name: 'New build for another game' });
+    more.focus();
+    await userEvent.keyboard('{ArrowDown}');
+    const menu = c.getByRole('menu', { name: 'New build for' });
+    await expectFloating(more, menu);
+    await expect(within(menu).getByRole('menuitem', { name: 'Path of Exile 1' })).toHaveFocus();
+    await expect(within(menu).getByRole('menuitem', { name: 'Path of Exile 2' })).toHaveAttribute('aria-current', 'true');
+    await userEvent.keyboard('{Enter}');
+    await expect(c.queryByRole('menu')).toBeNull();
+    await expect(more).toHaveFocus();
+    await expect(log()).toBe('new poe1; new poe2; new poe1');
+    await expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(window.innerWidth);
+  }}>
+  <LiveBuildList app game="all" />
+</Story>
+
+<Story
   name="About open"
   asChild
   globals={vp('target')}
@@ -354,7 +386,7 @@
     await userEvent.click(nf);
     await userEvent.click(c.getByRole('button', { name: 'New build' }));
     await userEvent.click(c.getByRole('button', { name: 'Import build' }));
-    await expect(log()).toBe('new folder; new; import');
+    await expect(log()).toBe('new folder; new poe1; import');
     await userEvent.click(c.getByRole('button', { name: 'Actions for Spectre Necro – budget' }));
     const menu = c.getByRole('menu', { name: 'Actions for Spectre Necro – budget' });
     await userEvent.click(within(menu).getByRole('menuitem', { name: 'Rename…' }));
@@ -362,7 +394,7 @@
     await userEvent.click(within(c.getByRole('menu', { name: 'Actions for Spectre Necro – budget' })).getByRole('menuitem', { name: 'Delete…' }));
     await userEvent.click(c.getByRole('button', { name: 'Copy Spectre Necro – budget' }));
     await expect(log()).toBe(
-      'new folder; new; import; rename League starters/Necromancer/Budget/Spectre Necro – budget; delete League starters/Necromancer/Budget/Spectre Necro – budget; copy League starters/Necromancer/Budget/Spectre Necro – budget'
+      'new folder; new poe1; import; rename League starters/Necromancer/Budget/Spectre Necro – budget; delete League starters/Necromancer/Budget/Spectre Necro – budget; copy League starters/Necromancer/Budget/Spectre Necro – budget'
     );
   }}>
   <LiveBuildList app />

@@ -662,6 +662,18 @@ class PoB2Worker {
     await this.booted;
     const calc = exposition.ParseBuild(xml).unwrap();
     if (!calc) throw new Error('the PoE2 build did not parse');
+    return this.openCalc(calc);
+  }
+
+  /* Build.lua:52-55, SkillsTab.lua:80 (PoB-PoE2) */
+  async New(defaults: { level: number; gemQuality: number }): Promise<Poe2Calc> {
+    await this.booted;
+    const calc = (await exposition.NewBuild(defaults.level, defaults.gemQuality)).unwrap();
+    if (!calc) throw new Error('the PoE2 build was not made');
+    return this.openCalc(calc);
+  }
+
+  private async openCalc(calc: exposition.Calculator): Promise<Poe2Calc> {
     this.calc?.release();
     this.calc = calc;
     // CompareTab.lua (PoB-PoE2) is created with each build

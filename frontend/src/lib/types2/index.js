@@ -51,6 +51,7 @@ export const initializeCrystalline = () => {
     ItemDBRaw: wrap('exposition.ItemDBRaw', globalThis['go']['go-pob2']['exposition']['ItemDBRaw']),
     ItemDBTooltip: wrap('exposition.ItemDBTooltip', globalThis['go']['go-pob2']['exposition']['ItemDBTooltip']),
     ModLineStatus: globalThis['go']['go-pob2']['exposition']['ModLineStatus'],
+    NewBuild: wrap('exposition.NewBuild', globalThis['go']['go-pob2']['exposition']['NewBuild']),
     ParseBuild: wrap('exposition.ParseBuild', globalThis['go']['go-pob2']['exposition']['ParseBuild']),
     ParseModLines: wrap('exposition.ParseModLines', globalThis['go']['go-pob2']['exposition']['ParseModLines']),
     PassiveTreeJSON: wrap('exposition.PassiveTreeJSON', globalThis['go']['go-pob2']['exposition']['PassiveTreeJSON']),

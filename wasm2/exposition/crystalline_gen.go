@@ -19,6 +19,7 @@ import (
 
 func init() {
 	crystallineNamespace("go-pob2", "exposition").Set("ParseBuild", crystallineWrap(js.FuncOf(crystallineFnExpositionParseBuild)))
+	crystallineNamespace("go-pob2", "exposition").Set("NewBuild", crystallineWrap(js.FuncOf(crystallineFnExpositionNewBuild)))
 	crystallineNamespace("go-pob2", "exposition").Set("ParseModLines", crystallineWrap(js.FuncOf(crystallineFnExpositionParseModLines)))
 	crystallineNamespace("go-pob2", "exposition").Set("Preload", crystallineWrap(js.FuncOf(crystallineFnExpositionPreload)))
 	crystallineNamespace("go-pob2", "exposition").Set("PassiveTreeJSON", crystallineWrap(js.FuncOf(crystallineFnExpositionPassiveTreeJSON)))
@@ -1046,6 +1047,34 @@ func crystallineFnExpositionParseBuild(this js.Value, args []js.Value) (result a
 	}
 
 	return crystallineOk(crystallineMarshalExpositionCalculator(r0))
+}
+
+func crystallineFnExpositionNewBuild(this js.Value, args []js.Value) (result any) {
+	defer crystallineRecover(&result)
+
+	if len(args) != 2 {
+		return crystallineFail("NewBuild: expected 2 arguments, got " + strconv.Itoa(len(args)))
+	}
+
+	return crystallinePromise(func() any {
+		a0, err := crystallineToInt(args[0])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		a1, err := crystallineToInt(args[1])
+		if err != nil {
+			return crystallineFail(err.Error())
+		}
+
+		r0, r1 := NewBuild(a0, a1)
+
+		if r1 != nil {
+			return crystallineErr(r1)
+		}
+
+		return crystallineOk(crystallineMarshalExpositionCalculator(r0))
+	})
 }
 
 func crystallineFnExpositionParseModLines(this js.Value, args []js.Value) (result any) {

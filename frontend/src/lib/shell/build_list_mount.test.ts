@@ -104,6 +104,10 @@ const fake = {
     calls.push(['NewBuild']);
     return Promise.resolve();
   }),
+  ClearBuild: vi.fn(() => {
+    calls.push(['ClearBuild']);
+    return Promise.resolve();
+  }),
   SetShowFlavourText: vi.fn(() => Promise.resolve()),
   SetDefaultItemAffixQuality: vi.fn(() => Promise.resolve()),
   SetItemModDebug: vi.fn(() => Promise.resolve()),
@@ -128,9 +132,15 @@ vi.mock('$lib/go/worker', () => ({ syncWrap: fake, syncWorker: undefined }));
 const nav = vi.hoisted(() => ({ pushState: vi.fn(), goto: vi.fn(() => Promise.resolve()) }));
 vi.mock('$app/navigation', () => nav);
 vi.mock('$app/state', () => ({ page: { state: {}, url: new URL('http://localhost/') } }));
-vi.mock('$lib/go/worker2', () => ({ poe2Worker: () => Promise.resolve({ TreeClasses: () => Promise.resolve(['All', 'Monk', 'Sorceress']) }) }));
+const worker2 = vi.hoisted(() => ({
+  TreeClasses: () => Promise.resolve(['All', 'Monk', 'Sorceress']),
+  New: vi.fn<(defaults: { level: number; gemQuality: number }) => Promise<object>>(() =>
+    Promise.resolve({ className: 'Ranger', ascendClassName: 'None', level: 1, output: {} })
+  )
+}));
+vi.mock('$lib/go/worker2', () => ({ poe2Worker: () => Promise.resolve(worker2) }));
 
-const { currentBuildPath, devMode, nodePowerTheme, poe2Enabled, zoomSensitivity } = await import('$lib/global');
+const { currentBuildPath, devMode, nodePowerTheme, poe2Build, poe2Enabled, zoomSensitivity } = await import('$lib/global');
 const { defaultCharLevel, defaultGemQuality, showFlavourText, showWarnings } = await import('$lib/display/item_options');
 const { unsavedName } = await import('./build_name.svelte');
 
@@ -624,5 +634,56 @@ describe('AppBuildList game toggle', () => {
     window.dispatchEvent(new StorageEvent('storage', { key: KEY }));
     await waitFor(() => expect(pressed(again.view, 'Show builds of')).toBe('PoE2'));
     await waitFor(() => expect(names(again.view.getByRole('grid', { name: 'Builds' }))).toEqual(['Second game']));
+  });
+
+  const newMenu = async (view: View) => {
+    await fireEvent.click(within(view.container).getByRole('button', { name: 'New build for another game' }));
+    return within(screen.getByRole('menu', { name: 'New build for' }))
+      .getAllByRole('menuitem')
+      .map((i) => [i.textContent?.trim(), i.getAttribute('aria-current')]);
+  };
+
+  it("New build makes the listed game's build, All making PoE1, and its menu makes either", async () => {
+    poe2Enabled.set(true);
+    const { view } = await mountBoth();
+    calls.length = 0;
+    await fireEvent.click(view.getByRole('button', { name: 'New build' }));
+    expect(calls).toEqual([['NewBuild']]);
+    expect(await newMenu(view)).toEqual([
+      ['Path of Exile 1', 'true'],
+      ['Path of Exile 2', null]
+    ]);
+    await fireEvent.keyDown(screen.getByRole('menu'), { key: 'Escape' });
+    await fireEvent.click(within(view.getByRole('group', { name: 'Show builds of' })).getByRole('button', { name: 'PoE2' }));
+    expect(view.getByRole('button', { name: 'New build' }).title).toBe('Make a new Path of Exile 2 build');
+    expect(await newMenu(view)).toEqual([
+      ['Path of Exile 1', null],
+      ['Path of Exile 2', 'true']
+    ]);
+    calls.length = 0;
+    await fireEvent.click(screen.getByRole('menuitem', { name: 'Path of Exile 1' }));
+    expect(calls).toEqual([['NewBuild']]);
+    expect(worker2.New).not.toHaveBeenCalled();
+  });
+
+  // Build.lua:52-55 (PoB-PoE2): the PoE2 build opens in the PoE2 engine with the default level and gem quality
+  it('a PoE2 new build opens in the PoE2 engine, as a PoE2 import does', async () => {
+    poe2Enabled.set(true);
+    localStorage.setItem(KEY, 'poe2');
+    defaultCharLevel.set(90);
+    defaultGemQuality.set(20);
+    const { view } = await mountBoth();
+    currentBuildPath.current = '/somewhere';
+    unsavedName.imported = true;
+    calls.length = 0;
+    await fireEvent.click(view.getByRole('button', { name: 'New build' }));
+    await waitFor(() => expect(get(poe2Build)).toEqual({ className: 'Ranger', ascendClassName: 'None', level: 1, output: {} }));
+    expect(worker2.New).toHaveBeenCalledExactlyOnceWith({ level: 90, gemQuality: 20 });
+    expect(calls, 'the PoE1 build is cleared, not made').toEqual([['ClearBuild']]);
+    expect(currentBuildPath.current).toBe('');
+    expect(unsavedName.imported).toBe(false);
+    poe2Build.set(undefined);
+    defaultCharLevel.set(1);
+    defaultGemQuality.set(0);
   });
 });

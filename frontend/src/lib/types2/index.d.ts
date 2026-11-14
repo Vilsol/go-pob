@@ -880,6 +880,7 @@ export declare namespace exposition {
   function ItemDBLists(kind: string): Promise<exposition.ItemDBInfo>;
   function ItemDBRaw(kind: string, name: string): Promise<Result<string>>;
   function ItemDBTooltip(kind: string, name: string): Promise<Result<exposition.ItemView>>;
+  function NewBuild(defaultCharLevel: number, defaultGemQuality: number): Promise<Result<(exposition.Calculator | undefined)>>;
   function ParseBuild(xml: string): Result<(exposition.Calculator | undefined)>;
   function ParseModLines(lines: Array<string> | undefined): (Array<exposition.ModLine> | undefined);
   function PassiveTreeJSON(): Promise<Result<string>>;

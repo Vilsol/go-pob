@@ -106,6 +106,7 @@ func Exports(r bind.Registry) {
 	r.Type(calculator2.CompareModRow{}, bind.Plain())
 
 	r.Func(ParseBuild)
+	r.Func(NewBuild, bind.AsPromise())
 	r.Func(ParseModLines)
 	r.Func(Preload, bind.AsPromise())
 	r.Func(PassiveTreeJSON, bind.AsPromise())

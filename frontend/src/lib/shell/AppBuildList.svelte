@@ -9,7 +9,7 @@
   import BuildListPage from '$lib/design/BuildListPage.svelte';
   import Dialog from '$lib/design/Dialog.svelte';
   import DialogActions from '$lib/design/DialogActions.svelte';
-  import { buildId, leaf, type GameFilter } from '$lib/design/builds';
+  import { buildId, leaf, type BuildGame, type GameFilter } from '$lib/design/builds';
   import type { SavedBuild } from '$lib/design/fixtures/app';
   import { syncWrap } from '$lib/go/worker';
   import { currentBuildPath, devMode, poe2Enabled } from '$lib/global.js';
@@ -266,7 +266,7 @@
       confirm: 'Create',
       run: (name) => void syncWrap.NewFolder(pathOf(folder, name)).then(reload).catch(logError)
     })}
-  onnew={() => void newBuild().catch(logError)}
+  onnew={(g: BuildGame) => void newBuild(g).catch(logError)}
   onimport={() => openImport()}
   onabout={() => (about = true)}
   onsettings={() => (settings = true)}>

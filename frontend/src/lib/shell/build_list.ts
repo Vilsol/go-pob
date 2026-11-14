@@ -1,8 +1,9 @@
 import type { SavedBuild } from '$lib/design/fixtures/app';
-import { GAME_FILTERS, type GameFilter } from '$lib/design/builds';
+import { GAME_FILTERS, type BuildGame, type GameFilter } from '$lib/design/builds';
 import type { storage } from '$lib/types';
 import { get } from 'svelte/store';
 import { syncWrap } from '$lib/go/worker';
+import { openNewPoe2 } from '$lib/go/game_route';
 import { currentBuildPath } from '$lib/global.js';
 import { defaultCharLevel, defaultGemQuality } from '$lib/display/item_options';
 import { opening, unsavedName } from './build_name.svelte';
@@ -73,9 +74,10 @@ export const loadTree = async (list: List, version: string, now = Date.now()) =>
   return { builds, folders };
 };
 
-export const newBuild = () => {
+export const newBuild = (game: BuildGame = 'poe1') => {
   opening.modFlag = false;
-  const made = syncWrap.NewBuild({ level: get(defaultCharLevel), gemQuality: get(defaultGemQuality) });
+  const defaults = { level: get(defaultCharLevel), gemQuality: get(defaultGemQuality) };
+  const made = game === 'poe2' ? openNewPoe2(defaults, () => syncWrap.ClearBuild()) : syncWrap.NewBuild(defaults);
   unsavedName.imported = false;
   unsavedName.predefined = undefined;
   resetAccountSession();
