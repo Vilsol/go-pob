@@ -56,3 +56,24 @@ func TestNodeSkillTooltips(t *testing.T) {
 		t.Fatalf("graded only %d skill-granting nodes", graded)
 	}
 }
+
+// TestNodeSkillTooltipsThroughGGGMarkup: node 16287 reads "Triggers Level 20 [BoneFeeders|Summon Bone Feeders] when Allocated".
+func TestNodeSkillTooltipsThroughGGGMarkup(t *testing.T) {
+	initItemsTabData(t)
+	build := loadCorpusBuild(t, "0005-occultist-vaal-double-strike.xml")
+	tips := NodeSkillTooltips(build, 16287, ItemTooltipContext{})
+	if len(tips) == 0 || len(tips[0]) == 0 || !strings.Contains(tips[0][0].Text, "Summon Bone Feeders") {
+		t.Fatalf("node 16287: tooltips %v, want one opening with Summon Bone Feeders", tips)
+	}
+}
+
+func TestGrantedSkillLineAfterGGGMarkup(t *testing.T) {
+	entry := ParseMod("Grants Level 20 Summon Bone Feeders", false)
+	if entry == nil {
+		t.Fatal("unparsed")
+	}
+	skills := utils.CastSlice[mod.ExtraSkill](asModList(entry.ModList).List(nil, "ExtraSkill"))
+	if len(skills) != 1 || skills[0].SkillID != "SummonAbyssalConstructs" || skills[0].Level != 20 || skills[0].Triggered {
+		t.Fatalf("ExtraSkill = %+v, want one untriggered SummonAbyssalConstructs level 20", skills)
+	}
+}

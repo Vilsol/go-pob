@@ -22,6 +22,7 @@ import (
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/pob"
 	"github.com/Vilsol/go-pob/storage"
+	"github.com/Vilsol/go-pob/utils"
 )
 
 const (
@@ -147,13 +148,47 @@ func (v *TreeVersionData) RawTree() []byte {
 	if err != nil {
 		panic(fmt.Errorf("failed to read unzipped data: %w", err))
 	}
-	v.rawTree = rawTree
+	v.rawTree = escapeTreeGGGStrings(rawTree)
 	if fetched {
 		_ = storage.Get().SetCache(treeCacheKey, compressedTree)
 	}
 	v.rawLoaded.Store(true)
 
 	return v.rawTree
+}
+
+// escapeTreeGGGStrings applies escapeGGGString to every JSON string in the tree, so node text
+// reads the same to the mod parser, tooltips and search.
+func escapeTreeGGGStrings(raw []byte) []byte {
+	//gopob:ext tree-ggg-markup 3.30's tree keeps GGG markup in node text; the pin applies escapeGGGString only to item lines
+	var out []byte
+	last := 0
+	for i := 0; i < len(raw); i++ {
+		if raw[i] != '"' {
+			continue
+		}
+		start := i + 1
+		markup := false
+		for i = start; i < len(raw) && raw[i] != '"'; i++ {
+			switch raw[i] {
+			case '\\':
+				i++
+			case '[', '<':
+				markup = true
+			}
+		}
+		if !markup {
+			continue
+		}
+		if escaped := utils.EscapeGGGString(string(raw[start:i])); escaped != string(raw[start:i]) {
+			out = append(append(out, raw[last:start]...), escaped...)
+			last = i
+		}
+	}
+	if out == nil {
+		return raw
+	}
+	return append(out, raw[last:]...)
 }
 
 func IsTreeNotable(node Node) bool {

@@ -494,8 +494,12 @@ test('the tree draws the tree the build is calculated on, whatever version the b
   );
   await expect(button, 'the deallocated node still reads as allocated').toHaveAttribute('aria-pressed', 'false');
 
-  const current = buildXml('0339-reliquarian-shield-crush-of-the-chieftain-2');
+  const current = recordingTree(buildXml('0339-reliquarian-shield-crush-of-the-chieftain-2'), version);
   const next = await go.loadXml(current);
+  expect(
+    go.fresh(next, (b) => b.Tree.Specs[b.Tree.ActiveSpec - 1].TreeVersion),
+    'the rewritten build does not record the drawn version'
+  ).toBe(version);
   await app.importCode(await go.encode(current), async () => expectedLines(await go.outputs(next)));
   await app.openTree(version);
   await expect(label).toHaveText(shown);

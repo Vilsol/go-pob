@@ -157,8 +157,9 @@ test('node tooltip: granted skill, reminder text, points and gold', async ({ pag
   const results = page.getByRole('region', { name: 'Search results' });
   const tip = page.getByRole('tooltip').filter({ has: page.getByRole('group', { name: 'Stat differences' }) });
 
+  // 3.29 says "Grants Level 20 X Skill", 3.30 "Grants Level 20 X"; PassiveTreeView.lua:1627-1628 shows a triggered ExtraSkill too
   const skillNode = Object.values(t.nodes).find(
-    (n) => (n.stats ?? []).some((l) => /^Grants Level \d+ .+ Skill$/.test(l)) && m.exposition.NodeSkillTooltips(build, n.skill!, go.NO_TIP_STATS)?.length
+    (n) => (n.stats ?? []).some((l) => /^(Grants|Triggers) Level \d+ \S/.test(l)) && m.exposition.NodeSkillTooltips(build, n.skill!, go.NO_TIP_STATS)?.length
   )!;
   const wantSkill = m.exposition.NodeSkillTooltips(build, skillNode.skill!, go.NO_TIP_STATS)![0]![0].Text.replace(/\^x[0-9A-Fa-f]{6}|\^\d/g, '');
   await search.fill(`#${skillNode.skill}`);

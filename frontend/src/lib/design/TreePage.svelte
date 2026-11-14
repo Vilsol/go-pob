@@ -676,7 +676,7 @@
       <div
         role="status"
         aria-label="Convert older tree"
-        class="absolute top-2.5 left-1/2 z-map-tip flex -translate-x-1/2 items-center gap-2 rounded-md border border-line bg-surface-1/95 px-3 py-1.5 text-12">
+        class="absolute top-2.5 left-1/2 z-map-tip flex -translate-x-1/2 items-center gap-2 rounded-md border border-line bg-surface-1/95 px-3 py-1.5 text-12 max-phone:right-12 max-phone:left-2.5 max-phone:translate-x-0 max-phone:flex-wrap">
         <span>This is an older tree version, which may not be fully compatible with the current game version.</span>
         <Button size="sm" variant="primary" onclick={() => void convert(tree.version, false, true)}>Convert to {versionLabel(tree.version)}</Button>
         {#if onconvertall}<Button size="sm" onclick={() => (convertingAll = true)}>Convert all trees to {versionLabel(tree.version)}</Button>{/if}
