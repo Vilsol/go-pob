@@ -24,12 +24,38 @@ the Releases page; [desktop/README.md](desktop/README.md) has the details.
 The Windows and macOS builds are not signed yet, so each warns on first launch: [First launch](desktop/README.md#first-launch)
 has the clicks that get past it.
 
+## MCP server
+
+`go-pob mcp` serves the calculation engine to AI assistants over the [Model Context Protocol](https://modelcontextprotocol.io)
+(stdio, PoE1). An assistant can import or create builds, edit the tree, items, skills and configuration, read PoB's
+stats, rank passives, supports and uniques by PoB's own power calculation, search listed choices with `optimize`,
+and export a build code for Path of Building.
+
+```shell
+go install github.com/Vilsol/go-pob/cmd/go-pob@latest   # or: go run ./cmd/go-pob mcp
+```
+
+A client configuration (the `mcpServers` shape most MCP clients read):
+
+```json
+{
+  "mcpServers": {
+    "go-pob": { "command": "go-pob", "args": ["mcp"] }
+  }
+}
+```
+
+Game data downloads from data.pob.gg into the same cache the app uses on first start (`GO_POB_CACHE_DIR` moves it);
+tool calls answer `DATA_LOADING` until it is ready. With `GOPOB_MCP_EXPORT_DIR` set (or `--export-dir`), every
+`export_build` call also writes the build there as one PoB XML file, named `<sequence>-<handle>-r<revision>.xml`.
+
 ## Layout
 
 | path | what |
 |---|---|
 | `calculator/`, `mod/`, `moddb/`, `data/`, `pob/`, `builds/` | the calculation engine, ported from PoB's Lua and kept structurally parallel to it; `//pob:` markers cite the Lua lines each part ports |
 | `wasm/` | the WASM entry point and the functions exposed to the frontend |
+| `cmd/go-pob/`, `mcp/` | the native command line and its MCP server |
 | `frontend/` | the SvelteKit frontend (`mise run dev-frontend`) |
 | `scripts/gopob/` | the development tool behind most `task` targets: data generators, the oracle tools, the PoB pin check |
 | `scripts/gamedatadump/`, `scripts/corpus/` | the game-data dumper and the test-corpus harvester |

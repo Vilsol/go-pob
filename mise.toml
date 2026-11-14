@@ -641,6 +641,17 @@ run = [
   '{{vars.NICE}} mise x --cd {{usage.pob_dir}}/src -- luajit {{config_root}}/oracle/custom_mod_lines.lua {{config_root}}/testdata/oracle/custom_mod_lines_cases.txt {{config_root}}/testdata/oracle/custom_mod_lines_expected.json',
 ]
 
+[tasks.mcp-data]
+description = "Regenerate the MCP server's config option and display stat lists (mcp/*.json) from the pinned PoB"
+usage = '''
+flag "--pob-dir <dir>" env="POB_DIR" default="{{vars.POB_DEFAULT}}"
+'''
+run = [
+  '{{vars.NICE}} mise x --cd {{usage.pob_dir}}/src -- luajit {{config_root}}/oracle/config_options.lua {{config_root}}/mcp/config_options.json',
+  '''{{vars.NICE}} mise x --cd {{usage.pob_dir}}/src -- luajit {{config_root}}/oracle/display_stats.lua | sed -n '/^\[/,$p' > {{config_root}}/mcp/display_stats.json''',
+  '''{{vars.NICE}} mise x --cd {{usage.pob_dir}}/src -- luajit {{config_root}}/oracle/display_stats.lua minion | sed -n '/^\[/,$p' > {{config_root}}/mcp/minion_display_stats.json''',
+]
+
 [tasks.config-ui-oracles-poe2]
 description = "Regenerate the PoE2 config page's option list and the sidebar fixture from the pinned PoB-PoE2 (--check fails when the option list is stale instead)"
 usage = '''

@@ -37,6 +37,27 @@ internal/importproxy/jscompat.go    GO-NATIVE  the JS runtime semantics proxy.ts
 internal/importproxy/proxy.go       GO-NATIVE  the desktop app's /api/* import relay, a port of frontend/src/lib/import_proxy/proxy.ts (TypeScript, not Lua); PoB fetches the sites itself and needs no relay
 internal/importproxy/sites.go       GO-NATIVE  share.ts's SITES table for the relay, checked against the TS source by its test; PoB's own table is BuildSiteTools.lua, which the TS already transcribes
 
+cmd/go-pob/main.go                  GO-NATIVE  the native command line (go-pob mcp); PoB has no command line
+mcp/server.go                       GO-NATIVE  the MCP server for AI assistants over stdio: tool registry, argument decoding, data loading; PoB has no programmatic interface
+mcp/errors.go                       GO-NATIVE  the MCP tools' error body and codes; no PoB analogue
+mcp/schemas.go                      GO-NATIVE  the MCP tools' input schemas; no PoB analogue
+mcp/state.go                        GO-NATIVE  build handles, revision snapshots and the summary an MCP tool returns; PoB edits one open build and has no handles
+mcp/edits.go                        GO-NATIVE  the MCP write envelope: atomic op batches, dry runs, stat deltas; no PoB analogue
+mcp/resolve.go                      GO-NATIVE  name matching for MCP tool arguments (exact, prefix, word, fuzzy); PoB's UI picks from lists instead
+mcp/stats.go                        GO-NATIVE  stat keys, labels and groups for the MCP tools, read from BuildDisplayStats.lua's list as generated JSON
+mcp/points.go                       PORT       src/Modules/Build.lua
+mcp/import.go                       GO-NATIVE  the MCP import source reader: file, XML, PoB code, or a build site from internal/importproxy's table; PoB fetches through its import tab
+mcp/tools_lifecycle.go              GO-NATIVE  new_build, import_build, export_build and revert_build over PoB's own class, conversion and save calls
+mcp/tools_read.go                   GO-NATIVE  get_build and get_stats: summaries of the calculated build for an MCP client
+mcp/tools_search.go                 GO-NATIVE  search_data over gems, items, bases, tree nodes, affixes, config options and stat keys
+mcp/tools_tree.go                   GO-NATIVE  edit_tree over the tree path search and PoB's allocate/deallocate/mastery calls
+mcp/tools_items.go                  GO-NATIVE  edit_items over PoB's item DB, slot checks and crafting path
+mcp/tools_skills.go                 GO-NATIVE  edit_skills over the build's socket groups and the gem list
+mcp/tools_build.go                  GO-NATIVE  edit_build: level, bandit, pantheon and config options from ConfigOptions.lua's list as generated JSON
+mcp/tools_compare.go                GO-NATIVE  compare_builds: stat and structure differences between two builds or revisions
+mcp/tools_rank.go                   GO-NATIVE  rank_candidates over PoB's power builder, item DB power and support compatibility
+mcp/optimize.go                     GO-NATIVE  optimize: an exhaustive or coordinate-ascent search over caller-listed choices, each scored by a full calculation; PoB has no optimiser
+
 calculator2/build_export.go         GO-NATIVE  the skills list of PoB-PoE2's .build export (BuildExportPoE2.lua, a PoE2-only module); each function cites the Lua it ports
 calculator2/item.go                 PORT       src/Classes/Item.lua,src/Classes/ItemsTab.lua,src/Modules/Common.lua
 calculator2/item_luapattern.go      GO-NATIVE  compiles the Lua patterns Item.lua builds at runtime from item and data text into Go regexps; Lua's pattern engine itself is C, not Lua
