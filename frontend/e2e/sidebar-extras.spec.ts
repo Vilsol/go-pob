@@ -16,6 +16,9 @@ import { buildSidebar } from '../src/lib/display/sidebar';
 type Row = { height: number; center: boolean; cells: string[] };
 type PoBCase = { file: string; statBox: Row[]; warnings: string[] };
 
+// PoB's oracle was made with the corpus's game data, so the app and the model load that, not the app's own
+test.use({ gameData: go.ORACLE_GAME_DATA });
+
 const ORACLE = resolve(import.meta.dirname, '../../testdata/oracle/sidebar_stat_box_expected.jsonl');
 const pobCases = new Map(
   readFileSync(ORACLE, 'utf8')

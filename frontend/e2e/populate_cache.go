@@ -3,7 +3,8 @@
 // Fills the Go bundle cache with every data.pob.gg asset the wasm can ask for, so the e2e data route can serve all
 // of them: what raw.InitializeAll and raw.LoadDeferred load, the trade site stats list, every asset go-pob-data's
 // field list names for the game version (the tables only some pages read, such as the item art tables, included),
-// and the tree of every tree version. The lists are Go's own, so a new table is covered without touching this file.
+// and the tree of every tree version; then the same for the corpus's game data, which the oracle specs load. The
+// lists are Go's own, so a new table is covered without touching this file.
 // Usage: go run frontend/e2e/populate_cache.go (GO_POB_CACHE_DIR picks the cache directory).
 package main
 
@@ -14,6 +15,7 @@ import (
 	"maps"
 	"net/http"
 	"os"
+	"os/exec"
 	"reflect"
 	"slices"
 
@@ -93,4 +95,14 @@ func main() {
 	}
 	slices.Sort(versions)
 	fmt.Printf("bundle cache: game data %s, %d listed assets (%d not loaded at start), %d tree versions %v\n", raw.LatestVersion, assets, added, len(versions), versions)
+
+	// the specs that compare against PoB's oracle load the corpus's game data
+	if os.Getenv("POE_VERSION") == "" && raw.DefaultVersion != raw.LatestVersion {
+		cmd := exec.Command(os.Args[0]) //nolint:gosec // this program again, for the other game data version
+		cmd.Env = append(os.Environ(), "POE_VERSION="+raw.DefaultVersion)
+		cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
+		if err := cmd.Run(); err != nil {
+			refuse("game data", raw.DefaultVersion, err)
+		}
+	}
 }

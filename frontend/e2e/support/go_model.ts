@@ -29,6 +29,22 @@ export type ModelOutputs = {
 
 let booted: Promise<Mod> | undefined;
 let loaded: Mod | undefined;
+let gameData: string | undefined;
+
+// the game data the corpus builds and PoB's oracle belong to: Go tests load it (data/raw DefaultVersion)
+export const ORACLE_GAME_DATA = (() => {
+  const m = /^const DefaultVersion = "([^"]+)"$/m.exec(readFileSync(resolve(ROOT, '../data/raw/main.go'), 'utf8'));
+  if (!m) throw new Error('REFUSING: could not read DefaultVersion from data/raw/main.go');
+  return m[1];
+})();
+
+// the game data version the model loads, as POE_VERSION; undefined loads the app's own. Fixed once the model boots.
+export const useGameData = (version: string | undefined) => {
+  if (booted && version !== gameData) {
+    throw new Error(`REFUSING: the model already booted on ${gameData ?? "the app's game data"}, not ${version ?? "the app's game data"}`);
+  }
+  gameData = version;
+};
 
 const patchFetch = () => {
   const realFetch = globalThis.fetch;
@@ -55,7 +71,12 @@ const boot = async (): Promise<Mod> => {
 
   patchFetch();
 
-  const go = new (globalThis as unknown as { Go: new () => { importObject: WebAssembly.Imports; run: (i: WebAssembly.Instance) => Promise<void> } }).Go();
+  const go = new (
+    globalThis as unknown as {
+      Go: new () => { importObject: WebAssembly.Imports; env: Record<string, string>; run: (i: WebAssembly.Instance) => Promise<void> };
+    }
+  ).Go();
+  if (gameData) go.env = { POE_VERSION: gameData };
   const { instance } = await WebAssembly.instantiate(readFileSync(WASM), go.importObject);
   void go.run(instance);
   while ((globalThis as unknown as { go?: Record<string, unknown> }).go?.['go-pob'] === undefined) {
@@ -69,6 +90,9 @@ const boot = async (): Promise<Mod> => {
   const result = await mod.raw.InitializeAll(mod.raw.GameDataVersion(), () => undefined);
   if (!result.ok) {
     throw new Error(`REFUSING: the model could not load game data: ${String(result.error)}`);
+  }
+  if (gameData && mod.raw.GameDataVersion() !== gameData) {
+    throw new Error(`REFUSING: the model loaded game data ${mod.raw.GameDataVersion()}, not ${gameData}`);
   }
   loaded = mod;
   return mod;

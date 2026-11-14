@@ -2,6 +2,7 @@ import { test as base, type BrowserContext, type Page } from '@playwright/test';
 import { appendFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
+import { useGameData } from './go_model';
 import { RESULTS_DIR } from './perf';
 
 // Specs that import `test` from here share one booted app per worker: App.open on a page that already booted resets it
@@ -101,17 +102,24 @@ const note = (line: string) => {
   }
 };
 
-export const test = base.extend<object, { shared: Shared }>({
+// gameData: the game data version the app and the Go model load (`test.use({ gameData })`); a spec that compares
+// against PoB's oracle sets the version the oracle was made with. A worker option, so such a spec gets its own workers.
+export const test = base.extend<object, { shared: Shared; gameData: string | undefined }>({
+  gameData: [undefined, { scope: 'worker', option: true }],
   shared: [
-    // eslint-disable-next-line no-empty-pattern -- Playwright reads a fixture's dependencies from this pattern
-    async ({}, use) => {
+    async ({ gameData }, use) => {
+      useGameData(gameData);
       const s: Shared = {};
       await use(s);
       await s.context?.close();
     },
     { scope: 'worker' }
   ],
-  page: async ({ shared, browser, viewport, baseURL, locale, colorScheme, reducedMotion, acceptDownloads, serviceWorkers, hasTouch }, use, testInfo) => {
+  page: async (
+    { shared, gameData, browser, viewport, baseURL, locale, colorScheme, reducedMotion, acceptDownloads, serviceWorkers, hasTouch },
+    use,
+    testInfo
+  ) => {
     if (shared.page && shared.hasTouch !== hasTouch) {
       // touch support is fixed when a context is created
       await shared.context!.close().catch(() => {});
@@ -121,6 +129,7 @@ export const test = base.extend<object, { shared: Shared }>({
     if (!shared.page) {
       // the options Playwright's own context fixture would pass for this config
       shared.context = await browser.newContext({ viewport, baseURL, locale, colorScheme, reducedMotion, acceptDownloads, serviceWorkers, hasTouch });
+      if (gameData) await shared.context.addInitScript((v) => ((globalThis as unknown as { __pobGameData?: string }).__pobGameData = v), gameData);
       shared.page = await shared.context.newPage();
       if (process.env.E2E_QUOTA) {
         const cdp = await shared.context.newCDPSession(shared.page);

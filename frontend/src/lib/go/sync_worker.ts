@@ -147,14 +147,15 @@ class PoBWorker {
     return this.fetchedWasm.byteLength;
   }
 
-  bootFetched(callback: TickCallback, currentBuildStore: BuildChannel, engine: WasmEngine = 'go') {
+  bootFetched(callback: TickCallback, currentBuildStore: BuildChannel, engine: WasmEngine = 'go', gameData?: string) {
     const wasm = this.fetchedWasm;
     this.fetchedWasm = undefined;
     if (!wasm) return Promise.reject(new Error('Booting needs the wasm runtime fetched first'));
-    return this.boot(wasm, callback, currentBuildStore, engine);
+    return this.boot(wasm, callback, currentBuildStore, engine, gameData);
   }
 
-  boot(wasm: ArrayBuffer, callback: TickCallback, currentBuildStore: BuildChannel, engine: WasmEngine = 'go') {
+  // gameData: a game data version to load instead of the app's own, as POE_VERSION; only the e2e harness sets one
+  boot(wasm: ArrayBuffer, callback: TickCallback, currentBuildStore: BuildChannel, engine: WasmEngine = 'go', gameData?: string) {
     this.callback = callback;
     this.booted = true;
     this.currentBuildStore = currentBuildStore;
@@ -163,6 +164,7 @@ class PoBWorker {
       useEngine(engine)
         .then(() => {
           const go = new Go();
+          if (gameData) go.env = { POE_VERSION: gameData };
           performance.mark('pob:instantiate-start');
           return WebAssembly.instantiate(wasm, go.importObject).then((result) => ({ go, result }));
         })

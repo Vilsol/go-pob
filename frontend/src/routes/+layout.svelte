@@ -244,7 +244,7 @@
               }, BOOT_STUCK_MS);
 
               syncWrap
-                ?.bootFetched(proxy(onTick), proxy(buildChannel), runningEngine)
+                ?.bootFetched(proxy(onTick), proxy(buildChannel), runningEngine, (globalThis as { __pobGameData?: string }).__pobGameData)
                 .then(async () => {
                   clearTimeout(stuck);
                   bootStuck = false;
