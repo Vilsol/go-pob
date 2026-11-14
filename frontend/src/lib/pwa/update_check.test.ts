@@ -28,6 +28,18 @@ describe('checkForUpdate', () => {
     expect(get(toasts).map((t) => t.message)).toEqual(['Update check failed!\noffline']);
   });
 
+  it('says the check failed when the newer worker fails to install', async () => {
+    const installing = { state: 'redundant', addEventListener: () => {}, removeEventListener: () => {} } as unknown as ServiceWorker;
+    await checkForUpdate(reg({ installing }));
+    expect(messages()).toEqual(['Update check failed!']);
+  });
+
+  it('precaches no file the host keeps as configuration', async () => {
+    const { keepInPrecache: keep } = (await import('../../../precache.js')) as { keepInPrecache: (f: string) => boolean };
+    for (const f of ['_headers', '_routes.json', '_redirects']) expect(keep(f), f).toBe(false);
+    expect(keep('robots.txt')).toBe(true);
+  });
+
   it('says the check failed with no service worker', async () => {
     await checkForUpdate(undefined);
     expect(messages()).toEqual(['Update check failed!']);

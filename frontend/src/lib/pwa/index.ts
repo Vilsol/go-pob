@@ -177,6 +177,10 @@ export const checkForUpdate = async (reg = registration) => {
         installing.addEventListener('statechange', settled);
         settled();
       });
+      if (installing.state === 'redundant') {
+        addToast('Update check failed!\nA newer version was found but could not be installed; reload the page to try again.');
+        return;
+      }
     }
     if (!(reg.waiting && navigator.serviceWorker.controller)) addToast('No update available\nYou are running the latest version.');
   } catch (e) {

@@ -1,5 +1,6 @@
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import { keepInPrecache } from './precache.js';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -18,7 +19,7 @@ const config = {
     },
     serviceWorker: {
       register: false,
-      files: (file) => !/(^|\/)(go-pob2?(-tiny)?\.wasm.*|_headers|\.DS_Store)$/.test(file)
+      files: keepInPrecache
     }
   },
 
