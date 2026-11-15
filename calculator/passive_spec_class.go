@@ -322,9 +322,16 @@ func pruneOrphans(build *pob.PathOfBuilding) {
 }
 
 func pruneOrphansOn(build *pob.PathOfBuilding, tree *data.Tree) {
+	if orphans := orphanNodes(build, tree); len(orphans) > 0 {
+		build.DeallocateNodes(orphans)
+	}
+}
+
+//pob:block:src/Classes/PassiveSpec.lua:1548-1582
+func orphanNodes(build *pob.PathOfBuilding, tree *data.Tree) []int64 {
 	alloc := allocSet(build, tree)
 	reached := connectedToStart(tree, alloc, allocatedStarts(tree, alloc))
-	held := leapHeld(build, tree, alloc)
+	var held map[int64]bool
 	var orphans []int64
 	for _, id := range build.Build.PassiveNodes {
 		at := id
@@ -333,13 +340,17 @@ func pruneOrphansOn(build *pob.PathOfBuilding, tree *data.Tree) {
 		} else if _, known := tree.Nodes[nodeKey(id)]; !known {
 			continue
 		}
-		if !reached[at] && !held[at] {
+		if reached[at] {
+			continue
+		}
+		if held == nil {
+			held = leapHeld(build, tree, alloc)
+		}
+		if !held[at] {
 			orphans = append(orphans, id)
 		}
 	}
-	if len(orphans) > 0 {
-		build.DeallocateNodes(orphans)
-	}
+	return orphans
 }
 
 func setStartNodes(build *pob.PathOfBuilding, tree *data.Tree, old []int64) {

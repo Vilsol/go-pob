@@ -38,6 +38,7 @@ func Exports(r bind.Registry) {
 	r.Type(msgp.Writer{}, bind.Without("WriteComplex64", "WriteComplex128"))
 
 	r.Type(pob.Skills{}, bind.Without("UnmarshalXML"))
+	r.Type(pob.Skill{}, bind.Without("UnmarshalXML"))
 
 	r.Type(poe.SkillGem{}, bind.Without("GetGemVariants", "GetLevelProgression"))
 	r.Type(poe.BaseItemType{}, bind.Without("GetEnchantMods", "GetItemVisualIdentity"))

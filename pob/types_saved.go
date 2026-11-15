@@ -407,6 +407,21 @@ type Skill struct {
 	displaySkillListCalcs interface{}
 }
 
+type skillXML Skill
+
+//pob:block:src/Classes/SkillsTab.lua:447
+func (s *Skill) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	if err := d.DecodeElement((*skillXML)(s), &start); err != nil {
+		return fmt.Errorf("failed to parse Skill: %w", err)
+	}
+	for _, attr := range start.Attr {
+		if attr.Name.Local == "active" && attr.Value == "true" {
+			s.Enabled = true
+		}
+	}
+	return nil
+}
+
 func (s *Skill) SetDisplaySkillList(list interface{}) {
 	s.displaySkillList = list
 }
@@ -458,7 +473,9 @@ type Gem struct {
 
 type gemXML Gem
 
+//pob:block:src/Classes/SkillsTab.lua:498-499
 func (g *Gem) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	g.Enabled, g.EnableGlobal1 = true, true
 	if err := d.DecodeElement((*gemXML)(g), &start); err != nil {
 		return fmt.Errorf("failed to parse Gem: %w", err)
 	}

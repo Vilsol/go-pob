@@ -607,7 +607,8 @@ func TestShownConditionalSlots(t *testing.T) {
 	if got := GetMiscCalculator(build).ShownConditionalSlots(); len(got) != 0 {
 		t.Fatalf("0280 shows %q", got)
 	}
-	build.AllocateNodes([]int64{43902})
+	SelectSecondaryAscendClass(build, bloodlineIndex(specTree(build), "KingInTheMists"))
+	allocPathTo(build, 43902)
 	if got := GetMiscCalculator(build).ShownConditionalSlots(); !slices.Equal(got, []string{"Ring 3"}) {
 		t.Fatalf("with The Unseen Hand: %q", got)
 	}

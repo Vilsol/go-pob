@@ -575,6 +575,14 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 			return ok && node.IsMastery != nil && *node.IsMastery && !masteryEffectSelected(env.Spec, id, node)
 		})
 
+		// Go must differ: PoB deallocates these when it loads the spec; a build loaded here keeps them
+		//pob:block:src/Classes/PassiveSpec.lua:311
+		if i := env.Build.ActiveSpecIndex(); i >= 0 && env.Build.Tree.Specs[i].TreeVersion == currentTreeVersion {
+			if orphans := orphanNodes(env.Build, tree); len(orphans) > 0 {
+				specNodeIDs = slices.DeleteFunc(specNodeIDs, func(id int64) bool { return slices.Contains(orphans, id) })
+			}
+		}
+
 		//pob:block:src/Modules/CalcSetup.lua:714-774
 		nodeIDs := specNodeIDs
 		overridesNodes := len(override.AddNodes) > 0 || len(override.RemoveNodes) > 0

@@ -56,8 +56,8 @@ func TestUnsetAttributesAreOmittedNotZeroed(t *testing.T) {
 		}
 	}
 
-	if !strings.Contains(saved, `enableGlobal1="false"`) {
-		t.Error(`saved XML omits enableGlobal1="false"; SkillsTab.lua:472 reads an absent one as TRUE`)
+	if !strings.Contains(saved, `enableGlobal1="true"`) {
+		t.Error(`saved XML lacks enableGlobal1="true"; SkillsTab.lua:499 reads an absent one as TRUE`)
 	}
 }
 
