@@ -4,6 +4,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/Vilsol/go-pob/mod"
 )
@@ -12,6 +13,29 @@ var (
 	fireOrIgnitePattern = regexp.MustCompile(`[fi][ig][rn][ei]t?e?`)
 	coldOrFreezePattern = regexp.MustCompile(`[cf][or][le][de]z?e?`)
 )
+
+const (
+	nameFireOrIgnite uint8 = 1 << iota
+	nameColdOrFreeze
+)
+
+var modNameElementCache sync.Map
+
+func modNameElements(name string) uint8 {
+	if v, ok := modNameElementCache.Load(name); ok {
+		return v.(uint8)
+	}
+	lowerName := strings.ToLower(name)
+	var bits uint8
+	if fireOrIgnitePattern.MatchString(lowerName) {
+		bits |= nameFireOrIgnite
+	}
+	if coldOrFreezePattern.MatchString(lowerName) {
+		bits |= nameColdOrFreeze
+	}
+	modNameElementCache.Store(name, bits)
+	return bits
+}
 
 //pob:src/Modules/Calcs.lua:469-478
 func addUsedVar(out map[string][]mod.Mod, varName string, m mod.Mod) {
@@ -32,11 +56,11 @@ func addUsedTag(out map[string][]mod.Mod, varList []string, m mod.Mod) {
 func (env *Environment) addModTagsUsed(isPlayer bool, m mod.Mod) {
 	addUsedVar(env.ModsUsed, m.Name(), m)
 
-	lowerName := strings.ToLower(m.Name())
-	if fireOrIgnitePattern.MatchString(lowerName) {
+	elements := modNameElements(m.Name())
+	if elements&nameFireOrIgnite != 0 {
 		addUsedTag(env.EnemyConditionsUsed, []string{"Ignited", "Burning"}, m)
 	}
-	if coldOrFreezePattern.MatchString(lowerName) {
+	if elements&nameColdOrFreeze != 0 {
 		addUsedTag(env.EnemyConditionsUsed, []string{"Frozen"}, m)
 	}
 

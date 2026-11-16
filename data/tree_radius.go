@@ -51,8 +51,9 @@ type nodePos struct {
 }
 
 type treeGeometry struct {
-	positions        map[int64]nodePos
-	jewelRadiusNodes map[int64][][]int64
+	positions           map[int64]nodePos
+	jewelRadiusNodes    map[int64][][]int64
+	largeClusterAnchors map[int64]int64
 }
 
 var (
@@ -132,9 +133,20 @@ func (t *Tree) buildGeometry() *treeGeometry {
 	}
 
 	return &treeGeometry{
-		positions:        positions,
-		jewelRadiusNodes: t.buildJewelRadiusNodes(positions),
+		positions:           positions,
+		jewelRadiusNodes:    t.buildJewelRadiusNodes(positions),
+		largeClusterAnchors: t.buildLargeClusterAnchors(),
 	}
+}
+
+func (t *Tree) buildLargeClusterAnchors() map[int64]int64 {
+	anchors := make(map[int64]int64)
+	for _, node := range t.Nodes {
+		if j := node.ExpansionJewel; j != nil && j.Parent == nil && j.Size == 2 && node.Skill != nil {
+			anchors[j.Index] = *node.Skill
+		}
+	}
+	return anchors
 }
 
 //pob:block:src/Classes/PassiveTree.lua:448
@@ -222,4 +234,9 @@ func (t *Tree) buildJewelRadiusNodes(positions map[int64]nodePos) map[int64][][]
 
 func (t *Tree) JewelRadiusNodes() map[int64][][]int64 {
 	return t.geometry().jewelRadiusNodes
+}
+
+func (t *Tree) LargeClusterAnchor(index int64) (int64, bool) {
+	id, ok := t.geometry().largeClusterAnchors[index]
+	return id, ok
 }

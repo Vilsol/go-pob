@@ -1995,6 +1995,7 @@ export declare namespace data {
     Points: data.Points;
     AlternateAscendancies?: Array<data.Ascendancy>;
     JewelRadiusNodes(): (Record<number, Array<Array<number> | undefined> | undefined> | undefined);
+    LargeClusterAnchor(index: number): [number, boolean];
     NodePosition(id: number): [number, number, boolean];
     NodesInRadiusOf(centre: number, radiusIndex: number): (Record<number, boolean> | undefined);
     OrbitPosition(group: number, orbit: number, oidx: number): [number, number, boolean];

@@ -30683,7 +30683,7 @@ func crystallineMarshalDataTree(v *data.Tree) any {
 					})(value)
 				}
 			},
-			[]string{"JewelRadiusNodes", "NodePosition", "NodesInRadiusOf", "OrbitPosition"},
+			[]string{"JewelRadiusNodes", "LargeClusterAnchor", "NodePosition", "NodesInRadiusOf", "OrbitPosition"},
 			func(v *data.Tree, method int, args []js.Value) any {
 				switch method {
 				case 0:
@@ -30779,6 +30779,19 @@ func crystallineMarshalDataTree(v *data.Tree) any {
 					})
 				case 1:
 					if len(args) != 1 {
+						return crystallineFail("LargeClusterAnchor: expected 1 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToInt64(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0, r1 := v.LargeClusterAnchor(a0)
+
+					return []any{float64(r0), bool(r1)}
+				case 2:
+					if len(args) != 1 {
 						return crystallineFail("NodePosition: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
 
@@ -30790,7 +30803,7 @@ func crystallineMarshalDataTree(v *data.Tree) any {
 					r0, r1, r2 := v.NodePosition(a0)
 
 					return []any{float64(r0), float64(r1), bool(r2)}
-				case 2:
+				case 3:
 					if len(args) != 2 {
 						return crystallineFail("NodesInRadiusOf: expected 2 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -30841,7 +30854,7 @@ func crystallineMarshalDataTree(v *data.Tree) any {
 							return out
 						}()
 					})
-				case 3:
+				case 4:
 					if len(args) != 3 {
 						return crystallineFail("OrbitPosition: expected 3 arguments, got " + strconv.Itoa(len(args)))
 					}

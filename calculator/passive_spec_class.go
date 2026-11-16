@@ -163,13 +163,7 @@ func clusterAnchor(tree *data.Tree, id int64) (int64, bool) {
 	if id < 0x10000 {
 		return 0, false
 	}
-	large := (id >> 6) & 7
-	for _, node := range tree.Nodes {
-		if j := node.ExpansionJewel; j != nil && j.Parent == nil && j.Size == 2 && j.Index == large && node.Skill != nil {
-			return *node.Skill, true
-		}
-	}
-	return 0, false
+	return tree.LargeClusterAnchor((id >> 6) & 7)
 }
 
 //pob:block:src/Classes/PassiveSpec.lua:1553-1567,src/Classes/PassiveSpec.lua:2485-2494
