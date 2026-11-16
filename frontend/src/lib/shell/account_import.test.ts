@@ -75,8 +75,7 @@ describe('DownloadSiteCharacterList (ImportTab.lua:886-1020)', () => {
   it.each([
     [401, 'Account profile is private or does not exist.'],
     [403, 'Account profile is private or does not exist.'],
-    [404, 'Account name is incorrect.'],
-    [429, 'Error retrieving character list, try again (Response code: 429)']
+    [404, 'Account name is incorrect.']
   ])("says PoB's message for %s", async (status, text) => {
     serve({ characters: () => new Response('', { status }) });
     expect(await fetchCharacterList(PC, 'a#1234')).toEqual({ ok: false, status: NEGATIVE + text });
@@ -104,6 +103,29 @@ describe('DownloadItems / DownloadPassiveTree (ImportTab.lua:813-885)', () => {
       ok: false,
       status: `${NEGATIVE}Error importing character data, try again (Response code: 500)`
     });
+  });
+});
+
+describe("pathofexile.com's limit on the proxy", () => {
+  const limited = (retryAfter?: string) => () =>
+    new Response('rate limited by pathofexile.com', { status: 429, headers: retryAfter ? { 'Retry-After': retryAfter } : {} });
+  const says = (minutes: string) =>
+    `${NEGATIVE}pathofexile.com is limiting pob.gg's import requests; try again in about ${minutes}. ` +
+    'Meanwhile, import a build code or link (pobb.in, poe.ninja, pastebin) or use the desktop app.';
+
+  it('says so for the character list and the profile, with the wait rounded up to minutes', async () => {
+    serve({ characters: limited('2016') });
+    expect(await fetchCharacterList(PC, 'Vilsol#3184')).toEqual({ ok: false, status: says('34 minutes') });
+    serve({ characters: () => Response.json(chars), profile: limited('30') });
+    expect(await fetchCharacterList(PC, 'Vilsol#3184')).toEqual({ ok: false, status: says('1 minute') });
+    serve({ characters: limited() });
+    expect(await fetchCharacterList(PC, 'Vilsol#3184')).toEqual({ ok: false, status: says('1 minute') });
+  });
+
+  it('says so for the items and the passives', async () => {
+    serve({ items: limited('120'), passives: limited('121') });
+    expect(await downloadCharacter('items', PC, 'Vilsol#3184', chars[0])).toEqual({ ok: false, status: says('2 minutes') });
+    expect(await downloadCharacter('passives', PC, 'Vilsol#3184', chars[0])).toEqual({ ok: false, status: says('3 minutes') });
   });
 });
 

@@ -550,7 +550,10 @@ describe('the Import / Export dialog', () => {
       serveApi({ items: () => new Response('', { status: 429, headers: { 'Retry-After': '30' } }) });
       await fireEvent.click(chars.getByRole('button', { name: 'Items and Skills' }));
       await vi.waitFor(() =>
-        expect(chars.getByRole('status').textContent).toBe('Character import status: Error importing character data, try again (Response code: 429)')
+        expect(chars.getByRole('status').textContent).toBe(
+          "Character import status: pathofexile.com is limiting pob.gg's import requests; try again in about 1 minute. " +
+            'Meanwhile, import a build code or link (pobb.in, poe.ninja, pastebin) or use the desktop app.'
+        )
       );
       expect(items).toHaveBeenCalledTimes(1);
       items.mockRestore();

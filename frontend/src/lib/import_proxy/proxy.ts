@@ -16,6 +16,7 @@ export type Deps = {
   fetch: typeof fetch;
   cache?: Cache;
   waitUntil?: (p: Promise<unknown>) => void;
+  now?: () => number;
 };
 
 const text = (status: number, body: string, headers: Record<string, string> = {}) =>
@@ -214,14 +215,31 @@ export const profileName = (html: string) => {
   }
 };
 
-const rateLimited = (res: Response) => {
-  const headers: Record<string, string> = { 'Retry-After': res.headers.get('Retry-After') ?? String(POE_TTL) };
+const HOLD_UNTIL = 'Hold-Until';
+
+const holdOff = (res: Response) => {
+  const wait = Number(res.headers.get('Retry-After') ?? '');
+  if (Number.isFinite(wait) && wait > 0) return wait;
+  const longest = Math.max(
+    0,
+    ...(res.headers.get('X-Rate-Limit-Ip-State') ?? '')
+      .split(',')
+      .map((rule) => Number(rule.split(':')[2]))
+      .filter((p) => Number.isFinite(p))
+  );
+  return longest > 0 ? longest : POE_TTL;
+};
+
+const rateLimits = (res: Response) => {
+  const headers: Record<string, string> = {};
   res.headers.forEach((v, k) => {
     if (k.toLowerCase().startsWith('x-rate-limit')) headers[k] = v;
   });
-  const wait = Number(headers['Retry-After']) || POE_TTL;
-  return text(429, 'rate limited by pathofexile.com', { ...headers, 'Cache-Control': `s-maxage=${wait}` });
+  return headers;
 };
+
+const rateLimited = (res: Response, left: number) =>
+  text(429, 'rate limited by pathofexile.com', { ...rateLimits(res), 'Retry-After': String(Math.ceil(left)), 'Cache-Control': 'no-store' });
 
 export const handlePoe = async (endpoint: string, request: Request, deps: Deps): Promise<Response> => {
   if (request.method !== 'GET') return text(405, 'GET only', { Allow: 'GET' });
@@ -236,7 +254,12 @@ export const handlePoe = async (endpoint: string, request: Request, deps: Deps):
   if (ep.character && !CHARACTER.test(character)) return text(400, 'malformed character name');
   const path = ep.path(queryValue(account), queryValue(character), realm);
   const key = `${origin}/api/poe/${endpoint}?realm=${realm}&account=${queryValue(account)}&character=${queryValue(character)}`;
+  const now = deps.now ?? Date.now;
+  const holdKey = `${origin}/api/poe/hold-off`;
   return cached(key, deps, async () => {
+    const held = await deps.cache?.match(holdKey);
+    const until = Number(held?.headers.get(HOLD_UNTIL));
+    if (held && until > now()) return rateLimited(held, (until - now()) / 1000);
     let res: Response;
     try {
       res = await (0, deps.fetch)(POE_HOST + path, { headers: { 'User-Agent': USER_AGENT } });
@@ -245,7 +268,16 @@ export const handlePoe = async (endpoint: string, request: Request, deps: Deps):
     }
     if (res.status === 429) {
       await res.body?.cancel();
-      return rateLimited(res);
+      const wait = holdOff(res);
+      if (deps.cache) {
+        const hold = new Response(null, {
+          headers: { ...rateLimits(res), [HOLD_UNTIL]: String(now() + wait * 1000), 'Cache-Control': `s-maxage=${Math.ceil(wait)}` }
+        });
+        const put = deps.cache.put(holdKey, hold);
+        if (deps.waitUntil) deps.waitUntil(put);
+        else await put;
+      }
+      return rateLimited(res, wait);
     }
     if (!res.ok) {
       await res.body?.cancel();

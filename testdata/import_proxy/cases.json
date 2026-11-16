@@ -1,5 +1,5 @@
 {
-  "about": "One contract for both import proxies: frontend/src/lib/import_proxy/proxy.test.ts and internal/importproxy/proxy_test.go each run every case against a faked upstream. A body, path or text is a string or {prefix, repeat+count | b64 | code, suffix}; code is url-safe base64 over the zlib-deflated inner spec. upstream defaults to 200 with an empty body; fetch lists every expected upstream request (omitted: unchecked); fetches and cached are counts after the step; a header value null means absent.",
+  "about": "One contract for both import proxies: frontend/src/lib/import_proxy/proxy.test.ts and internal/importproxy/proxy_test.go each run every case against a faked upstream. A body, path or text is a string or {prefix, repeat+count | b64 | code, suffix}; code is url-safe base64 over the zlib-deflated inner spec. upstream defaults to 200 with an empty body; fetch lists every expected upstream request (omitted: unchecked); fetches and cached are counts after the step; at is the clock in seconds for that step and after (default 0); a header value null means absent.",
   "constants": {
     "USER_AGENT": "go-pob (+https://pob.gg)",
     "BUILD_CAP": 1048576,
@@ -876,7 +876,7 @@
       ]
     },
     {
-      "name": "poe: passes GGG's 429 through with Retry-After and its rate-limit headers, never retries, and holds off until Retry-After",
+      "name": "poe: passes GGG's 429 through with its rate-limit headers, never retries, and holds off every account until Retry-After",
       "upstream": {
         "status": 429,
         "headers": {
@@ -894,30 +894,87 @@
             "Retry-After": "30",
             "X-Rate-Limit-Ip": "45:60:60",
             "X-Rate-Limit-Ip-State": "46:60:30",
-            "Cache-Control": "s-maxage=30"
+            "Cache-Control": "no-store"
           },
+          "fetches": 1,
+          "cached": 1
+        },
+        {
+          "at": 10,
+          "path": "/api/poe/items?realm=xbox&account=b%232&character=x",
+          "status": 429,
+          "text": "rate limited by pathofexile.com",
+          "headers": {
+            "Retry-After": "20",
+            "X-Rate-Limit-Ip": "45:60:60",
+            "X-Rate-Limit-Ip-State": "46:60:30",
+            "Cache-Control": "no-store"
+          },
+          "fetches": 1,
+          "cached": 1
+        },
+        {
+          "at": 29,
+          "path": "/api/poe/characters?realm=pc&account=a%231",
+          "status": 429,
+          "headers": { "Retry-After": "1" },
           "fetches": 1
         },
         {
-          "path": "/api/poe/characters?realm=pc&account=a%231",
+          "at": 30,
+          "path": "/api/poe/profile?realm=pc&account=c%233",
           "status": 429,
+          "headers": { "Retry-After": "30" },
+          "fetches": 2,
+          "cached": 1
+        }
+      ]
+    },
+    {
+      "name": "poe: a 429 without Retry-After holds off for the longest Ip penalty",
+      "upstream": {
+        "status": 429,
+        "headers": { "X-Rate-Limit-Ip-State": "2:60:0,37:1800:0,132:7200:2016" }
+      },
+      "steps": [
+        {
+          "path": "/api/poe/characters?realm=pc&account=Vilsol%233184",
+          "status": 429,
+          "headers": { "Retry-After": "2016", "X-Rate-Limit-Ip-State": "2:60:0,37:1800:0,132:7200:2016" },
+          "fetches": 1
+        },
+        {
+          "at": 16,
+          "path": "/api/poe/characters?realm=pc&account=other%231",
+          "status": 429,
+          "headers": { "Retry-After": "2000" },
           "fetches": 1
         }
       ]
     },
     {
-      "name": "poe: a 429 without Retry-After holds off a minute",
-      "upstream": { "status": 429 },
+      "name": "poe: a 429 without Retry-After or a penalty holds off a minute",
+      "upstream": {
+        "status": 429,
+        "headers": { "X-Rate-Limit-Ip-State": "46:60:0" }
+      },
       "steps": [
         {
           "path": "/api/poe/characters?realm=pc&account=a%231",
           "status": 429,
-          "headers": { "Retry-After": "60", "Cache-Control": "s-maxage=60" }
+          "headers": { "Retry-After": "60", "Cache-Control": "no-store" }
+        },
+        {
+          "at": 59,
+          "path": "/api/poe/characters?realm=pc&account=b%231",
+          "status": 429,
+          "headers": { "Retry-After": "1" },
+          "fetches": 1
         }
       ]
     },
     {
-      "name": "poe: a 429 whose Retry-After is a date holds off a minute and passes the date on",
+      "name": "poe: a 429 whose Retry-After is a date holds off a minute",
       "upstream": {
         "status": 429,
         "headers": { "Retry-After": "Wed, 21 Oct 2026 07:28:00 GMT" }
@@ -926,21 +983,36 @@
         {
           "path": "/api/poe/characters?realm=pc&account=a%231",
           "status": 429,
-          "headers": {
-            "Retry-After": "Wed, 21 Oct 2026 07:28:00 GMT",
-            "Cache-Control": "s-maxage=60"
-          }
+          "headers": { "Retry-After": "60", "Cache-Control": "no-store" }
         }
       ]
     },
     {
-      "name": "poe: a fractional Retry-After is written as Number prints it",
+      "name": "poe: a fractional Retry-After rounds up",
       "upstream": { "status": 429, "headers": { "Retry-After": " 1.50 " } },
       "steps": [
         {
           "path": "/api/poe/characters?realm=pc&account=a%231",
           "status": 429,
-          "headers": { "Cache-Control": "s-maxage=1.5" }
+          "headers": { "Retry-After": "2" }
+        }
+      ]
+    },
+    {
+      "name": "poe: without a cache a 429 holds nothing off",
+      "upstream": { "status": 429, "headers": { "Retry-After": "30" } },
+      "cache": false,
+      "steps": [
+        {
+          "path": "/api/poe/characters?realm=pc&account=a%231",
+          "status": 429,
+          "headers": { "Retry-After": "30" },
+          "fetches": 1
+        },
+        {
+          "path": "/api/poe/characters?realm=pc&account=a%231",
+          "status": 429,
+          "fetches": 2
         }
       ]
     },

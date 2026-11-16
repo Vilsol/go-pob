@@ -1,10 +1,20 @@
 // ImportTab.lua:321-472, 813-1094
 
 import { NEGATIVE, normaliseAccount, REALM_LIST, type AccountCharacter, type Realm } from '$lib/design/account';
+import { DESKTOP } from '$lib/pwa/desktop';
 
 const api = (endpoint: string, params: Record<string, string>) => fetch(`/api/poe/${endpoint}?${new URLSearchParams(params)}`);
 
 const errMsg = (res: Response) => `Response code: ${res.status}`;
+
+const rateLimited = (res: Response) => {
+  const wait = Number(res.headers.get('Retry-After'));
+  const minutes = Math.max(1, Math.ceil((Number.isFinite(wait) && wait > 0 ? wait : 60) / 60));
+  const about = `try again in about ${minutes} minute${minutes === 1 ? '' : 's'}`;
+  return DESKTOP
+    ? `${NEGATIVE}pathofexile.com is limiting import requests from this computer; ${about}. Meanwhile, import a build code or link (pobb.in, poe.ninja, pastebin).`
+    : `${NEGATIVE}pathofexile.com is limiting pob.gg's import requests; ${about}. Meanwhile, import a build code or link (pobb.in, poe.ninja, pastebin) or use the desktop app.`;
+};
 
 export type CharacterListResult = { ok: true; status: string; accountName: string; characters: AccountCharacter[] } | { ok: false; status: string };
 
@@ -20,6 +30,7 @@ export const fetchCharacterList = async (realm: Realm, buf: string): Promise<Cha
   }
   if (res.status === 401 || res.status === 403) return { ok: false, status: `${NEGATIVE}Account profile is private or does not exist.` };
   if (res.status === 404) return { ok: false, status: `${NEGATIVE}Account name is incorrect.` };
+  if (res.status === 429) return { ok: false, status: rateLimited(res) };
   if (!res.ok) return { ok: false, status: `${NEGATIVE}Error retrieving character list, try again (${errMsg(res)})` };
   let characters: AccountCharacter[];
   try {
@@ -33,6 +44,7 @@ export const fetchCharacterList = async (realm: Realm, buf: string): Promise<Cha
   let realName = accountName;
   try {
     const profile = await api('profile', params);
+    if (profile.status === 429) return { ok: false, status: rateLimited(profile) };
     if (profile.ok) realName = ((await profile.json()) as { accountName: string }).accountName.replace(/^(.*)[#-]/s, '$1#');
     else if (!(profile.status === 403 && (await profile.text()).includes('(challenge)')))
       return { ok: false, status: `${NEGATIVE}Error retrieving character list, try again (${errMsg(profile)})` };
@@ -55,6 +67,7 @@ export const downloadCharacter = async (
   } catch (e) {
     return { ok: false, status: `${NEGATIVE}Error importing character data, try again (${String(e)})` };
   }
+  if (res.status === 429) return { ok: false, status: rateLimited(res) };
   if (!res.ok) return { ok: false, status: `${NEGATIVE}Error importing character data, try again (${errMsg(res)})` };
   const body = await res.text();
   if (body === 'false') return { ok: false, status: `${NEGATIVE}Failed to retrieve character data, try again.` };

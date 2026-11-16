@@ -69,6 +69,7 @@ func (s *spec) bytes(t *testing.T) []byte {
 }
 
 type step struct {
+	At      *int64             `json:"at"`
 	Method  string             `json:"method"`
 	Path    spec               `json:"path"`
 	Body    *spec              `json:"body"`
@@ -170,12 +171,16 @@ func TestContract(t *testing.T) {
 				return res, nil
 			})}
 			cache := NewMemoryCache()
-			d := Deps{Client: client, Now: func() time.Time { return time.Unix(0, 0) }, Cache: cache}
+			now := time.Unix(0, 0)
+			d := Deps{Client: client, Now: func() time.Time { return now }, Cache: cache}
 			if c.Cache != nil && !*c.Cache {
 				d.Cache = nil
 			}
 			h := Handler(d)
 			for i, s := range c.Steps {
+				if s.At != nil {
+					now = time.Unix(*s.At, 0)
+				}
 				method := s.Method
 				if method == "" {
 					method = http.MethodGet

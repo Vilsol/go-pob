@@ -390,22 +390,35 @@ func profileName(html string) string {
 	return m[1]
 }
 
-func rateLimited(res *http.Response) *response {
-	retry := strconv.Itoa(POE_TTL)
+const holdOffKey = "/api/poe/hold-off"
+
+func holdOff(res *http.Response) float64 {
 	if v, ok := res.Header["Retry-After"]; ok {
-		retry = strings.Join(v, ", ")
-	}
-	wait := jsNumber(retry)
-	if wait == 0 || math.IsNaN(wait) {
-		wait = POE_TTL
-	}
-	out := text(429, "rate limited by pathofexile.com", "Retry-After", retry)
-	for k, v := range res.Header {
-		if strings.HasPrefix(strings.ToLower(k), "x-rate-limit") {
-			out.header.Set(k, strings.Join(v, ", "))
+		if wait := jsNumber(strings.Join(v, ", ")); wait > 0 && !math.IsInf(wait, 1) {
+			return wait
 		}
 	}
-	out.header.Set("Cache-Control", "s-maxage="+jsNumberString(wait))
+	longest := 0.0
+	for _, rule := range strings.Split(res.Header.Get("X-Rate-Limit-Ip-State"), ",") {
+		if f := strings.Split(rule, ":"); len(f) >= 3 {
+			if p := jsNumber(f[2]); p > longest && !math.IsInf(p, 1) {
+				longest = p
+			}
+		}
+	}
+	if longest > 0 {
+		return longest
+	}
+	return POE_TTL
+}
+
+func rateLimited(header http.Header, left time.Duration) *response {
+	out := text(429, "rate limited by pathofexile.com", "Retry-After", jsNumberString(math.Ceil(left.Seconds())), "Cache-Control", "no-store")
+	for k, v := range header {
+		if strings.HasPrefix(strings.ToLower(k), "x-rate-limit") {
+			out.header[k] = v
+		}
+	}
 	return out
 }
 
@@ -436,13 +449,22 @@ func handlePoe(name string, r *http.Request, d Deps) *response {
 	path := ep.path(queryValue(acc), queryValue(char), realm)
 	key := "/api/poe/" + name + "?realm=" + realm + "&account=" + queryValue(acc) + "&character=" + queryValue(char)
 	return cached(key, d, func() *response {
+		if d.Cache != nil {
+			if held, ok := d.Cache.Get(holdOffKey); ok && d.Now().Before(held.Expires) {
+				return rateLimited(held.Header, held.Expires.Sub(d.Now()))
+			}
+		}
 		res, err := d.fetch(r, get(poeHost+path), false)
 		if err != nil {
 			return text(502, "pathofexile.com is unreachable")
 		}
 		if res.StatusCode == http.StatusTooManyRequests {
 			res.Body.Close()
-			return rateLimited(res)
+			left := time.Duration(holdOff(res) * float64(time.Second))
+			if d.Cache != nil {
+				d.Cache.Put(holdOffKey, Entry{Status: http.StatusTooManyRequests, Header: res.Header.Clone(), Expires: d.Now().Add(left)})
+			}
+			return rateLimited(res.Header, left)
 		}
 		if res.StatusCode < 200 || res.StatusCode > 299 {
 			res.Body.Close()

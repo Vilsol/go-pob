@@ -18,6 +18,7 @@ import {
 
 type Spec = string | { prefix?: string; repeat?: string; count?: number; b64?: string; code?: Spec; suffix?: string };
 type Step = {
+  at?: number;
   method?: string;
   path: Spec;
   body?: Spec;
@@ -90,8 +91,10 @@ describe.each(fixture.cases.map((c) => [c.name, c] as const))('%s', (_, c) => {
       return Promise.resolve(new Response(body, { status, headers: up.headers }));
     });
     const { m, cache } = memoryCache();
-    const d: Deps = { fetch: fetchMock as unknown as typeof fetch, ...(c.cache === false ? {} : { cache }) };
+    let now = 0;
+    const d: Deps = { fetch: fetchMock as unknown as typeof fetch, now: () => now, ...(c.cache === false ? {} : { cache }) };
     for (const step of c.steps) {
+      if (step.at !== undefined) now = step.at * 1000;
       const request = new Request(`https://pob.gg${str(step.path)}`, {
         method: step.method ?? 'GET',
         body: step.body === undefined ? undefined : bytes(step.body)
