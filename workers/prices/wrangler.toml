@@ -1,0 +1,7 @@
+name = "go-pob-prices"
+main = "src/index.js"
+compatibility_date = "2026-09-26"
+workers_dev = false
+
+# Served on prices.pob.gg (the pob.gg zone is on this Cloudflare account).
+routes = [{ pattern = "prices.pob.gg", custom_domain = true }]

@@ -1,0 +1,9 @@
+{
+  "name": "go-pob-prices",
+  "private": true,
+  "type": "module",
+  "description": "Cloudflare Worker that proxies the poe.ninja economy endpoints go-pob reads",
+  "scripts": {
+    "test": "node --test test/"
+  }
+}

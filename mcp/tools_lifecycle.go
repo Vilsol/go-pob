@@ -82,6 +82,7 @@ func (s *Server) newBuild(args json.RawMessage) (any, *ToolError) {
 		return nil, e
 	}
 	var b *pob.PathOfBuilding
+	source := ""
 	if in.FromHandle != "" {
 		h, e := s.get(in.FromHandle)
 		if e != nil {
@@ -90,6 +91,7 @@ func (s *Server) newBuild(args json.RawMessage) (any, *ToolError) {
 		if b, e = h.parseRev(h.cur); e != nil {
 			return nil, e
 		}
+		source = fmt.Sprintf("a copy of %s revision %d, which came from %s", h.id, h.cur, h.source)
 	} else {
 		if in.Class == "" {
 			return nil, invalidArg("class is required.", classNames())
@@ -123,7 +125,16 @@ func (s *Server) newBuild(args json.RawMessage) (any, *ToolError) {
 		b.SetLevel(*in.Level)
 		b.SetCharacterLevelAutoMode(false)
 	}
-	h, e := s.addHandle(b, in.Name, versionsOf(b, "", false))
+	again := ""
+	if in.FromHandle == "" {
+		again = "new_build class=" + string(b.Build.ClassName)
+		if a := ascendancyName(b); a != nil {
+			again += " ascendancy=" + a.(string)
+		}
+		again += fmt.Sprintf(" level=%d", b.Build.Level)
+		source = again
+	}
+	h, e := s.addHandle(b, in.Name, source, again, versionsOf(b, "", false))
 	if e != nil {
 		return nil, e
 	}
@@ -133,7 +144,7 @@ func (s *Server) newBuild(args json.RawMessage) (any, *ToolError) {
 	}
 	return map[string]any{
 		"handle": h.id, "revision": 0, "versions": h.versions, "summary": sum,
-		"next": "Add a skill with edit_skills op=add_group, allocate passives with edit_tree, gear with edit_items.",
+		"next": "Add a skill with edit_skills op=add_group and a slot (e.g. Body Armour) so its gems are linked, allocate passives with edit_tree, gear with edit_items.",
 	}, nil
 }
 
@@ -185,7 +196,12 @@ func (s *Server) importBuild(args json.RawMessage) (any, *ToolError) {
 			}
 		}
 	}
-	h, e := s.addHandle(b, in.Name, versionsOf(b, buildTree, converted))
+	source, again := "the "+map[string]string{"code": "PoB code", "xml": "build XML"}[kind]+" passed to import_build", ""
+	if kind == "file" || kind == "url" {
+		source = src
+		again = "import_build source=" + src
+	}
+	h, e := s.addHandle(b, in.Name, source, again, versionsOf(b, buildTree, converted))
 	if e != nil {
 		return nil, e
 	}
@@ -198,10 +214,15 @@ func (s *Server) importBuild(args json.RawMessage) (any, *ToolError) {
 		conversion["dropped_nodes"] = dropped[:30]
 		conversion["more_dropped"] = len(dropped) - 30
 	}
+	env, e := h.envAt(0)
+	if e != nil {
+		return nil, e
+	}
 	return map[string]any{
 		"handle": h.id, "revision": 0, "versions": h.versions,
 		"conversion": conversion,
 		"summary":    sum, "source_kind": kind,
+		"audit": auditOf(env),
 	}, nil
 }
 
@@ -261,45 +282,73 @@ func (s *Server) exportBuild(args json.RawMessage) (any, *ToolError) {
 	if e != nil {
 		return nil, e
 	}
-	if in.Format != "" && in.Format != "code" && in.Format != "xml" {
-		e := errf(CodeInvalidValue, "format must be code or xml.")
-		e.Allowed = []any{"code", "xml"}
+	if in.Format != "" && in.Format != "code" && in.Format != "xml" && in.Format != "both" {
+		e := errf(CodeInvalidValue, "format must be code, xml or both.")
+		e.Allowed = []any{"code", "xml", "both"}
 		return nil, e
 	}
 	xml, e := exportXML(h)
 	if e != nil {
 		return nil, e
 	}
+	wantXML, wantCode := in.Format == "xml" || in.Format == "both", in.Format != "xml"
+	var code string
+	if wantCode {
+		var err error
+		if code, err = pob.CompressEncode(string(xml)); err != nil {
+			return nil, errf(CodeInternal, "the build does not encode: %v", err)
+		}
+	}
+	out := map[string]any{"handle": h.id, "revision": h.cur}
 	if in.Path != "" {
 		if !filepath.IsAbs(in.Path) {
 			return nil, invalidArg("path must be absolute.", nil)
 		}
-		if err := os.WriteFile(in.Path, xml, 0o600); err != nil {
-			return nil, errf(CodeInvalidValue, "cannot write %s: %v", in.Path, err)
+		var files []map[string]any
+		write := func(path, format string, body []byte) *ToolError {
+			if err := os.WriteFile(path, body, 0o600); err != nil {
+				return errf(CodeInvalidValue, "cannot write %s: %v", path, err)
+			}
+			files = append(files, map[string]any{"format": format, "path": path, "bytes": len(body)})
+			return nil
 		}
-	}
-	file, e := s.recordExport(h, xml)
-	if e != nil {
-		return nil, e
+		codePath := in.Path
+		if wantXML {
+			if e := write(in.Path, "xml", xml); e != nil {
+				return nil, e
+			}
+			codePath = strings.TrimSuffix(in.Path, filepath.Ext(in.Path)) + ".txt"
+		}
+		if wantCode {
+			if e := write(codePath, "code", []byte(code)); e != nil {
+				return nil, e
+			}
+		}
+		out["files"] = files
+		h.saved, h.savedRev = files[0]["path"].(string), h.cur
+	} else {
+		file, e := s.recordExport(h, xml)
+		if e != nil {
+			return nil, e
+		}
+		if file != "" {
+			out["export_file"] = file
+			h.saved, h.savedRev = file, h.cur
+		}
+		out["bytes"] = len(xml)
+		if wantXML {
+			out["xml"] = string(xml)
+		}
+		if wantCode {
+			out["code"] = code
+		}
 	}
 	h.exported = true
 	sum, e := summaryOf(h, h.cur)
 	if e != nil {
 		return nil, e
 	}
-	out := map[string]any{"handle": h.id, "revision": h.cur, "bytes": len(xml), "summary": compactSummary(sum)}
-	if file != "" {
-		out["export_file"] = file
-	}
-	if in.Format == "xml" {
-		out["xml"] = string(xml)
-	} else {
-		code, err := pob.CompressEncode(string(xml))
-		if err != nil {
-			return nil, errf(CodeInternal, "the build does not encode: %v", err)
-		}
-		out["code"] = code
-	}
+	out["summary"] = compactSummary(sum)
 	return out, nil
 }
 
@@ -308,7 +357,7 @@ func compactSummary(sum map[string]any) map[string]any {
 }
 
 // recordExport writes one PoB XML file per export into the export directory, named so a directory listing
-// sorts in export order: <seq>-<handle>-r<revision>.xml.
+// sorts by server process, then export order: <process>-<seq>-<handle>-r<revision>.xml.
 func (s *Server) recordExport(h *handle, xml []byte) (string, *ToolError) {
 	dir := s.opts.ExportDir
 	if dir == "" {
@@ -318,13 +367,13 @@ func (s *Server) recordExport(h *handle, xml []byte) (string, *ToolError) {
 		return "", errf(CodeInternal, "cannot create the export directory: %v", err)
 	}
 	s.exportSeq++
-	name := filepath.Join(dir, fmt.Sprintf("%04d-%s-r%d.xml", s.exportSeq, h.id, h.cur))
+	name := filepath.Join(dir, fmt.Sprintf("%s-%04d-%s-r%d.xml", s.exportTag, s.exportSeq, h.id, h.cur))
 	for {
 		if _, err := os.Stat(name); err != nil {
 			break
 		}
 		s.exportSeq++
-		name = filepath.Join(dir, fmt.Sprintf("%04d-%s-r%d.xml", s.exportSeq, h.id, h.cur))
+		name = filepath.Join(dir, fmt.Sprintf("%s-%04d-%s-r%d.xml", s.exportTag, s.exportSeq, h.id, h.cur))
 	}
 	if err := os.WriteFile(name, xml, 0o600); err != nil {
 		return "", errf(CodeInternal, "cannot write the export: %v", err)

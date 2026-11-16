@@ -16,17 +16,27 @@ import (
 
 const maxImportBytes = 8 << 20
 
-// fetchSource turns an import source into build XML: a file path, raw XML, a build-site URL from the import proxy's
-// site table, or a PoB code.
+// fetchSource turns an import source into build XML: a file path (holding XML or a PoB code), raw XML, a build-site
+// URL from the import proxy's site table, or a PoB code.
 func fetchSource(src string) (string, string, *ToolError) {
-	if filepath.IsAbs(src) && strings.HasSuffix(strings.ToLower(src), ".xml") {
+	if filepath.IsAbs(src) {
 		b, err := os.ReadFile(src)
 		if err != nil {
 			e := errf(CodeImportFailed, "Cannot read %s: %v", src, err)
 			e.Hint = "Pass the build code or XML instead."
 			return "", "", e
 		}
-		return string(b), "file", nil
+		text := strings.TrimSpace(strings.TrimPrefix(string(b), "\ufeff"))
+		if strings.HasPrefix(text, "<") {
+			return text, "file", nil
+		}
+		xml, err := pob.DecodeDecompress(text)
+		if err != nil {
+			e := errf(CodeParseError, "%s holds neither build XML nor a PoB code: %v", src, err)
+			e.Hint = "The file must hold the whole PoB export code or the build XML."
+			return "", "", e
+		}
+		return xml, "file", nil
 	}
 	if strings.HasPrefix(src, "<") {
 		return src, "xml", nil
@@ -46,7 +56,7 @@ func fetchSource(src string) (string, string, *ToolError) {
 	}
 	xml, err := pob.DecodeDecompress(src)
 	if err != nil {
-		e := errf(CodeParseError, "The source is not a PoB code, URL, XML or .xml path: %v", err)
+		e := errf(CodeParseError, "The source is not a PoB code, URL, XML or absolute file path: %v", err)
 		e.Hint = "Pass the whole PoB export code."
 		return "", "", e
 	}

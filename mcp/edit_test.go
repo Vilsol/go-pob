@@ -1,6 +1,8 @@
 package mcp
 
 import (
+	"encoding/json"
+	"fmt"
 	"slices"
 	"strings"
 	"testing"
@@ -111,8 +113,10 @@ func TestEditItemsEquipsUniquesCraftsAndUnequips(t *testing.T) {
 	h := importFixture(t, s)
 	before := call(t, s, "get_stats", map[string]any{"handle": h})
 	dry := call(t, s, "edit_items", map[string]any{"handle": h, "dry_run": true, "ops": ops(map[string]any{"op": "equip_unique", "name": "Kaoms Heart"})})
-	if item := dry["item"].([]any)[0].(map[string]any); item["name"] != "Kaom's Heart, Glorious Plate" || item["text"] == "" {
-		t.Fatalf("dry-run item = %v", item)
+	item := dry["item"].([]any)[0].(map[string]any)
+	if b, _ := json.Marshal(item); item["name"] != "Kaom's Heart, Glorious Plate" || item["text"] != nil || len(b) > 400 ||
+		!slices.ContainsFunc(item["mods"].([]any), func(m any) bool { return strings.HasSuffix(m.(string), "to maximum Life") }) {
+		t.Fatalf("dry-run item = %s", b)
 	}
 	res := assertSize(t, s, "edit_items", map[string]any{"handle": h, "ops": ops(map[string]any{"op": "equip_unique", "name": "Kaom's Heart"})}, capWrite)
 	after := call(t, s, "get_stats", map[string]any{"handle": h})
@@ -287,7 +291,7 @@ func TestCompareBuildsReportsWhatChanged(t *testing.T) {
 func TestDeltaAlwaysShowsResistsWatchAndObjective(t *testing.T) {
 	s := testServer(t)
 	h := importFixture(t, s)
-	st := call(t, s, "get_stats", map[string]any{"handle": h, "stats": []string{"FireResist", "FireResistTotal", "FireResistMax", "Armour", mainDPS}})["stats"].(map[string]any)
+	st := call(t, s, "get_stats", map[string]any{"handle": h, "stats": []string{"FireResist", "FireResistTotal", "FireResistOverCap", "MissingFireResist", "Armour", mainDPS}})["stats"].(map[string]any)
 	noop := assertSize(t, s, "edit_build", map[string]any{"handle": h, "dry_run": true, "watch": []string{"Armour"},
 		"ops": ops(map[string]any{"op": "append_notes", "text": "x"})}, capWrite)
 	if len(noop["delta"].([]any)) != 0 {
@@ -299,7 +303,7 @@ func TestDeltaAlwaysShowsResistsWatchAndObjective(t *testing.T) {
 	}
 	fire := noop["resists"].(map[string]any)["Fire"].(map[string]any)
 	if len(noop["resists"].(map[string]any)) != 4 || fire["resist"] != num(st, "FireResist") || fire["total"] != num(st, "FireResistTotal") ||
-		fire["headroom"] != round(num(st, "FireResistTotal")-num(st, "FireResistMax")) || fire["headroom_change"] != nil {
+		fire["headroom"] != round(num(st, "FireResistOverCap")-num(st, "MissingFireResist")) || fire["headroom_change"] != nil {
 		t.Fatalf("resists = %v, stats %v", noop["resists"], st)
 	}
 
@@ -353,5 +357,267 @@ func TestCraftSkipsWhatTheBaseCannotRollAndResolvesIntents(t *testing.T) {
 	full := craft("Martyr Gloves", []string{"life", "mana", "+# to maximum Energy Shield/+# to maximum Life", "armour"}, false)
 	if sk := full["skipped"].([]any); len(sk) != 1 || sk[0].(map[string]any)["reason"] != "no free prefix slot" {
 		t.Fatalf("a fourth prefix: %v", full["skipped"])
+	}
+}
+
+// TestSetGemsKeepsGemsThatStay changes one support: the gems that stay keep their level and quality, and the new
+// gem takes the default level and the quality of the slot it takes over, as PoB's skills tab changes a slot's gem.
+func TestSetGemsKeepsGemsThatStay(t *testing.T) {
+	s := testServer(t)
+	h := call(t, s, "new_build", map[string]any{"class": "Witch", "level": 90})["handle"].(string)
+	call(t, s, "edit_skills", map[string]any{"handle": h, "ops": ops(
+		map[string]any{"op": "add_group", "gems": []string{"Fireball", "Elemental Focus Support", "Spell Echo"}},
+		map[string]any{"op": "set_gem_level", "group": 1, "gem": "Fireball", "level": 21, "quality": 23},
+		map[string]any{"op": "set_gem_level", "group": 1, "gem": "Spell Echo", "level": 18, "quality": 7},
+	)})
+	call(t, s, "edit_skills", map[string]any{"handle": h, "ops": ops(
+		map[string]any{"op": "set_gems", "group": 1, "gems": []string{"Fireball", "Spell Echo", "Controlled Destruction"}},
+	)})
+	groups := call(t, s, "get_build", map[string]any{"handle": h, "section": "skills"})["groups"].([]any)
+	gems := groups[0].(map[string]any)["gems"].([]any)
+	want := []struct {
+		name           string
+		level, quality float64
+	}{{"Fireball", 21, 23}, {"Spell Echo", 18, 7}, {"Controlled Destruction", 20, 0}}
+	if len(gems) != len(want) {
+		t.Fatalf("gems = %v", gems)
+	}
+	for i, w := range want {
+		g := gems[i].(map[string]any)
+		if g["name"] != w.name || g["level"] != w.level || g["quality"] != w.quality {
+			t.Fatalf("gem %d = %v, want %v", i, g, w)
+		}
+	}
+}
+
+// TestUnsocketedGroupsWarn adds a group without a slot: every write and get_build skills say it sits in no item and
+// name the best free linked item, until a slot is set.
+func TestUnsocketedGroupsWarn(t *testing.T) {
+	s := testServer(t)
+	h := call(t, s, "new_build", map[string]any{"class": "Marauder", "level": 80})["handle"].(string)
+	res := assertSize(t, s, "edit_skills", map[string]any{"handle": h, "ops": ops(
+		map[string]any{"op": "add_group", "gems": []string{"Sunder", "Melee Physical Damage", "Brutality", "Fortify"}},
+	)}, capWrite)
+	first := func(res map[string]any) map[string]any {
+		t.Helper()
+		list, _ := res["unsocketed"].([]any)
+		if len(list) != 1 {
+			t.Fatalf("unsocketed = %v", res["unsocketed"])
+		}
+		return list[0].(map[string]any)
+	}
+	if u := first(res); u["group"] != float64(1) || u["best_slot"] != nil {
+		t.Fatalf("no item yet: %v", u)
+	}
+	res = assertSize(t, s, "edit_items", map[string]any{"handle": h, "ops": ops(
+		map[string]any{"op": "craft", "slot": "Body Armour", "base": "Legion Plate", "affixes": []string{"life"}, "sockets": "R-R-R-R-R-R"},
+		map[string]any{"op": "craft", "slot": "Helmet", "base": "Royal Burgonet", "affixes": []string{"life"}, "sockets": "R-R-R-R"},
+	)}, capWrite)
+	if u := first(res); u["best_slot"] != "Body Armour" || u["links"] != float64(6) {
+		t.Fatalf("best free item: %v", u)
+	}
+	groups := call(t, s, "get_build", map[string]any{"handle": h, "section": "skills"})["groups"].([]any)
+	if g := groups[0].(map[string]any); g["socketed"] != false || g["best_slot"] != "Body Armour" {
+		t.Fatalf("skills section: %v", g)
+	}
+	res = call(t, s, "edit_skills", map[string]any{"handle": h, "ops": ops(map[string]any{"op": "set_slot", "group": 1, "slot": "Body Armour"})})
+	if res["unsocketed"] != nil {
+		t.Fatalf("still unsocketed: %v", res)
+	}
+	res = call(t, s, "edit_skills", map[string]any{"handle": h, "ops": ops(map[string]any{"op": "add_group", "gems": []string{"Leap Slam", "Faster Attacks"}})})
+	if u := first(res); u["group"] != float64(2) || u["best_slot"] != "Helmet" || u["links"] != float64(4) {
+		t.Fatalf("body armour is taken, helmet is free: %v", u)
+	}
+	call(t, s, "edit_skills", map[string]any{"handle": h, "ops": ops(map[string]any{"op": "set_gems", "group": 2, "slot": "Helmet", "gems": []string{"Leap Slam", "Faster Attacks"}})})
+	groups = call(t, s, "get_build", map[string]any{"handle": h, "section": "skills"})["groups"].([]any)
+	if g := groups[1].(map[string]any); g["slot"] != "Helmet" || g["socketed"] != nil {
+		t.Fatalf("set_gems slot: %v", g)
+	}
+}
+
+// TestLegacyGemNamesSayWhatToUse: an awakened support PoB lists as legacy is not offered, and the error names the
+// gem to use instead.
+func TestLegacyGemNamesSayWhatToUse(t *testing.T) {
+	s := testServer(t)
+	h := call(t, s, "new_build", map[string]any{"class": "Witch"})["handle"].(string)
+	e := callErr(t, s, "edit_skills", map[string]any{"handle": h, "ops": ops(map[string]any{"op": "add_group", "gems": []string{"Fireball", "Awakened Spell Echo"}})})
+	if e.Code != CodeNotFound || !strings.Contains(e.Hint, "legacy") || len(e.DidYouMean) == 0 || e.DidYouMean[0] != "Spell Echo" {
+		t.Fatalf("legacy gem: %s %q %v", e.Code, e.Hint, e.DidYouMean)
+	}
+}
+
+// TestEditSkillsDescriptionNamesOfferedAwakenedSupports: the description's legacy note never covers an awakened
+// support PoB still offers (Awakened Empower is one), since a model reads it as "do not use".
+func TestEditSkillsDescriptionNamesOfferedAwakenedSupports(t *testing.T) {
+	var desc string
+	for _, d := range tools() {
+		if d.name == "edit_skills" {
+			desc = d.desc
+		}
+	}
+	if !strings.Contains(desc, "legacy") {
+		t.Fatalf("edit_skills description lost its legacy note: %q", desc)
+	}
+	offered := 0
+	for _, g := range gems() {
+		if !strings.HasPrefix(g.Name, "Awakened ") {
+			continue
+		}
+		if _, err := resolveGem(g.Name); err != nil {
+			continue
+		}
+		offered++
+		if !strings.Contains(desc, g.Name) {
+			t.Errorf("edit_skills calls awakened supports legacy but %s is offered", g.Name)
+		}
+	}
+	if offered == 0 {
+		t.Fatal("no awakened support is offered; the check saw nothing")
+	}
+}
+
+// qualitySupports is a Fireball group whose three supports are quality 20.
+func qualitySupports(t *testing.T, s *Server) string {
+	t.Helper()
+	h := call(t, s, "new_build", map[string]any{"class": "Witch", "level": 90})["handle"].(string)
+	call(t, s, "edit_skills", map[string]any{"handle": h, "ops": ops(
+		map[string]any{"op": "add_group", "gems": []string{"Fireball", "Spell Echo", "Elemental Focus", "Controlled Destruction"}},
+		map[string]any{"op": "set_gem_level", "group": 1, "gem": "Spell Echo", "quality": 20},
+		map[string]any{"op": "set_gem_level", "group": 1, "gem": "Elemental Focus", "quality": 20},
+		map[string]any{"op": "set_gem_level", "group": 1, "gem": "Controlled Destruction", "quality": 20},
+	)})
+	return h
+}
+
+func groupGems(t *testing.T, s *Server, h string, group int) map[string]map[string]any {
+	t.Helper()
+	groups := call(t, s, "get_build", map[string]any{"handle": h, "section": "skills"})["groups"].([]any)
+	out := map[string]map[string]any{}
+	for _, g := range groups[group-1].(map[string]any)["gems"].([]any) {
+		out[g.(map[string]any)["name"].(string)] = g.(map[string]any)
+	}
+	return out
+}
+
+// TestSetGemsReplacingAGemKeepsItsQuality swaps a quality 20 support for another: PoB's skills tab keeps the slot's
+// quality when the gem in it changes, and only a gem in a new slot takes the build's default quality.
+func TestSetGemsReplacingAGemKeepsItsQuality(t *testing.T) {
+	s := testServer(t)
+	h := qualitySupports(t, s)
+	call(t, s, "edit_skills", map[string]any{"handle": h, "ops": ops(
+		map[string]any{"op": "set_gems", "group": 1, "gems": []string{"Fireball", "Spell Echo", "Concentrated Effect", "Controlled Destruction", "Added Fire Damage"}},
+	)})
+	gems := groupGems(t, s, h, 1)
+	if g := gems["Concentrated Effect"]; g == nil || g["quality"] != 20.0 || g["level"] != 20.0 {
+		t.Fatalf("Concentrated Effect replacing a quality 20 Elemental Focus = %v", g)
+	}
+	if g := gems["Added Fire Damage"]; g == nil || g["quality"] != 0.0 {
+		t.Fatalf("Added Fire Damage in a new slot = %v", g)
+	}
+	if _, ok := gems["Elemental Focus"]; ok || len(gems) != 5 {
+		t.Fatalf("gems = %v", gems)
+	}
+}
+
+// TestGemEditsShowLevelAndQuality: what an edit or dry run applied names each gem it placed with its level/quality, as
+// PoB's skill text does, so a quality 0 support shows.
+func TestGemEditsShowLevelAndQuality(t *testing.T) {
+	s := testServer(t)
+	h := qualitySupports(t, s)
+	res := call(t, s, "edit_skills", map[string]any{"handle": h, "dry_run": true, "ops": ops(
+		map[string]any{"op": "set_gems", "group": 1, "gems": []string{"Fireball", "Spell Echo", "Concentrated Effect", "Controlled Destruction"}},
+		map[string]any{"op": "add_gem", "group": 1, "gem": "Added Fire Damage"},
+		map[string]any{"op": "add_group", "gems": []string{"Frostblink"}, "level": 5},
+	)})
+	applied := fmt.Sprint(res["applied"])
+	for _, want := range []string{"Concentrated Effect 20/20", "Spell Echo 20/20", "Added Fire Damage 20/0", "Frostblink 5/0"} {
+		if !strings.Contains(applied, want) {
+			t.Fatalf("applied = %s, want %q", applied, want)
+		}
+	}
+}
+
+func TestCompareBuildsReportsMasteryEffectChanges(t *testing.T) {
+	s := testServer(t)
+	h := importFixture(t, s)
+	call(t, s, "edit_tree", map[string]any{"handle": h, "ops": ops(map[string]any{"op": "set_mastery", "node": 292, "effect": "+30 to maximum Life"})})
+	st := assertSize(t, s, "compare_builds", map[string]any{"a": h + "@0", "b": h}, capCompare)["structure"].(map[string]any)
+	if len(st["nodes_added"].([]any))+len(st["nodes_removed"].([]any)) != 0 {
+		t.Fatalf("an effect swap moved nodes: %v", st)
+	}
+	list, _ := st["masteries_changed"].([]any)
+	if len(list) != 1 {
+		t.Fatalf("masteries_changed = %v", st["masteries_changed"])
+	}
+	row := list[0].(map[string]any)
+	if row["id"] != float64(292) || row["b"] != "+30 to maximum Life" || row["a"] == "" || row["a"] == row["b"] {
+		t.Fatalf("mastery row = %v", row)
+	}
+}
+
+func TestEditTreeMasteryHintOnlyWithoutAnEffect(t *testing.T) {
+	s := testServer(t)
+	h := importFixture(t, s)
+	bare := call(t, s, "edit_tree", map[string]any{"handle": h, "dry_run": true, "ops": ops(map[string]any{"op": "allocate", "node": 12382})})
+	if hint, _ := bare["hint"].(string); !strings.Contains(hint, "set_mastery") {
+		t.Fatalf("allocating a mastery alone gives no set_mastery hint: %v", bare["hint"])
+	}
+	for _, batch := range [][]any{
+		ops(map[string]any{"op": "set_mastery", "node": 12382, "effect": "+30 to maximum Life"}),
+		ops(map[string]any{"op": "allocate", "node": 12382}, map[string]any{"op": "set_mastery", "node": 12382, "effect": "+30 to maximum Life"}),
+	} {
+		res := call(t, s, "edit_tree", map[string]any{"handle": h, "dry_run": true, "ops": batch})
+		if hint, _ := res["hint"].(string); strings.Contains(hint, "set_mastery") {
+			t.Fatalf("batch %v picks an effect but still hints: %s", batch, hint)
+		}
+	}
+}
+
+// TestResistHeadroomIsTheMarginOverTheCap reads headroom as PoB's ResistOverCap minus MissingResist (CalcDefence.lua
+// 627-629): positive over the cap, negative below it, and a resistance below its cap is flagged.
+func TestResistHeadroomIsTheMarginOverTheCap(t *testing.T) {
+	s := testServer(t)
+	h := call(t, s, "new_build", map[string]any{"class": "Witch", "level": 90})["handle"].(string)
+	call(t, s, "edit_items", map[string]any{"handle": h, "ops": ops(
+		map[string]any{"op": "craft", "slot": "Ring 1", "base": "Ruby Ring", "affixes": []string{"fire_res", "all_res"}},
+		map[string]any{"op": "craft", "slot": "Ring 2", "base": "Ruby Ring", "affixes": []string{"fire_res", "all_res"}},
+	)})
+	res := call(t, s, "edit_build", map[string]any{"handle": h, "dry_run": true, "ops": ops(map[string]any{"op": "append_notes", "text": "x"})})
+	st := call(t, s, "get_stats", map[string]any{"handle": h, "stats": []string{"FireResistOverCap", "MissingFireResist", "ColdResistOverCap", "MissingColdResist"}})["stats"].(map[string]any)
+	resists := res["resists"].(map[string]any)
+	fire, cold := resists["Fire"].(map[string]any), resists["Cold"].(map[string]any)
+	if num(st, "FireResistOverCap") <= 0 || num(st, "MissingColdResist") <= 0 {
+		t.Fatalf("fixture: fire must be over its cap and cold under it: %v", st)
+	}
+	if fire["headroom"] != num(st, "FireResistOverCap") || fire["under_cap"] != nil {
+		t.Fatalf("fire over cap: %v, stats %v", fire, st)
+	}
+	if cold["headroom"] != -num(st, "MissingColdResist") || cold["under_cap"] != true {
+		t.Fatalf("cold under cap: %v, stats %v", cold, st)
+	}
+	rank := call(t, s, "rank_candidates", map[string]any{"handle": h, "kind": "nodes", "stat": "Life", "limit": 1})
+	if num(rank["base_headroom"], "Cold") != -num(st, "MissingColdResist") {
+		t.Fatalf("base_headroom = %v, stats %v", rank["base_headroom"], st)
+	}
+}
+
+// TestCompareBuildsMatchesGroupsByContent: removing one socket group shows that group removed and no other, and a
+// gem change in a later group names it by its index in each build.
+func TestCompareBuildsMatchesGroupsByContent(t *testing.T) {
+	s := testServer(t)
+	h := importFixture(t, s)
+	call(t, s, "edit_skills", map[string]any{"handle": h, "ops": ops(map[string]any{"op": "remove_group", "group": 2},
+		map[string]any{"op": "remove_gem", "group": 4, "gem": "Melee Splash"})})
+	st := call(t, s, "compare_builds", map[string]any{"a": h + "@0", "b": h})["structure"].(map[string]any)
+	gems := st["gems_changed"].([]any)
+	if len(gems) != 2 {
+		t.Fatalf("gems_changed has %d rows, want the removed group and the edited one: %v", len(gems), gems)
+	}
+	removed, edited := gems[0].(map[string]any), gems[1].(map[string]any)
+	if removed["group"] != float64(2) || removed["group_removed"] != true {
+		t.Fatalf("removed group row = %v", removed)
+	}
+	if edited["group"] != float64(4) || edited["group_b"] != float64(3) || fmt.Sprint(edited["removed"]) != "[Melee Splash]" || len(edited["added"].([]any)) != 0 {
+		t.Fatalf("edited group row = %v", edited)
 	}
 }

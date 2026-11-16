@@ -179,6 +179,8 @@ type deltaRow struct {
 	Before float64  `json:"before"`
 	After  float64  `json:"after"`
 	Pct    *float64 `json:"pct"`
+	// keep marks a row the caller asked for (objective, watch, EHP, Life); trimming drops every other row first
+	keep bool
 }
 
 func alwaysShown(key string) bool {
@@ -210,7 +212,7 @@ func statDelta(a, b *calculator.Environment, keys []string, must []string, limit
 				continue
 			}
 		}
-		rows = append(rows, deltaRow{Stat: k, Before: ra, After: rb, Pct: pct(va, vb)})
+		rows = append(rows, deltaRow{Stat: k, Before: ra, After: rb, Pct: pct(va, vb), keep: mustSet[k]})
 	}
 	mag := func(r deltaRow) float64 {
 		if mustSet[r.Stat] {
@@ -223,9 +225,9 @@ func statDelta(a, b *calculator.Environment, keys []string, must []string, limit
 	}
 	sort.SliceStable(rows, func(i, j int) bool { return mag(rows[i]) > mag(rows[j]) })
 	more := 0
-	if len(rows) > limit {
-		more = len(rows) - limit
-		rows = rows[:limit]
+	if keep := max(limit, len(must)); len(rows) > keep {
+		more = len(rows) - keep
+		rows = rows[:keep]
 	}
 	return rows, more
 }

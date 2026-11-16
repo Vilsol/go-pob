@@ -48,6 +48,9 @@ mcp/stats.go                        GO-NATIVE  stat keys, labels and groups for 
 mcp/points.go                       PORT       src/Modules/Build.lua
 mcp/import.go                       GO-NATIVE  the MCP import source reader: file, XML, PoB code, or a build site from internal/importproxy's table; PoB fetches through its import tab
 mcp/tools_lifecycle.go              GO-NATIVE  new_build, import_build, export_build and revert_build over PoB's own class, conversion and save calls
+mcp/validate.go                     GO-NATIVE  build checks PoB's sidebar does not make (links per socket group, points over the level, uncapped charge overrides) and the per-item socket map
+mcp/audit.go                        GO-NATIVE  import audit: gem quality and levels above the game maximum, legacy gems, custom-modifier defences and offence, config values over their limits in every config set
+mcp/legality.go                     GO-NATIVE  import audit of equipped items the game could not produce (affix counts, crafted mods, implicit ranges, socket colours); PoB does not check item legality
 mcp/tools_read.go                   GO-NATIVE  get_build and get_stats: summaries of the calculated build for an MCP client
 mcp/tools_search.go                 GO-NATIVE  search_data over gems, items, bases, tree nodes, affixes, config options and stat keys
 mcp/tools_tree.go                   GO-NATIVE  edit_tree over the tree path search and PoB's allocate/deallocate/mastery calls
@@ -56,7 +59,30 @@ mcp/tools_skills.go                 GO-NATIVE  edit_skills over the build's sock
 mcp/tools_build.go                  GO-NATIVE  edit_build: level, bandit, pantheon and config options from ConfigOptions.lua's list as generated JSON
 mcp/tools_compare.go                GO-NATIVE  compare_builds: stat and structure differences between two builds or revisions
 mcp/tools_rank.go                   GO-NATIVE  rank_candidates over PoB's power builder, item DB power and support compatibility
+mcp/realism.go                      GO-NATIVE  realism checks on ranked changes: forced config conditions (ConfigOptions.lua sections), warnings, sockets, totems, immunities
+mcp/rank_totems.go                  GO-NATIVE  Full DPS counts and the summoned-totems config checked against the totem and mine limits (Calcs.lua getActiveSkillCount, CalcOffence.lua limits); PoB does not cap them
+mcp/rank_conditions.go              GO-NATIVE  ranking realism: combat-condition options (ConfigOptions.lua sections, ifCond) a build reads negated, and the lines that grant a forced condition; PoB has no such check
+mcp/rank_unusable.go                GO-NATIVE  ranks changes that disable a skill, drop the off-hand, lower the totem limit, overfill sockets or lose much EHP after clean ones; no PoB analogue
 mcp/optimize.go                     GO-NATIVE  optimize: an exhaustive or coordinate-ascent search over caller-listed choices, each scored by a full calculation; PoB has no optimiser
+mcp/optimize_gems.go                GO-NATIVE  optimize gem slot: a gem's level and quality within the ranges SkillsTab.lua allows, one corruption at most
+mcp/scan.go                         GO-NATIVE  scan_build: one call ranking uniques per slot, flasks and anoints over PoB's misc calculator, with resist gaps
+mcp/scan_affix.go                   GO-NATIVE  scan_build affixes: open prefix/suffix counts and the best addition from PoB's add-modifier and crafting lists
+mcp/scan_reserve.go                 GO-NATIVE  scan_build reservation: per-skill reservations from CalcPerform's skill data and ranked sources of unreserved mana
+mcp/scan_cluster.go                 GO-NATIVE  scan_build clusters: notable swaps for socketed cluster jewels, scored by a full calculation of the changed jewel
+mcp/scan_apply.go                   GO-NATIVE  scan_build apply: rebuilds and commits the change a scan row names
+mcp/scan_resists.go                 GO-NATIVE  scan_build resists: the fewest resistance suffixes from PoB's add-modifier and bench lists that cap resistances; PoB has no solver
+mcp/scan_sockets.go                 GO-NATIVE  scan_build sockets: recolours sockets to their gems' colours, scored by a full calculation of the recoloured item; PoB has no recolour search
+mcp/scan_budget.go                  GO-NATIVE  cost_budget, rank_by gain_per_div and savings, and BuildCost: prices changes against a build at poe.ninja prices; no PoB analogue
+mcp/scan_budget_links.go            GO-NATIVE  scan_build links: a six-link taken to five links without one support, priced by the bench; no PoB analogue
+mcp/scan_links.go                   GO-NATIVE  scan_build links: a four- or five-link item linked one up with each compatible support, priced by the bench; no PoB analogue
+mcp/scan_budget_fit.go              GO-NATIVE  scan_build fit_budget: savings rows picked greedily until the build fits its cost cap; no PoB analogue
+mcp/scan_gems.go                    GO-NATIVE  scan_build gems: level and quality changes of each gem within its legal ranges, upgrades and corruption downgrades, scored by a full calculation
+mcp/scan_swaps.go                   GO-NATIVE  scan_build swaps: each support replaced by a compatible support and each curse, herald or aura by one of its kind, scored by a full calculation; no PoB analogue
+mcp/price.go                        GO-NATIVE  item and gem prices for the MCP server: poe.ninja listings for uniques and gems, an affix-tier estimate plus bench costs for other items; PoB prices nothing
+mcp/price_table.go                  GO-NATIVE  the chaos value of each affix tier in the item estimate; no PoB analogue
+mcp/price_tool.go                   GO-NATIVE  price_build: a build's cost by slot and gem; no PoB analogue
+mcp/prices/prices.go                GO-NATIVE  lookups over poe.ninja's economy overviews and the price snapshot format; PoB reads no market data
+mcp/prices/fetch.go                 GO-NATIVE  fetches and caches poe.ninja's economy overviews with a TTL and ETags; PoB reads no market data
 
 calculator2/build_export.go         GO-NATIVE  the skills list of PoB-PoE2's .build export (BuildExportPoE2.lua, a PoE2-only module); each function cites the Lua it ports
 calculator2/item.go                 PORT       src/Classes/Item.lua,src/Classes/ItemsTab.lua,src/Modules/Common.lua

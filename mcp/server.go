@@ -13,18 +13,22 @@ import (
 	"sort"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 
 	"github.com/Vilsol/go-pob/data/raw"
+	"github.com/Vilsol/go-pob/mcp/prices"
 )
 
-// ExportDirEnv names the directory export_build writes one PoB XML file per export into.
+// ExportDirEnv names the directory export_build writes one PoB XML file per export without a path into.
 const ExportDirEnv = "GOPOB_MCP_EXPORT_DIR"
 
 type Options struct {
 	ExportDir string
 	Version   string
+	// Prices answers price_build; nil when the server runs without prices
+	Prices *prices.Book
 }
 
 type Server struct {
@@ -34,15 +38,24 @@ type Server struct {
 	handles         map[string]*handle
 	order           []string
 	nextHandle      int
+	useSeq          int64
+	evicted         map[string]evictedHandle
 	pendingWarnings []string
 	exportSeq       int
+	exportTag       string
 
 	ready   atomic.Bool
 	loadErr atomic.Value
 }
 
+var serversStarted atomic.Int64
+
 func New(opts Options) *Server {
-	return &Server{opts: opts, handles: map[string]*handle{}}
+	tag := fmt.Sprintf("%s-%d", time.Now().Format("20060102-150405"), os.Getpid())
+	if n := serversStarted.Add(1); n > 1 {
+		tag += fmt.Sprintf("-%d", n)
+	}
+	return &Server{opts: opts, handles: map[string]*handle{}, evicted: map[string]evictedHandle{}, exportTag: tag}
 }
 
 // LoadData loads the game data; tool calls before it finishes answer DATA_LOADING.

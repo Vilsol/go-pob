@@ -3,6 +3,7 @@ package mcp
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"slices"
 	"sort"
 	"strings"
@@ -77,6 +78,173 @@ func resolveUnique(name string) (string, *ToolError) {
 		return "", e
 	}
 	return "", notFound("unique", name, suggest(name, uniqueNames(), 5), "Retry with one of did_you_mean, or search_data kind=unique.")
+}
+
+var foulbornPrefixRe = regexp.MustCompile(`(?i)^foulborn\s+`)
+
+type foulbornOption struct {
+	index int
+	line  string
+}
+
+// foulbornOptions are the unique's mod lines with a Foulborn counterpart (PoB's mutable lines), each with the line it
+// mutates into.
+func foulbornOptions(text string) []foulbornOption {
+	info, ok := calculator.DisplayItem(text)
+	if !ok {
+		return nil
+	}
+	var out []foulbornOption
+	for i, m := range info.Mods {
+		if !m.Mutable || m.Mutated {
+			continue
+		}
+		next, err := calculator.EditItem(text, calculator.ItemEdit{Kind: "mutate", Index: i})
+		if err != nil {
+			continue
+		}
+		if after, ok := calculator.DisplayItem(next); ok && i < len(after.Mods) && after.Mods[i].Mutated {
+			out = append(out, foulbornOption{i, after.Mods[i].Line})
+		} else if line, ok := newMutatedLine(text, next); ok {
+			out = append(out, foulbornOption{i, line})
+		}
+	}
+	return out
+}
+
+// newMutatedLine is the line a mutation added, by its unrolled text: one that rolls to 0 is hidden from the display.
+func newMutatedLine(before, after string) (string, bool) {
+	had := map[string]bool{}
+	for _, ml := range mutatedLines(calculator.ParseItem(before)) {
+		had[ml.Line] = true
+	}
+	for _, ml := range mutatedLines(calculator.ParseItem(after)) {
+		if !had[ml.Line] {
+			return ml.Line, true
+		}
+	}
+	return "", false
+}
+
+func mutatedLines(item *calculator.Item) []calculator.ModLine {
+	var out []calculator.ModLine
+	for _, list := range [][]calculator.ModLine{item.EnchantModLines, item.ScourgeModLines, item.ImplicitModLines, item.ExplicitModLines, item.CrucibleModLines} {
+		for _, ml := range list {
+			if ml.Mutated {
+				out = append(out, ml)
+			}
+		}
+	}
+	return out
+}
+
+// foulbornUnique resolves "Foulborn <unique>[: <mutated line>[; <mutated line>]]" to the unique's text with those
+// Foulborn mutations applied (a part of each mutated line names it), or its only one; ok is false for a name without
+// the Foulborn prefix.
+func foulbornUnique(name string) (string, bool, *ToolError) {
+	rest := foulbornPrefixRe.ReplaceAllString(strings.TrimSpace(name), "")
+	if rest == strings.TrimSpace(name) {
+		return "", false, nil
+	}
+	title, picks, _ := strings.Cut(rest, ":")
+	unique, e := resolveUnique(strings.TrimSpace(title))
+	if e != nil {
+		return "", true, e
+	}
+	text, _ := calculator.ItemDBText(calculator.ItemDBUnique, unique)
+	text, ranges := revealMutable(text)
+	opts := foulbornOptions(text)
+	if len(opts) == 0 {
+		return "", true, errf(CodeInvalidValue, "%s has no Foulborn form.", unique)
+	}
+	label := calculator.ParseItem(text).Title
+	var chosen []foulbornOption
+	for _, p := range strings.Split(picks, ";") {
+		if p = strings.ToLower(strings.TrimSpace(p)); p == "" {
+			continue
+		}
+		var hit []foulbornOption
+		for _, o := range opts {
+			if strings.Contains(strings.ToLower(o.line), p) {
+				hit = append(hit, o)
+			}
+		}
+		if len(hit) != 1 {
+			chosen = nil
+			break
+		}
+		chosen = append(chosen, hit[0])
+	}
+	if len(chosen) == 0 && strings.TrimSpace(picks) == "" && len(opts) == 1 {
+		chosen = opts
+	}
+	if len(chosen) == 0 {
+		e := errf(CodeAmbiguous, "Name the Foulborn mutation of %s: one of candidates, several joined with \";\".", label)
+		for _, o := range opts {
+			e.Candidates = append(e.Candidates, fmt.Sprintf("Foulborn %s: %s", label, o.line))
+		}
+		return "", true, e
+	}
+	slices.SortFunc(chosen, func(a, b foulbornOption) int { return b.index - a.index })
+	for _, o := range slices.CompactFunc(chosen, func(a, b foulbornOption) bool { return a.index == b.index }) {
+		next, err := calculator.EditItem(text, calculator.ItemEdit{Kind: "mutate", Index: o.index})
+		if err != nil {
+			return "", true, errf(CodeInvalidValue, "%s: %v", label, err)
+		}
+		text = next
+	}
+	return restoreRanges(text, ranges), true, nil
+}
+
+var (
+	modTagsRe  = regexp.MustCompile(`^(?:\{[^}]*\})*`)
+	rangeTagRe = regexp.MustCompile(`\{range:[^}]*\}`)
+)
+
+// revealMutable rolls each line with a Foulborn counterpart at its maximum, so one rolling to 0 is displayed and can be
+// mutated; ranges holds each such line's own range tag for restoreRanges.
+func revealMutable(text string) (string, map[string]string) {
+	mutable := map[string]bool{}
+	for _, ml := range calculator.ParseItem(text).ExplicitModLines {
+		if ml.ModID != "" && ml.NewModID != "" {
+			mutable[ml.Line] = true
+		}
+	}
+	ranges := map[string]string{}
+	lines := strings.Split(text, "\n")
+	for k, l := range lines {
+		body := modTagsRe.ReplaceAllString(l, "")
+		if tag := rangeTagRe.FindString(modTagsRe.FindString(l)); tag != "" && mutable[body] {
+			ranges[body] = tag
+			lines[k] = strings.Replace(l, tag, "{range:1}", 1)
+		}
+	}
+	return strings.Join(lines, "\n"), ranges
+}
+
+// restoreRanges puts back the range tags revealMutable raised on the lines left unmutated.
+func restoreRanges(text string, ranges map[string]string) string {
+	lines := strings.Split(text, "\n")
+	for k, l := range lines {
+		tags := modTagsRe.FindString(l)
+		if tag, ok := ranges[l[len(tags):]]; ok && rangeTagRe.MatchString(tags) {
+			lines[k] = strings.Replace(tags, rangeTagRe.FindString(tags), tag, 1) + l[len(tags):]
+		}
+	}
+	return strings.Join(lines, "\n")
+}
+
+// uniqueText is a named unique's text, a Foulborn one's with its mutations.
+func uniqueText(name string) (string, *ToolError) {
+	if text, ok, e := foulbornUnique(name); ok {
+		return text, e
+	}
+	unique, e := resolveUnique(name)
+	if e != nil {
+		return "", e
+	}
+	text, _ := calculator.ItemDBText(calculator.ItemDBUnique, unique)
+	return text, nil
 }
 
 // equipText validates and equips an item text in slot (default: the item's primary slot); it returns the slot used.
@@ -172,11 +340,15 @@ func applyItemOp(ec *editCtx, op itemOp, dryRun bool) *ToolError {
 		}
 		msg := fmt.Sprintf("%s %s in %s", what, item.Name, slot)
 		if old != "" && old != item.Name {
-			msg += " (replaced " + old + ")"
+			msg += " (replaced " + old + "; kept in the item list unequipped)"
 		}
 		ec.note(msg)
 		if dryRun {
-			ec.add("item", map[string]any{"name": item.Name, "text": text})
+			row := map[string]any{"name": item.Name, "mods": nonNil(keyMods(item, 12))}
+			if sockets := socketString(item); sockets != "" {
+				row["sockets"] = sockets
+			}
+			ec.add("item", row)
 		}
 		if bad := unsupportedLines(item); len(bad) > 0 {
 			ec.add("unsupported_lines", bad)
@@ -185,11 +357,10 @@ func applyItemOp(ec *editCtx, op itemOp, dryRun bool) *ToolError {
 	}
 	switch op.Op {
 	case "equip_unique":
-		name, e := resolveUnique(op.Name)
+		text, e := uniqueText(op.Name)
 		if e != nil {
 			return e
 		}
-		text, _ := calculator.ItemDBText(calculator.ItemDBUnique, name)
 		return equip(text, "equip_unique")
 	case "craft":
 		text, chosen, skipped, e := craftItem(op.Base, op.Affixes, op.Sockets, op.Strict)
@@ -247,11 +418,10 @@ func applyItemOp(ec *editCtx, op itemOp, dryRun bool) *ToolError {
 			if op.Name == "" {
 				return invalidArg("socket_jewel needs name (a unique jewel) or text.", nil)
 			}
-			name, e := resolveUnique(op.Name)
-			if e != nil {
+			var e *ToolError
+			if text, e = uniqueText(op.Name); e != nil {
 				return e
 			}
-			text, _ = calculator.ItemDBText(calculator.ItemDBUnique, name)
 		}
 		item := calculator.ParseItem(text)
 		if item == nil || item.Base == nil || item.Base.Type != "Jewel" {
@@ -558,6 +728,11 @@ func equippedItems(b *pob.PathOfBuilding) []equipped {
 			set = s
 		}
 	}
+	return setItems(b, set)
+}
+
+// setItems are the items an item set equips, in PoB's slot order, with the weapon swap the set uses.
+func setItems(b *pob.PathOfBuilding, set pob.ItemSet) []equipped {
 	texts := make(map[int]string, len(b.Items.Items))
 	for _, it := range b.Items.Items {
 		texts[it.ID] = it.Text
@@ -574,7 +749,7 @@ func equippedItems(b *pob.PathOfBuilding) []equipped {
 				continue
 			}
 			item := calculator.PeekItem(text)
-			out = append(out, equipped{slot: s.Name, id: s.ItemID, name: item.Name, rarity: string(item.Rarity), active: s.Active, text: text})
+			out = append(out, equipped{slot: s.Name, id: s.ItemID, name: item.Name, rarity: string(item.Rarity), active: s.Active, text: calculator.PlainItemText(text)})
 		}
 	}
 	return out

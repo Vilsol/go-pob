@@ -100,7 +100,8 @@ func foldModRanges(raw string) string {
 					continue
 				}
 				next = k + 1
-				if ml.Range != nil && !rangeTokenRe.MatchString(lines[k]) {
+				//pob:block:src/Classes/Item.lua:1854-1856
+				if ml.Range != nil && rawRangeLineRe.MatchString(first) && !rangeTokenRe.MatchString(lines[k]) {
 					lines[k] = "{range:" + strconv.FormatFloat(utils.RoundTo(*ml.Range, 6), 'f', -1, 64) + "}" + strings.TrimSpace(lines[k])
 				}
 				break
@@ -108,6 +109,14 @@ func foldModRanges(raw string) string {
 		}
 	}
 	return strings.Join(lines, "\n")
+}
+
+// PlainItemText is a build's saved <Item> body as item text: its <ModRange> rolls on its lines and its XML escapes
+// undone, ready to be added to a build again.
+//
+//pob:block:src/Classes/ItemsTab.lua:1246-1263
+func PlainItemText(raw string) string {
+	return strings.TrimSpace(xmlEntityDecoder.Replace(foldModRanges(raw)))
 }
 
 func splitRaw(raw string) []string {

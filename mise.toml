@@ -308,6 +308,11 @@ run = '{{vars.NICE}} go test -v ./...'
 description = "Tier 1: every test that does NOT need the corpus (~2m20s, 0 red at base, measured 2026-10-24). Run this per fix."
 run = 'env -u CORPUS {{vars.NICE}} go test ./...'
 
+[tasks.test-prices-worker]
+description = "The prices.pob.gg Worker's tests (workers/prices) on plain node, with fetch and the cache mocked"
+dir = "workers/prices"
+run = 'node --test test/'
+
 [tasks.affected-tests]
 description = "go test only the packages a change can reach: changed since BASE (default merge-base dev) plus the working tree, and every package whose tests import them. --run <regex>, --dry prints the pick only, CLI_ARGS pass to go test"
 usage = '''

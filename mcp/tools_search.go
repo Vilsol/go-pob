@@ -73,7 +73,10 @@ func (s *Server) searchData(args json.RawMessage) (any, *ToolError) {
 		if in.Handle != "" && in.Kind == "support" {
 			h := s.handles[in.Handle]
 			env, _ = h.envAt(h.cur)
-			group = b.Build.MainSocketGroup
+			if groups := activeSkills(b); b.Build.MainSocketGroup >= 1 && b.Build.MainSocketGroup <= len(groups) &&
+				slices.ContainsFunc(groups[b.Build.MainSocketGroup-1].Gems, func(g pob.Gem) bool { return !gemIsSupport(g) }) {
+				group = b.Build.MainSocketGroup
+			}
 		}
 		hits = searchGems(in, env, group)
 	case "unique":
@@ -87,7 +90,14 @@ func (s *Server) searchData(args json.RawMessage) (any, *ToolError) {
 	case "config":
 		hits = searchConfig(in)
 	case "stat":
-		hits = searchStats(in)
+		var env *calculator.Environment
+		if in.Handle != "" {
+			h := s.handles[in.Handle]
+			if env, e = h.envAt(h.cur); e != nil {
+				return nil, e
+			}
+		}
+		hits = searchStats(in, env)
 	default:
 		return nil, invalidArg(fmt.Sprintf("Unknown kind %q.", in.Kind), searchKinds)
 	}
@@ -124,6 +134,11 @@ func (s *Server) searchData(args json.RawMessage) (any, *ToolError) {
 	}
 	if len(hits) == 0 && in.Query != "" {
 		res["hint"] = "No match; try fewer or shorter words."
+		if in.Kind == "stat" && in.Handle != "" {
+			res["hint"] = "This build calculates no stat matching that; PoB writes some outputs, such as the exert keys (attacks an exerting warcry boosts), only for builds that use them."
+		} else if in.Kind == "stat" {
+			res["hint"] = "No match in the sidebar stats; pass handle to also search every output key the build calculates."
+		}
 	}
 	return res, nil
 }
@@ -224,11 +239,20 @@ func searchUniques(in searchIn, b *pob.PathOfBuilding) ([]hit, *ToolError) {
 			continue
 		}
 		r, ok := matchQuery(in.Query, it.Name, it.BaseName+" "+itemText(it))
+		//pob:block:src/Classes/ItemDBControl.lua:155-162
+		foulborn := slices.ContainsFunc(it.ExplicitModLines, func(ml calculator.ModLine) bool { return ml.NewModID != "" })
+		if f, fok := matchQuery(in.Query, "Foulborn "+it.Name, ""); foulborn && fok && (!ok || f < r) {
+			r, ok = f, true
+		}
 		if !ok {
 			continue
 		}
 		out = append(out, hit{r, it.Name, func() map[string]any {
-			return map[string]any{"name": it.Name, "base": it.BaseName, "slot": it.PrimarySlot(), "level_req": lvl, "key_mods": nonNil(keyMods(it, 4))}
+			row := map[string]any{"name": it.Name, "base": it.BaseName, "slot": it.PrimarySlot(), "level_req": lvl, "key_mods": nonNil(keyMods(it, 4))}
+			if foulborn {
+				row["foulborn"] = true
+			}
+			return row
 		}})
 	}
 	return out, nil
@@ -373,7 +397,57 @@ func searchAffixes(in searchIn) ([]hit, *ToolError) {
 			}})
 		}
 	}
-	return out, nil
+	return append(out, benchAndVeiledAffixes(in.Query, text)...), nil
+}
+
+// benchAndVeiledAffixes are the base's crafting bench and veiled (unveiled) mods, PoB's "Add modifier" Crafting Bench and
+// Veiled lists, one row per wording with its tier count; type is "Crafted" or "Veiled" and the affix type.
+func benchAndVeiledAffixes(query, text string) []hit {
+	choices, ok := calculator.ItemCustomModChoices(modChoicesText(text))
+	if !ok {
+		return nil
+	}
+	type row struct {
+		label, typ string
+		tiers      int
+	}
+	var rows []*row
+	byKey := map[string]*row{}
+	for _, src := range []struct{ id, name string }{{"MASTER", "Crafted"}, {"VEILED", "Veiled"}} {
+		for _, m := range choices.Mods[src.id] {
+			parts := make([]string, len(m.Lines))
+			for k, l := range m.Lines {
+				parts[k] = affixNumberRe.ReplaceAllString(affixRangeRe.ReplaceAllString(l, "#"), "#")
+			}
+			typ := src.name
+			switch {
+			case strings.HasSuffix(m.Label, "(Prefix)"):
+				typ += " Prefix"
+			case strings.HasSuffix(m.Label, "(Suffix)"):
+				typ += " Suffix"
+			}
+			label := strings.Join(parts, " / ")
+			if r := byKey[typ+label]; r != nil {
+				r.tiers++
+				continue
+			}
+			r := &row{label, typ, 1}
+			byKey[typ+label] = r
+			rows = append(rows, r)
+		}
+	}
+	var out []hit
+	for _, r := range rows {
+		rank, ok := matchQuery(query, r.label, r.typ)
+		if !ok {
+			continue
+		}
+		// the sort name puts them after the base's own affixes of the same rank
+		out = append(out, hit{rank, "\uffff" + r.label, func() map[string]any {
+			return map[string]any{"label": r.label, "type": r.typ, "tiers": r.tiers}
+		}})
+	}
+	return out
 }
 
 func searchConfig(in searchIn) []hit {
@@ -401,7 +475,9 @@ func searchConfig(in searchIn) []hit {
 	return out
 }
 
-func searchStats(in searchIn) []hit {
+// searchStats matches the stat table (PoB's sidebar list, power stats and groups) and, with a handle, every other
+// output key the build calculates, such as the warcry exert keys CalcOffence.lua sets only for builds that use them.
+func searchStats(in searchIn, env *calculator.Environment) []hit {
 	var out []hit
 	for _, k := range statKeys() {
 		info := statTable()[k]
@@ -416,6 +492,28 @@ func searchStats(in searchIn) []hit {
 			}
 			return row
 		}})
+	}
+	if env == nil || env.Player == nil {
+		return out
+	}
+	extra := map[string]float64{}
+	for k, v := range env.Player.Output {
+		extra[k] = v
+	}
+	if env.Minion != nil {
+		for k, v := range env.Minion.Output {
+			extra["Minion"+k] = v
+		}
+	}
+	for k, v := range extra {
+		if _, ok := statTable()[k]; ok {
+			continue
+		}
+		if r := rankMatch(in.Query, k, ""); r != rankNone {
+			out = append(out, hit{r, k, func() map[string]any {
+				return map[string]any{"key": k, "value": round(v), "group": "output"}
+			}})
+		}
 	}
 	return out
 }

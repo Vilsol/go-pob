@@ -3,6 +3,7 @@ package mcp
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/Vilsol/go-pob/builds"
@@ -110,7 +111,7 @@ func TestExportBuildWritesOneFilePerExport(t *testing.T) {
 	if err != nil || len(files) != 2 {
 		t.Fatalf("export files = %v (%v)", files, err)
 	}
-	if filepath.Base(files[0]) != "0001-"+h+"-r0.xml" || filepath.Base(files[1]) != "0002-"+h+"-r1.xml" {
+	if filepath.Base(files[0]) != s.exportTag+"-0001-"+h+"-r0.xml" || filepath.Base(files[1]) != s.exportTag+"-0002-"+h+"-r1.xml" {
 		t.Fatalf("export file names = %v", files)
 	}
 	written, err := os.ReadFile(files[1])
@@ -173,22 +174,53 @@ func TestToolsWaitForGameData(t *testing.T) {
 	}
 }
 
-func TestHandleLimitEvictsTheOldestUnexported(t *testing.T) {
+func TestHandleLimitEvictsTheLeastRecentlyUsedUnexported(t *testing.T) {
 	s := testServer(t)
-	first := call(t, s, "new_build", map[string]any{"class": "Witch"})["handle"].(string)
-	second := call(t, s, "new_build", map[string]any{"class": "Witch"})["handle"].(string)
-	call(t, s, "export_build", map[string]any{"handle": first})
+	busy := call(t, s, "new_build", map[string]any{"class": "Witch"})["handle"].(string)
+	idle := importFixture(t, s)
+	exported := call(t, s, "new_build", map[string]any{"class": "Witch"})["handle"].(string)
+	call(t, s, "export_build", map[string]any{"handle": exported})
+	var res map[string]any
 	for range maxHandles - 2 {
-		call(t, s, "new_build", map[string]any{"class": "Witch"})
+		res = call(t, s, "new_build", map[string]any{"class": "Witch"})
+		call(t, s, "get_stats", map[string]any{"handle": busy})
 	}
-	res := call(t, s, "new_build", map[string]any{"class": "Witch"})
 	if w, _ := res["server_warnings"].([]any); len(w) != 1 {
 		t.Fatalf("server_warnings = %v", res["server_warnings"])
 	}
-	if _, ok := s.handles[second]; ok {
-		t.Fatal("the oldest unexported handle was kept")
+	if _, ok := s.handles[busy]; !ok {
+		t.Fatal("the oldest but most recently used handle was evicted")
 	}
-	if _, ok := s.handles[first]; !ok {
+	if _, ok := s.handles[exported]; !ok {
 		t.Fatal("the exported handle was evicted")
+	}
+	e := callErr(t, s, "get_stats", map[string]any{"handle": idle})
+	if e.Code != CodeUnknownHandle || !strings.Contains(e.Message, "evicted") || !strings.Contains(e.Message, "came from "+fixture("3.xml")) ||
+		!strings.Contains(e.Hint, "import_build source="+fixture("3.xml")) {
+		t.Fatalf("evicted handle error: %s %q %q", e.Code, e.Message, e.Hint)
+	}
+	exported = call(t, s, "new_build", map[string]any{"class": "Witch"})["handle"].(string)
+	saved := call(t, s, "export_build", map[string]any{"handle": exported})["export_file"].(string)
+	s.handles[exported].exported = false
+	s.handles[exported].lastUsed = 0
+	call(t, s, "new_build", map[string]any{"class": "Witch"})
+	if e := callErr(t, s, "get_stats", map[string]any{"handle": exported}); !strings.Contains(e.Hint, "import_build source="+saved) {
+		t.Fatalf("an exported handle's eviction hint does not name its export: %q", e.Hint)
+	}
+}
+
+func TestExportBuildExplicitPathSkipsTheExportDir(t *testing.T) {
+	s := testServer(t)
+	h := importFixture(t, s)
+	path := filepath.Join(t.TempDir(), "chosen.xml")
+	res := call(t, s, "export_build", map[string]any{"handle": h, "path": path})
+	if _, err := os.Stat(path); err != nil {
+		t.Fatalf("the explicit path was not written: %v", err)
+	}
+	if files, _ := filepath.Glob(filepath.Join(s.opts.ExportDir, "*.xml")); len(files) != 0 {
+		t.Fatalf("an explicit path also wrote %v", files)
+	}
+	if f := res["files"].([]any); len(f) != 1 || f[0].(map[string]any)["path"] != path {
+		t.Fatalf("files = %v, want %s", f, path)
 	}
 }

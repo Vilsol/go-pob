@@ -91,7 +91,7 @@ func TestOptimizeCoordinateAscentIsDeterministicAndBudgeted(t *testing.T) {
 	}
 	first := call(t, s, "optimize", supportSpace(h, 7, 300))
 	space := first["space"].(map[string]any)
-	if space["method"] != "coordinate_ascent" || space["size"].(float64) <= exhaustiveLimit || first["proven_optimal"] != false {
+	if space["method"] != "coordinate_ascent" || space["size"].(float64) <= 300 || first["proven_optimal"] != false {
 		t.Fatalf("space = %v", space)
 	}
 	used := first["evaluations"].(map[string]any)["used"].(float64)
@@ -311,7 +311,7 @@ func TestOptimizePicksMasteryEffects(t *testing.T) {
 	var add []any
 	for _, r := range rows(res) {
 		a := r["choices"].([]any)[0].(map[string]any)["choice"].(map[string]any)["add"].([]any)
-		if strings.Contains(fmt.Sprint(a), "Mastery: ") {
+		if strings.Contains(fmt.Sprint(a), "Mastery (") {
 			top, add = r, a
 			break
 		}
@@ -330,7 +330,8 @@ func TestOptimizePicksMasteryEffects(t *testing.T) {
 			effect = eff
 			continue
 		}
-		others = append(others, map[string]any{"op": "allocate", "node": name})
+		id := name[strings.LastIndex(name, "(")+1 : len(name)-1]
+		others = append(others, map[string]any{"op": "allocate", "node": id})
 	}
 	if effect == "" {
 		t.Fatalf("best Life pick %v (effect %q)", add, effect)

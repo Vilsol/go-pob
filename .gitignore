@@ -156,3 +156,7 @@ testdata/corpus-[0-9]*
 testdata/oracle-[0-9]*
 testdata/corpus-poe2-*
 testdata/oracle-poe2-*
+
+# wrangler deploy caches
+/node_modules/
+workers/prices/.wrangler/

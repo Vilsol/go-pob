@@ -281,6 +281,9 @@ func applyBuildOp(ec *editCtx, op buildOp) *ToolError {
 		if op.Var == "" {
 			return invalidArg(op.Op+" needs var.", nil)
 		}
+		if op.Var == "customMods" {
+			return setCustomMods(ec, op)
+		}
 		o, e := resolveConfig(op.Var)
 		if e != nil {
 			return e
@@ -324,6 +327,28 @@ func applyBuildOp(ec *editCtx, op buildOp) *ToolError {
 	default:
 		return invalidArg(fmt.Sprintf("Unknown op %q.", op.Op), buildOps)
 	}
+	return nil
+}
+
+// setCustomMods sets the text of the first custom modifier block, as typing into ConfigTab's "Custom Modifiers"
+// box does; unset_config clears every block back to PoB's empty Default block.
+//
+//pob:block:src/Classes/ConfigTab.lua:924-935
+func setCustomMods(ec *editCtx, op buildOp) *ToolError {
+	b := ec.b
+	if op.Op == "unset_config" {
+		b.SetCustomModifierBlocks(nil)
+		ec.note("unset_config customMods")
+		return nil
+	}
+	text, ok := op.Value.(string)
+	if !ok {
+		return invalidArg("customMods takes a string: one modifier per line.", nil)
+	}
+	blocks := b.GetCustomModifierBlocks()
+	blocks[0].Text = text
+	b.SetCustomModifierBlocks(blocks)
+	ec.note("set_config customMods")
 	return nil
 }
 

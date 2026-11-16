@@ -56,7 +56,7 @@ func TestStdioEndToEnd(t *testing.T) {
 		names = append(names, tool.Name)
 	}
 	want := []string{"compare_builds", "edit_build", "edit_items", "edit_skills", "edit_tree", "export_build", "get_build",
-		"get_stats", "import_build", "new_build", "optimize", "rank_candidates", "revert_build", "search_data"}
+		"get_stats", "import_build", "new_build", "optimize", "price_build", "rank_candidates", "revert_build", "scan_build", "search_data"}
 	slices.Sort(names)
 	if !slices.Equal(names, want) {
 		t.Fatalf("tools = %v", names)

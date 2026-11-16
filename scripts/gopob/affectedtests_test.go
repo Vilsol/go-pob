@@ -84,7 +84,7 @@ func atListedForTest(t *testing.T) []string {
 func TestAffectedTestsFrontendAndRootTestdataSelectNone(t *testing.T) {
 	t.Parallel()
 	layout := "frontend/src/routes/+layout" + ".svelte"
-	sel := atRealSelect(t, layout, "frontend/e2e/load/cert.go", "testdata/corpus-x/1"+".xml")
+	sel := atRealSelect(t, layout, "frontend/e2e/load/cert.go", "testdata/corpus-x/unreferenced"+".xml")
 	if len(sel.picked) != 0 {
 		t.Fatalf("picked %v", atPicked(sel))
 	}

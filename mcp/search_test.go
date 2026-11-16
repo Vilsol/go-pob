@@ -1,6 +1,7 @@
 package mcp
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -70,5 +71,37 @@ func TestSearchDataRefusals(t *testing.T) {
 	}
 	if e := callErr(t, s, "search_data", map[string]any{"kind": "affix", "base": "Astral Bucket"}); e.Code != CodeNotFound || len(e.DidYouMean) == 0 {
 		t.Fatalf("misspelt base: %s %v", e.Code, e.DidYouMean)
+	}
+}
+
+// TestSupportSearchCompatibilityNeedsAnActiveSkill: before the build has an active skill no support is marked
+// incompatible; once it has one, its supports are marked compatible.
+func TestSupportSearchCompatibilityNeedsAnActiveSkill(t *testing.T) {
+	s := testServer(t)
+	h := call(t, s, "new_build", map[string]any{"class": "Marauder"})["handle"].(string)
+	args := map[string]any{"kind": "support", "query": "melee physical damage", "handle": h}
+	if f := firstResult(call(t, s, "search_data", args)); f["name"] != "Melee Physical Damage" || f["compatible"] != nil {
+		t.Fatalf("no skill yet: %v", f)
+	}
+	call(t, s, "edit_skills", map[string]any{"handle": h, "ops": ops(map[string]any{"op": "add_group", "gems": []string{"Sunder"}})})
+	if f := firstResult(call(t, s, "search_data", args)); f["compatible"] != true {
+		t.Fatalf("with Sunder: %v", f)
+	}
+}
+
+// TestSearchAffixBenchAndVeiled: kind=affix lists the base's crafting bench and veiled mods beside its prefixes and
+// suffixes, as PoB's "Add modifier" does.
+func TestSearchAffixBenchAndVeiled(t *testing.T) {
+	s := testServer(t)
+	res := assertSize(t, s, "search_data", map[string]any{"kind": "affix", "base": "Heavy Belt", "query": "lucky while focused"}, capSearch)
+	types := map[string]bool{}
+	for _, r := range res["results"].([]any) {
+		row := r.(map[string]any)
+		if strings.HasPrefix(row["label"].(string), "Your Critical Strike Chance is Lucky while Focused") {
+			types[row["type"].(string)] = true
+		}
+	}
+	if !types["Crafted Suffix"] || !types["Veiled Suffix"] {
+		t.Fatalf("bench and veiled rows: %v", res["results"])
 	}
 }

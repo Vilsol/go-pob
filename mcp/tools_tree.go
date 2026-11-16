@@ -208,6 +208,22 @@ func resolveNode(b *pob.PathOfBuilding, v pob.TreeVersion, raw json.RawMessage, 
 		}
 		return treeNode{}, notFound("passive node with id", strconv.FormatInt(id, 10), nil, "Find ids with search_data kind=node.")
 	}
+	if class, asc, named := classOrAscendancyNamed(name); named {
+		own := string(b.Build.AscendClassName)
+		var foreign []treeNode
+		list = slices.DeleteFunc(slices.Clone(list), func(t treeNode) bool {
+			if t.Ascendancy == "" || t.Ascendancy == own {
+				return false
+			}
+			if norm(t.Name) == norm(name) {
+				foreign = append(foreign, t)
+			}
+			return true
+		})
+		if !slices.ContainsFunc(list, func(t treeNode) bool { return norm(t.Name) == norm(name) }) {
+			return treeNode{}, classNameErr(name, class, asc, foreign)
+		}
+	}
 	_, ok, hits := resolveName(name, list, func(t treeNode) string { return t.Name }, func(t treeNode) string { return strings.Join(t.Stats, " ") })
 	if !ok {
 		if len(hits) > 0 {
@@ -226,6 +242,20 @@ func resolveNode(b *pob.PathOfBuilding, v pob.TreeVersion, raw json.RawMessage, 
 			same = append(same, h)
 		}
 	}
+	// another ascendancy's node is never allocatable, so it only stands in when nothing else carries the name
+	if own := slices.DeleteFunc(slices.Clone(same), func(t treeNode) bool {
+		return t.Ascendancy != "" && t.Ascendancy != string(b.Build.AscendClassName)
+	}); len(own) > 0 {
+		same = own
+	}
+	if slices.ContainsFunc(same, func(t treeNode) bool { return t.Ascendancy != same[0].Ascendancy }) {
+		e := errf(CodeAmbiguous, "%q names both a passive tree node and an ascendancy node.", name)
+		for _, h := range same {
+			e.Candidates = append(e.Candidates, map[string]any{"id": h.ID, "name": h.Name, "type": h.Type, "ascendancy": h.Ascendancy})
+		}
+		e.Hint = "Retry with the id of the one you mean."
+		return treeNode{}, e
+	}
 	if len(same) == 1 || plan == nil {
 		return same[0], nil
 	}
@@ -236,6 +266,40 @@ func resolveNode(b *pob.PathOfBuilding, v pob.TreeVersion, raw json.RawMessage, 
 		}
 	}
 	return best, nil
+}
+
+// classOrAscendancyNamed reports the class, and the ascendancy when it is one, that name spells.
+func classOrAscendancyNamed(name string) (pob.ClassName, pob.AscendancyName, bool) {
+	q := norm(name)
+	for id, ascs := range pob.ClassAscendancyNames() {
+		if norm(string(pob.ClassNameByID[id])) == q {
+			return pob.ClassNameByID[id], "", true
+		}
+		for _, a := range ascs {
+			if norm(string(a)) == q {
+				return pob.ClassNameByID[id], a, true
+			}
+		}
+	}
+	return "", "", false
+}
+
+// classNameErr answers a node name that only spells a class or ascendancy with the op that sets it.
+func classNameErr(name string, class pob.ClassName, asc pob.AscendancyName, foreign []treeNode) *ToolError {
+	var e *ToolError
+	if asc == "" {
+		e = errf(CodeAmbiguous, "%q names a class, not a passive node this build can allocate.", name)
+		e.Candidates = append(e.Candidates, map[string]any{"op": "set_class", "class": string(class)})
+		e.Hint = fmt.Sprintf("Set it with edit_tree op=set_class class=%s.", class)
+	} else {
+		e = errf(CodeAmbiguous, "%q names an ascendancy, not a passive node this build can allocate.", name)
+		e.Candidates = append(e.Candidates, map[string]any{"op": "set_ascendancy", "ascendancy": string(asc), "class": string(class)})
+		e.Hint = fmt.Sprintf("Set it with edit_tree op=set_ascendancy ascendancy=%s (op=set_class class=%s also switches the class to %s).", asc, asc, class)
+	}
+	for _, h := range foreign {
+		e.Candidates = append(e.Candidates, map[string]any{"id": h.ID, "name": h.Name, "type": h.Type, "ascendancy": h.Ascendancy})
+	}
+	return e
 }
 
 type treeOp struct {
@@ -290,18 +354,30 @@ func applyTreeOp(ec *editCtx, op treeOp) *ToolError {
 		if e != nil {
 			return e
 		}
-		return allocateNode(ec, n, op.Path == nil || *op.Path, plan)
+		withPath := op.Path == nil || *op.Path
+		if e := allocateNode(ec, n, withPath, plan); e != nil || withPath {
+			return e
+		}
+		opIndex := ec.op
+		ec.verify = append(ec.verify, func(env *calculator.Environment) *ToolError {
+			return checkConnected(env, n, opIndex)
+		})
 	case "deallocate":
 		n, e := resolveNode(b, v, op.Node, nil)
 		if e != nil {
 			return e
 		}
 		if !slices.Contains(b.Build.PassiveNodes, n.ID) {
-			return errf(CodeInvalidValue, "%s (id %d) is not allocated.", n.Name, n.ID)
+			ec.note(fmt.Sprintf("%s (id %d) was not allocated; nothing removed", n.Name, n.ID))
+			return nil
 		}
 		cut := []int64{n.ID}
+		deps := data.TreeVersions[v].CalculateDependentNodes(slices.Clone(b.Build.PassiveNodes), n.ID, classRoots(b, v))
 		if op.WithDependents == nil || *op.WithDependents {
-			cut = append(cut, data.TreeVersions[v].CalculateDependentNodes(slices.Clone(b.Build.PassiveNodes), n.ID, classRoots(b, v))...)
+			cut = append(cut, deps...)
+		} else if len(deps) > 0 {
+			//pob:block:src/Classes/PassiveSpec.lua:311
+			ec.note(fmt.Sprintf("with_dependents:false leaves %d nodes cut off from the class start; PoB drops them from the calculation", len(deps)))
 		}
 		b.DeallocateNodes(cut)
 		if len(cut) > 1 {
@@ -337,6 +413,10 @@ func applyTreeOp(ec *editCtx, op treeOp) *ToolError {
 		before := len(b.Build.PassiveNodes)
 		calculator.SelectClass(b, class)
 		ec.note(fmt.Sprintf("set_class %s (%d of %d allocated nodes kept)", class, len(b.Build.PassiveNodes), before))
+		if _, asc, _ := classOrAscendancyNamed(op.Class); asc != "" && op.Ascendancy == "" {
+			calculator.SelectAscendClass(b, asc)
+			ec.note("set_ascendancy " + string(asc))
+		}
 	case "set_ascendancy":
 		asc, e := resolveAscendancy(b.Build.ClassName, op.Ascendancy)
 		if e != nil {
@@ -389,9 +469,39 @@ func allocateNode(ec *editCtx, n treeNode, withPath bool, plan pathPlan) *ToolEr
 		ec.note(fmt.Sprintf("allocate %s (id %d)", n.Name, n.ID))
 	}
 	if n.Type == "mastery" {
-		ec.hints = append(ec.hints, "A mastery counts no points until an effect is picked: edit_tree op=set_mastery node=<id> effect=<text>.")
+		id := n.ID
+		ec.after = append(ec.after, func(*calculator.Environment) {
+			spec := activeSpec(ec.b)
+			if spec == nil || !slices.Contains(ec.b.Build.PassiveNodes, id) {
+				return
+			}
+			if slices.ContainsFunc(pob.SpecMasterySelections(*spec), func(m pob.MasterySelection) bool { return m.Node == id }) {
+				return
+			}
+			ec.hints = append(ec.hints, "A mastery counts no points until an effect is picked: edit_tree op=set_mastery node=<id> effect=<text>.")
+		})
 	}
 	return nil
+}
+
+// checkConnected refuses a path:false allocation the calculation dropped as cut off from the class start
+// (PassiveSpec.lua:311); a mastery without an effect is dropped for that reason instead and has its own hint.
+func checkConnected(env *calculator.Environment, n treeNode, opIndex int) *ToolError {
+	b := env.Build
+	if !slices.Contains(b.Build.PassiveNodes, n.ID) {
+		return nil
+	}
+	if _, ok := env.AllocatedNodes[strconv.FormatInt(n.ID, 10)]; ok {
+		return nil
+	}
+	if spec := activeSpec(b); n.Type == "mastery" && (spec == nil || !slices.ContainsFunc(pob.SpecMasterySelections(*spec), func(m pob.MasterySelection) bool { return m.Node == n.ID })) {
+		return nil
+	}
+	e := errf(CodeNotReachable, "%s (id %d) is not connected to the allocated tree, so the calculation drops it.", n.Name, n.ID)
+	e.Reason = "path:false allocates only the node; it must touch the allocated tree once the batch is applied"
+	e.Hint = "Nothing was applied; omit path (or path:true) to allocate the connecting path too, or allocate the connecting nodes in the same batch."
+	e.atOp(opIndex)
+	return e
 }
 
 func resolveMasteryEffect(n treeNode, effect string) (data.MasteryEffect, *ToolError) {

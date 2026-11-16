@@ -2,6 +2,7 @@ package mcp
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -13,8 +14,9 @@ import (
 )
 
 const (
-	maxHandles   = 16
-	maxSnapshots = 50
+	maxHandles     = 128
+	maxWarmHandles = 8
+	maxSnapshots   = 50
 )
 
 type revision struct {
@@ -29,6 +31,40 @@ type handle struct {
 	cur      int
 	exported bool
 	versions map[string]any
+	lastUsed int64
+	// source names where the build came from, again the call that recreates it (empty when that needs the original
+	// code or XML) and saved the last file export_build wrote of it
+	source   string
+	again    string
+	saved    string
+	savedRev int
+	// parents holds the revision an edit made after a revert built on; every other revision's is the one before it
+	parents map[int]int
+}
+
+// parent is the revision rev was edited from, -1 for revision 0.
+func (h *handle) parent(rev int) int {
+	if p, ok := h.parents[rev]; ok {
+		return p
+	}
+	return rev - 1
+}
+
+type evictedHandle struct {
+	why    string
+	source string
+	hint   string
+}
+
+// reimport says how to get an evicted handle's build back in one call.
+func (h *handle) reimport() string {
+	switch {
+	case h.saved != "":
+		return fmt.Sprintf("Re-import its last export (revision %d): import_build source=%s.", h.savedRev, h.saved)
+	case h.again != "":
+		return "Re-create it with " + h.again + "; edits made on the handle are not in it."
+	}
+	return "Re-import the build with import_build from " + h.source + "."
 }
 
 func (h *handle) latest() int {
@@ -43,13 +79,46 @@ func (s *Server) get(id string) (*handle, *ToolError) {
 	h, ok := s.handles[id]
 	if !ok {
 		e := errf(CodeUnknownHandle, "No live build handle %q.", id)
+		if ev, gone := s.evicted[id]; gone {
+			e.Message = fmt.Sprintf("Build handle %q was evicted: %s It came from %s.", id, ev.why, ev.source)
+			e.Hint = ev.hint + " Continue on the new handle."
+		}
 		e.ValidHandles = s.handleIDs()
-		if len(e.ValidHandles) == 0 {
+		if len(e.ValidHandles) == 0 && e.Hint == "" {
 			e.Hint = "Create one with new_build or import_build."
 		}
 		return nil, e
 	}
+	s.touch(h)
 	return h, nil
+}
+
+// touch marks h as the most recently used handle and drops the cached calculations of handles outside the
+// maxWarmHandles most recently used; their snapshots stay and recalculate on next use.
+func (s *Server) touch(h *handle) {
+	s.useSeq++
+	h.lastUsed = s.useSeq
+	if len(s.order) <= maxWarmHandles {
+		return
+	}
+	byUse := s.handlesByUse()
+	for _, c := range byUse[:len(byUse)-maxWarmHandles] {
+		for _, r := range c.revs {
+			if r != nil {
+				r.env = nil
+			}
+		}
+	}
+}
+
+// handlesByUse lists live handles from least to most recently used.
+func (s *Server) handlesByUse() []*handle {
+	out := make([]*handle, 0, len(s.order))
+	for _, id := range s.order {
+		out = append(out, s.handles[id])
+	}
+	sort.SliceStable(out, func(i, j int) bool { return out[i].lastUsed < out[j].lastUsed })
+	return out
 }
 
 func (h *handle) check(rev int) *ToolError {
@@ -107,11 +176,47 @@ func serialize(b *pob.PathOfBuilding) ([]byte, *ToolError) {
 
 // commit appends b as the handle's next revision and makes it current.
 func (s *Server) commit(h *handle, b *pob.PathOfBuilding) (int, *ToolError) {
-	xml, e := serialize(b)
+	xml, env, e := calculate(b)
 	if e != nil {
 		return 0, e
 	}
-	h.revs = append(h.revs, &revision{xml: xml})
+	return s.commitCalculated(h, xml, env)
+}
+
+// calculate serializes b and calculates the snapshot, applying the level estimate a build in characterLevelAutoMode
+// follows (Build.lua:910-914: PoB sets the level the allocated points need and recalculates).
+func calculate(b *pob.PathOfBuilding) ([]byte, *calculator.Environment, *ToolError) {
+	xml, e := serialize(b)
+	if e != nil {
+		return nil, nil, e
+	}
+	h := &handle{revs: []*revision{{xml: xml}}}
+	env, e := h.envAt(0)
+	if e != nil || !b.Build.CharacterLevelAutoMode {
+		return xml, env, e
+	}
+	level := pointsOf(env).LevelNeeded
+	if level == b.Build.Level {
+		return xml, env, nil
+	}
+	b.Build.Level = level
+	if xml, e = serialize(b); e != nil {
+		return nil, nil, e
+	}
+	h = &handle{revs: []*revision{{xml: xml}}}
+	env, e = h.envAt(0)
+	return xml, env, e
+}
+
+// commitCalculated appends a serialized build, with its environment when the caller already calculated it.
+func (s *Server) commitCalculated(h *handle, xml []byte, env *calculator.Environment) (int, *ToolError) {
+	if h.cur != h.latest() {
+		if h.parents == nil {
+			h.parents = map[int]int{}
+		}
+		h.parents[len(h.revs)] = h.cur
+	}
+	h.revs = append(h.revs, &revision{xml: xml, env: env})
 	h.cur = h.latest()
 	for i := range h.revs {
 		if i < h.latest()-maxSnapshots+1 && i != 0 {
@@ -126,26 +231,30 @@ func (s *Server) commit(h *handle, b *pob.PathOfBuilding) (int, *ToolError) {
 	return h.cur, nil
 }
 
-func (s *Server) addHandle(b *pob.PathOfBuilding, name string, versions map[string]any) (*handle, *ToolError) {
-	xml, e := serialize(b)
+func (s *Server) addHandle(b *pob.PathOfBuilding, name, source, again string, versions map[string]any) (*handle, *ToolError) {
+	xml, env, e := calculate(b)
 	if e != nil {
 		return nil, e
 	}
+	s.nextHandle++
+	id := "b" + strconv.Itoa(s.nextHandle)
 	if len(s.order) >= maxHandles {
-		evict := s.order[0]
-		for _, id := range s.order {
-			if !s.handles[id].exported {
-				evict = id
+		byUse := s.handlesByUse()
+		evict := byUse[0]
+		for _, c := range byUse {
+			if !c.exported {
+				evict = c
 				break
 			}
 		}
-		s.evictHandle(evict)
-		s.pendingWarnings = append(s.pendingWarnings, fmt.Sprintf("Handle %s was evicted (max %d live handles).", evict, maxHandles))
+		s.evictHandle(evict.id)
+		s.evicted[evict.id] = evictedHandle{fmt.Sprintf("it was the least recently used of %d live handles (the per-process limit) when %s was created.", maxHandles, id), evict.source, evict.reimport()}
+		s.pendingWarnings = append(s.pendingWarnings, fmt.Sprintf("Handle %s was evicted: least recently used of %d live handles.", evict.id, maxHandles))
 	}
-	s.nextHandle++
-	h := &handle{id: "b" + strconv.Itoa(s.nextHandle), name: name, revs: []*revision{{xml: xml}}, versions: versions}
+	h := &handle{id: id, name: name, revs: []*revision{{xml: xml, env: env}}, versions: versions, source: source, again: again}
 	s.handles[h.id] = h
 	s.order = append(s.order, h.id)
+	s.touch(h)
 	if _, e := h.envAt(0); e != nil {
 		return nil, e
 	}
@@ -202,8 +311,8 @@ func pointsOf(env *calculator.Environment) pointsInfo {
 	return pointsInfo{Used: used, Available: max(level-1, 0) + 23 + extra, AscUsed: asc, LevelNeeded: p.Level, extraWarnings: p.Warnings}
 }
 
-// warningsOf assembles PoB's sidebar warnings (Build.lua:907-909, 1778-1831) and the attribute/pool lines of
-// BuildDisplayStats.lua that warn.
+// warningsOf assembles PoB's sidebar warnings (Build.lua:907-909, 1778-1831), the attribute/pool lines of
+// BuildDisplayStats.lua that warn, then validationWarnings and unparsedWarnings.
 func warningsOf(env *calculator.Environment) []string {
 	var out []string
 	push := func(t string) {
@@ -264,6 +373,21 @@ func warningsOf(env *calculator.Environment) []string {
 	for _, l := range pointsOf(env).extraWarnings {
 		push(l)
 	}
+	for _, l := range validationWarnings(env) {
+		push(l)
+	}
+	for _, l := range gemWarnings(env.Build) {
+		push(l)
+	}
+	for _, l := range totemWarnings(env) {
+		push(l)
+	}
+	for _, l := range unparsedWarnings(env) {
+		push(l)
+	}
+	if l := customModDefences(env); l != "" {
+		push(l)
+	}
 	return out
 }
 
@@ -289,6 +413,11 @@ func gemIsSupport(g pob.Gem) bool {
 	}
 	if row, ok := raw.Gems[g.GemID]; ok {
 		return row.Tags["support"]
+	}
+	if g.GemID == "" && g.SkillID == "" {
+		if row, ok := gemRowByName(g.NameSpec); ok {
+			return row.Tags["support"]
+		}
 	}
 	return strings.HasPrefix(g.SkillID, "Support")
 }
