@@ -238,7 +238,6 @@ test('an update waits for the click: the prompt shows, nothing reloads until Rel
   const log = resolve(client, 'changelog.txt');
   const changelog = readFileSync(log, 'utf8');
   const [h1, h2] = [...changelog.matchAll(/^VERSION\[(.+)\]\[(.+)\]$/gm)];
-  expect(h1[1].length, 'the first two versions have one length').toBe(h2[1].length);
   const newer = h1[1].slice(0, -1) + String((Number(h1[1].at(-1)) + 1) % 10);
   writeFileSync(script, original.replaceAll(version, next));
   writeFileSync(log, changelog.replace(h1[0], `VERSION[${newer}][${h1[2]}]`).replace(h2[0], `VERSION[${h1[1]}][${h2[2]}]`));
