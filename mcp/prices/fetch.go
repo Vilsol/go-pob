@@ -86,7 +86,7 @@ func (f *Live) overview(league string, c Category) ([]byte, time.Time, error) {
 
 func safeName(s string) string {
 	return strings.Map(func(r rune) rune {
-		if r == '/' || r == '\\' || r == '.' {
+		if strings.ContainsRune(`/\\.:*?"<>|`, r) {
 			return '_'
 		}
 		return r
