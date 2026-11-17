@@ -12,7 +12,7 @@ func TestSelfCurseEffectClampsAtZero(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	env := corpusEnvForLoadedData(t, "1308-hierophant-flame-dash.xml")
 	for _, r := range env.ModDB.Tabulate(mod.TypeBase, nil, "FireResist") {

@@ -7,7 +7,7 @@ import (
 
 // TestBreakdownCFloatSpelling: LuaJIT's string.format spells infinities and NaN as C does; the lines are the pin's CALCS pass.
 func TestBreakdownCFloatSpelling(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	for _, tc := range []struct {
 		build, key string
 		want       []string

@@ -9,7 +9,7 @@ import (
 
 // TestModTagListRows0907 pins the modTagList rows found by re-deriving the two-sided name-set diff against ModParser.lua:1319-2008.
 func TestModTagListRows0907(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("10% increased Damage per Power Charge", false); e == nil ||
 		len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {
@@ -110,7 +110,7 @@ func collectCanonTags(mods []mod.Mod) []string {
 
 // TestMeleeKillRowCarriesTheMeleeFlag is split out because ModParser.lua:1800 is the only row in the batch whose payload is a FLAG rather than a tag.
 func TestMeleeKillRowCarriesTheMeleeFlag(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	e := ParseMod("5% chance to Gain Unholy Might for 4 seconds on Melee Kill", false)
 	if e == nil || len(e.ModList) == 0 {
 		t.Fatal("line dropped whole")

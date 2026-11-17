@@ -6,7 +6,7 @@ import (
 
 // TestUnknownBraceTagsDoNotEatTheModLine pins Item.lua:849-876.
 func TestUnknownBraceTagsDoNotEatTheModLine(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const base = "Rarity: RARE\nTest Item\nVaal Regalia\n"
 

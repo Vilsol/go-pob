@@ -9,7 +9,7 @@ import (
 
 // TestPactDamageStatMapStillEmitsTheNestedMod refuses if the producer this consumer was written for ever leaves the generated table again.
 func TestPactDamageStatMapStillEmitsTheNestedMod(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	for _, tc := range []struct {
 		skill, stat, name string

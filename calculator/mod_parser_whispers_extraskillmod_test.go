@@ -11,7 +11,7 @@ import (
 //
 //pob:block:src/Modules/ModParser.lua:4629-4632
 func TestMinionWhispersEmitsExtraSkillMod(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	ctl := ParseMod("Minions' Base Attack Critical Strike Chance is equal to the Critical Strike Chance of your Main Hand Weapon", false)
 	if ctl == nil || len(ctl.ModList) != 1 || ctl.ModList[0].Name() != "MinionModifier" {

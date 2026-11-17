@@ -9,7 +9,7 @@ import (
 
 // TestTriggerAndBuffWorklistRowsParse pins the second half of the parser worklist: five item-granted trigger supports, two buff rows and one no-op tag.
 func TestTriggerAndBuffWorklistRowsParse(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("+10 to Strength", false); e == nil || len(e.ModList) == 0 ||
 		strings.TrimSpace(modExtra(e)) != "" {

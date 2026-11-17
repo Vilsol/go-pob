@@ -9,7 +9,7 @@ import (
 //
 //pob:src/Modules/CalcTriggers.lua:1519-1532
 func TestTriggerCastOnBlockUniqueCalcsPass(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	for _, tc := range []struct {
 		build string
 		want  map[string]float64

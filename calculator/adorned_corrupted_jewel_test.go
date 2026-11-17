@@ -15,7 +15,7 @@ import (
 //	CalcSetup.lua:1135   an arm of the item-scaling elseif chain reads the multiplier and scales
 func TestAdornedCorruptedJewelEffect(t *testing.T) {
 	t.Run("the parser row produces the jewel data", func(t *testing.T) {
-		requireGameData(t, "3.29")
+		requireGameData(t, "3.30")
 
 		e := ParseMod("100% increased Effect of Jewel Socket Passive Skills containing Corrupted Magic Jewels", false)
 		if e == nil {
@@ -41,7 +41,7 @@ func TestAdornedCorruptedJewelEffect(t *testing.T) {
 		if os.Getenv("CORPUS") != "true" {
 			t.Skip("set CORPUS=true")
 		}
-		requireGameData(t, "3.29")
+		requireGameData(t, "3.30")
 		dir, _ := corpusNamesForLoadedData(t)
 		file, err := os.ReadFile(filepath.Join(dir, "0282-chieftain-incinerate-of-venting.xml"))
 		if err != nil {

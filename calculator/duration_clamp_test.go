@@ -9,7 +9,7 @@ import (
 
 // TestDurationModifierIsClamped pins `durationMod = m_max(durationMod, 0)`.
 func TestDurationModifierIsClamped(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	db := moddb.NewModDB()
 	db.AddMod(mod.NewFloat("Duration", mod.TypeIncrease, -150))

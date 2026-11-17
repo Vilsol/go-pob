@@ -7,7 +7,7 @@ import (
 
 // TestEquippedAllHaveDefenceConditionsParse pins the two `if equipped helmet, body armour, gloves, and boots all have <defence>` conditions.
 func TestEquippedAllHaveDefenceConditionsParse(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("+1% to all maximum Elemental Resistances", false); e == nil ||
 		len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {

@@ -9,7 +9,7 @@ import (
 
 // TestGainFlagFormParses pins the three FLAG forms of ModParser.lua:149-153 that were absent here: `^have `, `^gain ` and `^you gain `.
 func TestGainFlagFormParses(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	for _, tc := range []struct {
 		line string

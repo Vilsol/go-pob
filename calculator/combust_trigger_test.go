@@ -11,7 +11,7 @@ func TestCombustTriggersFromInfernalCryUptime(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	build := loadCorpusBuild(t, "0995-berserker-earthshatter-17.xml")
 	env := (&Calculator{PoB: build}).BuildOutput(OutputModeMain)
 

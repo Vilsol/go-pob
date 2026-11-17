@@ -8,7 +8,7 @@ import (
 
 // TestNameSpecOnlyGemResolves: a gem saved with only nameSpec is matched by FindSkillGem (SkillsTab.lua:1076-1100, :1166-1174).
 func TestNameSpecOnlyGemResolves(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	for name, want := range map[string]string{
 		"Mana-Infused Staff": "Metadata/Items/Gems/SkillGemManaInfusedStaff",
 		"fireball":           "Metadata/Items/Gems/SkillGemFireball",
@@ -27,7 +27,7 @@ func TestNameSpecOnlyGemResolves(t *testing.T) {
 }
 
 func TestManaInfusedStaffNameSpecCorpus(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	env := corpusEnvForLoadedData(t, "0954-elementalist-vaal-ice-nova-5.xml")
 	for k, want := range map[string]float64{"BlockChance": 49, "SpellBlockChance": 75, "ManaUnreserved": 99} {
 		if got := env.Player.Output[k]; got != want {

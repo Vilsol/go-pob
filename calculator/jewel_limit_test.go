@@ -10,7 +10,7 @@ import (
 
 // TestJewelLimitDisablesTheExtraSocket pins CalcSetup.lua:760-771.
 func TestJewelLimitDisablesTheExtraSocket(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const watchersEye = "Rarity: UNIQUE\nWatcher's Eye\nPrismatic Jewel\nLimited to: 1\n" +
 		"Variant: Anger\n+5% to Critical Strike Multiplier\n"

@@ -16,7 +16,7 @@ func TestItemModDropVsPoB(t *testing.T) {
 	if verdictPath == "" || casesPath == "" {
 		t.Skip("set POB_VERDICT=<pob_verdict.json> and DROP_CASES=<cases.json>")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	var verdicts []struct {
 		Line   string   `json:"line"`

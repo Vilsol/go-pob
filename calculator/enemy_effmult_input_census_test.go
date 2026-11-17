@@ -22,7 +22,7 @@ func TestEnemyEffMultInputCensus(t *testing.T) {
 	if listFile == "" {
 		t.Skip("set BUILDS=<file of build names> (the EffMult-first-diverging set)")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	dir := diagDumpsDir(t)
 
 	raw, err := os.ReadFile(listFile)

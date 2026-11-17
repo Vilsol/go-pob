@@ -13,7 +13,7 @@ import (
 // 10031 and mastery 41415 off the class start. The pinned PoB prunes them at load: Life 5661, the same as with the
 // three removed by hand; with 6712 kept it is 6633.
 func TestOrphanedNodesLeaveTheCalculation(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	file, err := os.ReadFile("testdata/orphaned-nodes/life-node-removed.xml")
 	if err != nil {
 		t.Fatal(err)

@@ -7,7 +7,7 @@ import (
 
 // TestPerElementalResistancePerStatParses pins ModParser.lua:1520-1522.
 func TestPerElementalResistancePerStatParses(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("+5% to Fire Resistance per 1% Chaos Resistance", false); e == nil ||
 		len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {

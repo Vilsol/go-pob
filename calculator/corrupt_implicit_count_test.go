@@ -4,7 +4,7 @@ import "testing"
 
 // TestCorruptImplicitCount pins Item.lua:1640, :2281-2284 and ModParser.lua:5940-5941 (upstream #10206).
 func TestCorruptImplicitCount(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	item := &Item{}
 	item.ParseRaw(`Rarity: UNIQUE
@@ -42,7 +42,7 @@ Corrupted`)
 
 // TestArmourDataCarriesBaseDefences pins Item.lua:2388-2394 (upstream #10210): the unscaled base roll beside each defence.
 func TestArmourDataCarriesBaseDefences(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	item := &Item{}
 	item.ParseRaw("Rarity: RARE\nX\nGlorious Plate\nArmour: 1000\nArmourBasePercentile: 0.5\n100% increased Armour")

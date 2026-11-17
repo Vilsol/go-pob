@@ -12,7 +12,7 @@ func TestSourcelessModCensus(t *testing.T) {
 	if os.Getenv("PROBE") != "true" {
 		t.Skip("set PROBE=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	for _, build := range []string{"0001-necromancer-unknown.xml", "0002-pathfinder-unknown.xml"} {
 		env := corpusEnvForLoadedData(t, build)

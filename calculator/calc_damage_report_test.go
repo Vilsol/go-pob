@@ -18,7 +18,7 @@ import (
 //	pin:113      local more = skillModList:More(cfg, unpack(modNames))
 func TestCalcDamageMatchesThePin(t *testing.T) {
 	t.Run("the generic min/max attack damage rows parse", func(t *testing.T) {
-		requireGameData(t, "3.29")
+		requireGameData(t, "3.30")
 
 		for text, want := range map[string]string{
 			"20% more Minimum Attack Damage": "MinDamage",
@@ -74,7 +74,7 @@ func assertBuildStats(t *testing.T, name string, stats []string, guard func(*tes
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	oracle, err := oracleForLoadedData()
 	if err != nil {
@@ -111,7 +111,7 @@ func assertBuildStats(t *testing.T, name string, stats []string, guard func(*tes
 
 // TestVolatilityStatMapStillProducesGenericMore refuses if the producer this consumer was written for ever disappears from the emitted tables.
 func TestVolatilityStatMapStillProducesGenericMore(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	found := map[string]bool{}
 	for _, perSkill := range raw2.SkillStatMaps {

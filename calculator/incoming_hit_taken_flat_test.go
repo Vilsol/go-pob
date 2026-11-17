@@ -8,7 +8,7 @@ import (
 // TestIncomingHitBlockMatchesThePin pins CalcDefence.lua:1961 and :1976-1984.
 func TestIncomingHitBlockMatchesThePin(t *testing.T) {
 	t.Run("the four skipped damage-taken rows parse", func(t *testing.T) {
-		requireGameData(t, "3.29")
+		requireGameData(t, "3.30")
 
 		for text, want := range map[string]string{
 			"-150 Physical Damage taken from Projectile Attacks":     "PhysicalDamageTakenFromProjectileAttacks",

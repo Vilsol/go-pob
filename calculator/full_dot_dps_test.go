@@ -54,7 +54,7 @@ func TestFullDotDPSAgrees(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	c := corpusWalkCheck[*fullDotDPSCheck](t)
 	nonzeroSeen, nonzeroOK, zeroSeen, zeroOK, controlLost := c.nonzeroSeen, c.nonzeroOK, c.zeroSeen, c.zeroOK, c.controlLost

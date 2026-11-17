@@ -7,7 +7,7 @@ import (
 
 // TestMinionLifeRecomputedAfterResistances: a minion's life/mana is recomputed once its resistances exist.
 func TestMinionLifeRecomputedAfterResistances(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	env := corpusEnvForLoadedData(t, "15406-variant-15400.toxic-rain-sporeburst.xml")
 	if env.Minion == nil {
 		t.Fatalf("fixture premise moved: no minion")

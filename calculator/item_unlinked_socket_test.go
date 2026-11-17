@@ -8,7 +8,7 @@ import (
 
 // TestUnlinkedSocketMultiplier covers Item.lua:2222-2228 and its consumer at ModParser.lua:1440.
 func TestUnlinkedSocketMultiplier(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	unlinkedFor := func(sockets string) (float64, bool) {
 		t.Helper()

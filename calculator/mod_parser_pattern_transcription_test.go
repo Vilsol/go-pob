@@ -9,7 +9,7 @@ import (
 
 // TestPatternTranscriptionAgainstPin pins the rows a mechanical sweep of THIS FILE's table keys against the pinned ModParser.lua found to differ from upstream in OPTIONALITY or CARDINALITY.
 func TestPatternTranscriptionAgainstPin(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("+10 to Strength", false); e == nil || len(e.ModList) == 0 ||
 		strings.TrimSpace(modExtra(e)) != "" {

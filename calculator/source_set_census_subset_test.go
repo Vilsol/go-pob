@@ -39,7 +39,7 @@ func TestSourceSetCensusSubset(t *testing.T) {
 		t.Fatalf("REFUSING: CENSUS_ONLY %s named no builds", listPath)
 	}
 
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	oracle, err := oracleForLoadedData()
 	if err != nil {
 		t.Fatalf("oracle: %v", err)

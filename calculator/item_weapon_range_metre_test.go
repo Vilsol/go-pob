@@ -7,7 +7,7 @@ import (
 
 // TestWeaponRangeMetreScalesByTen covers Item.lua:2248's `10 * calcLocal(modList, "WeaponRangeMetre", "BASE", 0)` term, which this port dropped entirely.
 func TestWeaponRangeMetreScalesByTen(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const raw = "Rarity: RARE\nProbe Blade\nSiege Axe\n" +
 		"Unique ID: 0000\nItem Level: 84\nQuality: 0\nLevelReq: 70\nImplicits: 0\n" +

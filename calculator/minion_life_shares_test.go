@@ -11,7 +11,7 @@ import (
 
 // TestMinionLifeSharesFoldsTheSpecificPool pins CalcPerform.lua:3625-3629 against its consumer at CalcDefence.lua:2476-2491.
 func TestMinionLifeSharesFoldsTheSpecificPool(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("needs the corpus")
 	}

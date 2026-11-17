@@ -8,7 +8,7 @@ import (
 
 // TestEverlastingSacrificeRowsParse pins ModParser.lua:2429-2431 and :3249-3251, the producers of Condition:EverlastingSacrifice.
 func TestEverlastingSacrificeRowsParse(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	e := ParseMod("Everlasting Sacrifice", false)
 	if e == nil || e.Extra != "" || len(e.ModList) != 1 || e.ModList[0].Name() != "Condition:EverlastingSacrifice" || len(e.ModList[0].Tags()) != 0 {

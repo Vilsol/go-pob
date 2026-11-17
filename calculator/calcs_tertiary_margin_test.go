@@ -10,7 +10,7 @@ import (
 
 // TestCalcsTertiaryMarginBreakdownMatchesPoB grades CalcOffence.lua:446-471, explosive trap's random-radius breakdown, against oracle/calcs_tertiary_margin.lua.
 func TestCalcsTertiaryMarginBreakdownMatchesPoB(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	f, err := os.Open("../testdata/oracle/calcs_tertiary_margin_expected.jsonl")
 	if err != nil {
 		t.Fatalf("REFUSING: %v", err)

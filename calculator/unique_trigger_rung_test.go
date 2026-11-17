@@ -11,7 +11,7 @@ func TestUniqueItemTriggerRung(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	for build, want := range map[string]float64{
 		"0772-slayer-starfall.xml":  4.4689586646463,
 		"0786-saboteur-unknown.xml": 7.9456,

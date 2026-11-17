@@ -25,9 +25,9 @@ type craftBase struct {
 	FlavourText      []string          `json:"-"`
 }
 
-//pob:block:src/Export/Scripts/bases.lua:419-442
+//pob:block:src/Export/Scripts/bases.lua:420-444
 var baseItemTypes = []string{"axe", "bow", "claw", "dagger", "fishing", "mace", "staff", "sword", "wand", "helmet", "body", "gloves", "boots",
-	"shield", "quiver", "amulet", "ring", "belt", "jewel", "flask", "tincture", "graft"}
+	"shield", "quiver", "amulet", "ring", "belt", "jewel", "flask", "tincture", "graft", "wickerman"}
 
 type baseState struct {
 	typ, subType         string
@@ -91,7 +91,7 @@ func (b *basesExport) baseItemTags(baseItemType string) []string {
 	return tags
 }
 
-//pob:block:src/Export/Scripts/bases.lua:77-203
+//pob:block:src/Export/Scripts/bases.lua:77-204
 func (b *basesExport) base(st *baseState, args string) error {
 	baseTypeID, displayName := args, ""
 	if m := baseDirectiveRe.FindStringSubmatch(args); m != nil {

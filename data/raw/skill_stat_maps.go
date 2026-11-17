@@ -44,11 +44,11 @@ import (
 // one. Both are fixed, and the dump now carries a `groupCount` this emitter REQUIRES, so a stale
 // dump refuses instead of quietly emptying the two entries again.
 //
-// Generated from the PINNED PoB (721 skills, 1667 statMap entries, 1520 mods) by
+// Generated from the PINNED PoB (726 skills, 1675 statMap entries, 1530 mods) by
 // oracle/skill_stat_map.lua + gopob's skill-stat-maps emitter. The pin's identity is in
 // scripts/pob_pin.json; this header does not restate it, because the per-skill dump does
 // not carry pobVersion and a hardcoded version is how this line came to claim "v2.18.1"
-// long after the pin moved to 3.29. 1518 mods are emitted;
+// long after the pin moved to 3.29. 1528 mods are emitted;
 // 2 are not representable and are omitted rather than mapped lossily:
 //   - 2 nested mod: name/type live inside tags[0], which mod/ has no constructor for [go-absent:mod.NestedMod]
 //
@@ -72,7 +72,7 @@ import (
 var SkillStatMaps = buildSkillStatMaps()
 
 func buildSkillStatMaps() map[string]map[string]*StatMap {
-	m := make(map[string]map[string]*StatMap, 721)
+	m := make(map[string]map[string]*StatMap, 726)
 	skillStatMapsPart0(m)
 	skillStatMapsPart1(m)
 	skillStatMapsPart2(m)
@@ -261,7 +261,7 @@ func skillStatMapsPart0(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("PhysicalMin", mod.TypeBase, 0).KeywordFlag(mod.KeywordFlagAttack).Tag(mod.ActorCondition("parent", "AnimatingLingeringBlades"))})},
 		},
 	}
-	// src/Data/Skills/other.lua:5285
+	// src/Data/Skills/other.lua:5353
 	m["AnimosityUniqueSkill"] = map[string]*StatMap{
 		"base_physical_damage_to_deal_per_minute": {
 			Mods: []mod.Mod{skill("PhysicalDot", 0).Tag(mod.Multiplier("WeepingBlackStacks").Limit(5))},
@@ -300,6 +300,21 @@ func skillStatMapsPart0(m map[string]map[string]*StatMap) {
 				mod.NewFloat("LightningMin", mod.TypeBase, 0).Tag(mod.PercentStatVar("ManaUnreserved", "ArcaneCloakConsumedMana"), mod.GlobalEffect("Buff")),
 				mod.NewFloat("LightningMax", mod.TypeBase, 0).Tag(mod.PercentStatVar("ManaUnreserved", "ArcaneCloakConsumedMana"), mod.GlobalEffect("Buff")),
 			},
+		},
+	}
+	// src/Data/Skills/act_int.lua:21190
+	m["ArcaneLink"] = map[string]*StatMap{
+		"arcane_link_added_lightning_damage_from_mana_%": {
+			Mods: []mod.Mod{
+				mod.NewFloat("LightningMin", mod.TypeBase, 0).Tag(mod.GlobalEffect("Link"), mod.PercentStat("Mana", 1).Actor("parent")),
+				mod.NewFloat("LightningMax", mod.TypeBase, 0).Tag(mod.GlobalEffect("Link"), mod.PercentStat("Mana", 1).Actor("parent")),
+			},
+		},
+		"arcane_link_maximum_lightning_damage": {
+			Mods: []mod.Mod{mod.NewFloat("LightningMax", mod.TypeBase, 0).Tag(mod.GlobalEffect("Link"))},
+		},
+		"arcane_link_minimum_lightning_damage": {
+			Mods: []mod.Mod{mod.NewFloat("LightningMin", mod.TypeBase, 0).Tag(mod.GlobalEffect("Link"))},
 		},
 	}
 	// src/Data/Skills/act_dex.lua:587
@@ -909,7 +924,7 @@ func skillStatMapsPart0(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:2617
+	// src/Data/Skills/act_dex.lua:2618
 	m["BladefallAltX"] = map[string]*StatMap{
 		"bladefall_critical_strike_chance_+%_per_stage": {
 			Mods: []mod.Mod{mod.NewFloat("CritChance", mod.TypeIncrease, 0).Tag(mod.Multiplier("BladefallofVolleysStage"))},
@@ -924,13 +939,13 @@ func skillStatMapsPart0(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:2706
+	// src/Data/Skills/act_dex.lua:2707
 	m["BladefallAltY"] = map[string]*StatMap{
 		"quality_display_bladefall_is_gem": {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:2790
+	// src/Data/Skills/act_dex.lua:2791
 	m["BladefallAltZ"] = map[string]*StatMap{
 		"bladefall_base_volley_frequency_ms": {
 			Mods: []mod.Mod{skill("hitFrequency", 0)},
@@ -1009,6 +1024,18 @@ func skillStatMapsPart0(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeMore, 0).Tag(mod.GlobalEffect("Buff").Name("Sand").EffectCond("SandStance"), mod.SkillType("Melee"))},
 		},
 	}
+	// src/Data/Skills/other.lua:6297
+	m["BloodFlower"] = map[string]*StatMap{
+		"blood_flower_maximum_flowers": {
+			Mods: []mod.Mod{
+				mod.NewFloat("Multiplier:GoreblossomBloom", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").Unscalable(true)),
+				mod.NewFloat("Multiplier:GoreblossomMaxBlooms", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").Unscalable(true)),
+			},
+		},
+		"blood_flower_physical_dot_multiplier_+_to_grant": {
+			Mods: []mod.Mod{mod.NewFloat("PhysicalDotMultiplier", mod.TypeBase, 0).Tag(multiplierLimitVar("GoreblossomBloom", "GoreblossomMaxBlooms"), mod.GlobalEffect("Buff"))},
+		},
+	}
 	// src/Data/Skills/other.lua:616
 	m["BloodOffering"] = map[string]*StatMap{
 		"blood_offering_%_of_life_to_lose": {
@@ -1033,7 +1060,7 @@ func skillStatMapsPart0(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Buff"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:3314
+	// src/Data/Skills/act_dex.lua:3316
 	m["BloodRage"] = map[string]*StatMap{
 		"attack_speed_+%_granted_from_skill": {
 			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeIncrease, 0).Flag(mod.MFlagAttack).Tag(mod.GlobalEffect("Buff"))},
@@ -1178,7 +1205,7 @@ func skillStatMapsPart0(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.Condition("DualWielding"))},
 		},
 	}
-	// src/Data/Skills/other.lua:5546
+	// src/Data/Skills/other.lua:5614
 	m["BreachHandTrap"] = map[string]*StatMap{
 		"active_skill_hit_damage_+%_final_per_curse_on_target": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Flag(mod.MFlagHit).Tag(mod.Multiplier("CurseOnEnemy"))},
@@ -1196,7 +1223,7 @@ func skillStatMapsPart0(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("PhysicalDamageGainAsLightning", mod.TypeBase, 0).Tag(mod.Multiplier("BlueSocketInGloves"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:3477
+	// src/Data/Skills/act_dex.lua:3479
 	m["BurningArrowAltX"] = map[string]*StatMap{
 		"added_fire_damage_to_attacks_equal_to_%_maximum_life": {
 			Mods: []mod.Mod{
@@ -1205,7 +1232,7 @@ func skillStatMapsPart0(m map[string]map[string]*StatMap) {
 			},
 		},
 	}
-	// src/Data/Skills/other.lua:2480
+	// src/Data/Skills/other.lua:2481
 	m["CatsStealthTriggeredIntimidatingCry"] = map[string]*StatMap{
 		"intimidating_cry_movement_speed_+%_per_5_power_up_to_cap": {
 			Mods: []mod.Mod{mod.NewFloat("IntimidatingMovementSpeedPer5MP", mod.TypeBase, 0)},
@@ -1214,13 +1241,13 @@ func skillStatMapsPart0(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("IntimidatingExertedAttacks", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:3632
+	// src/Data/Skills/act_dex.lua:3634
 	m["CausticArrow"] = map[string]*StatMap{
 		"caustic_arrow_explode_on_hit_base_area_of_effect_radius": {
 			Mods: []mod.Mod{skill("radius", 0)},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:3722
+	// src/Data/Skills/act_dex.lua:3724
 	m["CausticArrowAltX"] = map[string]*StatMap{
 		"caustic_arrow_explode_on_hit_base_area_of_effect_radius": {
 			Mods: []mod.Mod{skill("radius", 0)},
@@ -1249,7 +1276,7 @@ func skillStatMapsPart0(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(5)),
 		},
 	}
-	// src/Data/Skills/act_dex.lua:3945
+	// src/Data/Skills/act_dex.lua:3947
 	m["ChargedDash"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -1264,7 +1291,7 @@ func skillStatMapsPart0(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("chargedDashFinalDamageModifier", mod.TypeIncrease, 0).Tag(mod.Multiplier("ChargedDashStage"), mod.SkillPart(3))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:4070
+	// src/Data/Skills/act_dex.lua:4072
 	m["ChargedDashAltX"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -1302,7 +1329,7 @@ func skillStatMapsPart0(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:4168
+	// src/Data/Skills/act_dex.lua:4170
 	m["CobraLash"] = map[string]*StatMap{
 		"cobra_lash_hit_and_ailment_damage_+%_final_for_each_remaining_chain": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagHit|mod.KeywordFlagAilment).Tag(mod.PerStat(1, "ChainRemaining"), mod.SkillType("Projectile"))},
@@ -1320,7 +1347,10 @@ func skillStatMapsPart0(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:3077
+}
+
+func skillStatMapsPart1(m map[string]map[string]*StatMap) {
+	// src/Data/Skills/act_int.lua:3078
 	m["Conductivity"] = map[string]*StatMap{
 		"base_lightning_damage_resistance_%": {
 			Mods: []mod.Mod{mod.NewFloat("LightningResist", mod.TypeBase, 0).Tag(mod.GlobalEffect("Curse"))},
@@ -1333,7 +1363,7 @@ func skillStatMapsPart0(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("SelfShockChance", mod.TypeBase, 0).Tag(mod.GlobalEffect("Curse"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:4257
+	// src/Data/Skills/act_dex.lua:4259
 	m["Conflagration"] = map[string]*StatMap{
 		"base_fire_damage_to_deal_per_minute": {
 			Mods: []mod.Mod{skill("FireDot", 0).Tag(mod.SkillPart(2))},
@@ -1343,9 +1373,6 @@ func skillStatMapsPart0(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagHit | mod.KeywordFlagAilment).Tag(mod.SkillPart(2))},
 		},
 	}
-}
-
-func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 	// src/Data/Skills/act_str.lua:2148
 	m["ConsecratedPath"] = map[string]*StatMap{
 		"groundslam_damage_to_close_targets_+%_final": {
@@ -1371,7 +1398,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(60)),
 		},
 	}
-	// src/Data/Skills/act_int.lua:3465
+	// src/Data/Skills/act_int.lua:3466
 	m["CracklingLance"] = map[string]*StatMap{
 		"disintegrate_base_radius_+_per_intensify": {
 			Mods: []mod.Mod{skill("radiusExtra", 0).Tag(multiplierLimitVar("Intensity", "IntensityLimit"))},
@@ -1383,7 +1410,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:4373
+	// src/Data/Skills/act_dex.lua:4375
 	m["Cremation"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -1397,7 +1424,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(100)),
 		},
 	}
-	// src/Data/Skills/act_dex.lua:4491
+	// src/Data/Skills/act_dex.lua:4493
 	m["CremationAltX"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -1411,7 +1438,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(100)),
 		},
 	}
-	// src/Data/Skills/act_dex.lua:4595
+	// src/Data/Skills/act_dex.lua:4597
 	m["CremationAltY"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -1435,7 +1462,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffectPrimary", mod.TypeIncrease, 0)},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:4717
+	// src/Data/Skills/act_dex.lua:4719
 	m["Cyclone"] = map[string]*StatMap{
 		"cyclone_area_of_effect_+%_per_additional_melee_range": {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeIncrease, 0).Tag(mod.Multiplier("AdditionalMeleeRange"))},
@@ -1444,7 +1471,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("MovementSpeed", mod.TypeMore, 0).Tag(mod.Condition("ChannellingCyclone"), mod.GlobalEffect("Buff").Unscalable(true))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:4823
+	// src/Data/Skills/act_dex.lua:4825
 	m["CycloneAltX"] = map[string]*StatMap{
 		"cyclone_area_of_effect_+%_per_additional_melee_range": {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeIncrease, 0).Tag(mod.Multiplier("AdditionalMeleeRange"))},
@@ -1468,7 +1495,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("DamageTaken", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Debuff").Name("Thunder Web"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:3904
+	// src/Data/Skills/act_int.lua:3905
 	m["DarkPact"] = map[string]*StatMap{
 		"quality_display_dark_pact_is_gem": {
 			Mods: []mod.Mod{},
@@ -1483,7 +1510,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{skill("radiusExtra", 0).Tag(mod.SkillPart(1))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:4023
+	// src/Data/Skills/act_int.lua:4024
 	m["DarkPactAltX"] = map[string]*StatMap{
 		"dark_pact_chance_to_gain_an_additional_ruin_%": {
 			Mods: []mod.Mod{skill("additionalRuinChance", 0)},
@@ -1495,7 +1522,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{skill("percentageLifeSacrificed", 0)},
 		},
 	}
-	// src/Data/Skills/other.lua:1289
+	// src/Data/Skills/other.lua:1290
 	m["DeathWish"] = map[string]*StatMap{
 		"death_wish_attack_speed_+%": {
 			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeIncrease, 0).Flag(mod.MFlagAttack).Tag(mod.GlobalEffect("Buff"))},
@@ -1540,7 +1567,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.GlobalEffect("Curse"), mod.Condition("RareOrUnique"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:4110
+	// src/Data/Skills/act_int.lua:4111
 	m["Despair"] = map[string]*StatMap{
 		"base_chaos_damage_resistance_%": {
 			Mods: []mod.Mod{mod.NewFloat("ChaosResist", mod.TypeBase, 0).Tag(mod.GlobalEffect("Curse"))},
@@ -1552,7 +1579,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("SelfChaosMin", mod.TypeBase, 0).Tag(mod.GlobalEffect("Curse"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:4196
+	// src/Data/Skills/act_int.lua:4197
 	m["DestructiveLink"] = map[string]*StatMap{
 		"critical_link_grants_accuracy_rating_+%": {
 			Mods: []mod.Mod{mod.NewFloat("Accuracy", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Link"))},
@@ -1573,7 +1600,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Armour", mod.TypeMore, 0).Tag(mod.GlobalEffect("Aura"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:5183
+	// src/Data/Skills/act_dex.lua:5185
 	m["DetonateDead"] = map[string]*StatMap{
 		"spell_maximum_base_fire_damage": {
 			Mods: []mod.Mod{skill("FireMax", 0).Tag(mod.SkillPart(1))},
@@ -1582,7 +1609,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{skill("FireMin", 0).Tag(mod.SkillPart(1))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:5351
+	// src/Data/Skills/act_dex.lua:5353
 	m["DetonateDeadAltY"] = map[string]*StatMap{
 		"spell_maximum_base_fire_damage": {
 			Mods: []mod.Mod{skill("FireMax", 0).Tag(mod.SkillPart(1))},
@@ -1600,7 +1627,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{skill("manaLeechPerUse", 0)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:4439
+	// src/Data/Skills/act_int.lua:4440
 	m["Discipline"] = map[string]*StatMap{
 		"base_maximum_energy_shield": {
 			Mods: []mod.Mod{mod.NewFloat("EnergyShield", mod.TypeBase, 0).Tag(mod.GlobalEffect("Aura"))},
@@ -1615,7 +1642,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagHit | mod.KeywordFlagAilment).Tag(mod.SkillPart(2))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:4619
+	// src/Data/Skills/act_int.lua:4620
 	m["DivineIre"] = map[string]*StatMap{
 		"divine_tempest_ailment_damage_+%_final_per_stage": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagAilment).Tag(mod.Multiplier("DivineIreStageAfterFirst"))},
@@ -1627,7 +1654,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Flag(mod.MFlagHit).Tag(mod.Multiplier("DivineIreStageAfterFirst"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:4729
+	// src/Data/Skills/act_int.lua:4730
 	m["DivineIreAltX"] = map[string]*StatMap{
 		"divine_tempest_ailment_damage_+%_final_per_stage": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagAilment).Tag(mod.Multiplier("DivineIreofHolyLightningStageAfterFirst"))},
@@ -1639,7 +1666,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:4826
+	// src/Data/Skills/act_int.lua:4827
 	m["DivineIreAltY"] = map[string]*StatMap{
 		"divine_tempest_ailment_damage_+%_final_per_stage": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagAilment).Tag(mod.Multiplier("DivineIreofDisintegrationStageAfterFirst"))},
@@ -1648,7 +1675,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Flag(mod.MFlagHit).Tag(mod.Multiplier("DivineIreofDisintegrationStageAfterFirst"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:5708
+	// src/Data/Skills/act_dex.lua:5710
 	m["DoubleStrikeAltY"] = map[string]*StatMap{
 		"double_strike_attack_speed_+%_final_per_stage": {
 			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeMore, 0).Flag(mod.MFlagAttack).Tag(mod.Multiplier("DoubleStrikeofMomentumStage"))},
@@ -1672,7 +1699,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Buff"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:5883
+	// src/Data/Skills/act_dex.lua:5885
 	m["DualStrike"] = map[string]*StatMap{
 		"dual_strike_critical_strike_chance_+%_final_against_enemies_on_full_life": {
 			Mods: []mod.Mod{mod.NewFloat("CritChance", mod.TypeMore, 0).Tag(mod.ActorCondition("enemy", "FullLife"))},
@@ -1684,7 +1711,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:5971
+	// src/Data/Skills/act_dex.lua:5973
 	m["DualStrikeAltX"] = map[string]*StatMap{
 		"dual_strike_off_hand_weapon_determines_attack_time": {
 			Mods: []mod.Mod{mod.NewFlag("UseOffhandAttackSpeed", true)},
@@ -1750,13 +1777,13 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.SkillPart(2))},
 		},
 	}
-	// src/Data/Skills/other.lua:1573
+	// src/Data/Skills/other.lua:1574
 	m["ElementalAegis"] = map[string]*StatMap{
 		"aegis_unique_shield_max_value": {
 			Mods: []mod.Mod{mod.NewFloat("ElementalAegisValue", mod.TypeMAX, 0).Tag(mod.GlobalEffect("Buff").Unscalable(true))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:6083
+	// src/Data/Skills/act_dex.lua:6085
 	m["ElementalHit"] = map[string]*StatMap{
 		"active_skill_base_area_of_effect_radius": {
 			Mods: []mod.Mod{skill("radius", 0).Tag(mod.SkillPartList(2, 4, 6))},
@@ -1807,7 +1834,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:6239
+	// src/Data/Skills/act_dex.lua:6241
 	m["ElementalHitAltX"] = map[string]*StatMap{
 		"active_skill_base_area_of_effect_radius": {
 			Mods: []mod.Mod{skill("radius", 0).Tag(mod.SkillPart(2))},
@@ -1846,7 +1873,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:4996
+	// src/Data/Skills/act_int.lua:4997
 	m["ElementalWeakness"] = map[string]*StatMap{
 		"base_resist_all_elements_%": {
 			Mods: []mod.Mod{mod.NewFloat("ElementalResist", mod.TypeBase, 0).Tag(mod.GlobalEffect("Curse"))},
@@ -1884,7 +1911,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(60)),
 		},
 	}
-	// src/Data/Skills/act_int.lua:5087
+	// src/Data/Skills/act_int.lua:5088
 	m["EnergyBlade"] = map[string]*StatMap{
 		"storm_blade_damage_+%_final_with_two_hand_weapon": {
 			Mods: []mod.Mod{mod.NewFloat("EnergyBladeDamage", mod.TypeMore, 0).Tag(mod.Condition("UsingTwoHandedWeapon"), mod.GlobalEffect("Buff").Unscalable(true))},
@@ -1893,7 +1920,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("EnergyShield", mod.TypeMore, 0).Tag(mod.GlobalEffect("Buff"))},
 		},
 		"storm_blade_global_attack_speed_+%": {
-			Mods: []mod.Mod{mod.NewFloat("EnergyBladeAttackSpeed", mod.TypeMore, 0).Tag(mod.GlobalEffect("Buff").Unscalable(true))},
+			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeIncrease, 0).Flag(mod.MFlagAttack).Tag(mod.GlobalEffect("Buff").Unscalable(true))},
 		},
 		"storm_blade_maximum_lightning_damage": {
 			Mods: []mod.Mod{mod.NewFloat("EnergyBladeMaxLightning", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").Unscalable(true))},
@@ -1908,7 +1935,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("EnergyBladeMinLightning", mod.TypeBase, 0).Tag(mod.PercentStat("EnergyShield", 1), mod.GlobalEffect("Buff").Unscalable(true))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:5179
+	// src/Data/Skills/act_int.lua:5180
 	m["Enfeeble"] = map[string]*StatMap{
 		"accuracy_rating_+%": {
 			Mods: []mod.Mod{mod.NewFloat("Accuracy", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Curse"))},
@@ -1920,13 +1947,13 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.GlobalEffect("Curse"), mod.Condition("RareOrUnique"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:6376
+	// src/Data/Skills/act_dex.lua:6378
 	m["EnsnaringArrow"] = map[string]*StatMap{
 		"tethered_enemies_take_attack_projectile_damage_taken_+%": {
 			Mods: []mod.Mod{mod.NewFloat("ProjectileAttackDamageTaken", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Debuff").Name("Ensnared").EffectStackVar("EnsnareStackCount").EffectStackLimit(1))},
 		},
 	}
-	// src/Data/Skills/other.lua:1869
+	// src/Data/Skills/other.lua:1870
 	m["Envy"] = map[string]*StatMap{
 		"attack_maximum_added_chaos_damage": {
 			Mods: []mod.Mod{mod.NewFloat("ChaosMax", mod.TypeBase, 0).KeywordFlag(mod.KeywordFlagAttack).Tag(mod.GlobalEffect("Aura"))},
@@ -1941,7 +1968,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("ChaosMin", mod.TypeBase, 0).KeywordFlag(mod.KeywordFlagSpell).Tag(mod.GlobalEffect("Aura"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:6779
+	// src/Data/Skills/act_dex.lua:6781
 	m["ExplosiveArrow"] = map[string]*StatMap{
 		"explosive_arrow_ailment_damage_+%_final_per_stack": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagAilment).Tag(mod.SkillPartList(1, 2), mod.Multiplier("ExplosiveArrowStage"))},
@@ -1975,7 +2002,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:6922
+	// src/Data/Skills/act_dex.lua:6924
 	m["ExplosiveConcoction"] = map[string]*StatMap{
 		"flask_throw_maximum_cold_damage_if_used_sapphire_flask": {
 			Mods: []mod.Mod{mod.NewFloat("ColdMax", mod.TypeBase, 0).Tag(mod.SkillPartList(2, 5, 6, 8))},
@@ -1993,7 +2020,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("FireDotMultiplier", mod.TypeBase, 0).KeywordFlag(mod.KeywordFlagIgnite).Tag(mod.SkillPartList(4, 6, 7, 8))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:7048
+	// src/Data/Skills/act_dex.lua:7050
 	m["ExplosiveConcoctionAltX"] = map[string]*StatMap{
 		"flask_throw_maximum_cold_damage_if_used_sapphire_flask": {
 			Mods: []mod.Mod{mod.NewFloat("ColdMax", mod.TypeBase, 0).Tag(mod.SkillPartList(2, 5, 6, 8))},
@@ -2011,7 +2038,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("CritMultiplier", mod.TypeBase, 0).Tag(mod.SkillPartList(4, 6, 7, 8))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:7222
+	// src/Data/Skills/act_dex.lua:7224
 	m["ExplosiveTrap"] = map[string]*StatMap{
 		"quality_display_explosive_trap_is_gem": {
 			Mods: []mod.Mod{},
@@ -2049,7 +2076,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Div: utils.Ptr(float64(60)),
 		},
 	}
-	// src/Data/Skills/act_int.lua:5521
+	// src/Data/Skills/act_int.lua:5522
 	m["EyeOfWinter"] = map[string]*StatMap{
 		"freezing_pulse_damage_+%_final_at_long_range": {
 			Mods: []mod.Mod{mod.NewFloat("EyeOfWinterRamp", mod.TypeBase, 0)},
@@ -2061,7 +2088,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:5614
+	// src/Data/Skills/act_int.lua:5615
 	m["EyeOfWinterAltX"] = map[string]*StatMap{
 		"freezing_pulse_damage_+%_final_at_long_range": {
 			Mods: []mod.Mod{mod.NewFloat("EyeOfWinterRamp", mod.TypeBase, 0)},
@@ -2073,7 +2100,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:5707
+	// src/Data/Skills/act_int.lua:5708
 	m["EyeOfWinterAltY"] = map[string]*StatMap{
 		"freezing_pulse_damage_+%_final_at_long_range": {
 			Mods: []mod.Mod{mod.NewFloat("EyeOfWinterRamp", mod.TypeBase, 0)},
@@ -2104,7 +2131,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffectPrimary", mod.TypeIncrease, 0)},
 		},
 	}
-	// src/Data/Skills/other.lua:1945
+	// src/Data/Skills/other.lua:1946
 	m["FireAegis"] = map[string]*StatMap{
 		"aegis_unique_shield_max_value": {
 			Mods: []mod.Mod{mod.NewFloat("FireAegisValue", mod.TypeMAX, 0).Tag(mod.GlobalEffect("Buff").Unscalable(true))},
@@ -2117,7 +2144,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(60)),
 		},
 	}
-	// src/Data/Skills/act_int.lua:5978
+	// src/Data/Skills/act_int.lua:6058
 	m["Firestorm"] = map[string]*StatMap{
 		"firestorm_initial_impact_area_of_effect_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeMore, 0).Tag(mod.SkillPart(1))},
@@ -2141,7 +2168,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("FireMin", mod.TypeBase, 0).Tag(mod.GlobalEffect("Link"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:6613
+	// src/Data/Skills/act_int.lua:6693
 	m["FlameSurge"] = map[string]*StatMap{
 		"active_skill_base_area_length_+": {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeBase, 0)},
@@ -2156,7 +2183,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:6709
+	// src/Data/Skills/act_int.lua:6789
 	m["FlameSurgeAltX"] = map[string]*StatMap{
 		"active_skill_base_area_length_+": {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeBase, 0)},
@@ -2168,7 +2195,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:6499
+	// src/Data/Skills/act_int.lua:6579
 	m["FlameWall"] = map[string]*StatMap{
 		"base_fire_damage_to_deal_per_minute": {
 			Mods: []mod.Mod{skill("FireDot", 0).Tag(mod.SkillPart(1))},
@@ -2194,7 +2221,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{skill("radius", 0)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:6803
+	// src/Data/Skills/act_int.lua:6883
 	m["Flameblast"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -2215,7 +2242,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeBase, 0).Tag(mod.Multiplier("FlameblastStageAfterFirst"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:6908
+	// src/Data/Skills/act_int.lua:6988
 	m["FlameblastAltX"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -2236,7 +2263,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeBase, 0).Tag(mod.Multiplier("FlameblastofCelerityStageAfterFirst"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:7011
+	// src/Data/Skills/act_int.lua:7091
 	m["FlameblastAltY"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -2260,7 +2287,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeBase, 0).Tag(mod.Multiplier("FlameblastofContractionStageAfterFirst"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:7718
+	// src/Data/Skills/act_dex.lua:7720
 	m["FlamethrowerTrap"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -2269,7 +2296,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.ActorCondition("enemy", "Burning"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:7207
+	// src/Data/Skills/act_int.lua:7287
 	m["Flammability"] = map[string]*StatMap{
 		"base_fire_damage_resistance_%": {
 			Mods: []mod.Mod{mod.NewFloat("FireResist", mod.TypeBase, 0).Tag(mod.GlobalEffect("Curse"))},
@@ -2291,7 +2318,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("DamageTakenWhenHit", mod.TypeMore, 0).Tag(mod.GlobalEffect("Buff").EffectCond("SandStance"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:7297
+	// src/Data/Skills/act_int.lua:7377
 	m["FleshOffering"] = map[string]*StatMap{
 		"attack_speed_+%_granted_from_skill": {
 			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeIncrease, 0).Flag(mod.MFlagAttack).Tag(mod.GlobalEffect("Buff"))},
@@ -2303,7 +2330,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeIncrease, 0).Flag(mod.MFlagCast).Tag(mod.GlobalEffect("Buff"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:7923
+	// src/Data/Skills/act_dex.lua:7925
 	m["FlickerStrike"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -2312,7 +2339,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("MovementSpeed", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Buff").Name("Flick Strike"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:8014
+	// src/Data/Skills/act_dex.lua:8016
 	m["FlickerStrikeAltX"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -2321,7 +2348,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("MovementSpeed", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Buff").Name("Flick Strike"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:7435
+	// src/Data/Skills/act_int.lua:7515
 	m["ForbiddenRite"] = map[string]*StatMap{
 		"base_skill_area_of_effect_+%": {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeIncrease, 0)},
@@ -2343,7 +2370,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(100)),
 		},
 	}
-	// src/Data/Skills/act_int.lua:7590
+	// src/Data/Skills/act_int.lua:7670
 	m["ForbiddenRiteAltX"] = map[string]*StatMap{
 		"base_skill_area_of_effect_+%": {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeIncrease, 0)},
@@ -2357,13 +2384,13 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(100)),
 		},
 	}
-	// src/Data/Skills/act_int.lua:7690
+	// src/Data/Skills/act_int.lua:7770
 	m["FreezingPulse"] = map[string]*StatMap{
 		"display_what_freezing_pulse_does": {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:8196
+	// src/Data/Skills/act_dex.lua:8198
 	m["Frenzy"] = map[string]*StatMap{
 		"frenzy_skill_attack_damage_+%_final_per_frenzy_charge": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Flag(mod.MFlagAttack).Tag(mod.Multiplier("FrenzyCharge"))},
@@ -2378,7 +2405,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:8295
+	// src/Data/Skills/act_dex.lua:8297
 	m["FrenzyAltX"] = map[string]*StatMap{
 		"frenzy_skill_attack_damage_+%_final_per_frenzy_charge": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Flag(mod.MFlagAttack).Tag(mod.Multiplier("FrenzyCharge"))},
@@ -2393,20 +2420,20 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:8403
+	// src/Data/Skills/act_dex.lua:8405
 	m["FrostBlades"] = map[string]*StatMap{
 		"active_skill_hit_ailment_damage_with_projectile_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.SkillPart(2))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:8511
+	// src/Data/Skills/act_dex.lua:8513
 	m["FrostBladesAltX"] = map[string]*StatMap{
 		"base_cold_damage_to_deal_per_minute": {
 			Mods: []mod.Mod{skill("ColdDot", 0).Tag(mod.SkillPart(2))},
 			Div:  utils.Ptr(float64(60)),
 		},
 	}
-	// src/Data/Skills/act_int.lua:7766
+	// src/Data/Skills/act_int.lua:7846
 	m["FrostBomb"] = map[string]*StatMap{
 		"base_cold_damage_resistance_%": {
 			Mods: []mod.Mod{mod.NewFloat("ColdExposure", mod.TypeBase, 0).Tag(mod.GlobalEffect("Debuff").Name("Frost Bomb"))},
@@ -2415,7 +2442,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("LifeRegen", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Debuff").Name("Frost Bomb"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:7937
+	// src/Data/Skills/act_int.lua:8017
 	m["FrostBombAltY"] = map[string]*StatMap{
 		"active_skill_ailment_damage_+%_final_per_100ms_duration": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagAilment).Tag(mod.Multiplier("100msFrostBombDuration"))},
@@ -2424,7 +2451,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagHit).Tag(mod.Multiplier("100msFrostBombDuration"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:8022
+	// src/Data/Skills/act_int.lua:8102
 	m["FrostShield"] = map[string]*StatMap{
 		"energy_shield_lost_per_minute": {
 			Mods: []mod.Mod{mod.NewFloat("EnergyShieldDegen", mod.TypeBase, 0).Tag(mod.MultiplierThreshold("FrostShieldStage").Threshold(1), mod.GlobalEffect("Buff").Name("Frost Shield"))},
@@ -2447,13 +2474,13 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Multiplier:FrostShieldMaxStages", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").Unscalable(true))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:8120
+	// src/Data/Skills/act_int.lua:8200
 	m["FrostWall"] = map[string]*StatMap{
 		"quality_display_wall_length_is_gem": {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:8199
+	// src/Data/Skills/act_int.lua:8279
 	m["Frostbite"] = map[string]*StatMap{
 		"base_cold_damage_resistance_%": {
 			Mods: []mod.Mod{mod.NewFloat("ColdResist", mod.TypeBase, 0).Tag(mod.GlobalEffect("Curse"))},
@@ -2466,7 +2493,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("SelfFreezeChance", mod.TypeBase, 0).Tag(mod.GlobalEffect("Curse"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:8291
+	// src/Data/Skills/act_int.lua:8371
 	m["Frostblink"] = map[string]*StatMap{
 		"ice_dash_cooldown_recovery_per_nearby_normal_or_magic_enemy": {
 			Mods: []mod.Mod{mod.NewFloat("CooldownRecovery", mod.TypeIncrease, 0).Tag(mod.ActorCondition("enemy", "RareOrUnique").Neg(true))},
@@ -2475,13 +2502,13 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("CooldownRecovery", mod.TypeIncrease, 0).Tag(mod.ActorCondition("enemy", "RareOrUnique"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:8384
+	// src/Data/Skills/act_int.lua:8464
 	m["FrostblinkAltX"] = map[string]*StatMap{
 		"frostblink_damage_+%_final_per_5%_chill_effect_on_target": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Flag(mod.MFlagHit).Tag(mod.Multiplier("ChillEffect").Div(5).Actor("enemy"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:8554
+	// src/Data/Skills/act_int.lua:8634
 	m["GalvanicField"] = map[string]*StatMap{
 		"base_chance_to_shock_%_from_skill": {
 			Mods: []mod.Mod{mod.NewFloat("EnemyShockChance", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").Name("Galvanic Field"))},
@@ -2507,7 +2534,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:8674
+	// src/Data/Skills/act_int.lua:8754
 	m["GalvanicFieldAltX"] = map[string]*StatMap{
 		"base_chance_to_shock_%_from_skill": {
 			Mods: []mod.Mod{mod.NewFloat("EnemyShockChance", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").Name("Galvanic Field of Intensity"))},
@@ -2548,7 +2575,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:8783
+	// src/Data/Skills/act_int.lua:8863
 	m["GlacialCascade"] = map[string]*StatMap{
 		"glacial_cascade_final_spike_damage_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.SkillPart(2))},
@@ -2569,19 +2596,25 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFlag("Every3UseCrit", true)},
 		},
 	}
-	// src/Data/Skills/other.lua:2185
+	// src/Data/Skills/other.lua:2186
 	m["GluttonyOfElements"] = map[string]*StatMap{
 		"immune_to_curses": {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:8930
+	// src/Data/Skills/act_dex.lua:8932
 	m["Grace"] = map[string]*StatMap{
 		"base_evasion_rating": {
 			Mods: []mod.Mod{mod.NewFloat("Evasion", mod.TypeBase, 0).Tag(mod.GlobalEffect("Aura"))},
 		},
 		"grace_aura_evasion_rating_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Evasion", mod.TypeMore, 0).Tag(mod.GlobalEffect("Aura"))},
+		},
+	}
+	// src/Data/Skills/other.lua:6243
+	m["GrimBonfire"] = map[string]*StatMap{
+		"grim_bonfire_additional_projectile_chance_per_debuff_on_target": {
+			Mods: []mod.Mod{mod.NewFloat("DPS", mod.TypeMore, 0).Tag(mod.Multiplier("WitchhuntersPyreAdditionalBurningDebuff"))},
 		},
 	}
 	// src/Data/Skills/act_str.lua:5317
@@ -2614,7 +2647,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("LightningDamageTaken", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Debuff").Name("Thunderous Roar"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:9091
+	// src/Data/Skills/act_dex.lua:9093
 	m["Haste"] = map[string]*StatMap{
 		"attack_speed_+%_granted_from_skill": {
 			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeIncrease, 0).Flag(mod.MFlagAttack).Tag(mod.GlobalEffect("Aura"))},
@@ -2626,7 +2659,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeIncrease, 0).Flag(mod.MFlagCast).Tag(mod.GlobalEffect("Aura"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:9265
+	// src/Data/Skills/act_dex.lua:9267
 	m["Hatred"] = map[string]*StatMap{
 		"physical_damage_%_to_add_as_cold": {
 			Mods: []mod.Mod{mod.NewFloat("PhysicalDamageGainAsCold", mod.TypeBase, 0).Tag(mod.GlobalEffect("Aura"))},
@@ -2657,7 +2690,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{skill("radiusExtra", 0).Tag(mod.Multiplier("ExplosiveArrowFuse"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:9346
+	// src/Data/Skills/act_dex.lua:9348
 	m["HeraldOfAgony"] = map[string]*StatMap{
 		"herald_of_agony_poison_damage_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagPoison).Tag(mod.GlobalEffect("Buff"))},
@@ -2700,7 +2733,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:9449
+	// src/Data/Skills/act_dex.lua:9451
 	m["HeraldOfIce"] = map[string]*StatMap{
 		"attack_maximum_added_cold_damage": {
 			Mods: []mod.Mod{mod.NewFloat("ColdMax", mod.TypeBase, 0).KeywordFlag(mod.KeywordFlagAttack).Tag(mod.GlobalEffect("Buff"))},
@@ -2724,7 +2757,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("PhysicalDamage", mod.TypeMore, 0).Tag(mod.GlobalEffect("Buff"))},
 		},
 	}
-	// src/Data/Skills/other.lua:2261
+	// src/Data/Skills/other.lua:2262
 	m["HeraldOfTheBreach"] = map[string]*StatMap{
 		"base_herald_of_the_breach_pulse_delay_ms": {
 			Mods: []mod.Mod{skill("repeatFrequency", 0)},
@@ -2746,7 +2779,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.Multiplier("Herald"), mod.GlobalEffect("Buff"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:9386
+	// src/Data/Skills/act_int.lua:9466
 	m["HeraldOfThunder"] = map[string]*StatMap{
 		"attack_maximum_added_lightning_damage": {
 			Mods: []mod.Mod{mod.NewFloat("LightningMax", mod.TypeBase, 0).KeywordFlag(mod.KeywordFlagAttack).Tag(mod.GlobalEffect("Buff"))},
@@ -2768,7 +2801,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("LightningMin", mod.TypeBase, 0).KeywordFlag(mod.KeywordFlagSpell).Tag(mod.GlobalEffect("Buff"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:9104
+	// src/Data/Skills/act_int.lua:9184
 	m["Hexblast"] = map[string]*StatMap{
 		"chaos_damage_resisted_by_lowest_resistance": {
 			Mods: []mod.Mod{mod.NewFlag("ChaosDamageUsesLowestResistance", true)},
@@ -2783,7 +2816,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Flag(mod.MFlagHit).Tag(mod.ActorCondition("enemy", "Cursed"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:9207
+	// src/Data/Skills/act_int.lua:9287
 	m["HexblastAltX"] = map[string]*StatMap{
 		"chaos_damage_resisted_by_highest_resistance": {
 			Mods: []mod.Mod{mod.NewFlag("ChaosDamageUsesHighestResistance", true)},
@@ -2813,6 +2846,9 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.Multiplier("RemovablePowerCharge"))},
 		},
 	}
+}
+
+func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 	// src/Data/Skills/act_str.lua:6291
 	m["HolyStrike"] = map[string]*StatMap{
 		"skill_physical_damage_%_to_convert_to_lightning": {
@@ -2822,7 +2858,7 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			},
 		},
 	}
-	// src/Data/Skills/act_int.lua:8977
+	// src/Data/Skills/act_int.lua:9057
 	m["Hydrosphere"] = map[string]*StatMap{
 		"hydro_sphere_base_pulse_frequency_ms": {
 			Mods: []mod.Mod{skill("repeatFrequency", 0)},
@@ -2869,22 +2905,19 @@ func skillStatMapsPart1(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-}
-
-func skillStatMapsPart2(m map[string]map[string]*StatMap) {
-	// src/Data/Skills/act_int.lua:9567
+	// src/Data/Skills/act_int.lua:9647
 	m["IceNovaAltX"] = map[string]*StatMap{
 		"ice_nova_damage_when_cast_on_frostbolt_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagHit | mod.KeywordFlagAilment).Tag(mod.Condition("CastOnFrostbolt"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:9648
+	// src/Data/Skills/act_int.lua:9728
 	m["IceNovaAltY"] = map[string]*StatMap{
 		"ice_nova_freeze_as_though_damage_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("FreezeAsThoughDealing", mod.TypeMore, 0)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:9824
+	// src/Data/Skills/act_int.lua:9904
 	m["IceSpear"] = map[string]*StatMap{
 		"ice_spear_second_form_critical_strike_chance_+%": {
 			Mods: []mod.Mod{mod.NewFloat("CritChance", mod.TypeIncrease, 0).Tag(mod.SkillPartList(2, 4))},
@@ -2896,32 +2929,32 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("ProjectileSpeed", mod.TypeMore, 0).Tag(mod.SkillPartList(2, 4))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:9934
+	// src/Data/Skills/act_int.lua:10014
 	m["IceSpearAltX"] = map[string]*StatMap{
 		"ice_spear_second_form_projectile_speed_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("ProjectileSpeed", mod.TypeMore, 0).Tag(mod.SkillPartList(2, 4))},
 		},
 	}
-	// src/Data/Skills/other.lua:2379
+	// src/Data/Skills/other.lua:2380
 	m["Icestorm"] = map[string]*StatMap{
 		"skill_effect_duration_per_100_int": {
 			Mods: []mod.Mod{mod.NewFloat("Duration", mod.TypeBase, 0).Tag(mod.PerStat(100, "Int"))},
 			Div:  utils.Ptr(float64(1000)),
 		},
 	}
-	// src/Data/Skills/act_int.lua:10018
+	// src/Data/Skills/act_int.lua:10098
 	m["IcicleMine"] = map[string]*StatMap{
 		"cold_projectile_mine_enemy_critical_strike_chance_+%_against_self": {
 			Mods: []mod.Mod{mod.NewFloat("SelfCritChance", mod.TypeIncrease, 0).Tag(mod.Limit(500), mod.GlobalEffect("AuraDebuff").EffectStackVar("ActiveMineCount"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:10107
+	// src/Data/Skills/act_int.lua:10187
 	m["IcicleMineAltX"] = map[string]*StatMap{
 		"cold_projectile_mine_enemy_critical_strike_chance_+%_against_self": {
 			Mods: []mod.Mod{mod.NewFloat("SelfCritChance", mod.TypeIncrease, 0).Tag(mod.Limit(500), mod.GlobalEffect("AuraDebuff").EffectStackVar("ActiveMineCount"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:10195
+	// src/Data/Skills/act_int.lua:10275
 	m["IcicleMineAltY"] = map[string]*StatMap{
 		"cold_projectile_mine_enemy_critical_strike_chance_+%_against_self": {
 			Mods: []mod.Mod{mod.NewFloat("SelfCritChance", mod.TypeIncrease, 0).Tag(mod.Limit(500), mod.GlobalEffect("AuraDebuff").EffectStackVar("ActiveMineCount"))},
@@ -2943,7 +2976,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:10300
+	// src/Data/Skills/act_int.lua:10380
 	m["Incinerate"] = map[string]*StatMap{
 		"expanding_fire_cone_final_wave_always_ignite": {
 			Mods:  []mod.Mod{mod.NewFloat("EnemyIgniteChance", mod.TypeBase, 0).Tag(mod.SkillPart(2))},
@@ -2977,7 +3010,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:10438
+	// src/Data/Skills/act_int.lua:10518
 	m["IncinerateAltX"] = map[string]*StatMap{
 		"expanding_fire_cone_final_wave_always_ignite": {
 			Mods:  []mod.Mod{mod.NewFloat("EnemyIgniteChance", mod.TypeBase, 0).Tag(mod.SkillPart(2))},
@@ -3011,7 +3044,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:10566
+	// src/Data/Skills/act_int.lua:10646
 	m["IncinerateAltY"] = map[string]*StatMap{
 		"expanding_fire_cone_maximum_number_of_stages": {
 			Mods: []mod.Mod{mod.NewFloat("Multiplier:IncinerateofVentingMaxStages", mod.TypeBase, 0)},
@@ -3083,7 +3116,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("IntimidatingExertedAttacks", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:18239
+	// src/Data/Skills/act_dex.lua:18242
 	m["IntuitiveLink"] = map[string]*StatMap{
 		"display_trigger_link": {
 			Mods: []mod.Mod{},
@@ -3095,7 +3128,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("FireResist", mod.TypeBase, 0).Tag(mod.GlobalEffect("Debuff").EffectStackVar("KaomFireBeamTotemStage").EffectStackLimit(24))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:10772
+	// src/Data/Skills/act_int.lua:10852
 	m["KineticBlastAltX"] = map[string]*StatMap{
 		"added_physical_damage_to_attacks_equal_to_%_maximum_mana": {
 			Mods: []mod.Mod{
@@ -3107,7 +3140,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFlag("NoAdditionalProjectiles", true)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:11124
+	// src/Data/Skills/act_int.lua:11204
 	m["KineticFusillade"] = map[string]*StatMap{
 		"kinetic_fusillade_base_delay_between_projectiles_ms": {
 			Mods: []mod.Mod{skill("delayPerProjectile", 0)},
@@ -3123,7 +3156,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:11342
+	// src/Data/Skills/act_int.lua:11422
 	m["KineticFusilladeAltX"] = map[string]*StatMap{
 		"kinetic_fusillade_base_delay_between_projectiles_ms": {
 			Mods: []mod.Mod{skill("delayPerProjectile", 0)},
@@ -3139,13 +3172,13 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:9971
+	// src/Data/Skills/act_dex.lua:9973
 	m["Lacerate"] = map[string]*StatMap{
 		"attack_speed_+%_if_changed_stance_recently": {
 			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeIncrease, 0).Flag(mod.MFlagAttack).Tag(mod.Condition("ChangedStanceRecently"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:10250
+	// src/Data/Skills/act_dex.lua:10252
 	m["LancingSteel"] = map[string]*StatMap{
 		"lancing_steel_damage_+%_at_close_range": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeIncrease, 0).KeywordFlag(mod.KeywordFlagHit | mod.KeywordFlagAilment).Tag(mod.DistanceRamp([][]float64{{10, 1}, {70, 0}}))},
@@ -3157,19 +3190,19 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("ProjectileCount", mod.TypeMore, 0).Tag(mod.Multiplier("SteelShardConsumed").Limit(4))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:10353
+	// src/Data/Skills/act_dex.lua:10355
 	m["LancingSteelAltX"] = map[string]*StatMap{
 		"lancing_steel_damage_+%_final_after_first_hit_on_target": {
 			Mods: []mod.Mod{mod.NewFloat("LancingSteelSubsequentDamage", mod.TypeMore, 0).Tag(mod.SkillPart(2))},
 		},
 	}
-	// src/Data/Skills/other.lua:2563
+	// src/Data/Skills/other.lua:2595
 	m["LightningAegis"] = map[string]*StatMap{
 		"aegis_unique_shield_max_value": {
 			Mods: []mod.Mod{mod.NewFloat("LightningAegisValue", mod.TypeMAX, 0).Tag(mod.GlobalEffect("Buff").Unscalable(true))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:10500
+	// src/Data/Skills/act_dex.lua:10502
 	m["LightningArrowAltX"] = map[string]*StatMap{
 		"lightning_arrow_alt_strike_frequency_ms": {
 			Mods: []mod.Mod{skill("hitFrequency", 0)},
@@ -3179,7 +3212,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Multiplier:LightningArrowofElectrocutionMaxStages", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:12382
+	// src/Data/Skills/act_int.lua:12462
 	m["LightningConduit"] = map[string]*StatMap{
 		"energy_release_damage_+%_final_per_5%_increased_damage_taken_from_shock_on_target": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagHit).Tag(mod.Multiplier("ShockEffect").Div(5).Actor("enemy"))},
@@ -3203,7 +3236,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("LightningMin", mod.TypeBase, 0).KeywordFlag(mod.KeywordFlagSpell).Tag(mod.GlobalEffect("Aura"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:11809
+	// src/Data/Skills/act_int.lua:11889
 	m["LightningSpireTrap"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -3219,7 +3252,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:12049
+	// src/Data/Skills/act_int.lua:12129
 	m["LightningSpireTrapAltX"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -3235,7 +3268,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:12281
+	// src/Data/Skills/act_int.lua:12361
 	m["LightningSpireTrapAltY"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -3251,13 +3284,13 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:10709
+	// src/Data/Skills/act_dex.lua:10711
 	m["LightningStrike"] = map[string]*StatMap{
 		"active_skill_hit_ailment_damage_with_projectile_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.SkillPart(2))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:10810
+	// src/Data/Skills/act_dex.lua:10812
 	m["LightningStrikeAltX"] = map[string]*StatMap{
 		"active_skill_hit_ailment_damage_with_projectile_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.SkillPart(2))},
@@ -3266,7 +3299,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.PerStat(1, "Chain"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:12550
+	// src/Data/Skills/act_int.lua:12630
 	m["LightningTendrils"] = map[string]*StatMap{
 		"lightning_tendrils_channelled_larger_pulse_always_crit": {
 			Mods: []mod.Mod{mod.NewFloat("CritChance", mod.TypeOverride, 0).Tag(mod.SkillPart(3))},
@@ -3279,7 +3312,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFlag("Every3UseCrit", true).Tag(mod.SkillPart(1))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:12674
+	// src/Data/Skills/act_int.lua:12754
 	m["LightningTendrilsAltX"] = map[string]*StatMap{
 		"lightning_tendrils_channelled_larger_pulse_always_crit": {
 			Mods: []mod.Mod{mod.NewFloat("CritChance", mod.TypeOverride, 0).Tag(mod.SkillPart(3))},
@@ -3301,13 +3334,13 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			},
 		},
 	}
-	// src/Data/Skills/act_int.lua:12770
+	// src/Data/Skills/act_int.lua:12850
 	m["LightningTendrilsAltY"] = map[string]*StatMap{
 		"lightning_tendrils_channelled_base_radius_+_per_second_while_channelling": {
 			Mods: []mod.Mod{skill("radiusExtra", 0).Tag(mod.Multiplier("ChannellingTime").Limit(2))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:13355
+	// src/Data/Skills/act_int.lua:13435
 	m["Malevolence"] = map[string]*StatMap{
 		"delirium_aura_damage_over_time_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Flag(mod.MFlagDot).Tag(mod.GlobalEffect("Aura"))},
@@ -3316,7 +3349,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Duration", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Aura"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:13434
+	// src/Data/Skills/act_int.lua:13514
 	m["ManaInfusedStaff"] = map[string]*StatMap{
 		"active_skill_always_reserves_unmodifiable_X%_of_mana": {
 			Mods: []mod.Mod{skill("ManaReservationPercentForced", 0)},
@@ -3341,7 +3374,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			},
 		},
 	}
-	// src/Data/Skills/act_int.lua:13533
+	// src/Data/Skills/act_int.lua:13616
 	m["Manabond"] = map[string]*StatMap{
 		"mana_void_gain_%_missing_unreserved_mana_as_base_lightning_damage": {
 			Mods: []mod.Mod{skill("ManabondMissingManaGainPercent", 0)},
@@ -3350,7 +3383,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/other.lua:2683
+	// src/Data/Skills/other.lua:2715
 	m["ManifestDancingDervishes"] = map[string]*StatMap{
 		"attack_damage_+%": {
 			Mods: []mod.Mod{mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("Damage", mod.TypeIncrease, 0).Flag(mod.MFlagAttack)})},
@@ -3504,21 +3537,21 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("SelfBleedChance", mod.TypeBase, 0).Tag(mod.GlobalEffect("Curse"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:13624
+	// src/Data/Skills/act_int.lua:13707
 	m["OrbOfStorms"] = map[string]*StatMap{
 		"orb_of_storms_base_bolt_frequency_ms": {
 			Mods: []mod.Mod{skill("hitFrequency", 0)},
 			Div:  utils.Ptr(float64(1000)),
 		},
 	}
-	// src/Data/Skills/act_int.lua:13721
+	// src/Data/Skills/act_int.lua:13804
 	m["OrbOfStormsAltX"] = map[string]*StatMap{
 		"orb_of_storms_base_channelling_bolt_frequency_ms": {
 			Mods: []mod.Mod{skill("hitTimeOverride", 0).Tag(mod.SkillPart(2))},
 			Div:  utils.Ptr(float64(1000)),
 		},
 	}
-	// src/Data/Skills/other.lua:2910
+	// src/Data/Skills/other.lua:2978
 	m["PactOfBeidat"] = map[string]*StatMap{
 		"pact_skill_additional_beam_only_chains": {
 			Mods: []mod.Mod{mod.NewFloat("BeidatAdditionalBeamChains", mod.TypeBase, 0)},
@@ -3536,7 +3569,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("BeidatEmpoweredSpells", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/other.lua:3000
+	// src/Data/Skills/other.lua:3068
 	m["PactOfGhorr"] = map[string]*StatMap{
 		"pact_skill_grant_damage_over_time_+%_final_to_spells": {
 			Mods: []mod.Mod{mod.NewList("GhorrPactDamage", mod.PactDamage{Mod: mod.NewFloat("Damage", mod.TypeMore, 0).Flag(mod.MFlagDot)})},
@@ -3545,7 +3578,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("GhorrEmpoweredSpells", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/other.lua:3155
+	// src/Data/Skills/other.lua:3223
 	m["PactOfKtash"] = map[string]*StatMap{
 		"active_skill_osm_vaal_skill_soul_gain_prevention_+%_final_to_grant": {
 			Mods: []mod.Mod{mod.NewFloat("KtashPactSoulGainPrevention", mod.TypeBase, 0)},
@@ -3560,7 +3593,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("KtashEmpoweredSpells", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/other.lua:3241
+	// src/Data/Skills/other.lua:3309
 	m["PactOfLycia"] = map[string]*StatMap{
 		"pact_skill_grant_damage_+%_final_to_exerted_skills": {
 			Mods: []mod.Mod{mod.NewList("LyciaPactDamage", mod.PactDamage{Mod: mod.NewFloat("Damage", mod.TypeMore, 0)})},
@@ -3569,13 +3602,13 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("LyciaEmpoweredSpells", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:13812
+	// src/Data/Skills/act_int.lua:13895
 	m["PenanceBrand"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:13913
+	// src/Data/Skills/act_int.lua:13996
 	m["PenanceBrandAltX"] = map[string]*StatMap{
 		"magma_brand_ailment_damage_+%_final_per_additional_pustule": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagAilment).Tag(mod.Multiplier("PenanceBrandofDissipationStageAfterFirst"))},
@@ -3588,7 +3621,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Value: utils.Ptr(float64(1)),
 		},
 	}
-	// src/Data/Skills/other.lua:2824
+	// src/Data/Skills/other.lua:2892
 	m["PenanceMark"] = map[string]*StatMap{
 		"penance_mark_summon_phantasms_when_hit": {
 			Mods: []mod.Mod{mod.NewFloat("SummonPhantasmWhenHit", mod.TypeBase, 0).Tag(mod.GlobalEffect("Curse"))},
@@ -3645,7 +3678,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("ManaCostAsLifeCost", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").Name("Petrified Blood").Unscalable(true), mod.Condition("LowLife").Neg(true))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:11327
+	// src/Data/Skills/act_dex.lua:11329
 	m["PhaseRun"] = map[string]*StatMap{
 		"base_movement_velocity_+%": {
 			Mods: []mod.Mod{mod.NewFloat("MovementSpeed", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Buff"))},
@@ -3654,19 +3687,19 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("PhysicalDamage", mod.TypeMore, 0).Flag(mod.MFlagMelee).Tag(mod.SkillType("SummonsTotem").Neg(true), mod.GlobalEffect("Buff"))},
 		},
 	}
-	// src/Data/Skills/other.lua:2860
+	// src/Data/Skills/other.lua:2928
 	m["PhysicalAegis"] = map[string]*StatMap{
 		"aegis_unique_shield_max_value": {
 			Mods: []mod.Mod{mod.NewFloat("PhysicalAegisValue", mod.TypeMAX, 0).Tag(mod.GlobalEffect("Buff").Unscalable(true))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:11407
+	// src/Data/Skills/act_dex.lua:11409
 	m["PlagueBearer"] = map[string]*StatMap{
 		"corrosive_shroud_poison_damage_+%_final_while_accumulating_poison": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagPoison).Tag(mod.GlobalEffect("Buff").ModCond("PlagueBearerIncubating"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:11489
+	// src/Data/Skills/act_dex.lua:11491
 	m["PoachersMark"] = map[string]*StatMap{
 		"base_additional_physical_damage_reduction_%": {
 			Mods: []mod.Mod{mod.NewFloat("PhysicalDamageReduction", mod.TypeBase, 0).Tag(mod.GlobalEffect("Curse"))},
@@ -3684,19 +3717,19 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("SelfPhysicalMin", mod.TypeBase, 0).Flag(mod.MFlagHit).Tag(mod.GlobalEffect("Curse"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:17429
+	// src/Data/Skills/act_dex.lua:17432
 	m["PoisonousConcoction"] = map[string]*StatMap{
 		"flask_throw_added_chaos_damage_%_of_flask_life_to_recover": {
 			Mods: []mod.Mod{mod.NewFloat("ChaosPerLifeFlaskPercent", mod.TypeBase, 0).Tag(mod.SkillPart(2))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:17530
+	// src/Data/Skills/act_dex.lua:17533
 	m["PoisonousConcoctionAltX"] = map[string]*StatMap{
 		"flask_throw_added_chaos_damage_%_of_flask_life_to_recover": {
 			Mods: []mod.Mod{mod.NewFloat("ChaosPerLifeFlaskPercent", mod.TypeBase, 0).Tag(mod.SkillPart(2))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:14108
+	// src/Data/Skills/act_int.lua:14191
 	m["PowerSiphon"] = map[string]*StatMap{
 		"critical_strike_chance_+%_final_per_power_charge_from_power_siphon": {
 			Mods: []mod.Mod{mod.NewFloat("CritChance", mod.TypeMore, 0).Tag(mod.Multiplier("PowerCharge"))},
@@ -3705,13 +3738,13 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFlag("OneShotProj", true)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:14192
+	// src/Data/Skills/act_int.lua:14275
 	m["PowerSiphonAltX"] = map[string]*StatMap{
 		"power_siphon_base_fire_at_x_targets": {
 			Mods: []mod.Mod{mod.NewFlag("OneShotProj", true)},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:11580
+	// src/Data/Skills/act_dex.lua:11582
 	m["Precision"] = map[string]*StatMap{
 		"accuracy_rating": {
 			Mods: []mod.Mod{mod.NewFloat("Accuracy", mod.TypeBase, 0).Tag(mod.GlobalEffect("Aura"))},
@@ -3752,13 +3785,13 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:12067
+	// src/Data/Skills/act_dex.lua:12069
 	m["Puncture"] = map[string]*StatMap{
 		"quality_display_active_skill_bleed_damage_final_is_gem": {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:12155
+	// src/Data/Skills/act_dex.lua:12157
 	m["PunctureAltX"] = map[string]*StatMap{
 		"quality_display_active_skill_bleed_damage_final_is_gem": {
 			Mods: []mod.Mod{},
@@ -3770,7 +3803,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("DamageTaken", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Curse"), mod.Condition("LowLife"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:14367
+	// src/Data/Skills/act_int.lua:14450
 	m["PurifyingFlame"] = map[string]*StatMap{
 		"quality_display_sanctify_is_gem": {
 			Mods: []mod.Mod{},
@@ -3779,7 +3812,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.SkillPart(2))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:14471
+	// src/Data/Skills/act_int.lua:14554
 	m["PurifyingFlameAltX"] = map[string]*StatMap{
 		"quality_display_sanctify_is_gem": {
 			Mods: []mod.Mod{},
@@ -3788,7 +3821,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.SkillPart(2))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:14562
+	// src/Data/Skills/act_int.lua:14645
 	m["PurityOfElements"] = map[string]*StatMap{
 		"base_resist_all_elements_%": {
 			Mods: []mod.Mod{mod.NewFloat("ElementalResist", mod.TypeBase, 0).Tag(mod.GlobalEffect("Aura"))},
@@ -3806,7 +3839,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("FireResistMax", mod.TypeBase, 0).Tag(mod.GlobalEffect("Aura"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:12235
+	// src/Data/Skills/act_dex.lua:12237
 	m["PurityOfIce"] = map[string]*StatMap{
 		"base_cold_damage_resistance_%": {
 			Mods: []mod.Mod{mod.NewFloat("ColdResist", mod.TypeBase, 0).Tag(mod.GlobalEffect("Aura"))},
@@ -3815,7 +3848,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("ColdResistMax", mod.TypeBase, 0).Tag(mod.GlobalEffect("Aura"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:14641
+	// src/Data/Skills/act_int.lua:14724
 	m["PurityOfLightning"] = map[string]*StatMap{
 		"base_lightning_damage_resistance_%": {
 			Mods: []mod.Mod{mod.NewFloat("LightningResist", mod.TypeBase, 0).Tag(mod.GlobalEffect("Aura"))},
@@ -3824,13 +3857,13 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("LightningResistMax", mod.TypeBase, 0).Tag(mod.GlobalEffect("Aura"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:14808
+	// src/Data/Skills/act_int.lua:14891
 	m["PyroclastMine"] = map[string]*StatMap{
 		"pyroclast_mine_aura_fire_exposure_%_to_apply": {
 			Mods: []mod.Mod{mod.NewFloat("FireExposure", mod.TypeBase, 0).Tag(mod.GlobalEffect("AuraDebuff").Name("Pyroclast Mine Fire Exposure"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:14906
+	// src/Data/Skills/act_int.lua:14989
 	m["PyroclastMineAltX"] = map[string]*StatMap{
 		"pyroclast_mine_aura_fire_exposure_%_to_apply": {
 			Mods: []mod.Mod{mod.NewFloat("FireExposure", mod.TypeBase, 0).Tag(mod.GlobalEffect("AuraDebuff").Name("Pyroclast Mine Fire Exposure"))},
@@ -3875,13 +3908,13 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeMore, 0).Tag(mod.SkillPart(2))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:15010
+	// src/Data/Skills/act_int.lua:15093
 	m["RaiseSpectre"] = map[string]*StatMap{
 		"raised_spectre_level": {
 			Mods: []mod.Mod{skill("minionLevel", 0)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:15090
+	// src/Data/Skills/act_int.lua:15173
 	m["RaiseSpectreAltX"] = map[string]*StatMap{
 		"raised_spectre_level": {
 			Mods: []mod.Mod{skill("minionLevel", 0)},
@@ -3891,7 +3924,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(1000)),
 		},
 	}
-	// src/Data/Skills/other.lua:3538
+	// src/Data/Skills/other.lua:3606
 	m["RaiseSpiders"] = map[string]*StatMap{
 		"summoned_spider_grants_attack_speed_+%": {
 			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeIncrease, 0).Flag(mod.MFlagAttack).Tag(mod.Multiplier("RaisedSpider"), mod.GlobalEffect("Buff").Name("Raised Spider"))},
@@ -3900,13 +3933,13 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeIncrease, 0).KeywordFlag(mod.KeywordFlagPoison).Tag(mod.Multiplier("RaisedSpider"), mod.GlobalEffect("Buff").Name("Raised Spider"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:15176
+	// src/Data/Skills/act_int.lua:15259
 	m["RaiseZombie"] = map[string]*StatMap{
 		"quality_display_raise_zombie_is_gem+%": {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:15258
+	// src/Data/Skills/act_int.lua:15341
 	m["RaiseZombieAltX"] = map[string]*StatMap{
 		"quality_display_raise_zombie_is_gem+%": {
 			Mods: []mod.Mod{},
@@ -3918,7 +3951,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("CooldownRecovery", mod.TypeIncrease, 0).Tag(mod.SkillId("ZombieSlam"))})},
 		},
 	}
-	// src/Data/Skills/act_int.lua:15345
+	// src/Data/Skills/act_int.lua:15428
 	m["RaiseZombieAltY"] = map[string]*StatMap{
 		"minion_global_always_hit": {
 			Mods: []mod.Mod{},
@@ -3949,7 +3982,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("RallyingExertedAttacks", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/other.lua:3502
+	// src/Data/Skills/other.lua:3570
 	m["Ravenous"] = map[string]*StatMap{
 		"ravenous_buff_magnitude": {
 			Groups: []*StatMap{
@@ -4001,7 +4034,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:12719
+	// src/Data/Skills/act_dex.lua:12721
 	m["Reave"] = map[string]*StatMap{
 		"reave_additional_max_stacks": {
 			Mods: []mod.Mod{mod.NewFloat("Multiplier:ReaveMaxStages", mod.TypeBase, 0)},
@@ -4010,7 +4043,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeMore, 0).Tag(mod.Multiplier("ReaveStage"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:12808
+	// src/Data/Skills/act_dex.lua:12810
 	m["ReaveAltX"] = map[string]*StatMap{
 		"reave_additional_max_stacks": {
 			Mods: []mod.Mod{mod.NewFloat("Multiplier:ReaveofRefractionMaxStages", mod.TypeBase, 0)},
@@ -4041,7 +4074,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(60)),
 		},
 	}
-	// src/Data/Skills/act_int.lua:15435
+	// src/Data/Skills/act_int.lua:15518
 	m["RighteousFire"] = map[string]*StatMap{
 		"base_nonlethal_fire_damage_%_of_maximum_energy_shield_taken_per_minute": {
 			Mods: []mod.Mod{mod.NewFloat("FireDegen", mod.TypeBase, 0).Tag(mod.PerStat(1, "EnergyShield"), mod.GlobalEffect("Buff"), mod.StatThreshold("LifeUnreserved", 2))},
@@ -4063,7 +4096,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Flag(mod.MFlagSpell).Tag(mod.GlobalEffect("Buff"), mod.StatThreshold("LifeUnreserved", 2))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:15538
+	// src/Data/Skills/act_int.lua:15621
 	m["RighteousFireAltX"] = map[string]*StatMap{
 		"base_nonlethal_fire_damage_%_of_maximum_mana_taken_per_minute": {
 			Mods: []mod.Mod{mod.NewFloat("FireDegen", mod.TypeBase, 0).Tag(mod.PerStat(1, "Mana"), mod.GlobalEffect("Buff"), mod.StatThreshold("LifeUnreserved", 2), mod.StatThreshold("Mana", 1))},
@@ -4077,7 +4110,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeMore, 0).Flag(mod.MFlagCast).Tag(mod.GlobalEffect("Buff"), mod.StatThreshold("LifeUnreserved", 2), mod.StatThreshold("Mana", 1))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:15731
+	// src/Data/Skills/act_int.lua:15814
 	m["ScorchingRay"] = map[string]*StatMap{
 		"base_fire_damage_resistance_%": {
 			Mods: []mod.Mod{mod.NewFloat("FireExposure", mod.TypeBase, 0).Tag(mod.GlobalEffect("Debuff").Name("Fire Exposure").EffectCond("ScorchingRayMaxStages"))},
@@ -4093,7 +4126,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:15833
+	// src/Data/Skills/act_int.lua:15916
 	m["ScorchingRayAltX"] = map[string]*StatMap{
 		"display_max_fire_beam_stacks": {
 			Mods: []mod.Mod{mod.NewFloat("Multiplier:ScorchingRayofImmolationMaxStages", mod.TypeBase, 0).Tag(mod.SkillPart(1))},
@@ -4106,7 +4139,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:13003
+	// src/Data/Skills/act_dex.lua:13005
 	m["ScourgeArrow"] = map[string]*StatMap{
 		"base_arrows_always_pierce": {
 			Mods: []mod.Mod{mod.NewFlag("PierceAllTargets", true)},
@@ -4121,7 +4154,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.SkillPart(2))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:13100
+	// src/Data/Skills/act_dex.lua:13102
 	m["ScourgeArrowAltX"] = map[string]*StatMap{
 		"base_arrows_always_pierce": {
 			Mods: []mod.Mod{mod.NewFlag("PierceAllTargets", true)},
@@ -4169,7 +4202,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("SeismicExertedAttacks", mod.TypeBase, 0).Tag(mod.SkillType("Slam"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:13517
+	// src/Data/Skills/act_dex.lua:13519
 	m["SeismicTrap"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -4188,7 +4221,10 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("SeismicPulseFrequency", mod.TypeIncrease, 0)},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:13683
+}
+
+func skillStatMapsPart3(m map[string]map[string]*StatMap) {
+	// src/Data/Skills/act_dex.lua:13685
 	m["SeismicTrapAltX"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -4200,7 +4236,7 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:13287
+	// src/Data/Skills/act_dex.lua:13289
 	m["ShatteringSteelAltX"] = map[string]*StatMap{
 		"additional_block_chance_against_projectiles_%_per_steel_charge": {
 			Mods: []mod.Mod{mod.NewFloat("ProjectileBlockChance", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").Unscalable(true), mod.Multiplier("SteelWardCount").Limit(6))},
@@ -4221,16 +4257,13 @@ func skillStatMapsPart2(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Flag(mod.MFlagHit).Tag(mod.MeleeProximity([]int{1, 0}))},
 		},
 	}
-}
-
-func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 	// src/Data/Skills/act_str.lua:10031
 	m["ShieldCrushAltX"] = map[string]*StatMap{
 		"shield_crush_damage_+%_final_from_distance": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Flag(mod.MFlagHit).Tag(mod.MeleeProximity([]int{1, 0}))},
 		},
 	}
-	// src/Data/Skills/other.lua:3796
+	// src/Data/Skills/other.lua:3864
 	m["ShieldShatter"] = map[string]*StatMap{
 		"buff_added_spell_maximum_base_physical_damage_per_shield_quality": {
 			Mods: []mod.Mod{mod.NewFloat("PhysicalMax", mod.TypeBase, 0).Flag(mod.MFlagSpell).Tag(mod.Multiplier("QualityOnWeapon 2"), mod.Condition("BlockedRecently"), mod.GlobalEffect("Buff"))},
@@ -4245,25 +4278,25 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{skill("PhysicalMin", 0).Tag(mod.Multiplier("QualityOnWeapon 2"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:15933
+	// src/Data/Skills/act_int.lua:16016
 	m["ShockNova"] = map[string]*StatMap{
 		"shock_nova_ring_chance_to_shock_+%": {
 			Mods: []mod.Mod{mod.NewFloat("EnemyShockChance", mod.TypeBase, 0).Tag(mod.SkillPartList(1, 2))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:13876
+	// src/Data/Skills/act_dex.lua:13878
 	m["ShrapnelBallistaAltX"] = map[string]*StatMap{
 		"fires_1_projectile_if_no_steel_ammo": {
 			Mods: []mod.Mod{mod.NewFlag("NoAdditionalProjectiles", true).Tag(mod.MultiplierThreshold("SteelShardConsumed").Threshold(0).Upper(true))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:13964
+	// src/Data/Skills/act_dex.lua:13966
 	m["SiegeBallista"] = map[string]*StatMap{
 		"attack_speed_+%_per_maximum_totem": {
 			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeIncrease, 0).Flag(mod.MFlagAttack).Tag(mod.PerStat(1, "ActiveTotemLimit"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:14130
+	// src/Data/Skills/act_dex.lua:14132
 	m["SiegeBallistaAltY"] = map[string]*StatMap{
 		"active_skill_summon_X_totems_in_ring_override": {
 			Mods: []mod.Mod{skill("dpsMultiplier", 0)},
@@ -4272,7 +4305,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{skill("totemFireOnce", 1)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:16101
+	// src/Data/Skills/act_int.lua:16184
 	m["SigilOfPower"] = map[string]*StatMap{
 		"circle_of_power_enemy_damage_+%_final_at_max_stages": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.MultiplierThreshold("SigilOfPowerStage").ThresholdVar("SigilOfPowerMaxStages").Actor("enemy"), mod.GlobalEffect("Debuff").Name("Sigil of Power"))},
@@ -4299,7 +4332,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:16201
+	// src/Data/Skills/act_int.lua:16284
 	m["SiphoningTrap"] = map[string]*StatMap{
 		"skill_life_regeneration_per_minute_per_affected_enemy": {
 			Mods: []mod.Mod{mod.NewFloat("LifeRegen", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").EffectCond("SiphoningTrapSiphoning"), mod.Multiplier("EnemyAffectedBySiphoningTrap").Limit(10))},
@@ -4342,13 +4375,13 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:14216
+	// src/Data/Skills/act_dex.lua:14218
 	m["SmokeMine"] = map[string]*StatMap{
 		"base_movement_velocity_+%": {
 			Mods: []mod.Mod{mod.NewFloat("MovementSpeed", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Buff"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:17620
+	// src/Data/Skills/act_dex.lua:17623
 	m["Snipe"] = map[string]*StatMap{
 		"quality_display_snipe_is_gem": {
 			Mods: []mod.Mod{},
@@ -4357,7 +4390,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Multiplier:SnipeStagesMax", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").Unscalable(true))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:11660
+	// src/Data/Skills/act_dex.lua:11662
 	m["SnipersMark"] = map[string]*StatMap{
 		"projectile_damage_taken_+%": {
 			Mods: []mod.Mod{mod.NewFloat("ProjectileDamageTaken", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Curse"))},
@@ -4366,7 +4399,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("SelfSplitCount", mod.TypeBase, 0).Tag(mod.GlobalEffect("Curse"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:17211
+	// src/Data/Skills/act_int.lua:17294
 	m["SoulLink"] = map[string]*StatMap{
 		"soul_link_grants_damage_taken_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("DamageTaken", mod.TypeMore, 0).Tag(mod.GlobalEffect("Link"))},
@@ -4378,19 +4411,19 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("TakenFromParentESBeforeYou", mod.TypeBase, 0).Tag(mod.GlobalEffect("Link"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:15220
+	// src/Data/Skills/act_dex.lua:15223
 	m["SpectralHelix"] = map[string]*StatMap{
 		"spectral_spiral_weapon_base_number_of_bounces": {
 			Mods: []mod.Mod{mod.NewFloat("BounceCount", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:15311
+	// src/Data/Skills/act_dex.lua:15314
 	m["SpectralHelixAltY"] = map[string]*StatMap{
 		"spectral_spiral_weapon_base_number_of_bounces": {
 			Mods: []mod.Mod{mod.NewFloat("BounceCount", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:14313
+	// src/Data/Skills/act_dex.lua:14316
 	m["SpectralShieldThrow"] = map[string]*StatMap{
 		"off_hand_maximum_added_physical_damage_per_15_shield_armour_and_evasion_rating": {
 			Mods: []mod.Mod{mod.NewFloat("PhysicalMax", mod.TypeBase, 0).Tag(mod.Condition("OffHandAttack"), mod.Condition("ShieldThrowCrushNoArmourEvasion").Neg(true), mod.PerStat(15, "ArmourOnWeapon 2", "EvasionOnWeapon 2"))},
@@ -4405,13 +4438,13 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.SkillPart(2))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:14413
+	// src/Data/Skills/act_dex.lua:14416
 	m["SpectralShieldThrowAltX"] = map[string]*StatMap{
 		"thrown_shield_secondary_projectile_damage_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.SkillPart(2))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:14500
+	// src/Data/Skills/act_dex.lua:14503
 	m["SpectralShieldThrowAltY"] = map[string]*StatMap{
 		"stationary_shield_throw_firing_interval_ms": {
 			Mods: []mod.Mod{skill("hitTimeOverride", 0).Tag(mod.SkillPart(2))},
@@ -4421,13 +4454,13 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.SkillPart(2))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:17060
+	// src/Data/Skills/act_int.lua:17143
 	m["Spellslinger"] = map[string]*StatMap{
 		"spellslinger_mana_reservation": {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:17292
+	// src/Data/Skills/act_int.lua:17375
 	m["SpiritOffering"] = map[string]*StatMap{
 		"spirit_offering_critical_strike_chance_+%": {
 			Mods: []mod.Mod{mod.NewFloat("CritChance", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Buff"))},
@@ -4436,7 +4469,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("CritMultiplier", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff"))},
 		},
 	}
-	// src/Data/Skills/other.lua:3973
+	// src/Data/Skills/other.lua:4041
 	m["StalkingPustule"] = map[string]*StatMap{
 		"volatile_dead_core_explosion_radius_+": {
 			Mods: []mod.Mod{skill("radius", 0)},
@@ -4464,19 +4497,19 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Multiplier:StaticStrikeofGatheringLightningMaxStages", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:17376
+	// src/Data/Skills/act_int.lua:17459
 	m["StormBrand"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:17473
+	// src/Data/Skills/act_int.lua:17556
 	m["StormBrandAltX"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:18049
+	// src/Data/Skills/act_int.lua:18132
 	m["StormBurst"] = map[string]*StatMap{
 		"display_storm_burst_jump_time_ms": {
 			Mods: []mod.Mod{skill("repeatFrequency", 0)},
@@ -4486,7 +4519,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{skill("remainingDurationDamage", 0)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:18158
+	// src/Data/Skills/act_int.lua:18241
 	m["StormBurstAltX"] = map[string]*StatMap{
 		"display_storm_burst_jump_time_ms": {
 			Mods: []mod.Mod{skill("repeatFrequency", 0)},
@@ -4496,19 +4529,19 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{skill("remainingDurationDamage", 0)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:18252
+	// src/Data/Skills/act_int.lua:18335
 	m["StormCall"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:18336
+	// src/Data/Skills/act_int.lua:18419
 	m["StormCallAltX"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:11753
+	// src/Data/Skills/act_dex.lua:11755
 	m["StormRain"] = map[string]*StatMap{
 		"number_of_allowed_storm_arrows": {
 			Mods: []mod.Mod{},
@@ -4524,7 +4557,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:11865
+	// src/Data/Skills/act_dex.lua:11867
 	m["StormRainAltX"] = map[string]*StatMap{
 		"number_of_allowed_storm_arrows": {
 			Mods: []mod.Mod{mod.NewFloat("StormRainAllowedStormArrows", mod.TypeBase, 0)},
@@ -4540,7 +4573,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:11973
+	// src/Data/Skills/act_dex.lua:11975
 	m["StormRainAltY"] = map[string]*StatMap{
 		"number_of_allowed_storm_arrows": {
 			Mods: []mod.Mod{mod.NewFloat("StormRainAllowedStormArrows", mod.TypeBase, 0)},
@@ -4556,7 +4589,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:17673
+	// src/Data/Skills/act_int.lua:17756
 	m["Stormbind"] = map[string]*StatMap{
 		"quality_display_rune_paint_area_is_gem": {
 			Mods: []mod.Mod{},
@@ -4577,7 +4610,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:17855
+	// src/Data/Skills/act_int.lua:17938
 	m["StormbindAltX"] = map[string]*StatMap{
 		"quality_display_rune_paint_area_is_gem": {
 			Mods: []mod.Mod{},
@@ -4598,7 +4631,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:17567
+	// src/Data/Skills/act_int.lua:17650
 	m["StormblastMine"] = map[string]*StatMap{
 		"lightning_explosion_mine_aura_damage_taken_+%": {
 			Mods: []mod.Mod{mod.NewFloat("DamageTaken", mod.TypeIncrease, 0).Tag(mod.Limit(150), mod.GlobalEffect("AuraDebuff").EffectStackVar("ActiveMineCount"))},
@@ -4607,25 +4640,25 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/other.lua:4214
+	// src/Data/Skills/other.lua:4282
 	m["SummonBeastialRhoa"] = map[string]*StatMap{
 		"base_number_of_beast_minions_allowed": {
 			Mods: []mod.Mod{mod.NewFloat("ActiveBeastMinionLimit", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/other.lua:4253
+	// src/Data/Skills/other.lua:4321
 	m["SummonBeastialSnake"] = map[string]*StatMap{
 		"base_number_of_beast_minions_allowed": {
 			Mods: []mod.Mod{mod.NewFloat("ActiveBeastMinionLimit", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/other.lua:4293
+	// src/Data/Skills/other.lua:4361
 	m["SummonBeastialUrsa"] = map[string]*StatMap{
 		"base_number_of_beast_minions_allowed": {
 			Mods: []mod.Mod{mod.NewFloat("ActiveBeastMinionLimit", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:18513
+	// src/Data/Skills/act_int.lua:18596
 	m["SummonCarrionGolem"] = map[string]*StatMap{
 		"bone_golem_damage_+%_final_per_non_golem_minion_nearby": {
 			Mods: []mod.Mod{mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("Damage", mod.TypeMore, 0).Tag(multiplierLimitVar("NearbyNonGolemMinion", "MaxNearbyGolemDamage").LimitTotal(true).Actor("parent"))})},
@@ -4640,7 +4673,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("PhysicalMin", mod.TypeBase, 0)}).Tag(mod.SkillType("Golem").Neg(true), mod.GlobalEffect("Buff"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:18690
+	// src/Data/Skills/act_int.lua:18773
 	m["SummonCarrionGolemAltY"] = map[string]*StatMap{
 		"bone_golem_damage_+%_final_per_non_golem_minion_nearby": {
 			Mods: []mod.Mod{mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("Damage", mod.TypeMore, 0).Tag(multiplierLimitVar("NearbyNonGolemMinion", "MaxNearbyGolemDamage").LimitTotal(true).Actor("parent"))})},
@@ -4649,7 +4682,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("Multiplier:MaxNearbyGolemDamage", mod.TypeBase, 0)})},
 		},
 	}
-	// src/Data/Skills/act_int.lua:18779
+	// src/Data/Skills/act_int.lua:18862
 	m["SummonChaosGolem"] = map[string]*StatMap{
 		"chaos_golem_grants_chaos_resistance_%": {
 			Mods: []mod.Mod{mod.NewFloat("ChaosResist", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff"))},
@@ -4667,7 +4700,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Buff"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:19030
+	// src/Data/Skills/act_int.lua:19113
 	m["SummonHolyRelic"] = map[string]*StatMap{
 		"holy_relic_nova_life_regeneration_rate_per_minute": {
 			Mods: []mod.Mod{mod.NewFloat("LifeRegen", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").Name("Holy Relic's Boon").EffectCond("HolyRelicBoonActive"))},
@@ -4677,7 +4710,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("LifeRegen", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").Name("Holy Relic's Minion Boon").EffectCond("HolyRelicBoonActive").ApplyNotPlayer(true).ApplyMinions(true))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:15705
+	// src/Data/Skills/act_dex.lua:15708
 	m["SummonIceGolem"] = map[string]*StatMap{
 		"ice_golem_grants_accuracy_rating_+": {
 			Mods: []mod.Mod{mod.NewFloat("Accuracy", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff"))},
@@ -4686,7 +4719,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("CritChance", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Buff"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:19195
+	// src/Data/Skills/act_int.lua:19278
 	m["SummonLightningGolem"] = map[string]*StatMap{
 		"lightning_golem_grants_attack_and_cast_speed_+%": {
 			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Buff"))},
@@ -4696,13 +4729,13 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(60)),
 		},
 	}
-	// src/Data/Skills/other.lua:5076
+	// src/Data/Skills/other.lua:5144
 	m["SummonMirageChieftain"] = map[string]*StatMap{
 		"skill_used_by_mirage_chieftain_damage_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("ChieftainMirageChieftainMoreDamage", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:19512
+	// src/Data/Skills/act_int.lua:19595
 	m["SummonReaper"] = map[string]*StatMap{
 		"active_skill_non_reaper_minion_damage_+%_final": {
 			Mods: []mod.Mod{mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("Damage", mod.TypeMore, 0)}).Tag(mod.SkillName("Summon Reaper").Neg(true).Transfigured(true), mod.GlobalEffect("Buff").Unscalable(true))},
@@ -4714,7 +4747,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("BleedChance", mod.TypeBase, 0).Flag(mod.MFlagAttack)})},
 		},
 	}
-	// src/Data/Skills/act_int.lua:19600
+	// src/Data/Skills/act_int.lua:19683
 	m["SummonReaperAltX"] = map[string]*StatMap{
 		"active_skill_non_reaper_minion_damage_+%_final": {
 			Mods: []mod.Mod{mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("Damage", mod.TypeMore, 0)}).Tag(mod.SkillName("Summon Reaper").Neg(true).Transfigured(true), mod.GlobalEffect("Buff").Unscalable(true))},
@@ -4723,7 +4756,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("Life", mod.TypeMore, 0)}).Tag(mod.SkillName("Summon Reaper").Neg(true).Transfigured(true), mod.GlobalEffect("Buff").Unscalable(true))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:19683
+	// src/Data/Skills/act_int.lua:19766
 	m["SummonReaperAltY"] = map[string]*StatMap{
 		"active_skill_non_reaper_minion_damage_+%_final": {
 			Mods: []mod.Mod{mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("Damage", mod.TypeMore, 0)}).Tag(mod.SkillName("Summon Reaper").Neg(true).Transfigured(true), mod.GlobalEffect("Buff").Unscalable(true))},
@@ -4747,7 +4780,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("SacredWispsChance", mod.TypeBase, 25).Tag(mod.ActorCondition("enemy", "RareOrUnique"))},
 		},
 	}
-	// src/Data/Skills/other.lua:4824
+	// src/Data/Skills/other.lua:4892
 	m["SummonSentinelOfRadiance"] = map[string]*StatMap{
 		"radiant_sentinel_minion_burning_effect_radius": {
 			Mods: []mod.Mod{mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("Multiplier:GuardianSentinelFireAuraRadius", mod.TypeBase, 0)})},
@@ -4760,31 +4793,31 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Div: utils.Ptr(float64(60)),
 		},
 	}
-	// src/Data/Skills/act_int.lua:19774
+	// src/Data/Skills/act_int.lua:19857
 	m["SummonSkeletons"] = map[string]*StatMap{
 		"quality_display_summon_skeleton_is_gem": {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:19853
+	// src/Data/Skills/act_int.lua:19936
 	m["SummonSkeletonsAltX"] = map[string]*StatMap{
 		"quality_display_summon_skeleton_is_gem": {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:19932
+	// src/Data/Skills/act_int.lua:20015
 	m["SummonSkeletonsAltY"] = map[string]*StatMap{
 		"quality_display_summon_skeleton_is_gem": {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:20098
+	// src/Data/Skills/act_int.lua:20181
 	m["SummonSkitterbots"] = map[string]*StatMap{
 		"skitterbots_trap_mine_damage_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagTrap | mod.KeywordFlagMine).Tag(mod.GlobalEffect("Buff"))},
 		},
 	}
-	// src/Data/Skills/other.lua:4865
+	// src/Data/Skills/other.lua:4933
 	m["SummonSpectralTiger"] = map[string]*StatMap{
 		"modifiers_to_claw_critical_strike_chance_apply_minion_critical_strike_chance": {
 			Mods: []mod.Mod{mod.NewFlag("ClawCritChanceAppliesToMinions", true)},
@@ -4799,7 +4832,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("CritChance", mod.TypeIncrease, 0).Tag(mod.Multiplier("SpectralTigerCount"), mod.GlobalEffect("Buff").Name("Spectral Tiger"))},
 		},
 	}
-	// src/Data/Skills/other.lua:4915
+	// src/Data/Skills/other.lua:4983
 	m["SummonSpectralWolf"] = map[string]*StatMap{
 		"modifiers_to_claw_critical_strike_chance_apply_minion_critical_strike_chance": {
 			Mods: []mod.Mod{mod.NewFlag("ClawCritChanceAppliesToMinions", true)},
@@ -4824,7 +4857,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Defences", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Buff"))},
 		},
 	}
-	// src/Data/Skills/other.lua:5000
+	// src/Data/Skills/other.lua:5068
 	m["SummonVoidSpawn"] = map[string]*StatMap{
 		"void_spawn_withered_on_hit_chance_%": {
 			Mods: []mod.Mod{mod.NewFlag("Condition:CanWither", true)},
@@ -5081,7 +5114,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			},
 		},
 	}
-	// src/Data/Skills/sup_int.lua:6153
+	// src/Data/Skills/sup_int.lua:6151
 	m["SupportAwakenedSpellCascade"] = map[string]*StatMap{
 		"support_spell_cascade_area_of_effect_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeMore, 0)},
@@ -5090,7 +5123,7 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0)},
 		},
 	}
-	// src/Data/Skills/sup_int.lua:6384
+	// src/Data/Skills/sup_int.lua:6382
 	m["SupportAwakenedSpellEcho"] = map[string]*StatMap{
 		"spell_echo_plus_chance_double_damage_%_final": {
 			Mods: []mod.Mod{mod.NewFloat("RepeatFinalDoubleDamageChance", mod.TypeBase, 0).Flag(mod.MFlagSpell).Tag(mod.Condition("CastOnFrostbolt").Neg(true), mod.Condition("averageRepeat", "alwaysFinalRepeat"))},
@@ -5108,13 +5141,13 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Flag(mod.MFlagDot)},
 		},
 	}
-	// src/Data/Skills/sup_int.lua:6730
+	// src/Data/Skills/sup_int.lua:6728
 	m["SupportAwakenedUnboundAilments"] = map[string]*StatMap{
 		"support_unbound_ailments_ailment_damage_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagPoison | mod.KeywordFlagBleed | mod.KeywordFlagIgnite)},
 		},
 	}
-	// src/Data/Skills/sup_int.lua:6857
+	// src/Data/Skills/sup_int.lua:6855
 	m["SupportAwakenedUnleash"] = map[string]*StatMap{
 		"support_anticipation_charge_gain_interval_ms": {
 			Mods: []mod.Mod{mod.NewFloat("SealGainFrequency", mod.TypeBase, 0)},
@@ -5330,6 +5363,9 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Flag(mod.MFlagSpell)},
 		},
 	}
+}
+
+func skillStatMapsPart4(m map[string]map[string]*StatMap) {
 	// src/Data/Skills/sup_str.lua:1156
 	m["SupportCastWhenDamageTaken"] = map[string]*StatMap{
 		"cast_on_damage_taken_damage_+%_final": {
@@ -5355,9 +5391,6 @@ func skillStatMapsPart3(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("TriggeredDamage", mod.TypeMore, 0).Tag(mod.SkillType("Triggered"))},
 		},
 	}
-}
-
-func skillStatMapsPart4(m map[string]map[string]*StatMap) {
 	// src/Data/Skills/sup_int.lua:878
 	m["SupportCastWhileChannellingTriggeredPlus"] = map[string]*StatMap{
 		"support_cast_while_channelling_triggered_skill_damage_+%_final": {
@@ -5576,7 +5609,7 @@ func skillStatMapsPart4(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("ManaOnKill", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/other.lua:1433
+	// src/Data/Skills/other.lua:1434
 	m["SupportDivineBlessing"] = map[string]*StatMap{
 		"support_aura_duration_base_buff_duration": {
 			Mods: []mod.Mod{skill("auraDuration", 0)},
@@ -5589,7 +5622,7 @@ func skillStatMapsPart4(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/other.lua:1610
+	// src/Data/Skills/other.lua:1611
 	m["SupportEarthbreaker"] = map[string]*StatMap{
 		"ancestor_totem_grants_owner_area_of_effect_+%_with_melee_skills": {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeIncrease, 0).Flag(mod.MFlagMelee)},
@@ -5664,7 +5697,7 @@ func skillStatMapsPart4(m map[string]map[string]*StatMap) {
 	// src/Data/Skills/sup_str.lua:2144
 	m["SupportExcommunicate"] = map[string]*StatMap{
 		"support_excommunicate_on_melee_attack_hit_for_X_ms": {
-			Mods: []mod.Mod{mod.NewFlag("Condition:CanExcommunicate", true)},
+			Mods: []mod.Mod{mod.NewFlag("Condition:CanExcommunicate", true).Tag(mod.GlobalEffect("Buff").Name("Excommunicate Support"))},
 		},
 	}
 	// src/Data/Skills/sup_int.lua:2356
@@ -5676,7 +5709,7 @@ func skillStatMapsPart4(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewList("MinionModifier", mod.MinionModifier{Mod: mod.NewFloat("CritMultiplier", mod.TypeBase, 0)}).Tag(mod.Multiplier("CritRecently").Limit(100).LimitTotal(true))},
 		},
 	}
-	// src/Data/Skills/sup_str.lua:5495
+	// src/Data/Skills/sup_str.lua:5496
 	m["SupportExpertRetaliation"] = map[string]*StatMap{
 		"support_expert_retaliation_cooldown_speed_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("CooldownRecovery", mod.TypeMore, 0)},
@@ -5851,7 +5884,7 @@ func skillStatMapsPart4(m map[string]map[string]*StatMap) {
 			},
 		},
 	}
-	// src/Data/Skills/sup_int.lua:6211
+	// src/Data/Skills/sup_int.lua:6209
 	m["SupportGreaterSpellCascade"] = map[string]*StatMap{
 		"support_spell_cascade_area_of_effect_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeMore, 0)},
@@ -5860,7 +5893,7 @@ func skillStatMapsPart4(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0)},
 		},
 	}
-	// src/Data/Skills/sup_int.lua:6333
+	// src/Data/Skills/sup_int.lua:6331
 	m["SupportGreaterSpellEcho"] = map[string]*StatMap{
 		"support_greater_spell_echo_area_of_effect_+%_per_repeat": {
 			Mods: []mod.Mod{mod.NewFloat("RepeatPerRepeatAreaOfEffect", mod.TypeIncrease, 0).Tag(mod.Condition("CastOnFrostbolt").Neg(true))},
@@ -5872,7 +5905,7 @@ func skillStatMapsPart4(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeMore, 0).Flag(mod.MFlagCast)},
 		},
 	}
-	// src/Data/Skills/sup_int.lua:6918
+	// src/Data/Skills/sup_int.lua:6916
 	m["SupportGreaterUnleash"] = map[string]*StatMap{
 		"support_anticipation_charge_gain_interval_ms": {
 			Mods: []mod.Mod{mod.NewFloat("SealGainFrequency", mod.TypeBase, 0)},
@@ -6043,7 +6076,7 @@ func skillStatMapsPart4(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeMore, 0).Tag(multiplierLimitVar("Intensity", "IntensityLimit"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:18313
+	// src/Data/Skills/act_dex.lua:18316
 	m["SupportIntuitiveLink"] = map[string]*StatMap{
 		"support_trigger_link_damage_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0)},
@@ -6414,14 +6447,10 @@ func skillStatMapsPart4(m map[string]map[string]*StatMap) {
 	// src/Data/Skills/sup_int.lua:5894
 	m["SupportSacrifice"] = map[string]*StatMap{
 		"support_sacrifice_gain_%_of_sacrificed_life_as_added_chaos_damage": {
-			Mods: []mod.Mod{
-				mod.NewFloat("ChaosMin", mod.TypeBase, 0).Tag(mod.Multiplier("SacrificePercent")),
-				mod.NewFloat("ChaosMax", mod.TypeBase, 0).Tag(mod.Multiplier("SacrificePercent")),
-			},
-			Div: utils.Ptr(float64(100)),
+			Mods: []mod.Mod{skill("sacrificeLifeAsChaos", 0)},
 		},
 		"support_sacrifice_sacrifice_%_of_current_life": {
-			Mods: []mod.Mod{mod.NewFloat("Multiplier:SacrificePercent", mod.TypeBase, 0).Tag(mod.PercentStat("LifeUnreserved", 1).Actor("parent"))},
+			Mods: []mod.Mod{skill("sacrificeLifePercent", 0)},
 		},
 	}
 	// src/Data/Skills/sup_dex.lua:3657
@@ -6430,7 +6459,7 @@ func skillStatMapsPart4(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("EnemyAilmentDuration", mod.TypeMore, 0)},
 		},
 	}
-	// src/Data/Skills/sup_int.lua:5968
+	// src/Data/Skills/sup_int.lua:5966
 	m["SupportScornfulHerald"] = map[string]*StatMap{
 		"herald_no_buff_effect": {
 			Mods:  []mod.Mod{mod.NewFloat("BuffEffect", mod.TypeMore, 0).Tag(mod.SkillType("Herald"))},
@@ -6446,6 +6475,9 @@ func skillStatMapsPart4(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
+}
+
+func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 	// src/Data/Skills/sup_dex.lua:3785
 	m["SupportSlowerProjectiles"] = map[string]*StatMap{
 		"support_slower_projectiles_damage_+%_final": {
@@ -6455,7 +6487,7 @@ func skillStatMapsPart4(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("ProjectileSpeed", mod.TypeMore, 0)},
 		},
 	}
-	// src/Data/Skills/sup_int.lua:6076
+	// src/Data/Skills/sup_int.lua:6074
 	m["SupportSpellCascade"] = map[string]*StatMap{
 		"support_spell_cascade_area_of_effect_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeMore, 0)},
@@ -6464,7 +6496,7 @@ func skillStatMapsPart4(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0)},
 		},
 	}
-	// src/Data/Skills/sup_int.lua:6261
+	// src/Data/Skills/sup_int.lua:6259
 	m["SupportSpellEcho"] = map[string]*StatMap{
 		"support_echo_damage_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0)},
@@ -6473,9 +6505,6 @@ func skillStatMapsPart4(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeMore, 0).Flag(mod.MFlagCast)},
 		},
 	}
-}
-
-func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 	// src/Data/Skills/sup_str.lua:5048
 	m["SupportSpellTotem"] = map[string]*StatMap{
 		"support_spell_totem_cast_speed_+%_final": {
@@ -6485,13 +6514,13 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0)},
 		},
 	}
-	// src/Data/Skills/sup_int.lua:6009
+	// src/Data/Skills/sup_int.lua:6007
 	m["SupportSpellblade"] = map[string]*StatMap{
 		"support_spell_weapon_damage_gain_%_of_one_hand_melee_weapon_damage_as_added_spell_damage": {
 			Mods: []mod.Mod{mod.NewFloat("OneHandWeaponDamageAppliesToSpells", mod.TypeMAX, 0)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:17126
+	// src/Data/Skills/act_int.lua:17209
 	m["SupportSpellslinger"] = map[string]*StatMap{
 		"gain_%_of_base_wand_damage_as_added_spell_damage": {
 			Mods: []mod.Mod{skill("gainPercentBaseWandDamageToSpells", 0)},
@@ -6506,7 +6535,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagHit | mod.KeywordFlagAilment)},
 		},
 	}
-	// src/Data/Skills/sup_int.lua:6441
+	// src/Data/Skills/sup_int.lua:6439
 	m["SupportSummonPhantasm"] = map[string]*StatMap{
 		"phantasm_maximum_added_physical_damage_to_grant": {
 			Mods: []mod.Mod{mod.NewFloat("PhysicalMax", mod.TypeBase, 0).Flag(mod.MFlagSpell).Tag(mod.PerStat(1, "ActivePhantasmLimit"), mod.GlobalEffect("Buff").Name("Phantasmal Might").EffectCond("PhantasmalMight").AllowTotemBuff(true))},
@@ -6521,7 +6550,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Flag(mod.MFlagDot)},
 		},
 	}
-	// src/Data/Skills/sup_int.lua:6515
+	// src/Data/Skills/sup_int.lua:6513
 	m["SupportSwiftbrand"] = map[string]*StatMap{
 		"support_rapid_activation_brand_activation_rate_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("BrandActivationFrequency", mod.TypeMore, 0)},
@@ -6533,7 +6562,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("SecondaryDuration", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagBrand)},
 		},
 	}
-	// src/Data/Skills/sup_str.lua:5186
+	// src/Data/Skills/sup_str.lua:5187
 	m["SupportTransfusion"] = map[string]*StatMap{
 		"random_nearby_minion_gain_a_soul_eater_soul_on_X_life_spent": {
 			Mods: []mod.Mod{
@@ -6560,7 +6589,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("TrapThrowingSpeed", mod.TypeMore, 0)},
 		},
 	}
-	// src/Data/Skills/sup_str.lua:5240
+	// src/Data/Skills/sup_str.lua:5241
 	m["SupportTrauma"] = map[string]*StatMap{
 		"attack_maximum_added_physical_damage_with_weapons_per_trauma": {
 			Mods: []mod.Mod{mod.NewFloat("PhysicalMax", mod.TypeBase, 0).Flag(mod.MFlagAttack | mod.MFlagWeapon).Tag(mod.Multiplier("TraumaStacks"))},
@@ -6579,13 +6608,13 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/other.lua:6175
+	// src/Data/Skills/other.lua:6338
 	m["SupportTriggerFireSpellOnHit"] = map[string]*StatMap{
 		"spell_is_triggered_on_hit": {
 			Mods: []mod.Mod{skill("triggeredBySettlersEnchantTrigger", 1)},
 		},
 	}
-	// src/Data/Skills/other.lua:3619
+	// src/Data/Skills/other.lua:3687
 	m["SupportTriggerSpellOnUnarmedMeleeCriticalHit"] = map[string]*StatMap{
 		"spell_is_triggered_on_hit": {
 			Mods: []mod.Mod{
@@ -6594,7 +6623,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			},
 		},
 	}
-	// src/Data/Skills/sup_int.lua:6590
+	// src/Data/Skills/sup_int.lua:6588
 	m["SupportTrinity"] = map[string]*StatMap{
 		"damage_penetrates_%_elemental_resistances_while_all_resonance_is_25": {
 			Mods: []mod.Mod{mod.NewFloat("ElementalPenetration", mod.TypeBase, 0).Tag(mod.MultiplierThreshold("ResonanceCount").Threshold(25))},
@@ -6603,7 +6632,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("ElementalDamage", mod.TypeMore, 0).Tag(mod.Multiplier("ResonanceCount").Div(5))},
 		},
 	}
-	// src/Data/Skills/sup_int.lua:6663
+	// src/Data/Skills/sup_int.lua:6661
 	m["SupportUnboundAilments"] = map[string]*StatMap{
 		"support_unbound_ailments_ailment_damage_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagPoison | mod.KeywordFlagBleed | mod.KeywordFlagIgnite)},
@@ -6624,7 +6653,13 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("ChanceToIgnoreEnemyPhysicalDamageReduction", mod.TypeBase, 0).Tag(mod.MultiplierThreshold("UnholyResonanceCount").Threshold(25))},
 		},
 	}
-	// src/Data/Skills/sup_int.lua:6775
+	// src/Data/Skills/other.lua:2565
+	m["SupportUniqueSuspendInTimeCanUse"] = map[string]*StatMap{
+		"skill_can_be_used_by_temporal_mirage": {
+			Mods: []mod.Mod{skill("triggeredByTemporalMirage", 1)},
+		},
+	}
+	// src/Data/Skills/sup_int.lua:6773
 	m["SupportUnleash"] = map[string]*StatMap{
 		"support_anticipation_charge_gain_interval_ms": {
 			Mods: []mod.Mod{mod.NewFloat("SealGainFrequency", mod.TypeBase, 0)},
@@ -6637,13 +6672,13 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("SealRepeatPenalty", mod.TypeMore, 0)},
 		},
 	}
-	// src/Data/Skills/sup_int.lua:6974
+	// src/Data/Skills/sup_int.lua:6972
 	m["SupportVaalSacrifice"] = map[string]*StatMap{
 		"support_multicast_cast_speed_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeMore, 0).Flag(mod.MFlagCast)},
 		},
 	}
-	// src/Data/Skills/sup_str.lua:5389
+	// src/Data/Skills/sup_str.lua:5390
 	m["SupportVaalTemptation"] = map[string]*StatMap{
 		"support_vaal_temptation_physical_damage_taken_per_minute_instead_of_soul_gain_prevention": {
 			Mods: []mod.Mod{mod.NewFloat("PhysicalDegen", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff"))},
@@ -6698,7 +6733,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/sup_str.lua:5428
+	// src/Data/Skills/sup_str.lua:5429
 	m["SupportVolatility"] = map[string]*StatMap{
 		"maximum_attack_damage_+%_final_from_volatility_support": {
 			Mods: []mod.Mod{mod.NewFloat("MaxDamage", mod.TypeMore, 0).Tag(mod.SkillType("Attack"))},
@@ -6776,7 +6811,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeMore, 0).Tag(mod.Multiplier("RemovableEnduranceCharge"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:20179
+	// src/Data/Skills/act_int.lua:20262
 	m["TempestShield"] = map[string]*StatMap{
 		"shield_spell_block_%": {
 			Mods: []mod.Mod{mod.NewFloat("SpellBlockChance", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff"))},
@@ -6785,7 +6820,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFlag("ShockImmune", true).Tag(mod.GlobalEffect("Buff"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:15946
+	// src/Data/Skills/act_dex.lua:15949
 	m["TemporalChains"] = map[string]*StatMap{
 		"buff_time_passed_+%_other_than_temporal_chains": {
 			Mods: []mod.Mod{mod.NewFloat("BuffExpireFaster", mod.TypeMore, 0).Tag(mod.GlobalEffect("Curse"))},
@@ -6800,13 +6835,13 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("TemporalChainsActionSpeed", mod.TypeIncrease, 0).Tag(mod.GlobalEffect("Curse"), mod.Condition("RareOrUnique"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:17767
+	// src/Data/Skills/act_dex.lua:17770
 	m["TemporalRift"] = map[string]*StatMap{
 		"debuff_time_passed_+%": {
 			Mods: []mod.Mod{mod.NewFloat("SelfDebuffExpirationRate", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff"))},
 		},
 	}
-	// src/Data/Skills/other.lua:5130
+	// src/Data/Skills/other.lua:5198
 	m["ThirstForBlood"] = map[string]*StatMap{
 		"skill_life_regeneration_per_minute_per_affected_enemy": {
 			Mods: []mod.Mod{mod.NewFloat("LifeRegen", mod.TypeBase, 0).Tag(multiplierLimitVar("NearbyBleedingEnemies", "ThirstForBloodMaxTargets"), mod.GlobalEffect("Buff"))},
@@ -6819,7 +6854,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Multiplier:ThirstForBloodMaxTargets", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").Unscalable(true))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:17851
+	// src/Data/Skills/act_dex.lua:17854
 	m["Thunderstorm"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{skill("showAverage", 1).Tag(mod.SkillPart(2))},
@@ -6838,14 +6873,14 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Multiplier:ThunderstormMaxStages", mod.TypeBase, 0).Tag(mod.SkillPart(2))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:18037
+	// src/Data/Skills/act_dex.lua:18040
 	m["Tornado"] = map[string]*StatMap{
 		"tornado_base_damage_interval_ms": {
 			Mods: []mod.Mod{skill("damageInterval", 0)},
 			Div:  utils.Ptr(float64(1000)),
 		},
 	}
-	// src/Data/Skills/act_dex.lua:18145
+	// src/Data/Skills/act_dex.lua:18148
 	m["TornadoAltY"] = map[string]*StatMap{
 		"elemental_strike_physical_damage_%_to_convert": {
 			Mods: []mod.Mod{
@@ -6862,19 +6897,19 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(1000)),
 		},
 	}
-	// src/Data/Skills/act_dex.lua:16063
+	// src/Data/Skills/act_dex.lua:16066
 	m["TornadoShot"] = map[string]*StatMap{
 		"tornado_shot_num_of_secondary_projectiles": {
 			Mods: []mod.Mod{mod.NewFloat("tornadoShotSecondaryProjectiles", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:15119
+	// src/Data/Skills/act_dex.lua:15122
 	m["ToxicRainAltY"] = map[string]*StatMap{
 		"toxic_rain_spores_apply_withered": {
 			Mods: []mod.Mod{mod.NewFlag("Condition:CanWither", true)},
 		},
 	}
-	// src/Data/Skills/other.lua:5611
+	// src/Data/Skills/other.lua:5679
 	m["TriggerSummonedAncestorAhuana"] = map[string]*StatMap{
 		"ancestral_buff_base_spell_damage_%_suppressed": {
 			Mods: []mod.Mod{mod.NewFloat("SpellSuppressionEffect", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").Name("Spirit of Ahuana"), mod.Multiplier("RamakoTattooEffect").NoFloor())},
@@ -6884,7 +6919,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(100)),
 		},
 	}
-	// src/Data/Skills/other.lua:5657
+	// src/Data/Skills/other.lua:5725
 	m["TriggerSummonedAncestorAkoya"] = map[string]*StatMap{
 		"ancestral_buff_base_rage_regeneration_per_minute": {
 			Mods: []mod.Mod{mod.NewFloat("RageRegen", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").Name("Spirit of Akoya"), mod.Multiplier("TukohamaTattooEffect").NoFloor())},
@@ -6895,7 +6930,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(100)),
 		},
 	}
-	// src/Data/Skills/other.lua:5704
+	// src/Data/Skills/other.lua:5772
 	m["TriggerSummonedAncestorIkiaho"] = map[string]*StatMap{
 		"ancestral_buff_travel_skill_cooldown_speed_+%": {
 			Mods: []mod.Mod{mod.NewFloat("CooldownRecovery", mod.TypeIncrease, 0).Tag(mod.SkillType("Travel"), mod.GlobalEffect("Buff").Name("Spirit of Ikiaho"), mod.Multiplier("ArohonguiTattooEffect").NoFloor())},
@@ -6905,7 +6940,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(100)),
 		},
 	}
-	// src/Data/Skills/other.lua:5750
+	// src/Data/Skills/other.lua:5818
 	m["TriggerSummonedAncestorKahuturoa"] = map[string]*StatMap{
 		"ancestral_buff_armour_%_applies_to_all_damage_from_hits": {
 			Mods: []mod.Mod{
@@ -6920,7 +6955,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(100)),
 		},
 	}
-	// src/Data/Skills/other.lua:5799
+	// src/Data/Skills/other.lua:5867
 	m["TriggerSummonedAncestorKaom"] = map[string]*StatMap{
 		"ancestral_buff_damage_removed_from_your_nearest_totem_before_life_or_es_%": {
 			Mods: []mod.Mod{mod.NewFloat("takenFromTotemsBeforeYou", mod.TypeBase, 0).Tag(mod.Condition("HaveTotem"), mod.GlobalEffect("Buff").Name("Spirit of Kaom"), mod.Multiplier("NgamahuTattooEffect").NoFloor())},
@@ -6930,7 +6965,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(100)),
 		},
 	}
-	// src/Data/Skills/other.lua:5845
+	// src/Data/Skills/other.lua:5913
 	m["TriggerSummonedAncestorKiloava"] = map[string]*StatMap{
 		"ancestral_buff_recover_%_of_maximum_life_mana_energy_shield_on_block": {
 			Mods: []mod.Mod{mod.NewFloat("Multiplier:KiloavaRecoverOnBlock", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").Unscalable(true), mod.Multiplier("ValakoTattooEffect").NoFloor())},
@@ -6940,7 +6975,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(100)),
 		},
 	}
-	// src/Data/Skills/other.lua:5896
+	// src/Data/Skills/other.lua:5964
 	m["TriggerSummonedAncestorMaata"] = map[string]*StatMap{
 		"ancestral_buff_flask_charges_recovered_per_3_seconds": {
 			Mods: []mod.Mod{mod.NewFloat("FlaskChargesGenerated", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").Name("Spirit of Maata"), mod.Multiplier("TawhoaTattooEffect").NoFloor())},
@@ -6951,7 +6986,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(100)),
 		},
 	}
-	// src/Data/Skills/other.lua:5943
+	// src/Data/Skills/other.lua:6011
 	m["TriggerSummonedAncestorRakiata"] = map[string]*StatMap{
 		"ancestral_buff_action_speed_+%_minimum_value": {
 			Mods: []mod.Mod{mod.NewFloat("MinimumActionSpeed", mod.TypeMAX, 0).Tag(mod.GlobalEffect("Buff").Name("Spirit of Rakiata"), mod.Multiplier("TasalioTattooEffect").Base(100).NoFloor())},
@@ -6961,7 +6996,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(100)),
 		},
 	}
-	// src/Data/Skills/other.lua:5989
+	// src/Data/Skills/other.lua:6057
 	m["TriggerSummonedAncestorTawhanuku"] = map[string]*StatMap{
 		"ancestral_buff_base_mana_regeneration_rate_per_minute": {
 			Mods: []mod.Mod{mod.NewFloat("ManaRegen", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").Name("Spirit of Tawhanuku"), mod.Multiplier("HinekoraTattooEffect").NoFloor())},
@@ -6972,7 +7007,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(100)),
 		},
 	}
-	// src/Data/Skills/other.lua:6036
+	// src/Data/Skills/other.lua:6104
 	m["TriggerSummonedAncestorUtula"] = map[string]*StatMap{
 		"ancestral_buff_leech_%_is_instant": {
 			Mods: []mod.Mod{
@@ -6986,7 +7021,16 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(100)),
 		},
 	}
-	// src/Data/Skills/other.lua:4784
+	// src/Data/Skills/other.lua:2854
+	m["TriggeredMoonfall"] = map[string]*StatMap{
+		"attack_trigger_on_melee_critical_hit_%": {
+			Mods: []mod.Mod{
+				skill("triggeredByCovetousDark", 1),
+				skill("triggerOnCrit", 1),
+			},
+		},
+	}
+	// src/Data/Skills/other.lua:4852
 	m["TriggeredSummonGhostOnKill"] = map[string]*StatMap{
 		"phantasm_maximum_added_physical_damage_to_grant": {
 			Mods: []mod.Mod{mod.NewFloat("PhysicalMax", mod.TypeBase, 0).Flag(mod.MFlagSpell).Tag(mod.PerStat(1, "ActivePhantasmLimit"), mod.GlobalEffect("Buff").Name("Phantasmal Might").EffectCond("PhantasmalMight").AllowTotemBuff(true))},
@@ -7022,13 +7066,13 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Multiplier:VoidstormMaxStages", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:16208
+	// src/Data/Skills/act_dex.lua:16211
 	m["Unearth"] = map[string]*StatMap{
 		"unearth_base_corpse_level": {
 			Mods: []mod.Mod{mod.NewFloat("CorpseLevel", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/other.lua:3579
+	// src/Data/Skills/other.lua:3647
 	m["UniqueMirageWarriors"] = map[string]*StatMap{
 		"maximum_number_of_mirage_warriors": {
 			Mods: []mod.Mod{mod.NewFloat("SaviourMirageWarriorMaxCount", mod.TypeBase, 0)},
@@ -7123,13 +7167,13 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagHit|mod.KeywordFlagAilment).Tag(mod.ActorCondition("enemy", "LowLife"), mod.SkillName("Cleave").Transfigured(true), mod.GlobalEffect("Buff").Name("Vaal Cleave").Unscalable(true))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:4929
+	// src/Data/Skills/act_dex.lua:4931
 	m["VaalCyclone"] = map[string]*StatMap{
 		"cyclone_area_of_effect_+%_per_additional_melee_range": {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeIncrease, 0).Tag(mod.Multiplier("AdditionalMeleeRange"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:5448
+	// src/Data/Skills/act_dex.lua:5450
 	m["VaalDetonateDead"] = map[string]*StatMap{
 		"spell_maximum_base_fire_damage": {
 			Mods: []mod.Mod{skill("FireMax", 0).Tag(mod.SkillPart(1))},
@@ -7138,7 +7182,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{skill("FireMin", 0).Tag(mod.SkillPart(1))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:4520
+	// src/Data/Skills/act_int.lua:4521
 	m["VaalDiscipline"] = map[string]*StatMap{
 		"energy_shield_recharge_not_delayed_by_damage": {
 			Mods: []mod.Mod{mod.NewFloat("EnergyShieldRechargeNotDelayedByDamage", mod.TypeDummy, 0).Tag(mod.GlobalEffect("Aura"))},
@@ -7162,13 +7206,13 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:6228
+	// src/Data/Skills/act_int.lua:6308
 	m["VaalFirestorm"] = map[string]*StatMap{
 		"vaal_firestorm_gem_explosion_area_of_effect_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffectSecondary", mod.TypeMore, 0)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:7116
+	// src/Data/Skills/act_int.lua:7196
 	m["VaalFlameblast"] = map[string]*StatMap{
 		"charged_blast_spell_damage_+%_final_per_stack": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Flag(mod.MFlagHit).Tag(mod.Multiplier("VaalFlameblastStage"))},
@@ -7180,7 +7224,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffect", mod.TypeBase, 0).Tag(mod.Multiplier("VaalFlameblastStageAfterFirst"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:8105
+	// src/Data/Skills/act_dex.lua:8107
 	m["VaalFlickerStrike"] = map[string]*StatMap{
 		"active_skill_ailment_damage_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Flag(mod.MFlagAilment | mod.MFlagMeleeHit)},
@@ -7192,7 +7236,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:9009
+	// src/Data/Skills/act_dex.lua:9011
 	m["VaalGrace"] = map[string]*StatMap{
 		"chance_to_evade_attacks_%": {
 			Mods: []mod.Mod{mod.NewFloat("EvadeChance", mod.TypeBase, 0).Tag(mod.GlobalEffect("Aura"))},
@@ -7210,7 +7254,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:9174
+	// src/Data/Skills/act_dex.lua:9176
 	m["VaalHaste"] = map[string]*StatMap{
 		"attack_speed_+%_granted_from_skill": {
 			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeIncrease, 0).Flag(mod.MFlagAttack).Tag(mod.GlobalEffect("Aura"))},
@@ -7234,7 +7278,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFlag("SelfIgnoreFireResistance", true).Tag(mod.GlobalEffect("AuraDebuff"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:12314
+	// src/Data/Skills/act_dex.lua:12316
 	m["VaalImpurityOfIce"] = map[string]*StatMap{
 		"base_immune_to_chill": {
 			Mods: []mod.Mod{mod.NewFlag("ChillImmune", true).Tag(mod.GlobalEffect("Aura"))},
@@ -7249,7 +7293,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFlag("SelfIgnoreColdResistance", true).Tag(mod.GlobalEffect("AuraDebuff"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:14720
+	// src/Data/Skills/act_int.lua:14803
 	m["VaalImpurityOfLightning"] = map[string]*StatMap{
 		"base_immune_to_shock": {
 			Mods: []mod.Mod{mod.NewFlag("ShockImmune", true).Tag(mod.GlobalEffect("Aura"))},
@@ -7271,7 +7315,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("AreaOfEffectPrimary", mod.TypeIncrease, 0)},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:10595
+	// src/Data/Skills/act_dex.lua:10597
 	m["VaalLightningArrow"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -7283,13 +7327,13 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:10913
+	// src/Data/Skills/act_dex.lua:10915
 	m["VaalLightningStrike"] = map[string]*StatMap{
 		"vaal_lightning_strike_beam_damage_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.SkillPart(2))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:13019
+	// src/Data/Skills/act_int.lua:13099
 	m["VaalLightningTrap"] = map[string]*StatMap{
 		"shocked_ground_base_magnitude_override": {
 			Mods: []mod.Mod{mod.NewFloat("ShockedGroundEffect", mod.TypeBase, 0)},
@@ -7320,7 +7364,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.SkillPart(2))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:14272
+	// src/Data/Skills/act_int.lua:14355
 	m["VaalPowerSiphon"] = map[string]*StatMap{
 		"critical_strike_chance_+%_final_per_power_charge_from_power_siphon": {
 			Mods: []mod.Mod{mod.NewFloat("CritChance", mod.TypeMore, 0).Tag(mod.Multiplier("PowerCharge"))},
@@ -7345,7 +7389,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("BloodChargesMax", mod.TypeBase, 0).Tag(mod.GlobalEffect("Buff").Unscalable(true))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:12898
+	// src/Data/Skills/act_dex.lua:12900
 	m["VaalReave"] = map[string]*StatMap{
 		"reave_additional_max_stacks": {
 			Mods: []mod.Mod{mod.NewFloat("Multiplier:ReaveMaxStages", mod.TypeBase, 0)},
@@ -7364,7 +7408,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("takenFromVaalRejuvenationTotemsBeforeYou", mod.TypeBase, 0).Tag(mod.GlobalEffect("Aura"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:15632
+	// src/Data/Skills/act_int.lua:15715
 	m["VaalRighteousFire"] = map[string]*StatMap{
 		"vaal_righteous_fire_life_and_es_%_as_damage_per_second": {
 			Mods: []mod.Mod{skill("RFMultiplier", 0)},
@@ -7390,19 +7434,19 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("LightningMin", mod.TypeBase, 0).Tag(mod.GlobalEffect("Aura"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:14851
+	// src/Data/Skills/act_dex.lua:14854
 	m["VaalSpectralThrow"] = map[string]*StatMap{
 		"base_number_of_projectiles_in_spiral_nova": {
 			Mods: []mod.Mod{mod.NewFloat("ProjectileCount", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:20013
+	// src/Data/Skills/act_int.lua:20096
 	m["VaalSummonSkeletons"] = map[string]*StatMap{
 		"quality_display_summon_skeleton_is_gem": {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:18376
+	// src/Data/Skills/act_dex.lua:18379
 	m["VampiricLink"] = map[string]*StatMap{
 		"life_leech_is_applied_to_remora_link_targets_instead": {
 			Mods: []mod.Mod{
@@ -7432,7 +7476,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("MaximumRage", mod.TypeBase, 0).Tag(mod.GlobalEffect("Warcry"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:16472
+	// src/Data/Skills/act_dex.lua:16475
 	m["ViperStrike"] = map[string]*StatMap{
 		"viper_strike_dual_wield_attack_speed_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Speed", mod.TypeMore, 0).Flag(mod.MFlagAttack).Tag(mod.Condition("DualWielding"))},
@@ -7441,7 +7485,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Flag(mod.MFlagHit).Tag(mod.Condition("DualWielding"))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:16563
+	// src/Data/Skills/act_dex.lua:16566
 	m["ViperStrikeAltX"] = map[string]*StatMap{
 		"active_skill_poison_damage_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagPoison)},
@@ -7463,27 +7507,27 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Div:  utils.Ptr(float64(60)),
 		},
 	}
-	// src/Data/Skills/other.lua:5444
+	// src/Data/Skills/other.lua:5512
 	m["VoidGaze"] = map[string]*StatMap{
 		"base_chaos_damage_resistance_%": {
 			Mods: []mod.Mod{mod.NewFloat("ChaosResist", mod.TypeBase, 0).Tag(mod.GlobalEffect("Debuff"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:20270
+	// src/Data/Skills/act_int.lua:20353
 	m["VoidSphere"] = map[string]*StatMap{
 		"base_blackhole_tick_rate_ms": {
 			Mods: []mod.Mod{skill("repeatFrequency", 0)},
 			Div:  utils.Ptr(float64(1000)),
 		},
 	}
-	// src/Data/Skills/act_int.lua:20359
+	// src/Data/Skills/act_int.lua:20442
 	m["VoidSphereAltX"] = map[string]*StatMap{
 		"base_blackhole_tick_rate_ms": {
 			Mods: []mod.Mod{skill("repeatFrequency", 0)},
 			Div:  utils.Ptr(float64(1000)),
 		},
 	}
-	// src/Data/Skills/act_dex.lua:16669
+	// src/Data/Skills/act_dex.lua:16672
 	m["VolatileDead"] = map[string]*StatMap{
 		"spell_maximum_base_fire_damage": {
 			Mods: []mod.Mod{skill("FireMax", 0).Tag(mod.SkillPart(1))},
@@ -7492,7 +7536,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{skill("FireMin", 0).Tag(mod.SkillPart(1))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:16772
+	// src/Data/Skills/act_dex.lua:16775
 	m["VolatileDeadAltX"] = map[string]*StatMap{
 		"spell_maximum_base_fire_damage": {
 			Mods: []mod.Mod{skill("FireMax", 0).Tag(mod.SkillPart(1))},
@@ -7501,7 +7545,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{skill("FireMin", 0).Tag(mod.SkillPart(1))},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:16876
+	// src/Data/Skills/act_dex.lua:16879
 	m["VolatileDeadAltY"] = map[string]*StatMap{
 		"spell_maximum_base_fire_damage": {
 			Mods: []mod.Mod{skill("FireMax", 0).Tag(mod.SkillPart(1))},
@@ -7516,7 +7560,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.SkillPart(2))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:20449
+	// src/Data/Skills/act_int.lua:20532
 	m["VoltaxicBurst"] = map[string]*StatMap{
 		"quality_display_voltaxic_burst_is_gem": {
 			Mods: []mod.Mod{},
@@ -7525,7 +7569,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).KeywordFlag(mod.KeywordFlagHit | mod.KeywordFlagAilment).Tag(mod.Multiplier("VoltaxicWaitingStages"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:20632
+	// src/Data/Skills/act_int.lua:20715
 	m["VortexAltX"] = map[string]*StatMap{
 		"active_skill_if_used_through_frostbolt_damage_+%_final": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.Condition("CastOnFrostbolt"))},
@@ -7552,7 +7596,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("PhysicalDamage", mod.TypeMore, 0).Tag(mod.GlobalEffect("Aura"), mod.SkillType("Melee"))},
 		},
 	}
-	// src/Data/Skills/other.lua:5507
+	// src/Data/Skills/other.lua:5575
 	m["WardShatter"] = map[string]*StatMap{
 		"active_skill_damage_+%_final_if_ward_has_not_broken_in_the_past_2_seconds": {
 			Mods: []mod.Mod{mod.NewFloat("Damage", mod.TypeMore, 0).Tag(mod.Condition("WardBrokenPast2Seconds").Neg(true))},
@@ -7576,7 +7620,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("SelfDamageManaLeech", mod.TypeBase, 0).Flag(mod.MFlagAttack).Tag(mod.GlobalEffect("Curse"))},
 		},
 	}
-	// src/Data/Skills/act_int.lua:20801
+	// src/Data/Skills/act_int.lua:20884
 	m["WaveOfConviction"] = map[string]*StatMap{
 		"purge_expose_resist_%_matching_highest_element_damage": {
 			Mods: []mod.Mod{
@@ -7586,7 +7630,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:17097
+	// src/Data/Skills/act_dex.lua:17100
 	m["WildStrike"] = map[string]*StatMap{
 		"elemental_strike_physical_damage_%_to_convert": {
 			Mods: []mod.Mod{
@@ -7596,7 +7640,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:17238
+	// src/Data/Skills/act_dex.lua:17241
 	m["WildStrikeAltX"] = map[string]*StatMap{
 		"elemental_strike_physical_damage_%_to_convert": {
 			Mods: []mod.Mod{
@@ -7606,7 +7650,10 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			},
 		},
 	}
-	// src/Data/Skills/act_int.lua:20988
+}
+
+func skillStatMapsPart6(m map[string]map[string]*StatMap) {
+	// src/Data/Skills/act_int.lua:21071
 	m["WinterOrb"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -7634,7 +7681,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{},
 		},
 	}
-	// src/Data/Skills/act_int.lua:21141
+	// src/Data/Skills/act_int.lua:21309
 	m["WintertideBrand"] = map[string]*StatMap{
 		"base_skill_show_average_damage_instead_of_dps": {
 			Mods: []mod.Mod{},
@@ -7652,7 +7699,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("Multiplier:WintertideBrandMaxStages", mod.TypeBase, 0)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:21240
+	// src/Data/Skills/act_int.lua:21408
 	m["Wither"] = map[string]*StatMap{
 		"active_skill_withered_base_duration_ms": {
 			Mods: []mod.Mod{skill("duration", 0)},
@@ -7668,7 +7715,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFlag("Condition:CanWither", true)},
 		},
 	}
-	// src/Data/Skills/act_dex.lua:17324
+	// src/Data/Skills/act_dex.lua:17327
 	m["WitheringStep"] = map[string]*StatMap{
 		"quality_display_withering_step_is_gem": {
 			Mods: []mod.Mod{},
@@ -7677,7 +7724,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFlag("Condition:CanWither", true)},
 		},
 	}
-	// src/Data/Skills/act_int.lua:21328
+	// src/Data/Skills/act_int.lua:21496
 	m["Wrath"] = map[string]*StatMap{
 		"attack_maximum_added_lightning_damage": {
 			Mods: []mod.Mod{mod.NewFloat("LightningMax", mod.TypeBase, 0).KeywordFlag(mod.KeywordFlagAttack).Tag(mod.GlobalEffect("Aura"))},
@@ -7689,10 +7736,7 @@ func skillStatMapsPart5(m map[string]map[string]*StatMap) {
 			Mods: []mod.Mod{mod.NewFloat("LightningDamage", mod.TypeMore, 0).Flag(mod.MFlagSpell).Tag(mod.GlobalEffect("Aura"))},
 		},
 	}
-}
-
-func skillStatMapsPart6(m map[string]map[string]*StatMap) {
-	// src/Data/Skills/act_int.lua:21413
+	// src/Data/Skills/act_int.lua:21581
 	m["Zealotry"] = map[string]*StatMap{
 		"spell_critical_strike_chance_+%": {
 			Mods: []mod.Mod{mod.NewFloat("CritChance", mod.TypeIncrease, 0).Flag(mod.MFlagSpell).Tag(mod.GlobalEffect("Aura"))},

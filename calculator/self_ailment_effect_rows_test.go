@@ -8,7 +8,7 @@ import (
 
 // TestSelfAilmentEffectRowsParse covers the THREE assertions that `TestSelfNonDamagingAilmentEffectLinesParse` in self_ailment_effect_parse_test.go does not make about the same two rows.
 func TestSelfAilmentEffectRowsParse(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("+10 to Strength", false); e == nil || len(e.ModList) == 0 ||
 		strings.TrimSpace(modExtra(e)) != "" {

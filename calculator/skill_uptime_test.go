@@ -14,8 +14,8 @@ func TestSkillUptime(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("CORPUS!=true")
 	}
-	if raw.LatestVersion != "3.29" {
-		t.Skipf("SKIP: this test pins 3.29 values but the process loaded %s game data", raw.LatestVersion)
+	if raw.LatestVersion != "3.30" {
+		t.Skipf("SKIP: this test pins 3.30 values but the process loaded %s game data", raw.LatestVersion)
 	}
 
 	oracle, err := oracleForLoadedData()

@@ -10,7 +10,7 @@ func TestCombineStatFallthroughLeavesKeyAbsent(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	absent := []string{"CausticGroundDPS", "BleedDPS", "PoisonDPS", "PoisonDamage", "IgniteDPS", "ImpaleModifier"}
 	exercised := map[string]int{}

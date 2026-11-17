@@ -23,7 +23,7 @@ func phantasmBuffMod(env *Environment, name string) mod.Mod {
 
 // TestBuffMergeCopiesSharedDestMod: a global-effect skill mod merging into a buff mod copies it first.
 func TestBuffMergeCopiesSharedDestMod(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	const build = "0221-reliquarian-ethereal-knives.xml"
 	template := phantasmBuffMod(corpusEnvForLoadedData(t, build), "PhysicalMin")
 	if template == nil {
@@ -60,7 +60,7 @@ func TestBuffMergeCopiesSharedDestMod(t *testing.T) {
 
 // TestSkillInstanceModsSurviveACalculation: the cached stat-map mods (skillInstanceMods) are shared between calculations.
 func TestSkillInstanceModsSurviveACalculation(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	const build = "0221-reliquarian-ethereal-knives.xml"
 	first := corpusEnvForLoadedData(t, build).Player.Output
 	second := corpusEnvForLoadedData(t, build).Player.Output

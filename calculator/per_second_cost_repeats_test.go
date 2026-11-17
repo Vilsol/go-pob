@@ -13,7 +13,7 @@ func TestPerSecondCostUsesOutputRepeats(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	oracle, err := oracleForLoadedData()
 	if err != nil {
@@ -90,7 +90,7 @@ func TestPerSecondCostFamilyAgreementFloor(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	c := corpusWalkCheck[*perSecondCostFamilyCheck](t)
 	graded, agree := c.graded, c.agree

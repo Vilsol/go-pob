@@ -8,7 +8,7 @@ import (
 
 // TestFarrulPresenceRowsParse pins ModParser.lua:5087-5101, the three bloodline notables of the Farrul ascendancy.
 func TestFarrulPresenceRowsParse(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	for _, tc := range []struct {
 		line string

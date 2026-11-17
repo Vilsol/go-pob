@@ -10,7 +10,7 @@ import (
 
 // TestSupportManaMultiplierCarriesTheSupportSource: CalcActiveSkill.lua:514 sources each support's SupportManaMultiplier with the support's modSource.
 func TestSupportManaMultiplierCarriesTheSupportSource(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	raw, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), "0001-necromancer-unknown.xml"))
 	if err != nil {
 		t.Fatal(err)

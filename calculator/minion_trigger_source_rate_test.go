@@ -11,7 +11,7 @@ func TestHolyRelicTriggerCapAndSourceRateMatchPoB(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	build := loadCorpusBuild(t, "0140-necromancer-summon-holy-relic-of-conviction.xml")
 	env := (&Calculator{PoB: build}).BuildOutput(OutputModeMain)
 	if env.Minion == nil || env.Minion.Actor == nil {

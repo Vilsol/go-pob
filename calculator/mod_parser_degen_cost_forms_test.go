@@ -22,7 +22,7 @@ func onlyMod(t *testing.T, line string) mod.Mod {
 
 // TestDegenAndCostFormsAreParsed covers the four modifier forms this port never had.
 func TestDegenAndCostFormsAreParsed(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if m := onlyMod(t, "5 Fire Damage taken per second"); m != nil && m.Name() != "FireDegen" {
 		t.Fatalf("control: %q parsed as %s, want FireDegen -- the sibling form moved", "5 Fire Damage taken per second", m.Name())

@@ -66,7 +66,7 @@ func TestTriggerDispatchAgreesWithOracle(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	c := corpusWalkCheck[*triggerDispatchCheck](t)
 	c.log.report(t)
 	sort.Slice(c.results, func(i, j int) bool { return c.results[i].name < c.results[j].name })

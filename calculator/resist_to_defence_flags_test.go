@@ -9,7 +9,7 @@ import (
 
 // TestResistanceToDefenceLinesParseToFlags: ModParser.lua:4805-4812 parse these lines to flags.
 func TestResistanceToDefenceLinesParseToFlags(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	for line, flag := range map[string]string{
 		"Maximum Energy Shield is increased by Chance to Block Spell Damage": "EnergyShieldIncreasedByChanceToBlockSpellDamage",
 		"Maximum Energy Shield is increased by Chaos Resistance":             "EnergyShieldIncreasedByChaosResistance",

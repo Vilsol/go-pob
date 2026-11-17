@@ -11,7 +11,7 @@ func TestMirageCopySkipsTriggers(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	build := loadCorpusBuild(t, "0597-warden-split-arrow.xml")
 	env := (&Calculator{PoB: build}).BuildOutput(OutputModeMain)
 

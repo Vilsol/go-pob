@@ -4,7 +4,7 @@ import "testing"
 
 // TestVaalRejuvenationTotemIsTheNearestTotem pins CalcDefence.lua:2493-2498.
 func TestVaalRejuvenationTotemIsTheNearestTotem(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	env := corpusEnvForLoadedData(t, "12484-ladder-Tryllekat_6173.Badger_StickMerc")
 	out := env.Player.Output
 

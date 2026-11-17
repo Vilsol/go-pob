@@ -11,7 +11,7 @@ import (
 
 // TestSoulEaterSpeedRows pins CalcPerform.lua:935-939.
 func TestSoulEaterSpeedRows(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("needs the corpus")
 	}

@@ -10,7 +10,7 @@ import (
 
 // TestRetaliationSkillRowsParse covers the three Retaliation rows of ModParser.lua.
 func TestRetaliationSkillRowsParse(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	t.Run("deal, through the preFlagList prefix", func(t *testing.T) {
 		mods, extra := parseMod("Retaliation Skills deal 16% increased Damage", 1)

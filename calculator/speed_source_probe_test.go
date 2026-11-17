@@ -19,7 +19,7 @@ func TestSpeedSourceProbe(t *testing.T) {
 	if listPath == "" {
 		t.Skip("set SPEED_PROBE=<file of build names>")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	fh, err := os.Open(listPath)
 	if err != nil {

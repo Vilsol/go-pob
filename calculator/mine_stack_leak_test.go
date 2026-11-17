@@ -10,7 +10,7 @@ import (
 
 // TestMineStackDoesNotLeakAcrossBuilds: stackMineMods once stripped effectStackVar from the skill data's shared tag.
 func TestMineStackDoesNotLeakAcrossBuilds(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	dir := corpusDirForLoadedData(t)
 	eval := func(name string) *Environment {
 		file, err := os.ReadFile(filepath.Join(dir, name))

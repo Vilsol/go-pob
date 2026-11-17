@@ -11,7 +11,7 @@ import (
 
 // TestMinionsAreUndamagableResolvesInGameData: THIS TEST EXISTS BECAUSE TWO LIVE COMMENTS SAID THE OPPOSITE, AND BOTH WERE BELIEVED.
 func TestMinionsAreUndamagableResolvesInGameData(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if len(poe.ActiveSkillTypesByID) == 0 {
 		t.Fatalf("REFUSING: ActiveSkillTypesByID is empty; the game data did not load and every " +

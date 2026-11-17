@@ -30,7 +30,7 @@ func TestCalcsIntermediateCensus(t *testing.T) {
 	if wlDir == "" {
 		t.Fatal("REFUSING: set WL=<dir> written by `WORKLIST=<dir> mise run gate`")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	wrong, err := readWorklistWrong(filepath.Join(wlDir, "builds.tsv"))
 	if err != nil {

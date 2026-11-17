@@ -4,7 +4,7 @@ import "testing"
 
 // TestParseModDistinguishesNoFormFromNoName covers the nil-vs-{} split ModParser.lua draws and this port collapsed.
 func TestParseModDistinguishesNoFormFromNoName(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const noName = "+5 to Zzyzx Nonexistent Stat"
 	const noForm = "Zzyzx nonexistent"

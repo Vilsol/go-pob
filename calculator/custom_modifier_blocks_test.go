@@ -30,7 +30,7 @@ func customBlockAuras(t *testing.T, configXML string) []string {
 
 // TestCustomModifierBlocksReachTheModList pins ConfigTab.lua:1106-1129.
 func TestCustomModifierBlocksReachTheModList(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const line = "You and nearby allies gain 328 additional Energy Shield"
 
@@ -86,7 +86,7 @@ func TestCustomModifierBlocksReachTheModList(t *testing.T) {
 
 // TestLegacyCustomModsMigrationPredicate pins ConfigTab.lua:876-877: the legacy text becomes a block titled "Default".
 func TestLegacyCustomModsMigrationPredicate(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const line = "You and nearby allies gain 328 additional Energy Shield"
 	legacy := `<Input name="customMods" string="` + line + `"/>`
@@ -109,7 +109,7 @@ func TestLegacyCustomModsMigrationPredicate(t *testing.T) {
 
 // TestLegacyAndBlockCoexistence: ConfigTab.lua:876 migrates the legacy text only over no block or one empty block, and :882 drops it either way.
 func TestLegacyAndBlockCoexistence(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const line = "You and nearby allies gain 328 additional Energy Shield"
 	legacy := `<Input name="customMods" string="` + line + `"/>`
@@ -149,7 +149,7 @@ func TestLegacyAndBlockCoexistence(t *testing.T) {
 
 // TestCustomModifierLinesStripEscapes: ConfigTab.lua:1114 and :1133 strip colour escapes before parsing a custom line.
 func TestCustomModifierLinesStripEscapes(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const line = "^7You and nearby allies gain ^x8888FF328^7 additional Energy Shield"
 	for name, configXML := range map[string]string{

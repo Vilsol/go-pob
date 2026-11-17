@@ -9,7 +9,7 @@ import (
 
 // TestGemPropertyRowsParseWhole pins the gem-property row family against the pin's own rows.
 func TestGemPropertyRowsParseWhole(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("+10 to Strength", false); e == nil || len(e.ModList) == 0 ||
 		strings.TrimSpace(modExtra(e)) != "" {

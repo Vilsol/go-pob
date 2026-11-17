@@ -53,7 +53,7 @@ func TestGhostReaverConditionReachesTheBuild(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	env := corpusEnvForLoadedData(t, "0161-assassin-viper-strike-of-the-mamba.xml")
 	if !env.Player.ModDB.Flag(nil, "Condition:HaveGhostReaver") {

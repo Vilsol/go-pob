@@ -8,7 +8,7 @@ import (
 
 // TestHardCodedGemLevelRowsAgreeWithTheCatchAll is the adjudication of audit row ed078a2d's second half.
 func TestHardCodedGemLevelRowsAgreeWithTheCatchAll(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	phrases := []string{
 		"minion skill",

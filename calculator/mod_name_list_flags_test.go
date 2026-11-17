@@ -8,7 +8,7 @@ import (
 
 // TestModNameListRowsCarryTheirFlags pins the `flags` / `keywordFlags` that eighteen modNameList rows drop.
 func TestModNameListRowsCarryTheirFlags(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	for _, tc := range []struct {
 		line   string

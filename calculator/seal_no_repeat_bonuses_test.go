@@ -11,7 +11,7 @@ func TestSealBlockHonoursNoRepeatBonuses(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	env := corpusEnvForLoadedData(t, "0503-reliquarian-vaal-blade-vortex.xml")
 	if !env.Player.MainSkill.SkillModList.Flag(nil, "NoRepeatBonuses") {
 		t.Fatal("premise broken: main skill does not carry NoRepeatBonuses")

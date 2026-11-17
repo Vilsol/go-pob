@@ -7,7 +7,7 @@ import (
 
 // TestBodyArmourESAndArmourHasBothHalves pins ModParser.lua:2478 together with its consumer, CalcDefence.lua:900 and :908.
 func TestBodyArmourESAndArmourHasBothHalves(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const line = "100% increased Armour and Energy Shield from Equipped Body Armour if Equipped Helmet, Gloves and Boots all have Armour and Energy Shield"
 	e := ParseMod(line, false)

@@ -10,7 +10,7 @@ import (
 
 // TestAvoidElementalAilmentsIsOneNameNotSeven pins ModParser.lua:407-408.
 func TestAvoidElementalAilmentsIsOneNameNotSeven(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("+10 to Strength", false); e == nil || len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {
 		t.Fatalf("REFUSING: the control line failed to parse; this test cannot attribute a failure")
@@ -78,7 +78,7 @@ func TestAvoidElementalAilmentsHasAProducer(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	_, names := corpusNamesForLoadedData(t)
 	var seen, withStormshroud int

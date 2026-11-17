@@ -11,7 +11,7 @@ import (
 
 // TestDamageAppliesToAuraEffect pins ModParser.lua:3429-3433 against its consumer at CalcPerform.lua:1505-1529.
 func TestDamageAppliesToAuraEffect(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	t.Run("the row parses whole", func(t *testing.T) {
 		const line = "Increases and Reductions to Chaos Damage also apply to Effect of Auras from Chaos Skills at 15% of their value, up to a maximum of 150%"

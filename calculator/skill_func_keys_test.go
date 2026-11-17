@@ -13,7 +13,7 @@ func TestSkillFuncKeysResolve(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true — this census needs the game data loaded")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	known := map[string]bool{}
 	for id := range raw.PoBSkills {

@@ -10,7 +10,7 @@ import (
 
 // TestClusterSubgraphOnlyUnderAllocatedSocket pins PassiveSpec.lua:1849 (upstream #10272).
 func TestClusterSubgraphOnlyUnderAllocatedSocket(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	build := parseCorpusBuild(t, "0021-assassin-blade-flurry.xml")
 	if len(TreeClusterNodes(build)) == 0 {
 		t.Fatal("CONTROL FAILED: the fixture builds no subgraph")

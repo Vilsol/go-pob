@@ -9,7 +9,7 @@ import (
 
 // TestWardBreakParserRows pins ModParser.lua:2393 and :2394, the two ward rows this tree had a CONSUMER for and no PRODUCER.
 func TestWardBreakParserRows(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	cases := []struct {
 		line string

@@ -11,7 +11,7 @@ func TestFistOfWarAndRuthlessBlowUseTheirRealModNames(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	t.Run("ruthless blow ailment multiplier reaches its mod", func(t *testing.T) {
 		for _, tc := range []struct {

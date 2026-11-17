@@ -11,7 +11,7 @@ import (
 
 // TestExtraSupportResolvesBothGrantedEffects is the invariant behind a MEASURED ZERO.
 func TestExtraSupportResolvesBothGrantedEffects(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	cases := map[string][]string{
 		"cast on critical strike": {"SupportCastOnCriticalStrike", "SupportCastOnCritTriggered"},
@@ -66,7 +66,7 @@ func TestExtraSupportResolvesBothGrantedEffects(t *testing.T) {
 
 // TestExtraSupportSecondaryEffectIsGrantedAsASkill covers ModParser.lua:2090-2095.
 func TestExtraSupportSecondaryEffectIsGrantedAsASkill(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	for _, tc := range []struct {
 		name        string
@@ -99,7 +99,7 @@ func TestExtraSupportSecondaryEffectIsGrantedAsASkill(t *testing.T) {
 
 // TestHandSeededGemIDResolves is the end-to-end check on the one entry PoB writes into gemIdLookup by hand (ModParser.lua:2032-2034).
 func TestHandSeededGemIDResolves(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const name = "power charge on critical strike"
 

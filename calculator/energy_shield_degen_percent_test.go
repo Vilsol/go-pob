@@ -8,7 +8,7 @@ import (
 
 // TestEnergyShieldDegenPercentUsesTheForm pins ModParser.lua:118-121.
 func TestEnergyShieldDegenPercentUsesTheForm(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	for _, tc := range []struct {
 		line string

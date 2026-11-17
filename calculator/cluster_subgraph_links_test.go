@@ -29,7 +29,7 @@ var clusterCensusJewels = []struct{ name, text string }{
 
 // TestClusterSubgraphsConnectToTheirSocket: PassiveSpec.lua:2094, :2341: every subgraph links its entrance to the socket it is in.
 func TestClusterSubgraphsConnectToTheirSocket(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	tree := data.TreeVersions[data.LatestTreeVersion].Tree()
 	build := parseCorpusBuild(t, "0021-assassin-blade-flurry.xml")
 	build.Items.Items = nil

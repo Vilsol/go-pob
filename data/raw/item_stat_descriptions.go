@@ -58,7 +58,7 @@ func ItemStatDescriptions() ([]ItemStatDescription, error) {
 	return loadItemStatDescriptions()
 }
 
-//pob:block:src/Export/Scripts/statdesc.lua:23-103
+//pob:block:src/Export/Scripts/statdesc.lua:23-104
 func itemStatDescriptionsOf(file *rawdata.TranslationFile) []ItemStatDescription {
 	out := make([]ItemStatDescription, 0, len(file.Descriptors))
 	for _, d := range file.Descriptors {
@@ -79,7 +79,7 @@ func itemStatDescriptionsOf(file *rawdata.TranslationFile) []ItemStatDescription
 	return out
 }
 
-//pob:block:src/Export/Scripts/statdesc.lua:48-69
+//pob:block:src/Export/Scripts/statdesc.lua:48-70
 func itemStatLimit(c rawdata.Condition) [2]any {
 	end := func(p *int) any {
 		if p == nil {

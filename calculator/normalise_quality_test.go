@@ -8,7 +8,7 @@ import (
 //
 //	elseif not uniqueID and not corrupted       ... and not split and not mirrored
 func TestNormaliseQualityMatchesThePin(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const armourBase = "Rarity: NORMAL\nTest Plate\nGlorious Plate\n"
 

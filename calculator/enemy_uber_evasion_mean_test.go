@@ -16,7 +16,7 @@ func TestUberEnemyEvasionUsesEvasionMean(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if data.BossStats.UberArmourMean == data.BossStats.UberEvasionMean {
 		t.Fatalf("UberArmourMean == UberEvasionMean == %v: this test can no longer tell the arms apart",

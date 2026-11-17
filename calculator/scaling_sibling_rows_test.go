@@ -8,7 +8,7 @@ import (
 
 // TestScalingSiblingRowsAreComplete pins three parser FAMILIES where upstream writes an `increased` row and a `reduced` row side by side and we carried exactly one of each pair.
 func TestScalingSiblingRowsAreComplete(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	for _, tc := range []struct {
 		line      string

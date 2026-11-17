@@ -69,7 +69,7 @@ func TestArcaneSurgeAndUnholyMightAlsoGrant(t *testing.T) {
 		}
 	})
 	t.Run("Unholy Might also applies wither effect", func(t *testing.T) {
-		requireGameData(t, "3.29")
+		requireGameData(t, "3.30")
 		if os.Getenv("CORPUS") != "true" {
 			t.Skip("set CORPUS=true")
 		}
@@ -95,7 +95,7 @@ func TestArcaneSurgeAndUnholyMightAlsoGrant(t *testing.T) {
 		}
 	})
 	t.Run("Searching Eye maim adds enemy SelfCritChance MORE to crit chance", func(t *testing.T) {
-		requireGameData(t, "3.29")
+		requireGameData(t, "3.30")
 		if os.Getenv("CORPUS") != "true" {
 			t.Skip("set CORPUS=true")
 		}

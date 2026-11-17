@@ -11,7 +11,7 @@ func TestRageStacksFollowPoB(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	t.Run("HaveMaximumRage is raised at the cap", func(t *testing.T) {
 		env := corpusEnvForLoadedData(t, "0007-elementalist-storm-burst-of-repulsion.xml")

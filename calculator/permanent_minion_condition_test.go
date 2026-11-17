@@ -13,7 +13,7 @@ func TestPermanentMinionDoesNotSetUsedMinionSkillRecently(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	env := corpusEnvForLoadedData(t, "0019-champion-herald-of-agony.xml")
 	ms := env.Player.MainSkill
@@ -37,7 +37,7 @@ func TestNonPermanentMinionStillSetsUsedMinionSkillRecently(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	env := corpusEnvForLoadedData(t, "0147-necromancer-animate-weapon-of-ranged-arms.xml")
 	ms := env.Player.MainSkill

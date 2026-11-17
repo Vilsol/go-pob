@@ -7,7 +7,7 @@ import (
 
 // TestDropBatch4Parses pins two more PoB-confirmed drops with consumers already in place.
 func TestDropBatch4Parses(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("+10 to Strength", false); e == nil || len(e.ModList) == 0 ||
 		strings.TrimSpace(modExtra(e)) != "" {

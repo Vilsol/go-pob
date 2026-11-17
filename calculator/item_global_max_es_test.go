@@ -20,7 +20,7 @@ func hasGlobalTag(m mod.Mod) bool {
 // TestIncreasedMaximumEnergyShieldIsGlobal covers ModParser.lua:2400, whose own comment is.
 // "Override as increased maximum is always global".
 func TestIncreasedMaximumEnergyShieldIsGlobal(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	local := ParseMod("126% increased Energy Shield", false)
 	if len(local.ModList) != 1 || local.Extra != "" {

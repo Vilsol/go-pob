@@ -30,7 +30,7 @@ func TestBalefulDominionRecoupRows(t *testing.T) {
 
 // TestBalefulDominionRecoup pins CalcDefence.lua:1407-1429 (upstream #10231): Life Recoup also recovers Mana, and Recovery from Recoup scales every recoup.
 func TestBalefulDominionRecoup(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}

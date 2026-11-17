@@ -57,7 +57,7 @@ func TestGoPobOnlyConfigOptionsAreAbsentFromTheCorpus(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	files, err := filepath.Glob(filepath.Join(corpusDirForLoadedData(t), "*.xml"))
 	if err != nil || len(files) == 0 {

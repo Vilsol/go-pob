@@ -7,7 +7,7 @@ import (
 
 func assertPlayerOutputs(t *testing.T, build string, want map[string]float64) {
 	t.Helper()
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	env := corpusEnvForLoadedData(t, build)
 	for k, w := range want {
 		if got := env.Player.Output[k]; math.Abs(got-w) > 1e-9*math.Abs(w) {

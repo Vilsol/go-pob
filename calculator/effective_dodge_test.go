@@ -11,7 +11,7 @@ func TestEffectiveDodgeChanceIsPublished(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	cases := map[string]map[string]float64{
 		"6371-ladder-Toribey_5636.Dokkism_badbuild":       {"SpellDodgeChance": 5, "EffectiveSpellDodgeChance": 5, "EffectiveAttackDodgeChance": 0},

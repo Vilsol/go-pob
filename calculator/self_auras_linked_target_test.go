@@ -50,7 +50,7 @@ func TestSelfAurasAffectYouAndLinkedTargetSuppressesTheEnemyArm(t *testing.T) {
 		if os.Getenv("CORPUS") != "true" {
 			t.SkipNow()
 		}
-		requireGameData(t, "3.29")
+		requireGameData(t, "3.30")
 
 		const name = "0554-luminary-stormblast-mine.xml"
 		xml, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), name))

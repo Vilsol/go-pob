@@ -15,7 +15,7 @@ func TestEnemyModifierRows(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("With at least one nearby corpse, you and nearby Allies deal 10% more Damage", false); e == nil ||
 		len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {

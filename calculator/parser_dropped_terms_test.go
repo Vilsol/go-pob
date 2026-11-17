@@ -8,7 +8,7 @@ import (
 
 // TestParserRowsCarryEveryModThePinEmits is a DROPPED-TERM guard.
 func TestParserRowsCarryEveryModThePinEmits(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	cases := []struct {
 		line     string

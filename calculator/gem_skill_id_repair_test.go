@@ -17,7 +17,7 @@ import (
 // The pinned PoB loads it with those gems missing (minion TotalDPS 313816.35) and loads the
 // re-saved build with them (1891483.0676892).
 func TestLoadRepairsGemIDInSkillID(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	file, err := os.ReadFile("testdata/item-granted-supports/dancing-dervish.xml")
 	if err != nil {
 		t.Fatal(err)

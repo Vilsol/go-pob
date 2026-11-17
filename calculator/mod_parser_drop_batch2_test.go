@@ -7,7 +7,7 @@ import (
 
 // TestDropBatch2Parses pins three more lines the drop censuses found and the pinned PoB parses.
 func TestDropBatch2Parses(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("+10 to Strength", false); e == nil || len(e.ModList) == 0 ||
 		strings.TrimSpace(modExtra(e)) != "" {

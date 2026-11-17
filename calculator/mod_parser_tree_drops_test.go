@@ -7,7 +7,7 @@ import (
 
 // TestTreeDropGrammarGapsParse pins three passive-tree stat lines the parser discarded WHOLE.
 func TestTreeDropGrammarGapsParse(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("Regenerate 1 Life per second", false); e == nil ||
 		len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {

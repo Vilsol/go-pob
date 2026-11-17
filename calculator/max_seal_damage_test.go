@@ -28,7 +28,7 @@ func TestMaxSealDamageReachesDamage(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	env := corpusEnvForLoadedData(t, "0810-reliquarian-arc-of-oscillating-2.xml")
 	out := env.Player.Output
 	if out["SealMax"] != 8 {

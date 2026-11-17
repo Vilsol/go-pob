@@ -12,7 +12,7 @@ import (
 // TestAurasAffectEnemiesReachesTheEnemyModDB pins ModParser.lua:3996 and CalcPerform.lua:2451-2464 together.
 func TestAurasAffectEnemiesReachesTheEnemyModDB(t *testing.T) {
 	t.Run("the flag parses", func(t *testing.T) {
-		requireGameData(t, "3.29")
+		requireGameData(t, "3.30")
 
 		const line = "Auras from your Skills which affect Allies also affect Enemies"
 		entry := ParseMod(line, false)
@@ -31,7 +31,7 @@ func TestAurasAffectEnemiesReachesTheEnemyModDB(t *testing.T) {
 		if os.Getenv("CORPUS") != "true" {
 			t.SkipNow()
 		}
-		requireGameData(t, "3.29")
+		requireGameData(t, "3.30")
 
 		const name = "0161-assassin-viper-strike-of-the-mamba.xml"
 		xml, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), name))

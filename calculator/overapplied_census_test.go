@@ -19,7 +19,7 @@ func TestOverAppliedCensus(t *testing.T) {
 		t.Skip("set CORPUS=true")
 	}
 	requireOperatorRun(t, "report-only census; `mise run overapplied-census`")
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	oracle, err := oracleForLoadedData()
 	if err != nil {
 		t.Fatalf("oracle: %v", err)

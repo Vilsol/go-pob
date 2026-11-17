@@ -10,7 +10,7 @@ import (
 
 // TestGlobalWardIgnoresTheLastSlotCfg: CalcDefence.lua:931-932 total the global Ward with no slot cfg.
 func TestGlobalWardIgnoresTheLastSlotCfg(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	raw, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), "1606-chieftain-treeskill-4.xml"))
 	if err != nil {
 		t.Fatal(err)

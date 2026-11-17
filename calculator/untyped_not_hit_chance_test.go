@@ -11,7 +11,7 @@ func TestUntypedNotHitChance(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	env := corpusEnvForLoadedData(t, "0021-assassin-blade-flurry.xml")
 	out := env.Player.Output

@@ -4,7 +4,7 @@ import "testing"
 
 // TestFoulbornUniqueItemCount: a unique with a mutated explicit line is foulborn.
 func TestFoulbornUniqueItemCount(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	for build, want := range map[string]map[string]float64{
 		"11388-ladder-Panther34_4123.WingedGuardianAngel_CZE.xml": {"SpellBlockChance": 75},
 		"6151-ladder-SoloT1Witch_1235.AllFlameOfAT.xml":           {"GemLevel": 34},

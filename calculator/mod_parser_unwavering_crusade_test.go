@@ -11,7 +11,7 @@ import (
 //
 //pob:src/Modules/ModParser.lua:3429
 func TestUnwaveringCrusadeGrantsTheRelic(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const line = "25% chance to Trigger Level 20 Summon Elemental Relic when you or a nearby Ally Kill an Enemy, or Hit a Rare or Unique Enemy"
 	e := ParseMod(line, false)

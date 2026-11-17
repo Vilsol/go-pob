@@ -11,7 +11,7 @@ import (
 
 // TestVaalPactWhileAllSocketedGemsAreRed: ModParser.lua:3246, CalcSetup.lua:1607-1610 / 1771-1773, ModStore.lua:741-746.
 func TestVaalPactWhileAllSocketedGemsAreRed(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	raw, err := os.ReadFile("../testdata/socketed-in/all-red-helmet.xml")
 	if err != nil {
 		t.Fatalf("REFUSING: %v", err)

@@ -14,7 +14,7 @@ func TestBuffSpeedModsAreFlagged(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("CORPUS!=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	const build = "0176-juggernaut-vigilant-strike-4.xml"
 	// PoB's dumped modDB.Speed rows sourced from Adrenaline on this build.
 	want := []string{"Attack INC 25", "Cast INC 25"}

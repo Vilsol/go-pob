@@ -12,7 +12,7 @@ func TestCurseKeywordFollowsAppliesCurse(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	for build, wantCurse := range map[string]bool{
 		"0373-occultist-bane-of-condemnation.xml": false,
 		"0792-luminary-snipers-mark.xml":          true,

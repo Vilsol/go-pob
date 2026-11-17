@@ -7,7 +7,7 @@ import (
 
 func defenceEnv(t *testing.T, file string) *Environment {
 	t.Helper()
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	return corpusEnvForLoadedData(t, file)
 }

@@ -50,7 +50,7 @@ var gainNoCorpusBuilds = []string{
 
 // TestGainNoArmourFromBodyArmourIsInertOnThisCorpus pins the census that explains the measured zero.
 func TestGainNoArmourFromBodyArmourIsInertOnThisCorpus(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	flagged, binding := 0, []string{}
 	for _, b := range gainNoCorpusBuilds {

@@ -9,7 +9,7 @@ import (
 
 // TestInfluenceGemLevelRowsParse pins ModParser.lua:3188 and :3190 -- the gem-LEVEL members of the "if N <influence> Items are Equipped" family.
 func TestInfluenceGemLevelRowsParse(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	for _, tc := range []struct {
 		line      string

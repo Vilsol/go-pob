@@ -10,7 +10,7 @@ import (
 
 // TestPercentStatCeilsATableValue: ModStore.lua:518-530 ceil a PercentStat-scaled table value.
 func TestPercentStatCeilsATableValue(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	raw, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), "0543-luminary-mana-infused-staff.xml"))
 	if err != nil {
 		t.Fatal(err)
@@ -29,7 +29,7 @@ func TestPercentStatCeilsATableValue(t *testing.T) {
 
 // TestPercentStatDividesThePercentFirst: ModStore.lua:505 divides the percent first.
 func TestPercentStatDividesThePercentFirst(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	raw, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), "6603-ladder-XiledOne_4259.NizNecroKBoC.xml"))
 	if err != nil {
 		t.Fatal(err)

@@ -7,7 +7,7 @@ import (
 
 // TestCritsDontInherentlyIgniteParses pins ModParser.lua:3790.
 func TestCritsDontInherentlyIgniteParses(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("Critical Strikes do not inherently Freeze", false); e == nil ||
 		len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {

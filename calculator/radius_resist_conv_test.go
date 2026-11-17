@@ -16,7 +16,7 @@ func TestRadiusResistConversionLife(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	oracle, err := oracleForLoadedData()
 	if err != nil {
 		t.Fatalf("oracle: %v", err)
@@ -51,7 +51,7 @@ func TestRadiusResistConversionLife(t *testing.T) {
 
 // TestRadiusSimpleConvFamilyParses walks ModParser.lua:6102-6107 and :6111-6143 at percentages this port never hardcoded.
 func TestRadiusSimpleConvFamilyParses(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("Increases and Reductions to Life in Radius are Transformed to apply to Energy Shield", false); e == nil ||
 		len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {

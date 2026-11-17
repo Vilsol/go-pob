@@ -9,7 +9,7 @@ import (
 //
 //pob:block:src/Modules/ModParser.lua:5429-5431
 func TestDealNoDamageWithSkillsYourself(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("Deal no Chaos Damage", false); e == nil ||
 		len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {
@@ -49,7 +49,7 @@ func TestDealNoDamageWithSkillsYourself(t *testing.T) {
 
 // TestDealNoDamageYourselfEmitsTheFlag is the name half, kept separate from the tag half above so that a failure says WHICH of the two properties broke.
 func TestDealNoDamageYourselfEmitsTheFlag(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	e := ParseMod("You can't deal Damage with Skills yourself", false)
 	if e == nil || len(e.ModList) == 0 {

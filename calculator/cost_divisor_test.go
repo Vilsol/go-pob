@@ -17,7 +17,7 @@ func TestSkillCostsAreFinite(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const name = "15226-ladder-zelltran0303_7154.ADBZ_SungJinWo.xml"
 

@@ -9,7 +9,7 @@ import (
 //
 //pob:src/Modules/ModParser.lua:2821
 func TestShockMinimumRename(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	for _, tc := range []struct {
 		name string

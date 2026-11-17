@@ -10,7 +10,7 @@ import (
 
 // TestGetActiveSkillCountSeparatesAbsentFromZero pins the READ half of `<Gem count>`.
 func TestGetActiveSkillCountSeparatesAbsentFromZero(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const gemID = "Metadata/Items/Gems/SkillGemSpark"
 	baseItem := poe.BaseItemTypeByIDMap[gemID]

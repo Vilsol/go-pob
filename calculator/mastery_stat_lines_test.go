@@ -56,7 +56,7 @@ func TestSelectedMasteryLinesAreNotDropped(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	builds := []string{
 		"0001-necromancer-unknown.xml",
@@ -113,7 +113,7 @@ func TestEnergyShieldFromHelmetReachesTheOracle(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	oracle, err := oracleForLoadedData()
 	if err != nil {

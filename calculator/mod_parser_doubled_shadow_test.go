@@ -7,7 +7,7 @@ import (
 
 // TestDoubledFormIsNotShadowedByLiteralRows pins a class this tree invented.
 func TestDoubledFormIsNotShadowedByLiteralRows(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("Maximum Recovery per Energy Shield Leech is Doubled", false); e == nil ||
 		len(e.ModList) != 2 || strings.TrimSpace(modExtra(e)) != "" {

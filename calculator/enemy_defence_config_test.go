@@ -15,7 +15,7 @@ func TestEnemyCritEffectMatchesPoB(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	cases := []struct {
 		build string
@@ -52,7 +52,7 @@ func TestBossAddsNoCurseEffectOnSelf(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	dir := corpusDirForLoadedData(t)
 	for _, tc := range []struct{ build, isBoss string }{
@@ -82,7 +82,7 @@ func TestEnemyArmourEvasionMatchesPoB(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	cases := []struct {
 		build   string

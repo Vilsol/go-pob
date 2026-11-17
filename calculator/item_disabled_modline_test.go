@@ -17,7 +17,7 @@ func hasPhysicalDamageInc(item *Item) bool {
 
 // TestDisabledModLineIsNotApplied covers Item.lua:109-125's `disabled` lineFlag and the early return in BuildModList's processModLine at Item.lua:2511-2514.
 func TestDisabledModLineIsNotApplied(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	head := "Rarity: RARE\nProbe Ring\nTwo-Stone Ring\n" +
 		"Unique ID: 0000\nItem Level: 84\nQuality: 0\nLevelReq: 60\nImplicits: 0\n"

@@ -41,7 +41,7 @@ func TestSocketGroupSourceIsATruthyTest(t *testing.T) {
 
 // TestUpdateSocketCountsExcludesAnEmptySourcedGroup is the behavioural half.
 func TestUpdateSocketCountsExcludesAnEmptySourcedGroup(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	for _, tc := range []struct {
 		name       string

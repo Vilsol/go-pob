@@ -17,7 +17,7 @@ func combinedFireDamage(t *testing.T, item *Item) bool {
 
 // TestLineCombineRespectsModGroup covers Item.lua:1164-1168.
 func TestLineCombineRespectsModGroup(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	head := "Rarity: RARE\nProbe Ring\nTwo-Stone Ring\n" +
 		"Unique ID: 0000\nItem Level: 84\nQuality: 0\nLevelReq: 60\nImplicits: 0\n"

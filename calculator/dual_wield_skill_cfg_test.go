@@ -10,7 +10,7 @@ import (
 
 // TestDualWieldSkillCfgUsesMainHandFlagsOnly pins CalcActiveSkill.lua:455.
 func TestDualWieldSkillCfgUsesMainHandFlagsOnly(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	const build = "0016-gladiator-dual-strike-of-ambidexterity.xml"
 
 	corpus := corpusDirForLoadedData(t)

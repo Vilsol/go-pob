@@ -16,7 +16,7 @@ func TestCorpus3_29(t *testing.T) {
 		t.SkipNow()
 	}
 
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	corpusDir, names := corpusNamesForLoadedData(t)
 

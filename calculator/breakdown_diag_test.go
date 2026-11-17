@@ -25,7 +25,7 @@ func TestDiagBreakdown(t *testing.T) {
 	if stat == "" {
 		stat = "Armour"
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	dir := dumpsDirForLoadedData(t)
 	raw, err := os.ReadFile(filepath.Join(dir, build+".json"))

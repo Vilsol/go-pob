@@ -16,7 +16,7 @@ func TestReducePoolsByDamageMatchesOracle(t *testing.T) {
 	if dumpDir == "" {
 		t.Skip("set REDUCE_POOLS_DUMP=<dir> (mise run reduce-pools --builds <list> --out <dir>)")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	files, err := filepath.Glob(filepath.Join(dumpDir, "*.json"))
 	if err != nil {

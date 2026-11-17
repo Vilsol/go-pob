@@ -9,7 +9,7 @@ import (
 
 // TestSkillsSocketedInSlotAreSupported pins ModParser.lua:3374, `["skills socketed in your (.+) are supported by level (%d+) (.+)"]` -> extraSupport(...).
 func TestSkillsSocketedInSlotAreSupported(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("Socketed Gems are Supported by Level 20 Faster Attacks", false); e == nil ||
 		len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {

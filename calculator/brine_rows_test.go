@@ -4,7 +4,7 @@ import "testing"
 
 // TestBrineRowsParse pins ModParser.lua:4277 (mace.lua:972) and :3083 (tree.lua:13476).
 func TestBrineRowsParse(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	e := ParseMod("50% chance to gain a Brine Charge instead of an Endurance Charge", false)
 	if e == nil || e.Extra != "" || len(e.ModList) != 2 || e.ModList[0].Name() != "CanGainBrineCharges" ||

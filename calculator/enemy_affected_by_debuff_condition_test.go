@@ -13,7 +13,7 @@ func TestEnemyCarriesAffectedByDebuffCondition(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const name = "1518-slayer-sunder-of-earthbreaking-3.xml"
 	const key = "AffectedByPride"

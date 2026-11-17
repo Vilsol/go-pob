@@ -12,7 +12,7 @@ import (
 // TestCalcsAttributeBreakdownsMatchPoB: breakdown.simple for Str, Dex.
 func TestCalcsAttributeBreakdownsMatchPoB(t *testing.T) {
 	t.Parallel()
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	f, err := os.Open("../testdata/oracle/calcs_attribute_breakdowns_expected.jsonl.gz")
 	if err != nil {
 		t.Fatalf("REFUSING: %v", err)

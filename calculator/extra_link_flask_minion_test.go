@@ -25,7 +25,7 @@ func TestNonUniqueFlasksReachTheLinkedMinion(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const subject = "1007-luminary-animate-guardian-of-smiting-4.xml"
 	env := corpusEnvForLoadedData(t, subject)

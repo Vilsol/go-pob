@@ -12,7 +12,7 @@ func TestTraumaStacksConfigIsDispatched(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	env := corpusEnvForLoadedData(t, "0194-juggernaut-boneshatter-of-complex-trauma-2.xml")
 	if got := env.Player.ModDB.Sum(mod.TypeBase, nil, "Multiplier:TraumaStacks"); got == 0 {

@@ -11,7 +11,7 @@ import (
 
 // TestMasteryTallyCountsRunegraftsSeparately pins PassiveSpec.lua:1393-1420's mastery tally against the pinned PoB's own answer for three corpus builds.
 func TestMasteryTallyCountsRunegraftsSeparately(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	for _, tc := range []struct {
 		build     string
 		mastery   float64

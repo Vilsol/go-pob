@@ -12,7 +12,7 @@ import (
 
 // TestBloodShrines pins CalcSetup.lua:107-111, CalcPerform.lua:379-396, ConfigOptions.lua:1763-1777 and ModParser.lua:5664 (upstream #10186).
 func TestBloodShrines(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	entry := ParseMod("Gain a random Blood Shrine buff every 10 seconds", false)
 	if strings.TrimSpace(entry.Extra) != "" || len(entry.ModList) != 1 || entry.ModList[0].Name() != "Condition:CanHaveBloodShrines" {
 		t.Errorf("blood shrine row: extra %q, %d mods", entry.Extra, len(entry.ModList))

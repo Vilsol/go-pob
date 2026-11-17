@@ -14,7 +14,7 @@ import (
 
 func oracleModSectionTables(t *testing.T, file string) (*Environment, []modSectionCase) {
 	t.Helper()
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	f, err := os.Open("../testdata/oracle/calcs_mod_section_expected.jsonl.gz")
 	if err != nil {
 		t.Fatal(err)

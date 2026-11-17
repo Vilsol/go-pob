@@ -9,7 +9,7 @@ import (
 
 // TestSkillsFromEquippedSlotAreSupported pins ModParser.lua:3373, `["skills from equipped (.+) are supported by level (%d+) (.+)"]` -> extraSupport(...).
 func TestSkillsFromEquippedSlotAreSupported(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("Skills Socketed in your Helmet are Supported by level 20 Cold Penetration", false); e == nil ||
 		len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {

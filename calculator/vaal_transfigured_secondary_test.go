@@ -98,7 +98,7 @@ func TestVaalTransfiguredSecondaryArrivesOnACarrier(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const name = "0076-occultist-vaal-cold-snap-of-power.xml"
 	rawXML, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), name))

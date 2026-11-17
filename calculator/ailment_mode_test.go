@@ -15,7 +15,7 @@ func TestAilmentModeConfigAndFlag(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	e := ParseMod("Non-Critical Strikes cannot inflict Ailments", false)
 	if e == nil || strings.TrimSpace(modExtra(e)) != "" {

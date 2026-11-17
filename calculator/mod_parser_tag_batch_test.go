@@ -7,7 +7,7 @@ import (
 
 // TestModTagListBatch pins a batch of ModParser.lua `modTagList` rows that were never ported.
 func TestModTagListBatch(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("10% increased Damage per Power Charge", false); e == nil ||
 		len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {

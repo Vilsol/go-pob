@@ -10,7 +10,7 @@ import (
 
 // TestAllyExtraAuraRowsParseWithTheirGating pins ModParser.lua:2585 and :5086.
 func TestAllyExtraAuraRowsParseWithTheirGating(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("+10 to Strength", false); e == nil || len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {
 		t.Fatalf("REFUSING: the control line failed to parse; this test cannot attribute a failure")

@@ -54,7 +54,7 @@ type skillState struct {
 }
 
 var (
-	skillStatScopeRe = regexp.MustCompile(`([\pL\pN_]+) "Metadata/StatDescriptions/([\pL\pN_]+)\.txt"`)
+	skillStatScopeRe = regexp.MustCompile(`([\pL\pN_]+) "Metadata/StatDescriptions/([\pL\pN_]+)\.csd"`)
 	skillStatCopyRe  = regexp.MustCompile(`copy ([\pL\pN_]+) ([\pL\pN_]+)`)
 	luaAlphaRunRe    = regexp.MustCompile(`[A-Za-z]+`)
 )

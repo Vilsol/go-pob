@@ -3081,6 +3081,13 @@
           "crafted":false,
           "custom":false,
           "fractured":false,
+          "line":"Creates Consecrated Ground on Use",
+          "range":0.5,
+          "scourge":false
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
           "line":"(30-50)% increased Duration",
           "range":0.5,
           "scourge":false,
@@ -3104,13 +3111,6 @@
         },{
           "crafted":false,
           "custom":false,
-          "fractured":false,
-          "line":"Creates Consecrated Ground on Use",
-          "range":0.5,
-          "scourge":false
-        },{
-          "crafted":false,
-          "custom":false,
           "extra":"Consecrated Ground created by this Flask has Tripled Radius",
           "fractured":false,
           "line":"Consecrated Ground created by this Flask has Tripled Radius",
@@ -3128,17 +3128,17 @@
           "crafted":false,
           "custom":false,
           "fractured":false,
-          "line":"Consecrated Ground created during Effect applies (7-10)% increased Damage taken to Enemies",
-          "range":1,
-          "scourge":false
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
           "line":"(100-150)% increased Critical Strike Chance against Enemies on Consecrated Ground during Effect",
           "range":1,
           "scourge":false,
           "variantList":[null,true,true]
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"Consecrated Ground created during Effect applies (7-10)% increased Damage taken to Enemies",
+          "range":1,
+          "scourge":false
         }],
       "eyrie":false,
       "fractured":false,
@@ -4544,17 +4544,25 @@
           "crafted":false,
           "custom":false,
           "fractured":false,
+          "line":"(50-75)% increased Critical Strike Chance",
+          "range":1,
+          "scourge":false,
+          "variantList":[null,true,true]
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
           "line":"20% increased Attack Speed",
           "range":0.5,
           "scourge":false
         },{
           "crafted":false,
           "custom":false,
+          "extra":"  Gained  10% increased Movement Speed ",
           "fractured":false,
-          "line":"(50-75)% increased Critical Strike Chance",
-          "range":1,
-          "scourge":false,
-          "variantList":[null,true,true]
+          "line":"+10 Mana Gained on Kill",
+          "range":0.5,
+          "scourge":false
         },{
           "crafted":false,
           "custom":false,
@@ -4568,14 +4576,6 @@
           "extra":"Gain a Frenzy Charge on Critical Strike",
           "fractured":false,
           "line":"Gain a Frenzy Charge on Critical Strike",
-          "range":0.5,
-          "scourge":false
-        },{
-          "crafted":false,
-          "custom":false,
-          "extra":"  Gained  10% increased Movement Speed ",
-          "fractured":false,
-          "line":"+10 Mana Gained on Kill",
           "range":0.5,
           "scourge":false
         }],
@@ -10602,14 +10602,14 @@
           "crafted":false,
           "custom":false,
           "fractured":false,
-          "line":"25% reduced Bleeding Duration",
+          "line":"Bleeding Enemies you Kill Explode, dealing 5% of\ntheir Maximum Life as Physical Damage",
           "range":0.5,
           "scourge":false
         },{
           "crafted":false,
           "custom":false,
           "fractured":false,
-          "line":"Bleeding Enemies you Kill Explode, dealing 5% of\ntheir Maximum Life as Physical Damage",
+          "line":"25% reduced Bleeding Duration",
           "range":0.5,
           "scourge":false
         }],
@@ -10770,37 +10770,258 @@
           "crafted":false,
           "custom":false,
           "fractured":false,
-          "line":"+(25-28) to Strength and Dexterity",
-          "range":1,
+          "line":"Hits can't be Evaded",
+          "range":0.5,
           "scourge":false,
-          "variantList":{
-            "20":true
-          }
+          "variantList":[true]
         },{
           "crafted":false,
           "custom":false,
           "fractured":false,
-          "line":"+(25-28) to Strength and Intelligence",
+          "line":"Adds (12-14) to (18-20) Physical Damage",
+          "range":0.5,
+          "scourge":false,
+          "variantList":[null,true]
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"40% chance to cause Bleeding on Hit",
+          "range":0.5,
+          "scourge":false,
+          "variantList":[null,true]
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(60-69)% increased Chaos Damage",
+          "range":0.5,
+          "scourge":false,
+          "variantList":[null,null,true]
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"Chaos Skills have (13-15)% increased Skill Effect Duration",
+          "range":0.5,
+          "scourge":false,
+          "variantList":[null,null,true]
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"Attacks with this Weapon Penetrate (14-16)% Chaos Resistance",
+          "range":0.5,
+          "scourge":false,
+          "variantList":[null,null,null,true]
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"Gain (9-10)% of Cold Damage as Extra Chaos Damage",
+          "range":0.5,
+          "scourge":false,
+          "variantList":[null,null,null,null,true]
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(70-79)% increased Cold Damage",
+          "range":0.5,
+          "scourge":false,
+          "variantList":[null,null,null,null,null,true]
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(21-23)% chance to Freeze",
+          "range":0.5,
+          "scourge":false,
+          "variantList":[null,null,null,null,null,true]
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"Attacks with this Weapon Penetrate (14-16)% Elemental Resistances",
+          "range":0.5,
+          "scourge":false,
+          "variantList":[null,null,null,null,null,null,true]
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"Gain (9-10)% of Fire Damage as Extra Chaos Damage",
+          "range":0.5,
+          "scourge":false,
+          "variantList":[null,null,null,null,null,null,null,true]
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(70-79)% increased Fire Damage",
+          "range":0.5,
+          "scourge":false,
+          "variantList":[null,null,null,null,null,null,null,null,true]
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(21-23)% chance to Ignite",
+          "range":0.5,
+          "scourge":false,
+          "variantList":[null,null,null,null,null,null,null,null,true]
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(120-139)% increased Physical Damage",
+          "range":0.5,
+          "scourge":false,
+          "variantList":[null,null,null,null,null,null,null,null,null,true]
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(21-25)% chance to cause Bleeding on Hit",
+          "range":0.5,
+          "scourge":false,
+          "variantList":[null,null,null,null,null,null,null,null,null,true]
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(120-139)% increased Physical Damage",
           "range":0.5,
           "scourge":false,
           "variantList":{
-            "28":true
+            "11":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "extra":" to Blind Enemies  139% increased  ",
+          "fractured":false,
+          "line":"(21-25)% chance to Blind Enemies on hit",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "11":true
           }
         },{
           "crafted":false,
           "custom":false,
           "fractured":false,
-          "line":"+(25-28) to Dexterity and Intelligence",
+          "line":"(120-139)% increased Physical Damage",
           "range":1,
           "scourge":false,
           "variantList":{
-            "22":true
+            "12":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(21-25)% chance to Impale Enemies on Hit with Attacks",
+          "range":1,
+          "scourge":false,
+          "variantList":{
+            "12":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(120-139)% increased Physical Damage",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "13":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(21-25)% chance to Poison on Hit",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "13":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"Gain (9-10)% of Lightning Damage as Extra Chaos Damage",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "14":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(70-79)% increased Lightning Damage",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "15":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(21-23)% chance to Shock",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "15":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"Minions have (34-38)% increased maximum Life",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "16":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"Minions deal (34-38)% increased Damage",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "16":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"Gain (9-10)% of Physical Damage as Extra Chaos Damage",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "17":true
           }
         },{
           "crafted":false,
           "custom":false,
           "fractured":false,
           "line":"(70-79)% increased Spell Damage",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "18":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(18-20)% increased Mana Regeneration Rate",
           "range":0.5,
           "scourge":false,
           "variantList":{
@@ -10820,141 +11041,21 @@
           "crafted":false,
           "custom":false,
           "fractured":false,
-          "line":"(120-139)% increased Physical Damage",
-          "range":0.5,
-          "scourge":false,
-          "variantList":[null,null,null,null,null,null,null,null,null,true]
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(120-139)% increased Physical Damage",
+          "line":"Gain 5% of Non-Chaos Damage as extra Chaos Damage",
           "range":0.5,
           "scourge":false,
           "variantList":{
-            "11":true
+            "19":true
           }
         },{
           "crafted":false,
           "custom":false,
           "fractured":false,
-          "line":"(120-139)% increased Physical Damage",
+          "line":"+(25-28) to Strength and Dexterity",
           "range":1,
           "scourge":false,
           "variantList":{
-            "12":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(120-139)% increased Physical Damage",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "13":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"+(24-28)% to Physical Damage over Time Multiplier",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "36":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"+(24-28)% to Fire Damage over Time Multiplier",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "34":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"+(24-28)% to Cold Damage over Time Multiplier",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "27":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"+(24-28)% to Chaos Damage over Time Multiplier",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "26":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"Adds (12-14) to (18-20) Physical Damage",
-          "range":0.5,
-          "scourge":false,
-          "variantList":[null,true]
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(70-79)% increased Fire Damage",
-          "range":0.5,
-          "scourge":false,
-          "variantList":[null,null,null,null,null,null,null,null,true]
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(70-79)% increased Cold Damage",
-          "range":0.5,
-          "scourge":false,
-          "variantList":[null,null,null,null,null,true]
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(70-79)% increased Lightning Damage",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "15":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(60-69)% increased Chaos Damage",
-          "range":0.5,
-          "scourge":false,
-          "variantList":[null,null,true]
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(18-22)% increased Attack Speed",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "21":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(18-22)% increased Attack Speed",
-          "range":1,
-          "scourge":false,
-          "variantList":{
-            "22":true
+            "20":true
           }
         },{
           "crafted":false,
@@ -10970,264 +11071,6 @@
           "crafted":false,
           "custom":false,
           "fractured":false,
-          "line":"(18-22)% increased Cast Speed",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "24":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(28-32)% increased Critical Strike Chance",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "28":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(18-20)% increased Mana Regeneration Rate",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "18":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"Minions have (34-38)% increased maximum Life",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "16":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"Chaos Skills have (13-15)% increased Skill Effect Duration",
-          "range":0.5,
-          "scourge":false,
-          "variantList":[null,null,true]
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"Gain (9-10)% of Physical Damage as Extra Chaos Damage",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "17":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"Gain (9-10)% of Lightning Damage as Extra Chaos Damage",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "14":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"Gain (9-10)% of Cold Damage as Extra Chaos Damage",
-          "range":0.5,
-          "scourge":false,
-          "variantList":[null,null,null,null,true]
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"Gain (9-10)% of Fire Damage as Extra Chaos Damage",
-          "range":0.5,
-          "scourge":false,
-          "variantList":[null,null,null,null,null,null,null,true]
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"Minions deal (34-38)% increased Damage",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "16":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(21-23)% chance to Ignite",
-          "range":0.5,
-          "scourge":false,
-          "variantList":[null,null,null,null,null,null,null,null,true]
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(21-23)% chance to Freeze",
-          "range":0.5,
-          "scourge":false,
-          "variantList":[null,null,null,null,null,true]
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(21-23)% chance to Shock",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "15":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"Hits can't be Evaded",
-          "range":0.5,
-          "scourge":false,
-          "variantList":[true]
-        },{
-          "crafted":false,
-          "custom":false,
-          "extra":" to Blind Enemies  139% increased  ",
-          "fractured":false,
-          "line":"(21-25)% chance to Blind Enemies on hit",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "11":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(21-25)% chance to cause Bleeding on Hit",
-          "range":0.5,
-          "scourge":false,
-          "variantList":[null,null,null,null,null,null,null,null,null,true]
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"40% chance to cause Bleeding on Hit",
-          "range":0.5,
-          "scourge":false,
-          "variantList":[null,true]
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"Minions have (18-20)% increased Attack Speed",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "35":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"Minions have (18-20)% increased Cast Speed",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "35":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(21-25)% chance to Poison on Hit",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "13":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(5-6)% increased Damage per Endurance Charge",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "30":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(5-6)% increased Damage per Frenzy Charge",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "31":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"Attacks with this Weapon Penetrate (14-16)% Elemental Resistances",
-          "range":0.5,
-          "scourge":false,
-          "variantList":[null,null,null,null,null,null,true]
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(21-25)% chance to Impale Enemies on Hit with Attacks",
-          "range":1,
-          "scourge":false,
-          "variantList":{
-            "12":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"(5-6)% increased Damage per Power Charge",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "32":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"Attacks with this Weapon deal Double Damage",
-          "range":0.5,
-          "scourge":false
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"Attacks with this Weapon Penetrate (14-16)% Chaos Resistance",
-          "range":0.5,
-          "scourge":false,
-          "variantList":[null,null,null,true]
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
-          "line":"Gain 5% of Non-Chaos Damage as extra Chaos Damage",
-          "range":0.5,
-          "scourge":false,
-          "variantList":{
-            "19":true
-          }
-        },{
-          "crafted":false,
-          "custom":false,
-          "fractured":false,
           "line":"15% chance to Trigger Level 1 Blood Rage when you Kill an Enemy",
           "range":0.5,
           "scourge":false,
@@ -11238,11 +11081,51 @@
           "crafted":false,
           "custom":false,
           "fractured":false,
+          "line":"(18-22)% increased Attack Speed",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "21":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"+(25-28) to Dexterity and Intelligence",
+          "range":1,
+          "scourge":false,
+          "variantList":{
+            "22":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(18-22)% increased Attack Speed",
+          "range":1,
+          "scourge":false,
+          "variantList":{
+            "22":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
           "line":"(12-15)% increased Attack Speed while a Rare or Unique Enemy is Nearby",
           "range":0.5,
           "scourge":false,
           "variantList":{
             "23":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(18-22)% increased Cast Speed",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "24":true
           }
         },{
           "crafted":false,
@@ -11268,11 +11151,121 @@
           "crafted":false,
           "custom":false,
           "fractured":false,
+          "line":"+(24-28)% to Chaos Damage over Time Multiplier",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "26":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"+(24-28)% to Cold Damage over Time Multiplier",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "27":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"+(25-28) to Strength and Intelligence",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "28":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(28-32)% increased Critical Strike Chance",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "28":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
           "line":"+(36-40)% Critical Strike Multiplier while a Rare or Unique Enemy is Nearby",
           "range":0.5,
           "scourge":false,
           "variantList":{
             "29":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(5-6)% increased Damage per Endurance Charge",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "30":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(5-6)% increased Damage per Frenzy Charge",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "31":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"(5-6)% increased Damage per Power Charge",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "32":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"+(24-28)% to Fire Damage over Time Multiplier",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "34":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"Minions have (18-20)% increased Attack Speed",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "35":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"Minions have (18-20)% increased Cast Speed",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "35":true
+          }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"+(24-28)% to Physical Damage over Time Multiplier",
+          "range":0.5,
+          "scourge":false,
+          "variantList":{
+            "36":true
           }
         },{
           "crafted":false,
@@ -11296,6 +11289,13 @@
           "variantList":{
             "37":true
           }
+        },{
+          "crafted":false,
+          "custom":false,
+          "fractured":false,
+          "line":"Attacks with this Weapon deal Double Damage",
+          "range":0.5,
+          "scourge":false
         }],
       "eyrie":false,
       "fractured":false,

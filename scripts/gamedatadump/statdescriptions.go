@@ -76,7 +76,7 @@ type sdScope struct {
 	Descriptors map[string]sdDescriptor `json:"descriptors"`
 }
 
-//pob:block:src/Export/Scripts/statdesc.lua:48-69
+//pob:block:src/Export/Scripts/statdesc.lua:48-70
 func sdLimit(c rawdata.Condition) [2]any {
 	end := func(p *int) any {
 		if p == nil {
@@ -144,7 +144,7 @@ func sdUniverse() map[string]bool {
 	return universe
 }
 
-//pob:src/Export/Scripts/statdesc.lua:3-116
+//pob:src/Export/Scripts/statdesc.lua:3-117
 func sdScopeOf(file *rawdata.TranslationFile, universe map[string]bool) (sdScope, error) {
 	scope := sdScope{Stats: map[string]int{}, Descriptors: map[string]sdDescriptor{}}
 	for _, inc := range file.Includes {

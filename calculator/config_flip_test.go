@@ -517,7 +517,7 @@ func TestConfigFlip(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	runner := flipPoBRunner{pobSrc: in[2], luajit: in[3], script: in[4], shards: 6}
 	if v, err := strconv.Atoi(os.Getenv("SHARDS")); err == nil && v > 0 {
 		runner.shards = v

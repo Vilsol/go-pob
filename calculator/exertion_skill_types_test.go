@@ -10,7 +10,7 @@ import (
 
 // TestExertionSkillTypesResolveInGameData answers a question that CANNOT be answered by grepping this repository, and that I got wrong once by trying.
 func TestExertionSkillTypesResolveInGameData(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if len(poe.ActiveSkillTypesByID) == 0 {
 		t.Fatalf("REFUSING: ActiveSkillTypesByID is empty; the game data did not load and every " +
@@ -37,7 +37,7 @@ func TestExertionSkillTypesResolveInGameData(t *testing.T) {
 
 // TestNeverExertableMainSkillGetsNoWarcryUptime: 1785 is Flicker Strike with Multistrike, which adds NeverExertable, and Intimidating Cry.
 func TestNeverExertableMainSkillGetsNoWarcryUptime(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	env := corpusEnvForLoadedData(t, "1785-ladder-Haunterz_7064.SSJ_Degoshi.xml")
 	if !env.Player.MainSkill.SkillTypes[data.SkillTypeNeverExertable] {
 		t.Fatalf("fixture premise moved: the main skill no longer carries NeverExertable")

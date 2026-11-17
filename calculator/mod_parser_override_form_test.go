@@ -8,7 +8,7 @@ import (
 
 // TestOverrideFormIsParsed covers ModParser.lua:154's `is (%-?%d+)%%?
 func TestOverrideFormIsParsed(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	only := func(line string) (mod.Mod, string) {
 		t.Helper()

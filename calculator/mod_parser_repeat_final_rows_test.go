@@ -9,7 +9,7 @@ import (
 
 // TestRepeatFinalRowsParse pins ModParser.lua:5574 and :5673, the two producers that were absent while calc_offence.go:1104-1135 already consumed them.
 func TestRepeatFinalRowsParse(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("+10 to Strength", false); e == nil || len(e.ModList) == 0 ||
 		strings.TrimSpace(modExtra(e)) != "" {

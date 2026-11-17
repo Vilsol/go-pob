@@ -8,7 +8,7 @@ import (
 
 // TestSocketedGemScaledLevelRowsParse pins the two socketed-gem level rows whose value is scaled by a Multiplier tag and which had no counterpart here at all.
 func TestSocketedGemScaledLevelRowsParse(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	for _, tc := range []struct {
 		line  string

@@ -9,7 +9,7 @@ import (
 
 // TestGemKeywordListSplitsOnWhitespace pins ModParser.lua:3232-3236 — `for tag in skill:gmatch("%S+")`, NON-SPACE runs, not `%w+`.
 func TestGemKeywordListSplitsOnWhitespace(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if got := gemPropertyKeywords(t, "+1 to Level of all Elemental Support Gems"); !reflect.DeepEqual(got, []string{"elemental", "support"}) {
 		t.Fatalf("REFUSING: control keyword list = %v, want [elemental support]; the row itself is broken", got)

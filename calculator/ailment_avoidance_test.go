@@ -18,7 +18,7 @@ func TestElementalAilmentAvoidanceReadsTheAggregateMods(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const name = "2204-ladder-Ntkiy_hach_1026.Torchlight_Tourist.xml"
 

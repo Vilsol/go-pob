@@ -15,7 +15,7 @@ func TestGrantedSkillGroupsFollowTheTree(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	corpusDir, _ := corpusNamesForLoadedData(t)
 	file, err := os.ReadFile(filepath.Join(corpusDir, "1606-chieftain-treeskill-4.xml"))
 	if err != nil {

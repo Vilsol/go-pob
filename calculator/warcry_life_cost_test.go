@@ -35,7 +35,7 @@ func TestWarcryLifeCostReachesTheCost(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	env := corpusEnvForLoadedData(t, "14675-ladder-sementenegra2_0161.COTA_CryCry.xml")
 	if got := env.Player.Output["LifeCost"]; got < 1956.8*0.995 || got > 1956.8*1.005 {
 		t.Errorf("LifeCost = %v, PoB's oracle has 1956.8", got)

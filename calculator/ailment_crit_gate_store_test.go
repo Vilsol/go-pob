@@ -12,7 +12,7 @@ func TestAilmentCritGateReadsTheActorModDB(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	carriers := []string{
 		"0006-elementalist-storm-burst.xml",

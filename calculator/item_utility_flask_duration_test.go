@@ -7,7 +7,7 @@ import (
 
 // TestUtilityFlaskDurationCompoundsQuality covers Item.lua:2395.
 func TestUtilityFlaskDurationCompoundsQuality(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	raw := "Rarity: MAGIC\nExperimenter's Quicksilver Flask of Adrenaline\n" +
 		"Quality: 20\nLevelReq: 4\nImplicits: 0\n" +

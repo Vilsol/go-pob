@@ -8,7 +8,7 @@ import (
 
 // TestReservationIntegerStages pins CalcPerform.lua:2016-2036.
 func TestReservationIntegerStages(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	cases := []struct {
 		build, skill, pool string
 		percent            float64

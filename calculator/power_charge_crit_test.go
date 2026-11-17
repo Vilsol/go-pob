@@ -20,7 +20,7 @@ func TestPowerChargeCritUsesTheGeneratedConstant(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true for the rest")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	oracle, err := oracleForLoadedData()
 	if err != nil {

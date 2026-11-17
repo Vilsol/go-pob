@@ -24,7 +24,7 @@ func TestTreeStatParseCensus(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	tree := data.TreeVersions[data.LatestTreeVersion].Tree()
 	if len(tree.Nodes) == 0 {

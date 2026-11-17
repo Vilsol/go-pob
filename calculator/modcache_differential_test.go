@@ -661,7 +661,7 @@ func mcdRank(t *testing.T, rows []mcdRow, keys map[string]bool) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("MCD_RANK / MCD_EXTRA_OUT need CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	carriers, repr, builds := mcdCorpus(t)
 	t.Logf("corpus builds read: %d, distinct line templates: %d", builds, len(carriers))
 

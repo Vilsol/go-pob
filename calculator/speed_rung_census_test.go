@@ -21,7 +21,7 @@ func TestSpeedRungCensus(t *testing.T) {
 	if dumpPath == "" {
 		t.Skip("set SPEED_RUNGS=<jsonl from oracle/dump_speed_rungs.lua>")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	fh, err := os.Open(dumpPath)
 	if err != nil {

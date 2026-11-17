@@ -15,7 +15,7 @@ func TestEnemyAilmentImmunityGatesTheAilmentLoop(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	for _, tc := range []struct {
 		build         string

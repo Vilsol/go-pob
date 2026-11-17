@@ -14,7 +14,7 @@ Implicits: 3
 
 // TestModMagnitudeReadsTheLinesOwnRange pins Item.lua:1251, which re-ranges a magnitude line at `modLine.range or main.defaultItemAffixQuality or 1`.
 func TestModMagnitudeReadsTheLinesOwnRange(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	takenAsFire := func(raw string) float64 {
 		item := &Item{}

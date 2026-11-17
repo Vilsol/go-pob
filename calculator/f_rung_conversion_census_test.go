@@ -22,7 +22,7 @@ func TestFRungConversionSplit(t *testing.T) {
 	if dumpDir == "" {
 		t.Skip("set CALCS_DUMP=<dir> (mise run calcs-chain)")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	files, err := filepath.Glob(filepath.Join(dumpDir, "*.json"))
 	if err != nil || len(files) == 0 {

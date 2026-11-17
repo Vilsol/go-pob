@@ -16,7 +16,7 @@ import (
 //		modDB:AddMod(fromTree and modLib.setSource(mod, modObj.mod.source) or mod)
 //	end
 func TestKeystoneKeepsGrantingItemAsSource(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	newEnv := func() *Environment {
 		return &Environment{

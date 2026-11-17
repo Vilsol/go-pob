@@ -39,10 +39,10 @@ func TestGameDataVersionOverride(t *testing.T) {
 
 // TestDefaultVersionIsThePinnedOne guards the constant every published accuracy figure assumes.
 func TestDefaultVersionIsThePinnedOne(t *testing.T) {
-	testza.AssertEqual(t, "3.29", DefaultVersion,
-		"DefaultVersion is the game data an unqualified test run loads, and since 2026-08-11 that is "+
-			"3.29 — the version the pinned PoB and the committed corpus and oracle all belong "+
-			"to. It is the ONLY graded version: 3.18 grading was removed on 2026-08-09 and 3.20 "+
-			"on 2026-08-11. The paths are deliberately not spelled out here; they derive from "+
+	testza.AssertEqual(t, "3.30", DefaultVersion,
+		"DefaultVersion is the game data an unqualified test run loads, and since PoB 2.68.1 that is "+
+			"3.30 — the version the pinned PoB and the committed oracle belong to; the corpus is "+
+			"the 3.29 builds, graded on 3.30 data. It is the ONLY graded version: 3.18 grading was "+
+			"removed on 2026-08-09 and 3.20 on 2026-08-11. The paths are deliberately not spelled out here; they derive from "+
 			"this constant, and naming them would be a second place to edit at the next bump.")
 }

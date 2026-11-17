@@ -10,7 +10,7 @@ import (
 
 // TestGetActiveSkillCountMatchesTheGemsOwnEffects covers Calcs.lua:150-174.
 func TestGetActiveSkillCountMatchesTheGemsOwnEffects(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	skill := func(gemID, skillID string, count int, g1, g2 bool) *ActiveSkill {
 		gem := pob.Gem{

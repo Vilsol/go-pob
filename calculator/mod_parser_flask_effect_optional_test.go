@@ -7,7 +7,7 @@ import (
 
 // TestDuringEffectAcceptsTheFlasklessForm pins a ONE-TOKEN divergence from the pin that costs whole modifier lines.
 func TestDuringEffectAcceptsTheFlasklessForm(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	for _, line := range []string{
 		"Enemies Ignited by you during Effect take 10% increased Damage",

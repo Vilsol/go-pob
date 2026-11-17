@@ -7,7 +7,7 @@ import (
 
 // TestChanceToGainFormParses pins ModParser.lua:99, `["^([%+%-]?%d+)%% chance to gain "] = "FLAG"`.
 func TestChanceToGainFormParses(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("5% chance to Freeze", false); e == nil ||
 		len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {

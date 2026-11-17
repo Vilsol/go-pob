@@ -120,8 +120,8 @@ func TestClusterJewelData(t *testing.T) {
 		},
 	}, ClusterJewels.Jewels["Large Cluster Jewel"].Skills["affliction_mace_and_staff_damage"])
 
-	testza.AssertEqual(t, 11552, ClusterJewels.NotableSortOrder["Wizardry"])
-	testza.AssertEqual(t, 15607, ClusterJewels.NotableSortOrder["Aggressive Defence"])
+	testza.AssertEqual(t, 11544, ClusterJewels.NotableSortOrder["Wizardry"])
+	testza.AssertEqual(t, 15583, ClusterJewels.NotableSortOrder["Aggressive Defence"])
 	testza.AssertEqual(t, "Disciple of Kitava", ClusterJewels.Keystones[0])
 	testza.AssertEqual(t, "Pitfighter", ClusterJewels.Keystones[7])
 }

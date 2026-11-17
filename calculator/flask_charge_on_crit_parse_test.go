@@ -10,7 +10,7 @@ import (
 
 // TestFlaskChargeOnCritChanceParses pins ModParser.lua:3539.
 func TestFlaskChargeOnCritChanceParses(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	e := ParseMod("15% chance to gain a Flask Charge when you deal a Critical Strike", false)
 	if e.Extra != "" || len(e.ModList) != 1 {
@@ -35,7 +35,7 @@ func TestMedicFlaskKeepsItsOwnMergeKey(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	for _, b := range []string{"0024-trickster-frostbite.xml", "0057-trickster-spark-of-the-nova-2.xml", "1458-trickster-spark-of-the-nova-2.xml"} {
 		env := corpusEnvForLoadedData(t, b)
 		for key, want := range map[string]float64{"ActionSpeedMod": 1, "SelfChillEffect": -37, "SelfFreezeDuration": 18} {

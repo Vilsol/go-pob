@@ -29,7 +29,7 @@ func TestCurseNonCursedEnemiesRows(t *testing.T) {
 	}
 
 	t.Run("curse non-cursed enemies resolves a real hex to a skill id", func(t *testing.T) {
-		requireGameData(t, "3.29")
+		requireGameData(t, "3.30")
 		es := curseSkill(t, "10% chance to Curse Non-Cursed Enemies with Enfeeble on Hit")
 		if es.SkillID == "" {
 			t.Fatal("SkillID is empty; item.go:910 drops the mod and the curse is never granted")
@@ -37,7 +37,7 @@ func TestCurseNonCursedEnemiesRows(t *testing.T) {
 	})
 
 	t.Run("the sibling with increased effect resolves it too", func(t *testing.T) {
-		requireGameData(t, "3.29")
+		requireGameData(t, "3.30")
 		es := curseSkill(t, "25% chance to Curse Non-Cursed Enemies with Enfeeble on Hit, with 20% increased effect")
 		if es.SkillID == "" {
 			t.Fatal("SkillID is empty; item.go:910 drops the mod and the curse is never granted")
@@ -45,7 +45,7 @@ func TestCurseNonCursedEnemiesRows(t *testing.T) {
 	})
 
 	t.Run("an unresolvable name keeps the empty id upstream also produces", func(t *testing.T) {
-		requireGameData(t, "3.29")
+		requireGameData(t, "3.30")
 		es := curseSkill(t, "10% chance to Curse non-Cursed Enemies with a random Hex on Hit")
 		if es.SkillID != "" {
 			t.Errorf("SkillID = %q, want empty -- upstream cannot resolve this name either", es.SkillID)

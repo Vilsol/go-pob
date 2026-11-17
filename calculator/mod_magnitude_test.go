@@ -27,7 +27,7 @@ Implicit Modifiers Cannot Be Changed
 
 // TestModMagnitudeScalesExplicitLines pins Item.lua:1183-1283 and :1377-1432, which had no counterpart in this port at all.
 func TestModMagnitudeScalesExplicitLines(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	t.Run("a crafted item scales its explicit lines", func(t *testing.T) {
 		item := &Item{}

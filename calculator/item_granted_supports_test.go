@@ -14,7 +14,7 @@ import (
 // that item, a gem added to the granted group itself is dropped by the next calculation, and the
 // gem picker's what-if (CALCULATOR mode, no 1502 wipe) still counts it.
 func TestItemGrantedSkillTakesSlotSupports(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	file, err := os.ReadFile("testdata/item-granted-supports/dancing-dervish.xml")
 	if err != nil {
 		t.Fatal(err)

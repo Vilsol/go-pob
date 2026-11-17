@@ -16,7 +16,7 @@ func TestAreaOfEffectIntegerStages(t *testing.T) {
 }
 
 func TestAreaOfEffectIntegerStagesOnCarriers(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	env := corpusEnvForLoadedData(t, "0052-juggernaut-cleave.xml")
 	if got := env.Player.Output["AreaOfEffectRadius"]; got != 34 {
 		t.Errorf("Cleave AreaOfEffectRadius = %v, want 34", got)

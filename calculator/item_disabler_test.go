@@ -142,7 +142,7 @@ func TestDisabledItemSlotsMatchPoB(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	cases := map[string][]string{
 		"2668-ladder-helias61_8746.Somersby_Grusha": {"Amulet"},
@@ -187,7 +187,7 @@ func TestItemDisablerRespectsIgnoreConfig(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const buildName = "2668-ladder-helias61_8746.Somersby_Grusha"
 	rawXML, err := os.ReadFile(filepath.Join(corpusDirForLoadedData(t), buildName+".xml"))

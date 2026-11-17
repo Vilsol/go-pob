@@ -19,7 +19,7 @@ const (
 
 // TestCalcsBreakdownLinesMatchPoB: The lines of every breakdown key.
 func TestCalcsBreakdownLinesMatchPoB(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	f, err := os.Open("../testdata/oracle/calcs_breakdown_lines_expected.jsonl.gz")
 	if err != nil {
 		t.Fatalf("REFUSING: %v", err)

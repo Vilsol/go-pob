@@ -19,7 +19,7 @@ func TestEnemyModDBCensus(t *testing.T) {
 	if dumpDir == "" {
 		t.Skip("set DUMPS=<dir of PoB per-build dumps>")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	files, err := filepath.Glob(filepath.Join(dumpDir, "*.json"))
 	if err != nil || len(files) == 0 {

@@ -18,7 +18,7 @@ func TestBaseModConstantsMatchPoB(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true for the rest")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	env := corpusEnvForLoadedData(t, "0016-gladiator-dual-strike-of-ambidexterity.xml")
 

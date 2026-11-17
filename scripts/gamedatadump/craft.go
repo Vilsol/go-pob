@@ -431,7 +431,7 @@ var essenceModColumns = map[string]func(*poe.Essence) *int{
 	"Two Handed Sword":           func(e *poe.Essence) *int { return e.TwoHandSwordModsKey },
 }
 
-//pob:block:src/Export/Scripts/essence.lua:25-40
+//pob:block:src/Export/Scripts/essence.lua:25-42
 func dumpEssences() ([]craftEssence, error) {
 	ctx, cache := gameDataContext(), assetCache()
 	for name, init := range map[string]func() error{

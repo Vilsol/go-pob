@@ -10,7 +10,7 @@ func TestItemGrantedNoSupportsSkillTakesNoSupports(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	build := loadCorpusBuild(t, "4956-ladder-Icebloom008_0770.СаблимНаНищету.xml")
 	env := (&Calculator{PoB: build}).BuildOutput(OutputModeMain)
 

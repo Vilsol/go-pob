@@ -4,7 +4,7 @@ import "testing"
 
 // TestCritChanceStoredToPermyriad pins CalcOffence.lua:3106-3107 (#10264): crit chance is rounded to 0.01% before the cap.
 func TestCritChanceStoredToPermyriad(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	env := corpusEnvForLoadedData(t, "0001-necromancer-unknown.xml")
 	if got := env.Player.Output["CritChance"]; got != 13.27 {
 		t.Errorf("CritChance = %v, want 13.27", got)

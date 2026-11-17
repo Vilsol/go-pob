@@ -100,7 +100,7 @@ func modTags(keys []int) []string {
 	return out
 }
 
-//pob:src/Export/statdesc.lua:431-455
+//pob:src/Export/statdesc.lua:571-595
 func (x *modsExport) describeMod(m *poe.Mod, stat2 *[2]int) ([]string, []float64, error) {
 	buffTemplateStats := map[string]bool{}
 	var templates []int
@@ -124,6 +124,7 @@ func (x *modsExport) describeMod(m *poe.Mod, stat2 *[2]int) ([]string, []float64
 		}
 		stats[s.Stat.ID] = v
 	}
+	// statdesc.lua:589 calls describeModStats (:555-570); its granted-effect lines need Mods columns go-pob-data lacks.
 	return x.describer.describeStats(stats)
 }
 
@@ -228,8 +229,9 @@ func (x *modsExport) writeMods(outName string, condFunc func(*poe.Mod) bool) ([]
 
 var itemExclusiveExcludeRe = regexp.MustCompile(`Royale|Cowards|Map|Ultimatum|UNUSED`)
 
-//pob:block:src/Export/Scripts/mods.lua:282-292
+//pob:block:src/Export/Scripts/mods.lua:282-293
 func itemExclusive(mod *poe.Mod) bool {
+	// mods.lua:291 drops VisceraMod rows, but the pin's shipped ModItemExclusive.lua still carries them; follow the data.
 	return (mod.Domain == domainItem || mod.Domain == domainFlask || mod.Domain == domainJewel || mod.Domain == domainClusterJewel || mod.Domain == domainTincture) &&
 		mod.GenerationType == genIntrinsic &&
 		len(mod.Families) > 0 && modFamily(mod, 0) != "AuraBonus" &&

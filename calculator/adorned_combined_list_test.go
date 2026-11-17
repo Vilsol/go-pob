@@ -13,7 +13,7 @@ func TestAdornedScalesTheCombinedList(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	for _, name := range []string{
 		"1252-juggernaut-bladefall-of-trarthus-2.xml",
 		"1404-juggernaut-bladefall-of-trarthus-3.xml",

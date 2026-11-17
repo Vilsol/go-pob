@@ -9,7 +9,7 @@ import (
 
 // TestWorklistParserRowsParseWhole pins six rows the pin parses WHOLE and go-pob dropped whole.
 func TestWorklistParserRowsParseWhole(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("+10 to Strength", false); e == nil || len(e.ModList) == 0 ||
 		strings.TrimSpace(modExtra(e)) != "" {

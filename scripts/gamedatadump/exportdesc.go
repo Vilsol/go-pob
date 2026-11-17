@@ -34,7 +34,7 @@ var (
 	edSignedRe  = regexp.MustCompile(`\{(\d?):(\+?)d?\}`)
 )
 
-//pob:src/Export/statdesc.lua:6-108
+//pob:src/Export/statdesc.lua:6-109
 func (e *exportDescriber) parseStatFile(name string, order int) (int, error) {
 	file, err := loader.LoadTranslation(gameDataContext(), raw.LatestVersion, "en", name, assetCache())
 	if err != nil {
@@ -180,7 +180,7 @@ func edValue(v *edRange) string {
 	return "(" + edFormat(v.min, v.fmt, false) + "-" + edFormat(v.max, v.fmt, false) + ")"
 }
 
-//pob:block:src/Export/statdesc.lua:252-388
+//pob:block:src/Export/statdesc.lua:285-426
 //nolint:gocyclo // Mirrors the Lua elseif chain.
 func edApplySpec(val []*edRange, spec sdSpec) error {
 	idx, ok := spec.V.(float64)
@@ -256,7 +256,7 @@ func edApplySpec(val []*edRange, spec sdSpec) error {
 	case "milliseconds_to_seconds_2dp_if_required", "milliseconds_to_seconds_2dp":
 		scale(func(x float64) float64 { return luaRound(x/1000, 2) }, "g")
 	case "deciseconds_to_seconds":
-		scale(func(x float64) float64 { return x / 10 }, ".2f")
+		scale(func(x float64) float64 { return x / 10 }, "g")
 	case "locations_to_metres":
 		scale(func(x float64) float64 { return x / 10 }, "g")
 	case "60%_of_value":
@@ -265,6 +265,7 @@ func edApplySpec(val []*edRange, spec sdSpec) error {
 		scale(func(x float64) float64 { return x * 0.3 }, "")
 	case "mod_value_to_item_class":
 		return fmt.Errorf("handler %s needs ItemClasses, which no ported export reads", spec.K)
+	// statdesc.lua:399-403's formatter-name arm is unported: go-pob-data carries none of its eight tables.
 	case "multiplicative_damage_modifier":
 		scale(func(x float64) float64 { return 100 + x }, "")
 	case "multiply_by_four":
@@ -289,7 +290,7 @@ func (e *exportDescriber) describeStats(stats map[string][2]float64) ([]string, 
 	return e.describeRanges(ranges)
 }
 
-//pob:src/Export/statdesc.lua:212-429
+//pob:src/Export/statdesc.lua:245-467
 func (e *exportDescriber) describeRanges(stats map[string]*edRange) ([]string, []float64, error) {
 	var descOrdered []*edDescriptor
 	seen := map[*edDescriptor]bool{}

@@ -10,7 +10,7 @@ import (
 
 // TestAuraConditionPatternsCoverEveryAuraGem pins the `while affected by <aura>` / `while using <aura>` grammar that ModParser.lua:6059-6062 GENERATES.
 func TestAuraConditionPatternsCoverEveryAuraGem(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	var auraNames []string
 	for _, gem := range raw2.Gems {
@@ -43,7 +43,7 @@ func TestAuraConditionPatternsCoverEveryAuraGem(t *testing.T) {
 
 // TestWatchersEyeLinesParseWhole is the end-to-end half: the grammar gap above costs the whole modifier, not just its condition.
 func TestWatchersEyeLinesParseWhole(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("+10 to Strength", false); e == nil || len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {
 		t.Fatalf("REFUSING: the control line failed to parse; this test cannot attribute a failure")

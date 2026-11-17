@@ -7,7 +7,7 @@ import (
 
 // TestRadiusAlsoGrantJewelFuncsParse pins the nine `Passive Skills in Radius also grant …` rows.
 func TestRadiusAlsoGrantJewelFuncsParse(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("Passive Skills in Radius also grant: 10% increased Unarmed Attack Speed with Melee Skills", false); e == nil ||
 		len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {

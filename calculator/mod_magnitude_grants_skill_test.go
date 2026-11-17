@@ -9,7 +9,7 @@ import (
 
 // TestModMagnitudeSkipsSkillGrantingLines pins Item.lua:1417-1428 / :1449.
 func TestModMagnitudeSkipsSkillGrantingLines(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	item := &Item{}
 	item.ParseRaw(`Rarity: RARE

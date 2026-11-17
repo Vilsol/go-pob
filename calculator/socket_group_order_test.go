@@ -6,7 +6,7 @@ import (
 
 // TestSocketGroupOrderHoistsOnlyCrossLinkedSlots: CalcSetup.lua:998-1009 hoists a socket group to the front of the processing order only when the group's slot is the SOURCE SLOT of a live LinkedSupport mod.
 func TestSocketGroupOrderHoistsOnlyCrossLinkedSlots(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	t.Run("no linked support keeps file order", func(t *testing.T) {
 		env := defenceEnv(t, "0005-occultist-vaal-double-strike.xml")

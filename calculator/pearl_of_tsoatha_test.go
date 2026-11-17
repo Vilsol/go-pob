@@ -10,7 +10,7 @@ import (
 
 // TestExtraSupportAppliesToGrantedSkillsRows pins ModParser.lua:2073-2104 and :3419-3420 (upstream #10236).
 func TestExtraSupportAppliesToGrantedSkillsRows(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	for _, tc := range []struct {
 		line, slot string

@@ -17,7 +17,7 @@ import (
 )
 
 // DefaultVersion is the game data testdata's corpus and oracle belong to; a test binary loads it unless POE_VERSION says otherwise.
-const DefaultVersion = "3.29"
+const DefaultVersion = "3.30"
 
 // AppVersion is the game data every other binary loads unless POE_VERSION says otherwise.
 const AppVersion = "3.30"

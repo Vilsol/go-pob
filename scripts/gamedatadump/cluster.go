@@ -46,6 +46,7 @@ func passiveSkillStats(node *rawdata.PassiveSkill) map[string][2]float64 {
 
 //pob:block:src/Export/Scripts/cluster.lua:1-91
 func dumpClusterJewels() (any, error) {
+	// cluster.lua:92-100 (blightcoreNotableIndex) is unported: the Go table has no field for it.
 	ctx, cache := gameDataContext(), assetCache()
 	var passives []*rawdata.PassiveSkill
 	for _, init := range []func() error{

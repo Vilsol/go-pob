@@ -11,7 +11,7 @@ func TestBrandTotalDotScalesByAttachedBrands(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	for build, want := range map[string]float64{
 		"0115-elementalist-wintertide-brand-4.xml": 1425079.9538053,
 		"0398-hierophant-wintertide-brand.xml":     1165407.4415409,

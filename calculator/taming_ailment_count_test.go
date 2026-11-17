@@ -9,7 +9,7 @@ import (
 // TestTamingElementalAilmentExpansion: The Taming's "(30-40)% increased Elemental Damage with Hits and Ailments for each type of Elemental Ailment on Enemy" had no parser row at all.
 func TestTamingElementalAilmentExpansion(t *testing.T) {
 	t.Parallel()
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	entry := ParseMod("40% increased Elemental Damage with Hits and Ailments for each type of Elemental Ailment on Enemy", false)
 	if entry == nil {

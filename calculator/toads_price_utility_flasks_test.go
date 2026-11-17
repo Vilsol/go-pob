@@ -16,7 +16,7 @@ func TestUtilityFlasksDisabledKeepsOnlyLifeAndManaFlasks(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	corpusDir, _ := corpusNamesForLoadedData(t)
 	file, err := os.ReadFile(filepath.Join(corpusDir, "1225-deadeye-scourge-arrow-of-menace-2.xml"))
 	if err != nil {

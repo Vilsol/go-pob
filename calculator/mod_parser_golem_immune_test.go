@@ -8,7 +8,7 @@ import (
 
 // TestGolemElementalImmunityMatchesThePin pins ModParser.lua:2763-2766.
 func TestGolemElementalImmunityMatchesThePin(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	e := ParseMod("Summoned Golems are Immune to Elemental Damage", false)
 	if e == nil || len(e.ModList) == 0 {

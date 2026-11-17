@@ -62,7 +62,7 @@ func TestCatalystTagsMatchThePin(t *testing.T) {
 
 // TestCatalystLineFlagsSelectPrefixAndSuffix covers Item.lua:48-53.
 func TestCatalystLineFlagsSelectPrefixAndSuffix(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const raw = "Rarity: RARE\nProbe Ring\nTwo-Stone Ring\n" +
 		"Unique ID: 0000\nItem Level: 84\nQuality: 0\nLevelReq: 60\n" +
@@ -80,7 +80,7 @@ func TestCatalystLineFlagsSelectPrefixAndSuffix(t *testing.T) {
 
 // TestCatalystQualitySpecSelectsTheCatalyst covers Item.lua:649-655.
 func TestCatalystQualitySpecSelectsTheCatalyst(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const raw = "Rarity: RARE\nProbe Ring\nTwo-Stone Ring\n" +
 		"Unique ID: 0000\nItem Level: 84\nQuality (Attribute Modifiers): +20%\n" +

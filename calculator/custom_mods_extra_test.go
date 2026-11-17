@@ -8,7 +8,7 @@ import (
 
 // TestCustomModsDropLinesWithLeftoverExtra pins ConfigTab.lua:1116 and :1135.
 func TestCustomModsDropLinesWithLeftoverExtra(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	apply := func(text string) int {
 		list := moddb.NewModList()

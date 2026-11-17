@@ -9,7 +9,7 @@ import (
 
 // TestSelfCastCurseRowsParse pins the Balance of Terror family: every upstream row whose tag is `Condition:SelfCast<Curse>`.
 func TestSelfCastCurseRowsParse(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("+10 to Strength", false); e == nil || len(e.ModList) == 0 ||
 		strings.TrimSpace(modExtra(e)) != "" {

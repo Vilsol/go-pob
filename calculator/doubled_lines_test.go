@@ -56,7 +56,7 @@ func TestEnergyShieldLeechDoublingReachesTheBuild(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	env := corpusEnvForLoadedData(t, "0161-assassin-viper-strike-of-the-mamba.xml")
 	if got, want := env.Player.Output["MaxEnergyShieldLeechInstance"], 784.4; math.Abs(got-want) > want*0.005 {

@@ -22,7 +22,7 @@ func TestAbyssSocketConquestsMatchPoB(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	env := corpusEnvForLoadedData(t, "1852-ladder-Nyiou_7641.Nyu_Clutch")
 	sockets := abyssSockets(env)
@@ -62,7 +62,7 @@ func TestAbyssSocketConquestsLeaveRadiusJewelsAlone(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	env := corpusEnvForLoadedData(t, "0006-elementalist-storm-burst")
 	if s := abyssSockets(env); len(s) != 0 {

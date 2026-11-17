@@ -14,7 +14,7 @@ func TestPrecisionAuraCritReachesThePlayer(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.SkipNow()
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const name = "15350-juggernaut-sunder.xml"
 

@@ -24,7 +24,7 @@ func TestRegenFormLazyCapture(t *testing.T) {
 }
 
 func TestApepsSlumberESRegenCorpus(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	for _, b := range []string{"0678-assassin-cremation-of-the-volcano.xml", "1403-pathfinder-eye-of-winter.xml"} {
 		env := corpusEnvForLoadedData(t, b)
 		if got := env.Player.Output["EnergyShieldRegen"]; got != 400 {

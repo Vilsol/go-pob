@@ -51,7 +51,7 @@ func doubledShape(t *testing.T, line, name string) {
 
 // TestDoubledFormExpandsAnyModName covers ModParser.lua:155-157 + :6791-6806, the DOUBLED form.
 func TestDoubledFormExpandsAnyModName(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	doubledShape(t, "Maximum number of Summoned Golems is Doubled", "ActiveGolemLimit")
 

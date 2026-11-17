@@ -10,7 +10,7 @@ func TestSlotMatchSrcInstanceFromItem(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	env := corpusEnvForLoadedData(t, "1307-occultist-doom-blast-2.xml")
 	if name := env.Player.MainSkill.ActiveEffect.GrantedEffect.Name(); name != "Doom Blast" {
 		t.Fatalf("REFUSING: main skill is %q, not Doom Blast", name)

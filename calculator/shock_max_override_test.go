@@ -12,7 +12,7 @@ import (
 
 // TestOathOfSpringShockRowsParse pins ModParser.lua:3028 and :3029, the two lines on the Warden notable Oath of Spring (tree node 31364).
 func TestOathOfSpringShockRowsParse(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("+10 to Strength", false); e == nil || len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {
 		t.Fatalf("REFUSING: the control line failed to parse; this test cannot attribute a failure")
@@ -111,7 +111,7 @@ func TestOathOfSpringShockCapReachesTheOutput(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	c := corpusWalkCheck[*shockMaxOverrideCheck](t)
 	sort.Slice(c.carriers, func(i, j int) bool { return c.carriers[i].name < c.carriers[j].name })

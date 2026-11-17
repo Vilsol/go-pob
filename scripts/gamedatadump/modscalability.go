@@ -21,7 +21,7 @@ var (
 	scalabilityDigitRe       = regexp.MustCompile(`\d`)
 )
 
-//pob:src/Export/statdesc.lua:463-505
+//pob:src/Export/statdesc.lua:603-646
 func (e *exportDescriber) describeScalability() (map[string][]scalability, error) {
 	isScalable := map[string]bool{}
 	for _, s := range poe.Stats {
@@ -41,11 +41,7 @@ func (e *exportDescriber) describeScalability() (map[string][]scalability, error
 		}
 		var scalable []bool
 		for _, s := range statDescription.stats {
-			v, ok := isScalable[s]
-			if !ok {
-				return nil, fmt.Errorf("%s is not a Stats row", s)
-			}
-			scalable = append(scalable, v)
+			scalable = append(scalable, isScalable[s])
 		}
 		for _, wordings := range statDescription.variants {
 			wordingFormats := map[int][]string{}

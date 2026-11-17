@@ -7,7 +7,7 @@ import (
 
 // TestSidebarCritAndHitBreakdowns pins CalcOffence.lua:2542-2555.
 func TestSidebarCritAndHitBreakdowns(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	env := corpusEnvForLoadedData(t, "0215-slayer-cyclone-of-tumult.xml")
 	b := env.Player.Breakdown
 	if b == nil || !env.Player.MainSkill.SkillFlags[SkillFlagAttack] {

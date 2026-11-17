@@ -9,7 +9,7 @@ import (
 
 // TestConsecratedGroundAlsoAccuracy covers ModParser.lua:4121 and CalcPerform.lua:774.
 func TestConsecratedGroundAlsoAccuracy(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	e := ParseMod("Consecrated Ground you create grants 30% increased Accuracy Rating to you and Allies", false)
 	if e == nil || len(e.ModList) != 1 {

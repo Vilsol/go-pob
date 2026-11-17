@@ -12,7 +12,7 @@ import (
 //
 //pob:block:src/Modules/ModParser.lua:2033-2046
 func TestGemIDLookupMatchesUpstreamCollisionRule(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	ids := make([]string, 0, len(raw2.PoBSkills))
 	for id := range raw2.PoBSkills {

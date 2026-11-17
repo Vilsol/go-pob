@@ -28,7 +28,7 @@ func gradeCorpus3_29(t *testing.T, tolerance float64) {
 		t.SkipNow()
 	}
 
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	oracle, err := oracleForLoadedData()
 	if err != nil {
@@ -53,7 +53,7 @@ func gradeCorpus3_29(t *testing.T, tolerance float64) {
 	results := make([]result, len(names))
 
 	workers := evalWorkers()
-	t.Logf("grading %d builds against the 3.29 oracle across %d workers; %d guard picks pinned to the oracle's (guard-picks.tsv), %d builds with pairs() picks (pairs-picks.tsv)", len(names), workers, len(guardPicks), len(pairsPicks))
+	t.Logf("grading %d builds against the 3.30 oracle across %d workers; %d guard picks pinned to the oracle's (guard-picks.tsv), %d builds with pairs() picks (pairs-picks.tsv)", len(names), workers, len(guardPicks), len(pairsPicks))
 
 	runConcurrently(len(names), workers, func(i int, cache *EnvironmentCache) {
 		res := &results[i]
@@ -158,9 +158,9 @@ func gradeCorpus3_29(t *testing.T, tolerance float64) {
 	}
 	tight := tolerance != oracleDumpTolerance
 	if tight {
-		fmt.Printf("\n=== CORPUS 3.29 vs ORACLE 3.29 at relative %g  (NOT the gate — this asserts a miss ceiling) ===\n", tolerance)
+		fmt.Printf("\n=== CORPUS 3.29 vs ORACLE 3.30 at relative %g  (NOT the gate — this asserts a miss ceiling) ===\n", tolerance)
 	} else {
-		fmt.Printf("\n=== CORPUS 3.29 vs ORACLE 3.29  (AUTHORITATIVE — this asserts a floor) ===\n")
+		fmt.Printf("\n=== CORPUS 3.29 vs ORACLE 3.30  (AUTHORITATIVE — this asserts a floor) ===\n")
 	}
 	fmt.Printf("%d graded, %d excluded (treeSources < %d), %d with no oracle record\n",
 		built, excluded, oracleMinTreeSources, noOracle)

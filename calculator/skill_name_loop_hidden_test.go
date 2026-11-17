@@ -10,7 +10,7 @@ import (
 
 // TestSkillNameLoopHasNoHiddenGems is the retiring condition for the one conjunct of ModParser.lua:6044 that initializeSkillNameList does not test.
 func TestSkillNameLoopHasNoHiddenGems(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	reached := 0
 	var hidden []string

@@ -11,7 +11,7 @@ import (
 
 // TestMinionLifeAppliesToPlayer pins ModParser.lua:3408 against its consumer at CalcPerform.lua:1531-1541 — Rigwald's Hunt.
 func TestMinionLifeAppliesToPlayer(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	t.Run("the row parses whole", func(t *testing.T) {
 		const line = "Increases and Reductions to Minion Maximum Life also apply to you at 15% of their value"

@@ -16,7 +16,7 @@ func TestDoomBlastTriggerEntry(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	for build, want := range map[string]float64{
 		"1307-occultist-doom-blast-2.xml": 10.933333333333,
 		"0271-occultist-doom-blast.xml":   6.6666666666667,
@@ -33,7 +33,7 @@ func TestDoomBlastVixenArm(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	for _, c := range []struct {
 		build, key string
 		want       float64

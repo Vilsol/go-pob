@@ -9,7 +9,7 @@ import (
 
 // TestImmunitySpellingAndSignWidenings pins the second tranche of the pattern-transcription sweep.
 func TestImmunitySpellingAndSignWidenings(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("+10 to Strength", false); e == nil || len(e.ModList) == 0 ||
 		strings.TrimSpace(modExtra(e)) != "" {

@@ -19,7 +19,7 @@ import (
 
 // TestDistanceToClassStartMatchesPinnedPoB grades DistanceToClassStart against the PINNED PoB itself, not against our other implementation.
 func TestDistanceToClassStartMatchesPinnedPoB(t *testing.T) {
-	if raw.LatestVersion != "3.29" {
+	if raw.LatestVersion != "3.30" {
 		t.Skipf("SKIP: the reference is recorded against 3.29 and this process loaded %s", raw.LatestVersion)
 	}
 	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {

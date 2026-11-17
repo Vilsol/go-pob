@@ -6,7 +6,7 @@ import (
 
 // TestPerfectAgonyDotMultiplierChainIsWhole is the positive successor to the tripwire that stood here until 2026-08-30.
 func TestPerfectAgonyDotMultiplierChainIsWhole(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const line = "Damage over Time Multiplier for Ailments is equal to Critical Strike Multiplier"
 

@@ -22,7 +22,7 @@ func leakedSpecLines(i *Item) []string {
 
 // TestUnrecognisedSpecDoesNotOpenTheExplicitSection covers applySpec's default arm.
 func TestUnrecognisedSpecDoesNotOpenTheExplicitSection(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	const raw = "Rarity: RARE\nHate Carapace\nTwilight Regalia\n" +
 		"Energy Shield: 981\nEnergyShieldBasePercentile: 0.9982\n" +

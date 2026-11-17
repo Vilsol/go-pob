@@ -7,7 +7,7 @@ import (
 
 // TestWardDoesNotBreakEmitsUnbrokenWard pins ModParser.lua:4972.
 func TestWardDoesNotBreakEmitsUnbrokenWard(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	e := ParseMod("Ward does not Break during Effect", false)
 	if e == nil || strings.TrimSpace(modExtra(e)) != "" {

@@ -9,7 +9,7 @@ import (
 
 // TestR40ParserRows pins the rows r40 moved to the pin's parse, by NAME|TYPE|VALUE|TAG-COUNT.
 func TestR40ParserRows(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	for _, tc := range []struct {
 		line string

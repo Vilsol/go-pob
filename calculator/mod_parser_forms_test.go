@@ -7,7 +7,7 @@ import (
 
 // TestMissingParserForms pins five rows of ModParser.lua's `formList` that were never ported.
 func TestMissingParserForms(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("Regenerate 2 Life per second", false); e == nil ||
 		len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {

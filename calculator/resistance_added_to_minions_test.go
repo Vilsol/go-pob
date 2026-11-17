@@ -30,7 +30,7 @@ func TestResistanceAddedToMinions(t *testing.T) {
 		if os.Getenv("CORPUS") != "true" {
 			t.SkipNow()
 		}
-		requireGameData(t, "3.29")
+		requireGameData(t, "3.30")
 
 		env := corpusEnvForLoadedData(t, "0664-necromancer-raise-spectre-4.xml")
 		if env.Minion == nil {

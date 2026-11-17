@@ -12,7 +12,7 @@ import (
 
 // TestSkillModListMoreRoundsPerName pins ModList.lua:118-150's per-name `round(modResult, 2)` at the level that matters: a skill's own mod list.
 func TestSkillModListMoreRoundsPerName(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	const build = "0065-chieftain-tectonic-slam.xml"
 	const pobMore = 0.77
 

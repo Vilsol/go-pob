@@ -58,7 +58,7 @@ func TestMomentumStacksMultiplier(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	c := corpusWalkCheck[*momentumStacksCheck](t)
 	carriers, wrote, clamped, control, firstBad := c.carriers, c.wrote, c.clamped, c.control, c.firstBad.msg

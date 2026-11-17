@@ -13,7 +13,7 @@ type Row struct {
 }
 
 var Table = []Row{
-	{Version: "3.29", OracleTest: "TestCorpus3_29VsOracle", CorpusTest: "TestCorpus3_29", Authoritative: true},
+	{Version: "3.30", OracleTest: "TestCorpus3_29VsOracle", CorpusTest: "TestCorpus3_29", Authoritative: true},
 }
 
 const (

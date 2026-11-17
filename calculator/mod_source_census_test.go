@@ -20,7 +20,7 @@ func TestMissingItemSourceCensus(t *testing.T) {
 	if listFile == "" {
 		t.Skip("set BUILDS=<file of build names>")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	dir := diagDumpsDir(t)
 	var wantNames []string
 	for _, n := range strings.Split(os.Getenv("NAMES"), ",") {
@@ -151,7 +151,7 @@ func TestDivergingModSourceCensus(t *testing.T) {
 	if listFile == "" || modName == "" {
 		t.Skip("set BUILDS=<file> and NAME=<mod name>")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	dir := diagDumpsDir(t)
 	actorName := os.Getenv("ACTOR")
 	if actorName == "" {

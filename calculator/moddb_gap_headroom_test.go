@@ -23,7 +23,7 @@ func TestModDBGapHeadroom(t *testing.T) {
 	if wl == "" {
 		t.Skip("set WORKLIST=<dir> holding builds.tsv (write it with WORKLIST= on TestCorpus3_29VsOracle)")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	wrongByBuild, totalByBuild := readBuildsTSV(t, filepath.Join(wl, "builds.tsv"))
 

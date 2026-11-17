@@ -9,7 +9,7 @@ import (
 
 // TestTriggerOnCritArms pins the two call sites in this tree that matched a "trigger ...
 func TestTriggerOnCritArms(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if mods := parsedNames(t, "Trigger Level 20 Summon Spectral Wolf on Critical Strike"); !contains(mods, "ExtraSkillMod") {
 		t.Fatalf("REFUSING: an already-ported onCrit sibling no longer emits the ExtraSkillMod")

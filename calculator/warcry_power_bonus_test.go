@@ -14,7 +14,7 @@ func warcryFixtureEnv(t *testing.T, name string) *Environment {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	corpusDir, _ := corpusNamesForLoadedData(t)
 	file, err := os.ReadFile(filepath.Join(corpusDir, name))
 	if err != nil {

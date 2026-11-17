@@ -11,7 +11,7 @@ import (
 
 // TestSupportExcludeTypesComeFromThePin pins the consumer of raw2.SkillExcludeSkillTypes.
 func TestSupportExcludeTypesComeFromThePin(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	ruthless := &GrantedEffect{Raw: poe.GrantedEffectByID("SupportRuthless")}
 	if ruthless.Raw == nil {
@@ -37,7 +37,7 @@ func TestSupportExcludeTypesComeFromThePin(t *testing.T) {
 
 // TestActiveSkillTypesComeFromThePin pins grantedEffectSkillTypes.
 func TestActiveSkillTypesComeFromThePin(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	types := grantedEffectSkillTypes(poe.GrantedEffectByID("GSAncestralDruidFlaskExplode"))
 	if !types[data.SkillTypeProjectile] {
 		t.Errorf("GSAncestralDruidFlaskExplode types %v lack Projectile; PoB declares it", types)
@@ -49,7 +49,7 @@ func TestAnimateGuardiansWeaponMinionRefusesRuthless(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	env := corpusEnvForLoadedData(t, "1262-necromancer-tempest-shield-3.xml")
 	if env.Minion == nil {
 		t.Fatal("no minion")

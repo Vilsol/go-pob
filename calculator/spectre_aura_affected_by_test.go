@@ -11,7 +11,7 @@ func TestSpectreAuraSetsAffectedBy(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	for _, b := range []string{"0066-hierophant-forbidden-rite-of-soul-sacrifice.xml", "1062-hierophant-forbidden-rite-of-soul-sacrifice-3.xml"} {
 		env := corpusEnvForLoadedData(t, b)
 		for _, c := range []string{"AffectedByZealotry", "AffectedByDiscipline", "AffectedByAura"} {

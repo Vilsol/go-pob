@@ -4,7 +4,7 @@ import "testing"
 
 // TestUpfrontCostRoundedAfterEfficiency pins CalcOffence.lua:1835-1838 and :1852-1855.
 func TestUpfrontCostRoundedAfterEfficiency(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	cases := []struct {
 		build, stat string
 		want        float64

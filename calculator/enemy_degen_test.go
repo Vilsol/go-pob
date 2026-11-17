@@ -57,7 +57,7 @@ func TestEnemyDegenMatchesOracle(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	c := corpusWalkCheck[*enemyDegenCheck](t)
 	seen, agree, missing, extra, worst := c.seen, c.agree, c.missing, c.extra, c.worst.msg

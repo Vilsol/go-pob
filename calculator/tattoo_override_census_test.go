@@ -16,7 +16,7 @@ import (
 // TestTattooOverrideCensus grades the mods a build's <Override> nodes contribute.
 func TestTattooOverrideCensus(t *testing.T) {
 	requireOperatorRun(t, "report-only census")
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	dumps := diagDumpsDir(t)
 	corpus := corpusDirForLoadedData(t)
 

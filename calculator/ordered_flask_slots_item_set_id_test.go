@@ -8,7 +8,7 @@ import (
 
 // TestOrderedFlaskSlotsResolvesActiveItemSetByID pins CalcPerform.lua:1548's flask walk to the ACTIVE item set.
 func TestOrderedFlaskSlotsResolvesActiveItemSetByID(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	ruby := "Rarity: NORMAL\nRuby Flask\n"
 	granite := "Rarity: NORMAL\nGranite Flask\n"

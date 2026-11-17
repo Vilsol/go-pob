@@ -7,7 +7,7 @@ import (
 // TestVileBastionEnergyShieldFromSpellBlock pins CalcDefence.lua:812-817 and ModParser.lua:4805.
 func TestVileBastionEnergyShieldFromSpellBlock(t *testing.T) {
 	t.Run("the parser row exists", func(t *testing.T) {
-		requireGameData(t, "3.29")
+		requireGameData(t, "3.30")
 		e := ParseMod("Maximum Energy Shield is increased by Chance to Block Spell Damage", false)
 		if e == nil {
 			t.Fatal("REFUSING: the line does not parse at all")

@@ -89,7 +89,7 @@ func TestPartyExportAgainstPoB(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	dir, names := partyExportCarriers(t)
 	agree, total := map[string]int{}, map[string]int{}
 	for _, name := range names {
@@ -145,7 +145,7 @@ func TestPartyExportRoundTrips(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	dir, names := partyExportCarriers(t)
 	raw, err := os.ReadFile(filepath.Join(dir, names[0]))
 	if err != nil {

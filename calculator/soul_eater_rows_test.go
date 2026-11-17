@@ -25,7 +25,7 @@ func TestSoulEaterStacksReachSpeed(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 	env := corpusEnvForLoadedData(t, "0364-assassin-voltaxic-burst.xml")
 	if got := env.Player.Output["Speed"]; got < 15.25*0.995 || got > 15.25*1.005 {
 		t.Errorf("Speed = %v, PoB's oracle has 15.25", got)

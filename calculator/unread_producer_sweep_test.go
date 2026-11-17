@@ -301,7 +301,7 @@ func TestUnreadProducerSweep(t *testing.T) {
 			t.Fatalf("REFUSING: SWEEP_POPULATION=1 needs CORPUS=true; ranking by a population " +
 				"nobody measured is exactly the folklore this sweep exists to replace")
 		}
-		requireGameData(t, "3.29")
+		requireGameData(t, "3.30")
 
 		scopeOfSurface := map[string]string{
 			"skill_stat_maps": "skill",

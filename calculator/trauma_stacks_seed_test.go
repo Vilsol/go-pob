@@ -15,7 +15,7 @@ func TestTraumaStacksSeededFromSustainable(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true — this reads the graded corpus")
 	}
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	stacks := func(name string) (float64, float64, bool) {
 		t.Helper()

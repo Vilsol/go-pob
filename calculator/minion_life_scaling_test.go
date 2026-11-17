@@ -9,7 +9,7 @@ import (
 
 // TestMinionLifeScalingTables pins CalcActiveSkill.lua:717.
 func TestMinionLifeScalingTables(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	for _, tc := range []struct {
 		name  string

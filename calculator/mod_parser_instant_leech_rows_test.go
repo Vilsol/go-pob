@@ -9,7 +9,7 @@ import (
 
 // TestInstantLeechRows pins ModParser.lua:3135 and :3137-3141, two absent rows in a block whose four neighbours (:3132-3134, :3136) this tree already carries.
 func TestInstantLeechRows(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	if e := ParseMod("Life Leech from Hits with this Weapon is Instant", false); e == nil ||
 		len(e.ModList) == 0 || strings.TrimSpace(modExtra(e)) != "" {

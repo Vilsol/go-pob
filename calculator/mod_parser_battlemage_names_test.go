@@ -10,7 +10,7 @@ import (
 //pob:block:src/Modules/ModParser.lua:3513-3517
 //pob:src/Modules/ModParser.lua:5673
 func TestBattlemageAndMinionAttackSpeedRowsMatchThePin(t *testing.T) {
-	requireGameData(t, "3.29")
+	requireGameData(t, "3.30")
 
 	for _, tc := range []struct {
 		name string
