@@ -287,7 +287,7 @@ func gradeCorpus3_29(t *testing.T, tolerance float64) {
 	}
 }
 
-const oracle329MatchedFloor = 13726244
+const oracle329MatchedFloor = 13762306
 
 const oracle329NaNCeiling = 0
 
