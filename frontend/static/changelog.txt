@@ -5,7 +5,11 @@ VERSION[0.10.0][2026/11/16]
 
 --- Fixed ---
 * import: a pathofexile.com rate limit holds off every account at the proxy and the import dialog says how long to wait
+* mcp: price cache folders never contain characters Windows refuses, such as the colon in a host with a port
 * saved gems without enabled flags load enabled, and passive nodes cut off from the class start no longer count
+
+--- Performance Improvements ---
+* calculator: cluster jewel sockets come from a per-tree table and mod names' fire and cold tags are decided once per name
 
 
 VERSION[0.9.0][2026/11/14]
