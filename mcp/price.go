@@ -1,7 +1,6 @@
 package mcp
 
 import (
-	"context"
 	"fmt"
 	"math"
 	"regexp"
@@ -11,16 +10,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Vilsol/go-pob-data/loader"
 	"github.com/Vilsol/go-pob-data/poe"
 
 	"github.com/Vilsol/go-pob/calculator"
 	"github.com/Vilsol/go-pob/data"
-	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
 	"github.com/Vilsol/go-pob/mcp/prices"
 	"github.com/Vilsol/go-pob/pob"
-	"github.com/Vilsol/go-pob/storage"
 )
 
 // CodePricesUnavailable answers a pricing call on a server started without prices.
@@ -600,20 +596,7 @@ type benchCurrency struct {
 	count int
 }
 
-var (
-	benchCosts   = sync.OnceValue(loadBenchCosts)
-	benchOptions = sync.OnceValue(loadBenchOptions)
-)
-
-// loadBenchOptions is CraftingBenchOptions with the full column set: the app's trimmed variant drops AddMod and the
-// cost columns, and the browser build never needs bench costs.
-func loadBenchOptions() []*poe.CraftingBenchOption {
-	var options []*poe.CraftingBenchOption
-	if err := loader.InitHelper(context.Background(), raw.LatestVersion, "CraftingBenchOptions", &options, nil, assetcache.AssetLoaderWrapper{Storage: storage.Get()}); err != nil {
-		return nil
-	}
-	return options
-}
+var benchCosts = sync.OnceValue(loadBenchCosts)
 
 func benchCurrencies(craft *poe.CraftingBenchOption) []benchCurrency {
 	var cost []benchCurrency
@@ -629,7 +612,7 @@ func benchCurrencies(craft *poe.CraftingBenchOption) []benchCurrency {
 // benchLinkChaos is the bench's cheapest craft that links this many sockets, in chaos.
 func benchLinkChaos(book *prices.Book, links int) (float64, bool) {
 	best, ok := 0.0, false
-	for _, craft := range benchOptions() {
+	for _, craft := range raw.CraftingBenchOptions() {
 		if craft.IsDisabled || craft.Links != links {
 			continue
 		}
@@ -654,10 +637,7 @@ func benchLinkChaos(book *prices.Book, links int) (float64, bool) {
 // same options in the same order as the masters export keeps them, a newer game version's options appended after
 // them. nil when a craft's mod level disagrees at its index.
 func loadBenchCosts() [][]benchCurrency {
-	options := benchOptions()
-	if options == nil {
-		return nil
-	}
+	options := raw.CraftingBenchOptions()
 	masters, mods := data.MasterMods(), raw.Mods()
 	var out [][]benchCurrency
 	for _, craft := range options {

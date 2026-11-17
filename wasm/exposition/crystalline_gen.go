@@ -41487,7 +41487,7 @@ func crystallineMarshalPoeBaseItemType(v *poe.BaseItemType) any {
 					})(value)
 				}
 			},
-			[]string{"DecodeMsg", "EncodeMsg", "MarshalMsg", "Msgsize", "SkillGem", "UnmarshalMsg"},
+			[]string{"DecodeMsg", "EncodeMsg", "MarshalMsg", "Msgsize", "SkillGem", "UnmarshalJSON", "UnmarshalMsg"},
 			func(v *poe.BaseItemType, method int, args []js.Value) any {
 				switch method {
 				case 0:
@@ -41558,6 +41558,23 @@ func crystallineMarshalPoeBaseItemType(v *poe.BaseItemType) any {
 
 					return crystallineMarshalPoeSkillGem(r0)
 				case 5:
+					if len(args) != 1 {
+						return crystallineFail("UnmarshalJSON: expected 1 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToBytes(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0 := v.UnmarshalJSON(a0)
+
+					if r0 != nil {
+						return crystallineErr(r0)
+					}
+
+					return crystallineOk(nil)
+				case 6:
 					if len(args) != 1 {
 						return crystallineFail("UnmarshalMsg: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}
@@ -44049,7 +44066,7 @@ func crystallineMarshalRaw2BaseItemType(v *raw2.BaseItemType) any {
 
 	if crystallineMarshalRaw2BaseItemTypeShape.IsUndefined() {
 		crystallineMarshalRaw2BaseItemTypeShape = crystallineShape("raw.BaseItemType",
-			[]string{"SoundEffect", "EquipAchievementItemsKey", "FlavourTextKey", "FragmentBaseItemTypesKey", "ID", "Name", "Inflection", "InheritsFrom", "TagsKeys", "EnchantMods", "ImplicitModsKeys", "VendorRecipeAchievementItems", "SizeOnGround", "ItemVisualIdentity", "ModDomain", "ItemClassesKey", "SiteVisibility", "DropLevel", "Height", "Hash", "Width", "Key", "IsCorrupted"},
+			[]string{"SoundEffect", "FlavourTextKey", "FragmentBaseItemTypesKey", "ID", "Name", "Inflection", "InheritsFrom", "TagsKeys", "EnchantMods", "ImplicitModsKeys", "VendorRecipeAchievementItems", "EquipAchievements", "SizeOnGround", "ItemVisualIdentity", "ModDomain", "ItemClassesKey", "SiteVisibility", "DropLevel", "Height", "Hash", "Width", "Key", "IsCorrupted"},
 			func(v *raw2.BaseItemType, entry *crystallineEntry, field int) any {
 				switch field {
 				case 0:
@@ -44062,21 +44079,13 @@ func crystallineMarshalRaw2BaseItemType(v *raw2.BaseItemType) any {
 					}()
 				case 1:
 					return func() any {
-						if v.EquipAchievementItemsKey == nil {
-							return nil
-						}
-
-						return float64((*v.EquipAchievementItemsKey))
-					}()
-				case 2:
-					return func() any {
 						if v.FlavourTextKey == nil {
 							return nil
 						}
 
 						return float64((*v.FlavourTextKey))
 					}()
-				case 3:
+				case 2:
 					return func() any {
 						if v.FragmentBaseItemTypesKey == nil {
 							return nil
@@ -44084,15 +44093,15 @@ func crystallineMarshalRaw2BaseItemType(v *raw2.BaseItemType) any {
 
 						return float64((*v.FragmentBaseItemTypesKey))
 					}()
-				case 4:
+				case 3:
 					return string(v.ID)
-				case 5:
+				case 4:
 					return string(v.Name)
-				case 6:
+				case 5:
 					return string(v.Inflection)
-				case 7:
+				case 6:
 					return string(v.InheritsFrom)
-				case 8:
+				case 7:
 					return func() any {
 						items := v.TagsKeys
 						if items == nil {
@@ -44106,7 +44115,7 @@ func crystallineMarshalRaw2BaseItemType(v *raw2.BaseItemType) any {
 
 						return out
 					}()
-				case 9:
+				case 8:
 					return func() any {
 						items := v.EnchantMods
 						if items == nil {
@@ -44120,7 +44129,7 @@ func crystallineMarshalRaw2BaseItemType(v *raw2.BaseItemType) any {
 
 						return out
 					}()
-				case 10:
+				case 9:
 					return func() any {
 						items := v.ImplicitModsKeys
 						if items == nil {
@@ -44134,9 +44143,23 @@ func crystallineMarshalRaw2BaseItemType(v *raw2.BaseItemType) any {
 
 						return out
 					}()
-				case 11:
+				case 10:
 					return func() any {
 						items := v.VendorRecipeAchievementItems
+						if items == nil {
+							return nil
+						}
+
+						out := make([]any, 0, len(items))
+						for i := range items {
+							out = append(out, float64(items[i]))
+						}
+
+						return out
+					}()
+				case 11:
+					return func() any {
+						items := v.EquipAchievements
 						if items == nil {
 							return nil
 						}
@@ -44196,7 +44219,7 @@ func crystallineMarshalRaw2BaseItemType(v *raw2.BaseItemType) any {
 							return
 						}
 
-						v.EquipAchievementItemsKey = converted
+						v.FlavourTextKey = converted
 					})(value)
 				case 2:
 					(func(value js.Value) {
@@ -44207,20 +44230,9 @@ func crystallineMarshalRaw2BaseItemType(v *raw2.BaseItemType) any {
 							return
 						}
 
-						v.FlavourTextKey = converted
-					})(value)
-				case 3:
-					(func(value js.Value) {
-						converted, err := crystallineToPtrInt(value)
-						if err != nil {
-							crystallineFail(err.Error())
-
-							return
-						}
-
 						v.FragmentBaseItemTypesKey = converted
 					})(value)
-				case 4:
+				case 3:
 					(func(value js.Value) {
 						converted, err := crystallineToString(value)
 						if err != nil {
@@ -44231,7 +44243,7 @@ func crystallineMarshalRaw2BaseItemType(v *raw2.BaseItemType) any {
 
 						v.ID = converted
 					})(value)
-				case 5:
+				case 4:
 					(func(value js.Value) {
 						converted, err := crystallineToString(value)
 						if err != nil {
@@ -44242,7 +44254,7 @@ func crystallineMarshalRaw2BaseItemType(v *raw2.BaseItemType) any {
 
 						v.Name = converted
 					})(value)
-				case 6:
+				case 5:
 					(func(value js.Value) {
 						converted, err := crystallineToString(value)
 						if err != nil {
@@ -44253,7 +44265,7 @@ func crystallineMarshalRaw2BaseItemType(v *raw2.BaseItemType) any {
 
 						v.Inflection = converted
 					})(value)
-				case 7:
+				case 6:
 					(func(value js.Value) {
 						converted, err := crystallineToString(value)
 						if err != nil {
@@ -44264,7 +44276,7 @@ func crystallineMarshalRaw2BaseItemType(v *raw2.BaseItemType) any {
 
 						v.InheritsFrom = converted
 					})(value)
-				case 8:
+				case 7:
 					(func(value js.Value) {
 						converted, err := crystallineToSliceOfInt(value)
 						if err != nil {
@@ -44275,7 +44287,7 @@ func crystallineMarshalRaw2BaseItemType(v *raw2.BaseItemType) any {
 
 						v.TagsKeys = converted
 					})(value)
-				case 9:
+				case 8:
 					(func(value js.Value) {
 						converted, err := crystallineToSliceOfInt(value)
 						if err != nil {
@@ -44286,7 +44298,7 @@ func crystallineMarshalRaw2BaseItemType(v *raw2.BaseItemType) any {
 
 						v.EnchantMods = converted
 					})(value)
-				case 10:
+				case 9:
 					(func(value js.Value) {
 						converted, err := crystallineToSliceOfInt(value)
 						if err != nil {
@@ -44297,7 +44309,7 @@ func crystallineMarshalRaw2BaseItemType(v *raw2.BaseItemType) any {
 
 						v.ImplicitModsKeys = converted
 					})(value)
-				case 11:
+				case 10:
 					(func(value js.Value) {
 						converted, err := crystallineToSliceOfInt(value)
 						if err != nil {
@@ -44307,6 +44319,17 @@ func crystallineMarshalRaw2BaseItemType(v *raw2.BaseItemType) any {
 						}
 
 						v.VendorRecipeAchievementItems = converted
+					})(value)
+				case 11:
+					(func(value js.Value) {
+						converted, err := crystallineToSliceOfInt(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.EquipAchievements = converted
 					})(value)
 				case 12:
 					(func(value js.Value) {
@@ -44431,7 +44454,7 @@ func crystallineMarshalRaw2BaseItemType(v *raw2.BaseItemType) any {
 					})(value)
 				}
 			},
-			[]string{"DecodeMsg", "EncodeMsg", "MarshalMsg", "Msgsize", "UnmarshalMsg"},
+			[]string{"DecodeMsg", "EncodeMsg", "MarshalMsg", "Msgsize", "UnmarshalJSON", "UnmarshalMsg"},
 			func(v *raw2.BaseItemType, method int, args []js.Value) any {
 				switch method {
 				case 0:
@@ -44494,6 +44517,23 @@ func crystallineMarshalRaw2BaseItemType(v *raw2.BaseItemType) any {
 
 					return float64(r0)
 				case 4:
+					if len(args) != 1 {
+						return crystallineFail("UnmarshalJSON: expected 1 arguments, got " + strconv.Itoa(len(args)))
+					}
+
+					a0, err := crystallineToBytes(args[0])
+					if err != nil {
+						return crystallineFail(err.Error())
+					}
+
+					r0 := v.UnmarshalJSON(a0)
+
+					if r0 != nil {
+						return crystallineErr(r0)
+					}
+
+					return crystallineOk(nil)
+				case 5:
 					if len(args) != 1 {
 						return crystallineFail("UnmarshalMsg: expected 1 arguments, got " + strconv.Itoa(len(args)))
 					}

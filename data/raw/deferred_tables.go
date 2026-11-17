@@ -17,7 +17,8 @@ var (
 	modsTable             = table{"Mods", poe.InitializeMods}
 	monsterVarietiesTable = table{"MonsterVarieties", poe.InitializeMonsterVarieties}
 	tincturesTable        = table{"Tinctures", poe.InitializeTinctures}
-	deferredTables        = []table{modsTable, monsterVarietiesTable, tincturesTable}
+	benchOptionsTable     = table{"CraftingBenchOptions", poe.InitializeCraftingBenchOptions}
+	deferredTables        = []table{modsTable, monsterVarietiesTable, tincturesTable, benchOptionsTable}
 )
 
 var deferredOnce = map[string]*sync.Once{}
@@ -88,4 +89,9 @@ func LoadDeferred() error {
 func Tinctures() []*poe.Tincture {
 	ensureDeferred(tincturesTable, func() bool { return len(poe.Tinctures) > 0 })
 	return poe.Tinctures
+}
+
+func CraftingBenchOptions() []*poe.CraftingBenchOption {
+	ensureDeferred(benchOptionsTable, func() bool { return len(poe.CraftingBenchOptions) > 0 })
+	return poe.CraftingBenchOptions
 }

@@ -3379,6 +3379,7 @@ export declare namespace poe {
     MarshalMsg(b: Uint8Array | undefined): Result<(Uint8Array | undefined)>;
     Msgsize(): number;
     SkillGem(): (poe.SkillGem | undefined);
+    UnmarshalJSON(data: Uint8Array | undefined): Result<void>;
     UnmarshalMsg(bts: Uint8Array | undefined): Result<(Uint8Array | undefined)>;
     /** Releases the Go resources behind this wrapper. */
     release(): void;
@@ -3734,7 +3735,6 @@ export declare namespace raw {
   }
   interface BaseItemType {
     SoundEffect?: number;
-    EquipAchievementItemsKey?: number;
     FlavourTextKey?: number;
     FragmentBaseItemTypesKey?: number;
     ID: string;
@@ -3745,6 +3745,7 @@ export declare namespace raw {
     EnchantMods?: Array<number>;
     ImplicitModsKeys?: Array<number>;
     VendorRecipeAchievementItems?: Array<number>;
+    EquipAchievements?: Array<number>;
     SizeOnGround: number;
     ItemVisualIdentity: number;
     ModDomain: number;
@@ -3760,6 +3761,7 @@ export declare namespace raw {
     EncodeMsg(en: msgp.Writer | undefined): Result<void>;
     MarshalMsg(b: Uint8Array | undefined): Result<(Uint8Array | undefined)>;
     Msgsize(): number;
+    UnmarshalJSON(data: Uint8Array | undefined): Result<void>;
     UnmarshalMsg(bts: Uint8Array | undefined): Result<(Uint8Array | undefined)>;
     /** Releases the Go resources behind this wrapper. */
     release(): void;

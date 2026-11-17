@@ -70,7 +70,7 @@ var tables = []table{
 }
 
 var unreadTables = []string{
-	"AlternatePassiveAdditions", "AlternatePassiveSkills", "CraftingBenchOptions", "DefaultMonsterStats",
+	"AlternatePassiveAdditions", "AlternatePassiveSkills", "DefaultMonsterStats",
 	"Essences", "ItemExperiencePerLevel", "MonsterMapBossDifficulty", "MonsterMapDifficulty",
 	"PantheonPanelLayout", "PassiveTreeExpansionJewels", "PassiveTreeExpansionSkills",
 	"PassiveTreeExpansionSpecialSkills", "SkillTotems",
