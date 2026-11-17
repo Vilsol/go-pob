@@ -10,7 +10,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
-//pob:src/Classes/TreeTab.lua:594-618
+//pob:src/Classes/TreeTab.lua:593-617
 func ConvertSpecToVersion(build *pob.PathOfBuilding, version pob.TreeVersion, remove bool) error {
 	target, ok := data.TreeVersions[version]
 	if !ok {
@@ -52,7 +52,7 @@ func ConvertSpecToVersion(build *pob.PathOfBuilding, version pob.TreeVersion, re
 	return nil
 }
 
-//pob:src/Classes/TreeTab.lua:620-633
+//pob:src/Classes/TreeTab.lua:619-632
 func ConvertAllSpecsToVersion(build *pob.PathOfBuilding, version pob.TreeVersion) error {
 	active := build.ActiveSpecIndex() + 1
 	versions := make([]pob.TreeVersion, 0, len(build.Tree.Specs))

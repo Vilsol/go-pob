@@ -90,7 +90,7 @@ func decodeTreeLinkBytes(url string) ([]byte, bool) {
 	return b, err == nil
 }
 
-//pob:src/Classes/PassiveSpec.lua:480-523
+//pob:src/Classes/PassiveSpec.lua:498-541
 func DecodeTreeURL(url string) (DecodedTree, error) {
 	b, ok := decodeTreeLinkBytes(url)
 	if !ok || len(b) < 6 {
@@ -185,7 +185,7 @@ func DecodeTreeURL(url string) (DecodedTree, error) {
 	return out, nil
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:588-591,src/Classes/PassiveSpec.lua:619-624,src/Classes/PassiveSpec.lua:651-661
+//pob:block:src/Classes/PassiveSpec.lua:612-615,src/Classes/PassiveSpec.lua:619-624,src/Classes/PassiveSpec.lua:675-685
 func decodedStarts(tree *data.Tree, d DecodedTree) []int64 {
 	var out []int64
 	if id, err := strconv.ParseInt(classStartNodeID(tree, pob.ClassID(d.ClassID)), 10, 64); err == nil {
@@ -232,7 +232,7 @@ var (
 	treeLinkAlternateRe = regexp.MustCompile(`tree/([a-z]+-?[a-z]*)`)
 )
 
-//pob:block:src/Classes/TreeTab.lua:733-747
+//pob:block:src/Classes/TreeTab.lua:732-746
 func validateTreeVersion(alternate string, major, minor string) pob.TreeVersion {
 	suffix := ""
 	if alternate != "" {
@@ -277,7 +277,7 @@ var poePlannerVersions = map[int]string{
 	16: "3_12", 15: "3_11",
 }
 
-//pob:src/Classes/PassiveSpec.lua:376-477
+//pob:src/Classes/PassiveSpec.lua:394-495
 func DecodePoePlannerURL(url string) (DecodedTree, error) {
 	b, ok := decodeTreeLinkBytes(url)
 	if !ok || len(b) < 15 {
@@ -353,7 +353,7 @@ func DecodePoePlannerURL(url string) (DecodedTree, error) {
 	return out, nil
 }
 
-//pob:block:src/Classes/TreeTab.lua:765-809
+//pob:block:src/Classes/TreeTab.lua:764-808
 func decodeTreeLink(url string) (DecodedTree, error) {
 	switch {
 	case strings.Contains(url, "poeurl.com/"):
@@ -371,7 +371,7 @@ func decodeTreeLink(url string) (DecodedTree, error) {
 	}
 }
 
-//pob:block:src/Classes/TreeTab.lua:714-732,src/Classes/TreeTab.lua:802-809
+//pob:block:src/Classes/TreeTab.lua:713-731,src/Classes/TreeTab.lua:802-809
 func ImportTreeURL(build *pob.PathOfBuilding, title string, url string) error {
 	decoded, err := decodeTreeLink(url)
 	if err != nil {

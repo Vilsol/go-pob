@@ -39,7 +39,7 @@ var (
 	craftNumberRe    = regexp.MustCompile(`\d+`)
 )
 
-//pob:block:src/Classes/Item.lua:799-820,src/Classes/Item.lua:1474-1518
+//pob:block:src/Classes/Item.lua:810-831,src/Classes/Item.lua:1486-1530
 func itemAffixState(raw string, item *Item) (affixState, bool) {
 	if item.Base == nil || !item.Crafted {
 		return affixState{}, false
@@ -152,7 +152,7 @@ func itemAffixState(raw string, item *Item) (affixState, bool) {
 	return st, true
 }
 
-//pob:block:src/Classes/Item.lua:1810-1817
+//pob:block:src/Classes/Item.lua:1839-1846
 func (st *affixState) specLines() []string {
 	var out []string
 	for _, list := range []struct {
@@ -180,7 +180,7 @@ func (st *affixState) slot(index int) (*affixSlot, string, int) {
 	return &st.suffixes[index-st.prefixLimit], "Suffix", index - st.prefixLimit
 }
 
-//pob:src/Classes/Item.lua:2055-2118
+//pob:src/Classes/Item.lua:2084-2147
 func craftText(raw string, item *Item, st affixState) string {
 	b := craftBlock(raw, item)
 	type gen struct {
@@ -414,7 +414,7 @@ var affixTierNumRe = regexp.MustCompile(`\d[\d.]*`)
 
 var clusterNotableRe = regexp.MustCompile(`^1 Added Passive Skill is (.*)$`)
 
-//pob:block:src/Classes/ItemsTab.lua:863-917,src/Modules/Data.lua:876-912
+//pob:block:src/Classes/ItemsTab.lua:879-933,src/Modules/Data.lua:876-912
 func clusterNotableTooltip(mod *data.AffixMod) []string {
 	if mod == nil || len(mod.Lines) == 0 {
 		return nil
@@ -507,7 +507,7 @@ func midTier(modList []string) string {
 	return modList[int(math.Floor(float64(float64(len(modList)-1)*(*defaultItemAffixQuality))+0.5))]
 }
 
-//pob:block:src/Classes/ItemsTab.lua:720-725,src/Classes/ItemsTab.lua:2197-2427
+//pob:block:src/Classes/ItemsTab.lua:736-741,src/Classes/ItemsTab.lua:2197-2427
 func ItemAffixControls(raw string) (AffixControls, bool) {
 	item := ParseItem(raw)
 	st, ok := itemAffixState(raw, item)
@@ -516,7 +516,7 @@ func ItemAffixControls(raw string) (AffixControls, bool) {
 	}
 	_, cluster := data.ClusterJewels.Jewels[item.BaseName]
 	out := AffixControls{Sorting: !cluster}
-	//pob:block:src/Classes/ItemsTab.lua:2239-2244
+	//pob:block:src/Classes/ItemsTab.lua:2313-2318
 	extraTags := map[string]bool{}
 	if cj, ok := data.ClusterJewels.Jewels[item.BaseName]; ok {
 		if skill, ok := cj.Skills[clusterJewelSkillOf(raw)]; ok {
@@ -526,7 +526,7 @@ func ItemAffixControls(raw string) (AffixControls, bool) {
 	rl, _ := item.rareLike()
 	for i := range st.limit {
 		self, affixType, _ := st.slot(i)
-		//pob:block:src/Classes/ItemsTab.lua:2204-2207
+		//pob:block:src/Classes/ItemsTab.lua:2278-2281
 		modType := affixType
 		if affixType == "Prefix" && rl.ignoreModType {
 			modType = ""
@@ -580,7 +580,7 @@ func ItemAffixControls(raw string) (AffixControls, bool) {
 				c.Series = append(c.Series, AffixSeries{Label: label, HaveRange: affixAnyRangeRe.MatchString(label)})
 				last, lastOrder = &c.Series[len(c.Series)-1], mod.StatOrder
 			}
-			//pob:block:src/Classes/ItemsTab.lua:2297-2300
+			//pob:block:src/Classes/ItemsTab.lua:2371-2374
 			if retainedAffixes[id] && cluster {
 				last.Label = "^8[Retained] " + last.Label
 			}
@@ -629,7 +629,7 @@ func divVal(val float64, divCount int) (int, float64) {
 	return 1, val
 }
 
-//pob:src/Classes/ItemsTab.lua:759-798
+//pob:src/Classes/ItemsTab.lua:775-814
 func verifyRange(st affixState, modList []string, rng float64, index int) float64 {
 	minMax := func(mod *data.AffixMod) (float64, float64, bool) {
 		for _, line := range mod.Lines {
@@ -686,7 +686,7 @@ func AffixEditText(raw string, slot int, series int, slider float64) (string, bo
 	return craftText(raw, item, st), true
 }
 
-//pob:src/Classes/ItemsTab.lua:946-971
+//pob:src/Classes/ItemsTab.lua:962-987
 func AffixRollTooltip(raw string, slot int, slider float64) []string {
 	item := ParseItem(raw)
 	st, ok := itemAffixState(raw, item)

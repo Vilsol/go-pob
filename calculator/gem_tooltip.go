@@ -283,7 +283,7 @@ func addCommonGemInfo(t *ItemTooltip, ctx ItemTooltipContext, gi *gemTooltipInst
 	}
 }
 
-//pob:src/Classes/GemTooltip.lua:213-259
+//pob:src/Classes/GemTooltip.lua:219-265
 func AddGemTooltip(t *ItemTooltip, ctx ItemTooltipContext, gem pob.Gem, display *GemDisplay, skipRequirements bool) bool {
 	gemData, row, ok := gemTooltipRow(gem)
 	if !ok {
@@ -292,7 +292,7 @@ func AddGemTooltip(t *ItemTooltip, ctx ItemTooltipContext, gem pob.Gem, display 
 	return addGemTooltip(t, ctx, gem, gemData, row, display, skipRequirements)
 }
 
-//pob:block:src/Classes/ItemsTab.lua:4624-4630
+//pob:block:src/Classes/ItemsTab.lua:4730-4736
 func AddSkillTooltip(t *ItemTooltip, ctx ItemTooltipContext, skillID string, level int) bool {
 	return addGemTooltip(t, ctx, pob.Gem{SkillID: skillID, Level: level, Enabled: true}, nil, raw2.PoBGem{GrantedEffectID: skillID, Tags: map[string]bool{}}, nil, true)
 }
@@ -351,7 +351,7 @@ func addGemTooltip(t *ItemTooltip, ctx ItemTooltipContext, gem pob.Gem, gemData 
 	return true
 }
 
-//pob:src/Classes/SkillsTab.lua:895-936
+//pob:src/Classes/SkillsTab.lua:896-937
 func GemQualityTooltip(gem pob.Gem) []TooltipLine {
 	t := &ItemTooltip{}
 	gemData, row, ok := gemTooltipRow(gem)

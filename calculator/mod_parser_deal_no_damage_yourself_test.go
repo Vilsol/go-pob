@@ -7,7 +7,7 @@ import (
 
 // TestDealNoDamageWithSkillsYourself pins ModParser.lua:5251.
 //
-//pob:block:src/Modules/ModParser.lua:5298-5300
+//pob:block:src/Modules/ModParser.lua:5429-5431
 func TestDealNoDamageWithSkillsYourself(t *testing.T) {
 	requireGameData(t, "3.29")
 

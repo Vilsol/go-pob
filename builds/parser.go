@@ -124,7 +124,7 @@ func finishSkills(build *pob.PathOfBuilding) {
 // PoB matches skillId against the variants' grantedEffectId; a gem id there loads the gem empty.
 // Older go-pob saves wrote the gem id into skillId.
 //
-//pob:block:src/Classes/SkillsTab.lua:472-479
+//pob:block:src/Classes/SkillsTab.lua:473-480
 func repairGemSkillID(gem *pob.Gem) {
 	if GemGrantedEffectID == nil || gem.SkillID == "" || (gem.GemID != "" && gem.GemID != gem.SkillID) {
 		return

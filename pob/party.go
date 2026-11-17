@@ -101,7 +101,7 @@ func (b *PathOfBuilding) PartyOptions() (string, bool, bool) {
 	return destination, b.Party.Append == "true", b.Party.ShowAdvanceTools == "true"
 }
 
-//pob:block:src/Classes/PartyTab.lua:662-666
+//pob:block:src/Classes/PartyTab.lua:654-658
 func (b *PathOfBuilding) SetPartyOptions(destination string, appendMode bool, showAdvanceTools bool) {
 	b.Party.Destination = destination
 	b.Party.Append = "false"

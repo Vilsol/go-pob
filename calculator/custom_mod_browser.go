@@ -22,13 +22,13 @@ func modBrowserTemplate(modText string) string {
 	return luaLower(modBrowserNumberRe.ReplaceAllString(modBrowserRangeRe.ReplaceAllString(modText, "${1}#"), "#"))
 }
 
-//pob:block:src/Modules/ConfigModBrowser.lua:213-221
+//pob:block:src/Modules/ConfigModBrowser.lua:223-231
 func modBrowserSortKey(modText string) string {
 	key := strings.ReplaceAll(modBrowserTemplate(modText), "#", " ")
 	return strings.Trim(modBrowserNotAlpha.ReplaceAllString(key, " "), luaSpace)
 }
 
-//pob:block:src/Modules/ConfigModBrowser.lua:102-110
+//pob:block:src/Modules/ConfigModBrowser.lua:113-121
 func modBrowserLess(a, b string) bool {
 	if ak, bk := modBrowserSortKey(a), modBrowserSortKey(b); ak != bk {
 		return ak < bk
@@ -71,7 +71,7 @@ func modBrowserScore(modText, searchStr string, words []string) int {
 	return 0
 }
 
-//pob:block:src/Modules/ConfigModBrowser.lua:113-150
+//pob:block:src/Modules/ConfigModBrowser.lua:124-161
 func ModBrowserList(search string) []string {
 	all := data.CustomModBrowserLines()
 	searchStr := strings.Trim(luaLower(search), luaSpace)
@@ -114,7 +114,7 @@ func ModBrowserSupported(line string) bool {
 	return entry != nil && entry.ModList != nil && entry.Extra == ""
 }
 
-//pob:block:src/Modules/ConfigModBrowser.lua:243-250
+//pob:block:src/Modules/ConfigModBrowser.lua:253-260
 func ModBrowserSources(line string) []string {
 	return data.CustomModBrowserSources(line)
 }

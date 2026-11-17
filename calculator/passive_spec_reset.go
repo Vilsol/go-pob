@@ -8,7 +8,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
-//pob:src/Classes/PassiveSpec.lua:767-776
+//pob:src/Classes/PassiveSpec.lua:791-800
 func ResetTree(build *pob.PathOfBuilding) {
 	i := build.ActiveSpecIndex()
 	if i < 0 {
@@ -28,7 +28,7 @@ func ResetTree(build *pob.PathOfBuilding) {
 	build.Tree.Specs[i].MasteryEffects = ""
 }
 
-//pob:block:src/Classes/TreeTab.lua:144-153
+//pob:block:src/Classes/TreeTab.lua:143-152
 func RemoveAllTattoos(build *pob.PathOfBuilding) {
 	if i := build.ActiveSpecIndex(); i >= 0 {
 		build.Tree.Specs[i].Overrides = []pob.Override{}
@@ -40,7 +40,7 @@ type TattooCountLine struct {
 	Count int
 }
 
-//pob:block:src/Classes/TreeTab.lua:955-982
+//pob:block:src/Classes/TreeTab.lua:954-981
 func TattooCountLines(build *pob.PathOfBuilding) []TattooCountLine {
 	i := build.ActiveSpecIndex()
 	if i < 0 {

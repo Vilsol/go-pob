@@ -70,7 +70,7 @@ func loadItemDB(kind ItemDBKind) itemDBList {
 	return out
 }
 
-//pob:block:src/Modules/Main.lua:182-192
+//pob:block:src/Modules/Main.lua:184-194
 func craftDBItem(item *Item) *Item {
 	raw := item.Raw
 	if !strings.HasPrefix(raw, "Rarity:") {
@@ -121,7 +121,7 @@ func resetItemDB() {
 	itemDBLists = [2]itemDBList{}
 }
 
-//pob:src/Classes/ItemDBControl.lua:75-93
+//pob:src/Classes/ItemDBControl.lua:78-96
 func loadLeaguesAndTypes(items []*Item) ([]string, []string) {
 	leagueFlag, typeFlag := map[string]bool{}, map[string]bool{}
 	for _, item := range items {
@@ -142,7 +142,7 @@ var leagueNameRe = regexp.MustCompile(` ?([A-Za-z0-9 ]+),?`)
 //pob:src/Classes/ItemDBControl.lua:42
 var ItemDBSlots = []string{"Any slot", "Weapon 1", "Weapon 2", "Helmet", "Body Armour", "Gloves", "Boots", "Amulet", "Ring", "Belt", "Jewel", "Flask", "Graft 1", "Graft 2"}
 
-//pob:block:src/Classes/ItemDBControl.lua:57-67,src/Classes/ItemDBControl.lua:60
+//pob:block:src/Classes/ItemDBControl.lua:60-70,src/Classes/ItemDBControl.lua:63
 var (
 	ItemDBRequirements = []string{"Any requirements", "Current level", "Current attributes", "Current useable"}
 	ItemDBObtainable   = []string{"Obtainable", "Any source", "Unobtainable", "Vendor Recipe", "Upgraded", "Boss Item", "Corruption", "Core Drop Pool"}
@@ -177,7 +177,7 @@ var (
 	slotNumSuffix  = regexp.MustCompile(` \d`)
 )
 
-//pob:src/Classes/ItemDBControl.lua:95-213
+//pob:src/Classes/ItemDBControl.lua:98-216
 //nolint:gocyclo // Mirrors the Lua branch chain.
 func doesItemMatchFilters(kind ItemDBKind, item *Item, f ItemDBFilter, ctx ItemDBContext) bool {
 	leagues, types := ItemDBLists(kind)
@@ -226,7 +226,7 @@ func doesItemMatchFilters(kind ItemDBKind, item *Item, f ItemDBFilter, ctx ItemD
 			return false
 		case f.Obtainable == 7 && !strings.Contains(source, "Vaal Orb"):
 			return false
-		//pob:block:src/Classes/ItemDBControl.lua:139-140
+		//pob:block:src/Classes/ItemDBControl.lua:142-143
 		case f.Obtainable == 8 && source != "":
 			return false
 		}
@@ -295,7 +295,7 @@ func doesItemMatchFilters(kind ItemDBKind, item *Item, f ItemDBFilter, ctx ItemD
 	return found
 }
 
-//pob:src/Modules/Common.lua:1038-1079
+//pob:src/Modules/Common.lua:1039-1080
 func matchOrPattern(s, pattern string) bool {
 	for p := range generateOrPatterns(pattern) {
 		lit, ok := escapedLiteral(p)
@@ -380,7 +380,7 @@ func escapedLiteral(p string) (string, bool) {
 	return b.String(), true
 }
 
-//pob:src/Classes/ItemDBControl.lua:221-245
+//pob:src/Classes/ItemDBControl.lua:224-248
 func ItemDBSortStats() []PowerStat {
 	return PowerStats()
 }
@@ -390,7 +390,7 @@ func sortName(name string) string {
 	return strings.TrimPrefix(name, "The ")
 }
 
-//pob:block:src/Classes/ItemDBControl.lua:247-253,src/Classes/ItemDBControl.lua:277-299
+//pob:block:src/Classes/ItemDBControl.lua:250-256,src/Classes/ItemDBControl.lua:280-302
 func FilterItemDB(kind ItemDBKind, f ItemDBFilter, ctx ItemDBContext) []*Item {
 	var list []*Item
 	for _, item := range ItemDB(kind) {
@@ -432,7 +432,7 @@ func ItemDBItem(kind ItemDBKind, name string) *Item {
 	return nil
 }
 
-//pob:block:src/Classes/ItemDBControl.lua:353-354
+//pob:block:src/Classes/ItemDBControl.lua:356-357
 func ItemDBText(kind ItemDBKind, name string) (string, bool) {
 	item := ItemDBItem(kind, name)
 	if item == nil {
@@ -443,7 +443,7 @@ func ItemDBText(kind ItemDBKind, name string) (string, bool) {
 	return buildRawText(newItem), true
 }
 
-//pob:block:src/Classes/ItemDBControl.lua:351-378,src/Classes/ItemListControl.lua:283-293
+//pob:block:src/Classes/ItemDBControl.lua:354-381,src/Classes/ItemListControl.lua:283-293
 func AddDBItem(build *pob.PathOfBuilding, kind ItemDBKind, name string, equip, second bool) (int, bool) {
 	text, ok := ItemDBText(kind, name)
 	if !ok {
@@ -466,7 +466,7 @@ func AddDBItem(build *pob.PathOfBuilding, kind ItemDBKind, name string, equip, s
 			build.SetSlotItem(slotName, id)
 		}
 	}
-	//pob:block:src/Classes/ItemDBControl.lua:374,src/Classes/ItemListControl.lua:288
+	//pob:block:src/Classes/ItemDBControl.lua:377,src/Classes/ItemListControl.lua:288
 	AddForbiddenJewelCounterpart(build, ParseItem(text))
 	PopulateSlots(build)
 	return id, true
@@ -538,7 +538,7 @@ func DropItemOnSlot(build *pob.PathOfBuilding, slotName string, id int, kind Ite
 	return true
 }
 
-//pob:src/Classes/ItemsTab.lua:1620-1649
+//pob:src/Classes/ItemsTab.lua:1687-1716
 func EquipItemInSet(build *pob.PathOfBuilding, setID int, id int, kind ItemDBKind, name string, second bool) bool {
 	text, inBuild, ok := dropText(build, id, kind, name)
 	item := ParseItem(text)

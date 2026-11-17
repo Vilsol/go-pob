@@ -8,7 +8,7 @@ import (
 
 // TestWintertideBrandStagesReachColdDot pins act_int.lua:21110-21129.
 //
-//pob:block:src/Data/Skills/act_int.lua:21110-21129
+//pob:block:src/Data/Skills/act_int.lua:21278-21297
 func TestWintertideBrandStagesReachColdDot(t *testing.T) {
 	if os.Getenv("CORPUS") != "true" {
 		t.Skip("set CORPUS=true")

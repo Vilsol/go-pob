@@ -13,7 +13,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
-//pob:block:src/Modules/Calcs.lua:179,src/Modules/Calcs.lua:217,src/Modules/Calcs.lua:254,src/Modules/Calcs.lua:309-349
+//pob:block:src/Modules/Calcs.lua:187,src/Modules/Calcs.lua:225,src/Modules/Calcs.lua:262,src/Modules/Calcs.lua:317-357
 type SkillDPS struct {
 	Name      string
 	DPS       float64
@@ -183,7 +183,7 @@ func (r *SidebarWarningsRun) skillCosts(index int, skill *ActiveSkill) (map[stri
 	return costOutputs(r.loopEnv.Player.Output), lifeReserved, manaReserved, true, true
 }
 
-//pob:block:src/Modules/Calcs.lua:399-435
+//pob:block:src/Modules/Calcs.lua:418-454
 func (r *SidebarWarningsRun) checkSkill(index int) bool {
 	env, w := r.env, r.w
 	output := env.Player.Output
@@ -263,7 +263,7 @@ func (r *SidebarWarningsRun) checkSkill(index int) bool {
 	return calculated
 }
 
-//pob:block:src/Modules/CalcSetup.lua:862-873
+//pob:block:src/Modules/CalcSetup.lua:876-887
 func jewelLimitWarning(env *Environment) []string {
 	if env.Build == nil || env.Build.GetBooleanOption("ignoreJewelLimits") {
 		return nil
@@ -317,7 +317,7 @@ func jewelLimitWarning(env *Environment) []string {
 	return warnings
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1009-1020,src/Modules/CalcSetup.lua:1308-1359
+//pob:block:src/Modules/CalcSetup.lua:1023-1034,src/Modules/CalcSetup.lua:1308-1359
 func equippedItemWarnings(env *Environment) ([]string, []string) {
 	if env.Build == nil || len(env.Build.Items.ItemSets) == 0 {
 		return nil, nil
@@ -382,7 +382,7 @@ func equippedItemWarnings(env *Environment) ([]string, []string) {
 	return socketLimit, missingAnoint
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1311-1321
+//pob:block:src/Modules/CalcSetup.lua:1347-1357
 func socketedGemCount(env *Environment, slotName string) int {
 	setIndex := activeSkillSetIndex(env.Build.Skills)
 	if setIndex < 0 {

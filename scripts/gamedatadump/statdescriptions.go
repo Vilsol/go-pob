@@ -13,7 +13,7 @@ import (
 	"github.com/Vilsol/go-pob/data/raw"
 )
 
-//pob:src/Export/Scripts/statdesc.lua:118-141
+//pob:src/Export/Scripts/statdesc.lua:119-142
 var statFileList = []string{
 	"active_skill_gem_stat_descriptions",
 	"aura_skill_stat_descriptions",
@@ -46,7 +46,7 @@ var (
 	includeRe   = regexp.MustCompile(`^Metadata/StatDescriptions/(.+)\.(?:txt|csd)$`)
 )
 
-//pob:src/Modules/Common.lua:1110-1116
+//pob:src/Modules/Common.lua:1111-1117
 func escapeGGGString(text string) string {
 	text = gggMarkupRe.ReplaceAllString(text, "$1")
 	text = gggLinkRe.ReplaceAllString(text, "$1")
@@ -90,7 +90,7 @@ func sdLimit(c rawdata.Condition) [2]any {
 	return [2]any{end(c.Min), end(c.Max)}
 }
 
-//pob:block:src/Export/Scripts/statdesc.lua:70-97
+//pob:block:src/Export/Scripts/statdesc.lua:71-98
 func sdSpecs(handlers []rawdata.IndexHandler) []sdSpec {
 	var tokens []string
 	for _, h := range handlers {

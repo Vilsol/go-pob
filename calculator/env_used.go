@@ -37,7 +37,7 @@ func modNameElements(name string) uint8 {
 	return bits
 }
 
-//pob:src/Modules/Calcs.lua:469-478
+//pob:src/Modules/Calcs.lua:488-497
 func addUsedVar(out map[string][]mod.Mod, varName string, m mod.Mod) {
 	if m.GetSource() == "Base" {
 		return
@@ -45,14 +45,14 @@ func addUsedVar(out map[string][]mod.Mod, varName string, m mod.Mod) {
 	out[varName] = append(out[varName], m)
 }
 
-//pob:src/Modules/Calcs.lua:479-487
+//pob:src/Modules/Calcs.lua:498-506
 func addUsedTag(out map[string][]mod.Mod, varList []string, m mod.Mod) {
 	for _, varName := range varList {
 		addUsedVar(out, varName, m)
 	}
 }
 
-//pob:src/Modules/Calcs.lua:472-494
+//pob:src/Modules/Calcs.lua:491-513
 func (env *Environment) addModTagsUsed(isPlayer bool, m mod.Mod) {
 	addUsedVar(env.ModsUsed, m.Name(), m)
 
@@ -130,7 +130,7 @@ func (env *Environment) initUsedTables() {
 	env.TagTypesUsed = make(map[string][]mod.Mod)
 }
 
-//pob:block:src/Modules/Calcs.lua:425-528
+//pob:block:src/Modules/Calcs.lua:444-547
 func collectUsedTables(env *Environment) {
 	env.initUsedTables()
 
@@ -178,7 +178,7 @@ func collectUsedTables(env *Environment) {
 	collectEnemyTagsUsed(env)
 }
 
-//pob:block:src/Modules/Calcs.lua:546-550
+//pob:block:src/Modules/Calcs.lua:565-569
 func collectModDBTagsUsed(env *Environment, isPlayer bool, actor *Actor) {
 	if actor == nil || actor.ModDB == nil {
 		return
@@ -190,7 +190,7 @@ func collectModDBTagsUsed(env *Environment, isPlayer bool, actor *Actor) {
 	}
 }
 
-//pob:block:src/Modules/Calcs.lua:514-528
+//pob:block:src/Modules/Calcs.lua:533-547
 func collectEnemyTagsUsed(env *Environment) {
 	if env.EnemyModDB == nil {
 		return
@@ -237,7 +237,7 @@ func pobGrantedEffectID(id string) string {
 	return id
 }
 
-//pob:block:src/Modules/Calcs.lua:439
+//pob:block:src/Modules/Calcs.lua:458
 func baseSkillMods(activeSkill *ActiveSkill) []mod.Mod {
 	if activeSkill == nil || activeSkill.BaseSkillModList == nil {
 		return nil

@@ -47,8 +47,8 @@ func buySimilarModEntries(item *calculator.Item) []*calculator.BuySimilarModEntr
 
 // BuySimilar is the popup for the item text in slotName, read as build reads it.
 //
-//pob:block:src/Classes/CompareBuySimilar.lua:285-333
-//pob:block:src/Classes/CompareBuySimilar.lua:418-431
+//pob:block:src/Classes/CompareBuySimilar.lua:282-330
+//pob:block:src/Classes/CompareBuySimilar.lua:415-428
 func BuySimilar(build *pob.PathOfBuilding, text string, slotName string) (*BuySimilarView, error) {
 	item, err := buildItem(build, text)
 	if err != nil {

@@ -124,7 +124,7 @@ var (
 	partySpaceLowerRe  = regexp.MustCompile(` [a-z]`)
 )
 
-//pob:src/Classes/PartyTab.lua:718-896
+//pob:src/Classes/PartyTab.lua:722-900
 func (t *partyTab) parseBuffs(list *partyBuffList, buf string, buffType string) {
 	switch buffType {
 	case "EnemyConditions":
@@ -192,7 +192,7 @@ func (t *partyTab) parseBuffs(list *partyBuffList, buf string, buffType string) 
 	}
 }
 
-//pob:block:src/Classes/PartyTab.lua:793-896
+//pob:block:src/Classes/PartyTab.lua:797-900
 func (t *partyTab) parseNamedBuffs(list *partyBuffList, buf string, buffType string) {
 	mode := "Name"
 	if buffType == "Curse" {
@@ -597,7 +597,7 @@ func buildPartyTag(fields map[string]string, order []string) (mod.Tag, *float64,
 	return tag, warcryPowerBonus, nil
 }
 
-//pob:block:src/Modules/CalcPerform.lua:1310
+//pob:block:src/Modules/CalcPerform.lua:1312
 func (env *Environment) partyMembers() *partyActor {
 	if env.partyTab == nil {
 		env.partyTab = newPartyTab()
@@ -654,7 +654,7 @@ type PartySummaryEntry struct {
 	Value string
 }
 
-//pob:block:src/Classes/PartyTab.lua:897-980
+//pob:block:src/Classes/PartyTab.lua:901-984
 func PartySummaries(party pob.Party) map[string][]PartySummaryEntry {
 	out := map[string][]PartySummaryEntry{}
 	t := newPartyTab()
@@ -699,7 +699,7 @@ func sortPartySummary(entries []PartySummaryEntry) {
 	})
 }
 
-//pob:block:src/Classes/PartyTab.lua:898-945
+//pob:block:src/Classes/PartyTab.lua:902-949
 func partyAuraSummary(list *partyBuffList) []PartySummaryEntry {
 	var out []PartySummaryEntry
 	aura, debuff := list.byType["Aura"], list.byType["AuraDebuff"]
@@ -744,7 +744,7 @@ func partyAuraSummary(list *partyBuffList) []PartySummaryEntry {
 	return out
 }
 
-//pob:block:src/Classes/PartyTab.lua:725-760
+//pob:block:src/Classes/PartyTab.lua:729-764
 func partyEnemyModsSummary(buf string) []PartySummaryEntry {
 	var out []PartySummaryEntry
 	index := map[string]int{}

@@ -178,7 +178,7 @@ var (
 		"Ring2": "Ring 2", "Ring3": "Ring 3", "Belt": "Belt", "BrequelGrafts": "Graft 1", "BrequelGrafts2": "Graft 2"}
 )
 
-//pob:block:src/Modules/ItemTools.lua:16-25
+//pob:block:src/Modules/ItemTools.lua:86-95
 var importInfluenceInfo = []struct{ key, display string }{
 	{"shaper", "Shaper"}, {"elder", "Elder"}, {"adjudicator", "Warlord"}, {"basilisk", "Hunter"}, {"crusader", "Crusader"},
 	{"eyrie", "Redeemer"}, {"cleansing", "Searing Exarch"}, {"tangle", "Eater of Worlds"},
@@ -188,11 +188,11 @@ var importInfluenceInfo = []struct{ key, display string }{
 var importCatalystList = []string{"Abrasive", "Accelerating", "Dextral", "Fertile", "Imbued", "Intrinsic", "Noxious", "Prismatic",
 	"Sinistral", "Tempering", "Turbulent", "Unstable"}
 
-//pob:block:src/Classes/ImportTab.lua:1595-1608
+//pob:block:src/Classes/ImportTab.lua:1603-1616
 var importCatalystMap = map[string]int{"Attack": 1, "Speed": 2, "Suffix": 3, "Life and Mana": 4, "Caster": 5, "Attribute": 6,
 	"Physical and Chaos Damage": 7, "Resistance": 8, "Prefix": 9, "Defense": 10, "Elemental Damage": 11, "Critical": 12}
 
-//pob:block:src/Classes/ImportTab.lua:1778-1791
+//pob:block:src/Classes/ImportTab.lua:1786-1799
 var importFoilVariants = []string{"Amethyst", "Verdant", "Ruby", "Cobalt", "Sunset", "Aureate", "Celestial Quartz", "Celestial Ruby",
 	"Celestial Emerald", "Celestial Aureate", "Celestial Pearl", "Celestial Amethyst"}
 
@@ -395,7 +395,7 @@ func (t *importTab) importItem(itemData importItemData, slotName string, ignoreW
 		}
 	}
 	item.split = itemData.Split
-	//pob:src/Classes/ImportTab.lua:1641
+	//pob:src/Classes/ImportTab.lua:1649
 	item.mirrored = itemData.Duplicated || itemData.Mirrored
 	item.corrupted = itemData.Corrupted
 	item.fractured = itemData.Fractured
@@ -464,7 +464,7 @@ func (t *importTab) importItem(itemData importItemData, slotName string, ignoreW
 			item.explicit = append(item.explicit, importModLine{line: l, mutated: true})
 		}
 	}
-	//pob:block:src/Classes/ImportTab.lua:1753-1776
+	//pob:block:src/Classes/ImportTab.lua:1761-1784
 	for _, line := range itemData.FlavourText {
 		for _, l := range importLines(line) {
 			start, end := strings.Index(l, "{"), strings.Index(l, "}")
@@ -483,7 +483,7 @@ func (t *importTab) importItem(itemData importItemData, slotName string, ignoreW
 		}
 	}
 
-	//pob:block:src/Classes/ImportTab.lua:1795-1820
+	//pob:block:src/Classes/ImportTab.lua:1803-1828
 	text := item.buildRaw()
 	id := 0
 	for _, existing := range t.build.Items.Items {
@@ -507,7 +507,7 @@ func (t *importTab) importItem(itemData importItemData, slotName string, ignoreW
 	}
 }
 
-//pob:block:src/Classes/Item.lua:1772-2047
+//pob:block:src/Classes/Item.lua:1801-2076
 func (item *importedItem) buildRaw() string {
 	var out []string
 	add := func(s ...string) { out = append(out, s...) }
@@ -598,7 +598,7 @@ func (item *importedItem) buildRaw() string {
 	return strings.Join(out, "\n")
 }
 
-//pob:block:src/Classes/Item.lua:1842-1909
+//pob:block:src/Classes/Item.lua:1871-1938
 func (ml importModLine) raw() string {
 	line := ml.line
 	for _, f := range []struct {
@@ -808,7 +808,7 @@ var importGemForSkill = sync.OnceValue(func() map[string]bool {
 	return out
 })
 
-//pob:block:src/Classes/SkillsTab.lua:1168-1187
+//pob:block:src/Classes/SkillsTab.lua:1178-1197
 func grantedEffectOf(gem pob.Gem) (raw.PoBSkill, bool) {
 	if gem.GemID != "" || gem.SkillID == "" || importGemForSkill()[gem.SkillID] {
 		return raw.PoBSkill{}, false
@@ -906,7 +906,7 @@ func importItemsAndSkills(build *pob.PathOfBuilding, charData *characterData, cl
 		}
 		t.assignGuardianItemSet(guardianSet)
 	}
-	//pob:block:src/Classes/ImportTab.lua:1425-1461
+	//pob:block:src/Classes/ImportTab.lua:1429-1465
 	if skillOrder != nil {
 		order := func(group pob.Skill) int {
 			best := -1

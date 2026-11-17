@@ -80,7 +80,7 @@ var catalystQualityFormat = []string{
 	"^x7F7F7FQuality (Critical Modifiers): " + colorMagic + "+%d%% (augmented)",
 }
 
-//pob:block:src/Modules/ItemTools.lua:15-25
+//pob:block:src/Modules/ItemTools.lua:85-95
 var influenceInfoAll = []struct {
 	on      func(ItemInfluence) bool
 	display string
@@ -143,14 +143,14 @@ func (env *Environment) ItemTooltipStats() ItemTooltipStats {
 	}
 }
 
-//pob:src/Classes/Tooltip.lua:91-114
+//pob:src/Classes/Tooltip.lua:150-173
 func (t *ItemTooltip) addLine(text string) {
 	for _, line := range strings.Split(text, "\n") {
 		t.Lines = append(t.Lines, TooltipLine{Text: line})
 	}
 }
 
-//pob:src/Classes/Tooltip.lua:120-127
+//pob:src/Classes/Tooltip.lua:179-186
 func (t *ItemTooltip) addSeparator() {
 	if n := len(t.Lines); n > 0 && t.Lines[n-1].Separator {
 		return
@@ -158,7 +158,7 @@ func (t *ItemTooltip) addSeparator() {
 	t.Lines = append(t.Lines, TooltipLine{Separator: true})
 }
 
-//pob:src/Modules/Main.lua:1574-1582
+//pob:src/Modules/Main.lua:1589-1597
 func statColor(stat float64, base *float64, limit *float64) string {
 	if limit != nil && stat > *limit {
 		return colorNegative
@@ -203,7 +203,7 @@ func luaFixed(v float64, prec int) string {
 	return out
 }
 
-//pob:src/Classes/ItemsTab.lua:3993-4062
+//pob:src/Classes/ItemsTab.lua:4099-4168
 func itemTooltipInfluence(item *Item) []string {
 	var header []string
 	add := func(name string) {
@@ -262,7 +262,7 @@ func itemTooltipInfluence(item *Item) []string {
 	return header
 }
 
-//pob:src/Classes/ItemsTab.lua:4185-4213
+//pob:src/Classes/ItemsTab.lua:4291-4319
 func socketDescriptionLine(item *Item) string {
 	var b strings.Builder
 	group := 0
@@ -329,7 +329,7 @@ func addRequirementsToTooltip(t *ItemTooltip, ctx ItemTooltipContext, level, str
 	}
 }
 
-//pob:src/Modules/ItemTools.lua:361-382
+//pob:src/Modules/ItemTools.lua:431-452
 func formattedModLine(ml ModLine, dbMode bool) (string, bool) {
 	line, kind, ok := formatModLine(ml, dbMode)
 	if !ok {
@@ -351,7 +351,7 @@ var (
 	sourceProphecyRe = regexp.MustCompile(`prophecy\{([^}]+)\}`)
 )
 
-//pob:src/Classes/ItemsTab.lua:4064-4069
+//pob:src/Classes/ItemsTab.lua:4170-4175
 func FormatItemSource(text string) string {
 	text = sourceUniqueRe.ReplaceAllString(text, colorUnique+"${1}"+colorSource)
 	text = sourceNormalRe.ReplaceAllString(text, colorNormal+"${1}"+colorSource)
@@ -359,7 +359,7 @@ func FormatItemSource(text string) string {
 	return sourceProphecyRe.ReplaceAllString(text, colorProphecy+"${1}"+colorSource)
 }
 
-//pob:src/Classes/ItemsTab.lua:4214-4593
+//pob:src/Classes/ItemsTab.lua:4320-4699
 //nolint:gocyclo // Mirrors the Lua branch chain.
 func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 	t := ItemTooltip{}
@@ -396,7 +396,7 @@ func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 	}
 	t.addSeparator()
 
-	//pob:block:src/Classes/ItemsTab.lua:4252-4290
+	//pob:block:src/Classes/ItemsTab.lua:4358-4396
 	if ctx.DBMode {
 		if item.UsesVariantGroups {
 			if len(item.VersionList) > 0 && item.SelectedVersion != nil {
@@ -489,7 +489,7 @@ func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 		if base.Armour.BlockChance != 0 && ad["BlockChance"] > 0 {
 			t.addLine(fmt.Sprintf("^x7F7F7FChance to Block: %s%d%%", statColor(ad["BlockChance"], f64(float64(base.Armour.BlockChance)), nil), luaInt(ad["BlockChance"])))
 		}
-		//pob:block:src/Classes/ItemsTab.lua:4340-4351
+		//pob:block:src/Classes/ItemsTab.lua:4446-4457
 		if ad["Armour"] > 0 {
 			t.addLine(fmt.Sprintf("^x7F7F7FArmour: %s%d", statColor(ad["Armour"], f64(ad["ArmourBase"]), nil), luaInt(ad["Armour"])))
 		}
@@ -564,7 +564,7 @@ func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 		if item.JewelRadiusLabel != "" {
 			t.addLine("^x7F7F7FRadius: ^7" + item.JewelRadiusLabel)
 		}
-		//pob:block:src/Classes/ItemsTab.lua:4426-4438
+		//pob:block:src/Classes/ItemsTab.lua:4532-4544
 		if ctx.RadiusData != nil {
 			line := ""
 			for i, stat := range []string{"Str", "Dex", "Int"} {
@@ -697,7 +697,7 @@ func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 			t.addSeparator()
 		}
 	}
-	//pob:block:src/Classes/ItemsTab.lua:4602-4615
+	//pob:block:src/Classes/ItemsTab.lua:4708-4721
 	for _, g := range item.GrantedSkills {
 		t.Skills = append(t.Skills, TooltipSkill{SkillID: g.SkillID, Level: g.Level})
 	}
@@ -732,7 +732,7 @@ var gemForSkill = sync.OnceValue(func() map[string]string {
 	return out
 })
 
-//pob:block:src/Classes/ItemsTab.lua:4615-4639
+//pob:block:src/Classes/ItemsTab.lua:4721-4745
 func GrantedSkillTooltips(t ItemTooltip, ctx ItemTooltipContext) [][]TooltipLine {
 	out := make([][]TooltipLine, len(t.Skills))
 	for k, s := range t.Skills {
@@ -753,7 +753,7 @@ func GrantedSkillTooltips(t ItemTooltip, ctx ItemTooltipContext) [][]TooltipLine
 
 var foulbornPrefixRe = regexp.MustCompile(`^Foulborn\s+`)
 
-//pob:block:src/Classes/ItemsTab.lua:4542-4574
+//pob:block:src/Classes/ItemsTab.lua:4648-4680
 func grandSpectrumFlavourID(lines []TooltipLine) string {
 	for _, l := range lines {
 		switch text := l.Text; {
@@ -974,7 +974,7 @@ func configInputBool(build *pob.PathOfBuilding, name string) bool {
 	return false
 }
 
-//pob:block:src/Classes/ItemsTab.lua:4806-4811
+//pob:block:src/Classes/ItemsTab.lua:4916-4921
 func emptyFlaskSlots(build *pob.PathOfBuilding) int {
 	if build == nil {
 		return 0
@@ -999,7 +999,7 @@ func emptyFlaskSlots(build *pob.PathOfBuilding) int {
 	return empty
 }
 
-//pob:block:src/Classes/ItemsTab.lua:4874-4901
+//pob:block:src/Classes/ItemsTab.lua:4984-5011
 func (m *MiscCalculator) EffectiveTinctureStats(item *Item) []string {
 	if item == nil || item.Base == nil || item.Base.Tincture == nil || m.base == nil || m.base.ModDB == nil {
 		return nil
@@ -1040,7 +1040,7 @@ func (m *MiscCalculator) SocketJewelTooltip(nodeID int, ctx ItemTooltipContext) 
 	return AddItemTooltip(parseItemGlobal(text), ctx), true
 }
 
-//pob:src/Classes/ItemsTab.lua:2493-2501
+//pob:src/Classes/ItemsTab.lua:2567-2575
 func checkLineForAllocates(line string, nodes map[string]data.Node) string {
 	if nodes != nil && strings.Contains(line, "Allocates") {
 		if id := allocatesIDRe.FindString(line); id != "" {

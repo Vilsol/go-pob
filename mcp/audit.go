@@ -66,7 +66,7 @@ func eachSetGem(b *pob.PathOfBuilding, fn func(set string, group int, gem pob.Ge
 
 // gemSkillID is the granted effect a saved gem loads as: by gem id, else skill id, else its name.
 //
-//pob:block:src/Classes/SkillsTab.lua:1169-1201
+//pob:block:src/Classes/SkillsTab.lua:1179-1211
 func gemSkillID(gem pob.Gem) string {
 	if row, ok := gemVariantRow(gem); ok {
 		return row.GrantedEffectID
@@ -86,7 +86,7 @@ func gemSkillID(gem pob.Gem) string {
 // gemVariantRow is a transfigured gem's own row: PoB saves it under its base gem's id with the variant's id, or in
 // older builds the variant's skill id, and its granted effect, parts and labels are the variant's.
 //
-//pob:block:src/Classes/SkillsTab.lua:466-480
+//pob:block:src/Classes/SkillsTab.lua:467-481
 func gemVariantRow(gem pob.Gem) (raw.PoBGem, bool) {
 	if gem.VariantID != nil {
 		row, ok := raw.GemVariants[*gem.VariantID]

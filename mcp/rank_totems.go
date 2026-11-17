@@ -21,7 +21,7 @@ type overLimit struct {
 
 // skillCount is the count Full DPS multiplies a skill's DPS by: the group's count, else its gem's.
 //
-//pob:block:src/Modules/Calcs.lua:116-140
+//pob:block:src/Modules/Calcs.lua:123-147
 func skillCount(sk *calculator.ActiveSkill, g *pob.Skill) int {
 	if g.GroupCount != nil {
 		return *g.GroupCount
@@ -40,7 +40,7 @@ func countsOverLimit(env *calculator.Environment) []overLimit {
 // countedSkills lists the totem and mine skills Full DPS counts more than once, with their active limit; the main
 // skill's limit is its output, another skill's its skill modifiers' sum as CalcOffence takes it.
 //
-//pob:block:src/Modules/CalcOffence.lua:562,src/Modules/CalcOffence.lua:1433
+//pob:block:src/Modules/CalcOffence.lua:562,src/Modules/CalcOffence.lua:1185
 func countedSkills(env *calculator.Environment) []overLimit {
 	var out []overLimit
 	for _, sk := range env.Player.ActiveSkillList {

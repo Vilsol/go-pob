@@ -17,7 +17,7 @@ func weaponSetOf(slotName string) int {
 	return 1
 }
 
-//pob:block:src/Classes/ItemsTab.lua:236-275
+//pob:block:src/Classes/ItemsTab.lua:248-287
 func (b *PathOfBuilding) SetUseSecondWeaponSet(second bool) bool {
 	set := b.activeItemSet()
 	if (set.UseSecondWeaponSet != nil && *set.UseSecondWeaponSet) == second {
@@ -146,7 +146,7 @@ func (b *PathOfBuilding) DeallocateSpecNodes(specIndex int, nodeIDs []int64) {
 	}
 }
 
-//pob:src/Classes/ItemsTab.lua:1857-1904
+//pob:src/Classes/ItemsTab.lua:1927-1974
 func (b *PathOfBuilding) DeleteItem(itemID int) bool {
 	i := slices.IndexFunc(b.Items.Items, func(it Item) bool { return it.ID == itemID })
 	if i < 0 {

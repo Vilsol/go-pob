@@ -473,7 +473,7 @@ type Gem struct {
 
 type gemXML Gem
 
-//pob:block:src/Classes/SkillsTab.lua:498-499
+//pob:block:src/Classes/SkillsTab.lua:499-500
 func (g *Gem) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	g.Enabled, g.EnableGlobal1 = true, true
 	if err := d.DecodeElement((*gemXML)(g), &start); err != nil {
@@ -490,7 +490,7 @@ func (g *Gem) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return nil
 }
 
-//pob:block:src/Classes/SkillsTab.lua:614-615
+//pob:block:src/Classes/SkillsTab.lua:615-616
 func (g Gem) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	if g.stageCountZero && g.SkillStageCount == 0 {
 		start.Attr = append(start.Attr, xml.Attr{Name: xml.Name{Local: "skillStageCount"}, Value: "0"})

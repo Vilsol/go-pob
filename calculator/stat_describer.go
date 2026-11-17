@@ -172,7 +172,7 @@ type DescribedStats struct {
 	LineMap map[string]string
 }
 
-//pob:src/Modules/StatDescriber.lua:207-299
+//pob:src/Modules/StatDescriber.lua:213-305
 func DescribeStats(stats map[string]float64, scopeName string, quality bool) DescribedStats {
 	scopeList := statDescriptionScopeList(scopeName)
 	type described struct {

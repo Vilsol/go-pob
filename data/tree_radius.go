@@ -6,7 +6,7 @@ import (
 	"sync"
 )
 
-//pob:src/Classes/PassiveTree.lua:1041-1062
+//pob:src/Classes/PassiveTree.lua:1088-1109
 func calcOrbitAngles(nodesInOrbit int) []float64 {
 	var degrees []float64
 	switch nodesInOrbit {
@@ -31,7 +31,7 @@ func calcOrbitAngles(nodesInOrbit int) []float64 {
 	return angles
 }
 
-//pob:block:src/Classes/PassiveTree.lua:897-903
+//pob:block:src/Classes/PassiveTree.lua:944-950
 func (t *Tree) OrbitPosition(group int64, orbit, oidx int) (float64, float64, bool) {
 	g, ok := t.Groups[strconv.FormatInt(group, 10)]
 	if !ok || orbit < 0 || orbit >= len(t.Constants.OrbitRadii) || orbit >= len(t.Constants.SkillsPerOrbit) {
@@ -83,7 +83,7 @@ func (t *Tree) geometry() *treeGeometry {
 	return g.(*treeGeometry)
 }
 
-//pob:block:src/Classes/PassiveTree.lua:227-232,src/Classes/PassiveTree.lua:897-903
+//pob:block:src/Classes/PassiveTree.lua:252-257,src/Classes/PassiveTree.lua:944-950
 func (t *Tree) buildGeometry() *treeGeometry {
 	orbitRadii := t.Constants.OrbitRadii
 	skillsPerOrbit := t.Constants.SkillsPerOrbit
@@ -149,7 +149,7 @@ func (t *Tree) buildLargeClusterAnchors() map[int64]int64 {
 	return anchors
 }
 
-//pob:block:src/Classes/PassiveTree.lua:448
+//pob:block:src/Classes/PassiveTree.lua:473
 func (t *Tree) includedInRadius(key string, node Node) bool {
 	if node.Group == nil || boolVal(node.IsMastery) || boolVal(node.IsProxy) || boolVal(node.IsBlighted) {
 		return false
@@ -164,7 +164,7 @@ func (t *Tree) includedInRadius(key string, node Node) bool {
 	return true
 }
 
-//pob:block:src/Classes/PassiveTree.lua:438-459
+//pob:block:src/Classes/PassiveTree.lua:463-484
 func (t *Tree) buildJewelRadiusNodes(positions map[int64]nodePos) map[int64][][]int64 {
 	type cand struct {
 		id   int64

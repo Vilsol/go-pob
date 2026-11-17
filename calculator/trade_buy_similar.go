@@ -31,7 +31,7 @@ type BuySimilarDefence struct {
 
 // BuySimilarDefences is the popup's defence rows for a non-unique item with an armour base.
 //
-//pob:block:src/Classes/CompareBuySimilar.lua:314-333
+//pob:block:src/Classes/CompareBuySimilar.lua:311-330
 func BuySimilarDefences(item *Item) []BuySimilarDefence {
 	defenceEntries := []BuySimilarDefence{}
 	isUnique := item.Rarity == RarityUnique || item.Rarity == RarityRelic
@@ -69,7 +69,7 @@ var tradeWeaponSlotRe = regexp.MustCompile(`^Weapon \d`)
 
 // TradeCategory is the trade site's category for an item in slotName, "" for none.
 //
-//pob:src/Classes/TradeHelpers.lua:351-387
+//pob:src/Classes/TradeHelpers.lua:373-409
 func TradeCategory(slotName string, item *Item) string {
 	if slotName == "" {
 		return ""
@@ -144,7 +144,7 @@ func TradeCategory(slotName string, item *Item) string {
 
 // TradeCategoryLabel is the popup's Category label.
 //
-//pob:src/Classes/TradeHelpers.lua:392-396
+//pob:src/Classes/TradeHelpers.lua:414-418
 func TradeCategoryLabel(item *Item) string {
 	if item == nil || item.Base == nil {
 		return "Item"
@@ -186,7 +186,7 @@ type BuySimilarModFilter struct {
 
 // tradeURLEncode is urlEncode: every byte but [A-Za-z0-9_.~-] as %XX.
 //
-//pob:src/Modules/Common.lua:1024-1029
+//pob:src/Modules/Common.lua:1025-1030
 func tradeURLEncode(s string) string {
 	var b strings.Builder
 	for _, c := range []byte(s) {
@@ -402,7 +402,7 @@ var existingStats = sync.OnceValue(func() map[string]bool {
 // BuySimilarAddModEntries is the popup's mod rows for item's enchant, implicit, explicit and scourge lines.
 //
 //pob:src/Classes/CompareBuySimilar.lua:211-283
-//pob:block:src/Classes/CompareBuySimilar.lua:301-309
+//pob:block:src/Classes/CompareBuySimilar.lua:298-306
 func BuySimilarAddModEntries(item *Item) []*BuySimilarModEntry {
 	var modEntries []*BuySimilarModEntry
 	// this adds a single aggregated entry for matching stats (e.g. transformed flat dmg mods) which
@@ -522,7 +522,7 @@ var (
 
 // BuySimilarModRows is the popup's mod rows as openPopup lays them out.
 //
-//pob:block:src/Classes/CompareBuySimilar.lua:458-511
+//pob:block:src/Classes/CompareBuySimilar.lua:455-508
 func BuySimilarModRows(modEntries []*BuySimilarModEntry) []BuySimilarModRow {
 	rows := make([]BuySimilarModRow, 0, len(modEntries))
 	for _, entry := range modEntries {

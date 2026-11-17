@@ -229,7 +229,7 @@ func findTradeIDOption(modLine string, modType string) (string, any) {
 
 // impliedValue is the value a form with no variable for the canonical stat implies through its limits.
 //
-//pob:src/Classes/TradeHelpers.lua:229-232
+//pob:src/Classes/TradeHelpers.lua:233-236
 func impliedValue(statForm *tradeStatForm, canonicalStat *int) *float64 {
 	idx := 1
 	if canonicalStat != nil {
@@ -244,7 +244,7 @@ func impliedValue(statForm *tradeStatForm, canonicalStat *int) *float64 {
 	return nil
 }
 
-//pob:src/Classes/TradeHelpers.lua:234-238
+//pob:src/Classes/TradeHelpers.lua:238-242
 func insertUniqueHash(resultIDs []uint32, tradeHash uint32) []uint32 {
 	for _, h := range resultIDs {
 		if h == tradeHash {
@@ -373,7 +373,7 @@ entries:
 
 // hashStats is the trade site's hash of a stat description's stats.
 //
-//pob:src/Modules/Common.lua:1135-1146
+//pob:src/Modules/Common.lua:1136-1147
 func hashStats(stats []string, extraStat string) uint32 {
 	if extraStat != "" {
 		stats = append(append([]string{}, stats...), extraStat)
@@ -385,12 +385,12 @@ func hashStats(stats []string, extraStat string) uint32 {
 	return murmurHash2(statHashes, 0x02312233)
 }
 
-//pob:src/Modules/Common.lua:332-339
+//pob:src/Modules/Common.lua:333-340
 func intToBytes(v uint32) []byte {
 	return []byte{byte(v & 0xFF), byte(v >> 8 & 0xFF), byte(v >> 16 & 0xFF), byte(v >> 24 & 0xFF)} //nolint:gosec // masked to a byte
 }
 
-//pob:src/Modules/Common.lua:341-372
+//pob:src/Modules/Common.lua:342-373
 func murmurHash2(key []byte, seed uint32) uint32 {
 	mix := func(v uint32) uint32 { return v * 0x5BD1E995 }
 	n := len(key)

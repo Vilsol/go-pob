@@ -7,8 +7,8 @@ import (
 
 // TestBattlemageAndMinionAttackSpeedRowsMatchThePin pins two rows this tree emitted differently from the pin, both routed as "census hygiene, expect +0".
 //
-//pob:block:src/Modules/ModParser.lua:3450-3454
-//pob:src/Modules/ModParser.lua:5542
+//pob:block:src/Modules/ModParser.lua:3513-3517
+//pob:src/Modules/ModParser.lua:5673
 func TestBattlemageAndMinionAttackSpeedRowsMatchThePin(t *testing.T) {
 	requireGameData(t, "3.29")
 

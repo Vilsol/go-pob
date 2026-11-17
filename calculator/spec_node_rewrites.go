@@ -15,7 +15,7 @@ type SpecNodeRewrite struct {
 	Replaced bool
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1697-1718,src/Classes/PassiveSpec.lua:2468-2476
+//pob:block:src/Classes/PassiveSpec.lua:1722-1743,src/Classes/PassiveSpec.lua:2527-2535
 func SpecNodeRewrites(env *Environment) []SpecNodeRewrite {
 	tree := data.TreeVersions[data.LatestTreeVersion].Tree()
 	if env.Spec != nil {

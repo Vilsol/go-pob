@@ -11,7 +11,7 @@ import (
 	"github.com/Vilsol/go-pob/data"
 )
 
-//pob:src/Classes/ItemsTab.lua:574-579
+//pob:src/Classes/ItemsTab.lua:585-590
 func addImplicitShown(item *Item) bool {
 	t := item.Base.Type
 	corruptible := t != "Flask"
@@ -25,7 +25,7 @@ type ImplicitSource struct {
 	Label string
 }
 
-//pob:block:src/Modules/Main.lua:163-174
+//pob:block:src/Modules/Main.lua:165-176
 var uniqueDBByTitle = sync.OnceValue(func() map[string]*Item {
 	out := map[string]*Item{}
 	for _, item := range ItemDB(ItemDBUnique) {

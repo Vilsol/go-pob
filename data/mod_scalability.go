@@ -55,7 +55,7 @@ func alwaysPositiveRound(val float64) float64 {
 	return floorSymmetric(float64(val) + 0.5)
 }
 
-//pob:src/Modules/ItemTools.lua:61-75
+//pob:src/Modules/ItemTools.lua:131-145
 func formatValue(value float64, baseValueScalar, valueScalar *float64, precision float64,
 	displayPrecision *int, ifRequired bool,
 ) string {
@@ -83,7 +83,7 @@ func formatValue(value float64, baseValueScalar, valueScalar *float64, precision
 	return luaNum(roundSymmetricDec(value, dec))
 }
 
-//pob:block:src/Modules/ItemTools.lua:195-287
+//pob:block:src/Modules/ItemTools.lua:265-357
 func precisionForFormats(formats []string) (*float64, *int, bool) {
 	var precision *float64
 	var displayPrecision *int
@@ -247,7 +247,7 @@ func substituteScalability(parts []string, values []string, subs []int) string {
 	return b.String()
 }
 
-//pob:block:src/Modules/ItemTools.lua:121-186
+//pob:block:src/Modules/ItemTools.lua:191-256
 func findScalableLine(line string, values []string) (string, []string, bool) {
 	candidates := scalabilityIndex()[scalabilityKey(line)]
 	if len(candidates) == 0 {
@@ -298,7 +298,7 @@ func moreSubstituted(a, b []int) bool {
 	return false
 }
 
-//pob:block:src/Modules/ItemTools.lua:98-112
+//pob:block:src/Modules/ItemTools.lua:168-182
 func stripLineForScalability(line string, rangeVal float64) (string, []string) {
 	stripped := replaceLimit(scalabilityRangeRe, line, -1, func(g []string) string {
 		sign := g[1]
@@ -327,7 +327,7 @@ func stripLineForScalability(line string, rangeVal float64) (string, []string) {
 	return stripped, values
 }
 
-//pob:block:src/Modules/ItemTools.lua:188-300
+//pob:block:src/Modules/ItemTools.lua:258-370
 func applyRangeScalability(line string, rangeVal float64, valueScalar, baseValueScalar *float64) (string, bool) {
 	stripped, values := stripLineForScalability(line, rangeVal)
 

@@ -63,7 +63,7 @@ func replaceLimit(re *regexp.Regexp, s string, n int, repl func(groups []string)
 	return out.String()
 }
 
-//pob:src/Modules/ItemTools.lua:26-43
+//pob:src/Modules/ItemTools.lua:96-113
 func ApplyValueScalar(line string, valueScalar, baseValueScalar *float64, numbers int, precision *int) string {
 	scalar := 1.0
 	if valueScalar != nil {
@@ -107,7 +107,7 @@ type lineRange struct {
 	ok       bool
 }
 
-//pob:src/Modules/ItemTools.lua:45-60
+//pob:src/Modules/ItemTools.lua:115-130
 func GetLineRangeMinMax(line string) (string, string, bool) {
 	lineRangeMu.RLock()
 	cached, hit := lineRangeCache[line]
@@ -159,7 +159,7 @@ type applyRangeKey struct {
 	hasBaseScalar bool
 }
 
-//pob:src/Modules/ItemTools.lua:62-115
+//pob:src/Modules/ItemTools.lua:132-185
 func ApplyRange(line string, rangeVal float64, valueScalar, baseValueScalar *float64) string {
 	key := applyRangeKey{line: line, rangeVal: rangeVal}
 	if valueScalar != nil {

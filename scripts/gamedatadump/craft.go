@@ -206,7 +206,7 @@ func dumpItemCraftMods() (any, error) {
 		}
 	}
 	affixTables["Vestigial"] = byID(vestigial)
-	//pob:block:src/Classes/ItemsTab.lua:3151-3155
+	//pob:block:src/Classes/ItemsTab.lua:3256-3260
 	var specialCorruption []exportMod
 	for _, m := range tables["ItemExclusive"] {
 		if strings.HasPrefix(m.ID, "UniqueSpecialCorruption") {
@@ -260,7 +260,7 @@ type craftDropRestricted struct {
 	Categories []string `json:"categories"`
 }
 
-//pob:block:src/Classes/ItemsTab.lua:3513-3514,src/Classes/ItemsTab.lua:3579-3602
+//pob:block:src/Classes/ItemsTab.lua:3619-3620,src/Classes/ItemsTab.lua:3685-3708
 func dumpDropRestricted(pobDir, file string, table []exportMod) ([]craftDropRestricted, error) {
 	b, err := os.ReadFile(filepath.Join(pobDir, "src", "Data", file)) //nolint:gosec // the pinned PoB checkout
 	if err != nil {

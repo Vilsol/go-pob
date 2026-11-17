@@ -809,7 +809,7 @@ func (g *GrantedEffect) Name() string {
 	return g.Raw.ID
 }
 
-//pob:block:src/Modules/CalcActiveSkill.lua:296
+//pob:block:src/Modules/CalcActiveSkill.lua:314
 func (g *GrantedEffect) WeaponTypes() []data.ItemClassName {
 	id := g.ID()
 	if alias, aliased := skillFlagIDAliases[id]; aliased {

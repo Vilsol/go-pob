@@ -65,7 +65,7 @@ type curseEntry struct {
 	socketedCursesHexLimit bool
 }
 
-//pob:block:src/Modules/CalcPerform.lua:3151-3157
+//pob:block:src/Modules/CalcPerform.lua:3185-3191
 func extraCurseEffect(value mod.ExtraCurse) *GemEffect {
 	id := value.SkillID
 	if id == "" && value.SkillName != "" {
@@ -99,7 +99,7 @@ func extraCurseEffect(value mod.ExtraCurse) *GemEffect {
 	}
 }
 
-//pob:src/Modules/CalcPerform.lua:587-617
+//pob:src/Modules/CalcPerform.lua:589-619
 func determineCursePriority(curseName string, activeSkill *ActiveSkill) float64 {
 	source := ""
 	slot := ""
@@ -134,7 +134,7 @@ func determineCursePriority(curseName string, activeSkill *ActiveSkill) float64 
 	return basePriority + socketPriority + slotPriority + sourcePriority
 }
 
-//pob:block:src/Modules/CalcPerform.lua:595-596
+//pob:block:src/Modules/CalcPerform.lua:597-598
 func gemInstanceName(gemInstance pob.Gem) string {
 	gem, _ := resolveGemInstance(gemInstance)
 	if gem == nil {
@@ -149,7 +149,7 @@ func gemInstanceName(gemInstance pob.Gem) string {
 
 var playerActorCfg = &moddb.ListCfg{Actor: "player"}
 
-//pob:src/Modules/CalcPerform.lua:45-67
+//pob:src/Modules/CalcPerform.lua:46-68
 func mergeBuff(src *moddb.ModList, dest map[string]*moddb.ModList, key string) {
 	if src == nil {
 		return
@@ -160,12 +160,12 @@ func mergeBuff(src *moddb.ModList, dest map[string]*moddb.ModList, key string) {
 	destList := dest[key]
 	for _, srcMod := range src.Mods() {
 		merged := false
-		//pob:src/Modules/CalcPerform.lua:52
+		//pob:src/Modules/CalcPerform.lua:53
 		if srcMod.Type() == mod.TypeList {
 			destList.AddMod(srcMod.Clone())
 			continue
 		}
-		//pob:src/Modules/CalcPerform.lua:53-61
+		//pob:src/Modules/CalcPerform.lua:54-62
 		for index, destMod := range destList.Mods() {
 			if moddb.CompareModParams(srcMod, destMod) {
 				sv := srcMod.Value()
@@ -200,7 +200,7 @@ func mergeFlaskBuff(src *moddb.ModList, dest map[string]*moddb.ModList, order []
 	return order
 }
 
-//pob:block:src/Modules/CalcPerform.lua:1590-1598
+//pob:block:src/Modules/CalcPerform.lua:1592-1600
 func flaskModKey(mods []mod.Mod) string {
 	var b []byte
 	for _, m := range mods {
@@ -225,7 +225,7 @@ type flaskSlotItem struct {
 	active bool
 }
 
-//pob:block:src/Modules/CalcPerform.lua:1524-1536
+//pob:block:src/Modules/CalcPerform.lua:1526-1538
 func orderedFlaskSlots(env *Environment) []flaskSlotItem {
 	items := env.Build.Items
 	if len(items.ItemSets) == 0 {
@@ -272,7 +272,7 @@ func flaskSlotNum(name string) int {
 	return num
 }
 
-//pob:src/Modules/CalcPerform.lua:1638-1650
+//pob:src/Modules/CalcPerform.lua:1640-1652
 func getFlaskInstantRecovery(env *Environment, item *Item) float64 {
 	instantPerc := item.FlaskData["instantPerc"]
 	if env.ModDB.Flag(nil, "Condition:LowLife") {
@@ -337,7 +337,7 @@ func mergeFlaskRecovery(env *Environment, item *Item, typ, key string,
 	return mergeFlaskBuff(srcList, dest, order, key)
 }
 
-//pob:src/Modules/CalcPerform.lua:1605-1609
+//pob:src/Modules/CalcPerform.lua:1607-1611
 type flaskMinionState struct {
 	effectIncNonPlayer      float64
 	effectIncMagicNonPlayer float64
@@ -445,7 +445,7 @@ func flaskConditionNames(env *Environment) []string {
 	return names
 }
 
-//pob:block:src/Modules/CalcPerform.lua:1829-1847
+//pob:block:src/Modules/CalcPerform.lua:1850-1868
 func (s *flaskMinionState) applyToMinion(env *Environment) {
 	if env.Minion == nil {
 		return
@@ -481,7 +481,7 @@ func warcryDisplayName(activeSkill *ActiveSkill) string {
 
 var rallyingCryDamageTypes = []string{"Physical", "Lightning", "Cold", "Fire", "Chaos"}
 
-//pob:block:src/Modules/CalcPerform.lua:1457-1458
+//pob:block:src/Modules/CalcPerform.lua:1459-1460
 func weaponDataDamage(weaponData *SkillData, damageType string) (float64, float64) {
 	if weaponData == nil {
 		return 0, 0
@@ -560,7 +560,7 @@ type triggerSkillCache struct {
 	building map[string]bool
 }
 
-//pob:src/Modules/Common.lua:722-737
+//pob:src/Modules/Common.lua:723-738
 func cacheSkillUUID(env *Environment, skill *ActiveSkill) string {
 	name := ""
 	if skill.ActiveEffect != nil && skill.ActiveEffect.GrantedEffect != nil {
@@ -580,7 +580,7 @@ func cacheSkillUUID(env *Environment, skill *ActiveSkill) string {
 	return strings.ReplaceAll(name, " ", "") + "_" + strings.ReplaceAll(slotName, " ", "") + "_" + strconv.Itoa(index)
 }
 
-//pob:src/Modules/Calcs.lua:353-366, src/Modules/CalcPerform.lua:3191-3193
+//pob:src/Modules/Calcs.lua:353-366, src/Modules/CalcPerform.lua:3225-3227
 func buildActiveSkillCache(env *Environment, skill *ActiveSkill) *cachedTriggerSkill {
 	uuid := cacheSkillUUID(env, skill)
 	if cached, ok := env.triggerCache.entries[uuid]; ok {
@@ -601,7 +601,7 @@ func buildActiveSkillCache(env *Environment, skill *ActiveSkill) *cachedTriggerS
 	source := triggerSourceEnvFor(env)
 	defer func() { env.triggerCache.spare = append(env.triggerCache.spare, source) }()
 	subEnv := source.env
-	//pob:src/Modules/Calcs.lua:359
+	//pob:src/Modules/Calcs.lua:372
 	subEnv.BuildBreakdown = false
 	subEnv.triggerCache = env.triggerCache
 	var target *ActiveSkill
@@ -754,7 +754,7 @@ func mirageSkillCopy(env *Environment, newEnv *Environment, built *ActiveSkill) 
 	return newSkill
 }
 
-//pob:block:src/Modules/CalcPerform.lua:2474-2551
+//pob:block:src/Modules/CalcPerform.lua:2508-2585
 func performMirageArcher(env *Environment) {
 	skill := env.Player.MainSkill
 	if skill == nil || skill.SkillData == nil || !skill.SkillData.TriggeredByMirageArcher {
@@ -808,7 +808,7 @@ func performMirageArcher(env *Environment) {
 	//pob:block:src/Modules/CalcMirages.lua:89
 	newSkill.SkillModList.AddMod(mod.NewFlag("HasNoCost", true).Source("Used by mirage"))
 
-	//pob:block:src/Modules/CalcPerform.lua:2727-2729
+	//pob:block:src/Modules/CalcPerform.lua:2761-2763
 	//pob:block:src/Modules/CalcMirages.lua:76-78,src/Modules/CalcMirages.lua:91-97
 	skill.Mirage = &MirageResult{Name: newSkill.ActiveEffect.GrantedEffect.Name(), Count: mirageCount, SkillPartName: newSkill.SkillPartName}
 	//pob:block:src/Modules/CalcMirages.lua:80-82
@@ -816,7 +816,7 @@ func performMirageArcher(env *Environment) {
 		skill.infoMessage = luaNumber(mirageCount) + " Mirage Archers using " + newSkill.ActiveEffect.GrantedEffect.Name()
 	}
 
-	//pob:block:src/Modules/CalcPerform.lua:2743
+	//pob:block:src/Modules/CalcPerform.lua:2777
 	newSkill.Marked = true
 	PerformCalc(newEnv)
 
@@ -893,7 +893,7 @@ func performSaviourMirage(env *Environment) bool {
 	return true
 }
 
-//pob:block:src/Modules/CalcMirages.lua:357-359
+//pob:block:src/Modules/CalcMirages.lua:361-363
 func performGeneralsCryMarks(env *Environment) {
 	skill := env.Player.MainSkill
 	if skill == nil || skill.SkillData == nil || !skill.SkillData.TriggeredByGeneralsCry {
@@ -966,10 +966,10 @@ func performSacredWisps(env *Environment) {
 
 	newSkill.SkillModList.AddMod(mod.NewFloat("Damage", mod.TypeMore, lessDamage).Source("Used by Sacred Wisps"))
 	newSkill.SkillModList.AddMod(mod.NewFloat("Speed", mod.TypeMore, wispsCastChance-100).Source("Sacred Wisps cast chance"))
-	//pob:block:src/Modules/CalcMirages.lua:315
+	//pob:block:src/Modules/CalcMirages.lua:319
 	newSkill.SkillModList.AddMod(mod.NewFlag("HasNoCost", true).Source("Used by Sacred Wisps"))
 
-	//pob:block:src/Modules/CalcMirages.lua:302-304,src/Modules/CalcMirages.lua:317-323
+	//pob:block:src/Modules/CalcMirages.lua:304-307,src/Modules/CalcMirages.lua:317-323
 	skill.Mirage = &MirageResult{Name: newSkill.ActiveEffect.GrantedEffect.Name(), Count: wispsMaxCount, SkillPartName: newSkill.SkillPartName}
 	//pob:block:src/Modules/CalcMirages.lua:306-308
 	if skill.infoMessage == "" {
@@ -1012,7 +1012,7 @@ func defaultTriggerComparer(cached *cachedTriggerSkill, source *ActiveSkill, tri
 	return (source == nil && speedSet) || (speedSet && speed > triggerRate)
 }
 
-//pob:src/Modules/CalcPerform.lua:22-41
+//pob:src/Modules/CalcPerform.lua:23-42
 func findTriggerSkill(env *Environment, skill *ActiveSkill, source *ActiveSkill, triggerRate float64, reqManaCost *float64, comparer triggerComparer) (*ActiveSkill, float64) {
 	cached := buildActiveSkillCache(env, skill)
 	if cached == nil {
@@ -1084,11 +1084,11 @@ func packageSkillDataForSimulation(env *Environment, skill *ActiveSkill) *trigge
 	}
 }
 
-//pob:src/Modules/Common.lua:1013-1022
+//pob:src/Modules/Common.lua:1014-1023
 func ceilB(x float64, base float64) float64  { return float64(base * math.Ceil(x/base)) }
 func floorB(x float64, base float64) float64 { return float64(base * math.Floor(x/base)) }
 
-//pob:src/Modules/CalcTriggers.lua:91-134
+//pob:src/Modules/CalcTriggers.lua:105-148
 type triggerSimBreakdown struct {
 	simTime float64
 	rates   []triggerSimRate
@@ -1166,7 +1166,7 @@ func calcMultiSpellRotationImpact329(env *Environment, skillRotation []*triggerR
 	return mainRate, trigRateTable
 }
 
-//pob:src/Modules/CalcPerform.lua:166-295
+//pob:src/Modules/CalcPerform.lua:168-297
 func calcActualTriggerRate(env *Environment, source *ActiveSkill, sourceAPS *float64, spellCount []*triggerRotationSkill, output map[string]float64, triggerChance float64) float64 {
 	if sourceAPS == nil && source.SkillTypes[data.SkillTypeChannel] {
 		triggerTime := source.SkillData.TriggerTime
@@ -1194,14 +1194,14 @@ func calcActualTriggerRate(env *Environment, source *ActiveSkill, sourceAPS *flo
 		triggeredCDAdjusted := math.Ceil(triggeredTotalCooldown*data.ServerTickRate) / data.ServerTickRate
 		effCDTriggeredSkill := math.Ceil(triggeredCDAdjusted*triggerRateOfTrigger) / triggerRateOfTrigger
 
-		//pob:src/Modules/CalcTriggers.lua:250-267
+		//pob:src/Modules/CalcTriggers.lua:264-281
 		output["TriggerRateCap"] = math.Min(1/effCDTriggeredSkill, triggerRateOfTrigger)
 	} else {
 		actionCooldown, addsCastTime := triggerActionCooldown(env.Player.MainSkill, env.Player.MainSkill, false)
 		if addsCastTime != 0 {
 			output["addsCastTime"] = addsCastTime
 		}
-		//pob:block:src/Modules/CalcTriggers.lua:588-591
+		//pob:block:src/Modules/CalcTriggers.lua:603-606
 		output["TriggerRateCap"] = math.Inf(1)
 		if actionCooldown != 0 {
 			output["TriggerRateCap"] = 1 / actionCooldown
@@ -1278,7 +1278,7 @@ var itemGrantedSupportNames = map[string]string{
 	"SupportUniqueVirulenceSpellsCastOnBlock":                       "Festering Resentment Cast on Block",
 }
 
-//pob:src/Modules/CalcTriggers.lua:1585-1600
+//pob:src/Modules/CalcTriggers.lua:1601-1616
 func getUniqueItemTriggerName(skill *ActiveSkill) string {
 	for _, gemInstance := range skill.SupportList {
 		if gemInstance.GrantedEffect == nil {
@@ -1292,7 +1292,7 @@ func getUniqueItemTriggerName(skill *ActiveSkill) string {
 	return ""
 }
 
-//pob:src/Modules/CalcPerform.lua:301-316
+//pob:src/Modules/CalcPerform.lua:303-318
 func calcDualWieldImpact(env *Environment, sourceAPS float64, skillDoubleHitsWhenDualWielding bool) (float64, bool) {
 	dualWield := false
 	if env.Player.WeaponData1 != nil && env.Player.WeaponData1.Type != "" &&
@@ -1313,7 +1313,7 @@ func skillCfgHasFlag(skill *ActiveSkill, flag mod.MFlag) bool {
 	return skill.SkillCfg != nil && skill.SkillCfg.Flags != nil && *skill.SkillCfg.Flags&flag > 0
 }
 
-//pob:src/Modules/CalcPerform.lua:343-350
+//pob:src/Modules/CalcPerform.lua:345-352
 func getTriggerDefaultCooldown(supportList []*GemEffect, name string) float64 {
 	for _, support := range supportList {
 		if support.GrantedEffect != nil && support.GrantedEffect.ID() == name {
@@ -1366,7 +1366,7 @@ func reuseMinionSkills(env *Environment, activeSkill *ActiveSkill) {
 	activeSkill.reusableMinionSkills, activeSkill.reusableMinionMain = activeSkill.Minion.ActiveSkillList, activeSkill.Minion.MainSkill
 }
 
-//pob:block:src/Modules/CalcPerform.lua:1286
+//pob:block:src/Modules/CalcPerform.lua:1288
 func performCalc(env *Environment, skipEHP bool) {
 	env.skipEHP = skipEHP
 
@@ -1399,7 +1399,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			}
 			activeSkill.Minion.ModDB.Actor = activeSkill.Minion
 			reuseMinionSkills(env, activeSkill)
-			//pob:block:src/Modules/CalcPerform.lua:1301
+			//pob:block:src/Modules/CalcPerform.lua:1303
 			activeSkill.SkillPartName = activeSkill.Minion.MainSkill.ActiveEffect.GrantedEffect.Name()
 		}
 	}
@@ -1429,7 +1429,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		env.ModDB.AddMod(mod.NewFloat("FlaskChargesGained", mod.TypeIncrease, math.Floor(20*effectMod)).Source("Alchemist's Genius"))
 	}
 
-	//pob:block:src/Modules/CalcPerform.lua:1341-1348
+	//pob:block:src/Modules/CalcPerform.lua:1343-1350
 	if env.ModDB.Flag(nil, "CryWolfMinimumPower") && env.ModDB.Sum(mod.TypeBase, nil, "WarcryPower") < 10 {
 		env.ModDB.AddMod(mod.NewFloat("WarcryPower", "OVERRIDE", 10).Source("Minimum Warcry Power from CryWolf"))
 	}
@@ -1439,7 +1439,7 @@ func performCalc(env *Environment, skipEHP bool) {
 	env.Player.Output["WarcryPower"] = utils.Or(env.ModDB.Override(nil, "WarcryPower"), env.ModDB.Sum(mod.TypeBase, nil, "WarcryPower"))
 	env.ModDB.Multipliers["WarcryPower"] = env.Player.Output["WarcryPower"]
 
-	//pob:block:src/Modules/CalcPerform.lua:1350-1354
+	//pob:block:src/Modules/CalcPerform.lua:1352-1356
 	applyEnemyModifiers(env.Player, true)
 	if env.Minion != nil {
 		applyEnemyModifiers(env.Minion.Actor, true)
@@ -1472,7 +1472,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			env.EnemyModDB.Multipliers["BrandsAttached"] = max(actual, env.EnemyModDB.Multipliers["BrandsAttached"])
 		}
 
-		//pob:block:src/Modules/CalcPerform.lua:1370-1375
+		//pob:block:src/Modules/CalcPerform.lua:1372-1377
 		if activeSkill.SkillFlags[SkillFlagTotem] {
 			limit := env.Player.MainSkill.SkillModList.Sum(mod.TypeBase, env.Player.MainSkill.SkillCfg, "ActiveTotemLimit", "ActiveBallistaLimit")
 			env.Player.Output["ActiveTotemLimit"] = max(limit, env.Player.Output["ActiveTotemLimit"])
@@ -1482,7 +1482,7 @@ func performCalc(env *Environment, skipEHP bool) {
 
 		// The actual hexes as opposed to hex related skills all have the curse flag. TotemCastsWhenNotDetached is to remove blasphemy
 		// Note that this doesn't work for triggers yet, insufficient support
-		//pob:block:src/Modules/CalcPerform.lua:1378-1387
+		//pob:block:src/Modules/CalcPerform.lua:1380-1389
 		if activeSkill.SkillFlags[SkillFlagHex] && activeSkill.SkillFlags[SkillFlagCurse] && !activeSkill.SkillTypes[data.SkillTypeTotemCastsWhenNotDetached] {
 			hexDoom := env.ModDB.Sum(mod.TypeBase, nil, "Multiplier:HexDoomStack")
 			maxDoom := activeSkill.SkillModList.Sum(mod.TypeBase, nil, "MaxDoom")
@@ -1494,7 +1494,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			env.ModDB.Multipliers["HexDoom"] = min(max(hexDoom, env.ModDB.Multipliers["HexDoom"]), env.Player.Output["HexDoomLimit"])
 		}
 
-		//pob:src/Modules/CalcPerform.lua:1393-1395
+		//pob:src/Modules/CalcPerform.lua:1395-1397
 		if activeSkill.SkillData.SupportBonechill &&
 			(activeSkill.SkillTypes[data.SkillTypeChillingArea] ||
 				activeSkill.SkillTypes[data.SkillTypeNonHitChill] ||
@@ -1582,7 +1582,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			// Set trigger time to 1 min in ms ( == 6000 ). Technically any large value would do.
 			activeSkill.SkillData.TriggerTime = 60 * 1000
 		}
-		//pob:block:src/Modules/CalcPerform.lua:1484-1488
+		//pob:block:src/Modules/CalcPerform.lua:1486-1490
 		if activeSkill.ActiveEffect.GrantedEffect.Name() == "Reflection" || activeSkill.SkillData.TriggeredBySaviour {
 			activeSkill.infoMessage = "Triggered by a Crit from The Saviour"
 			activeSkill.infoTrigger = "Saviour"
@@ -1623,7 +1623,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			}
 		}
 
-		//pob:src/Modules/CalcPerform.lua:1461-1463
+		//pob:src/Modules/CalcPerform.lua:1463-1465
 		if activeSkill.SkillTypes[data.SkillTypeCreatesMinion] &&
 			!activeSkill.SkillTypes[data.SkillTypeMinionsAreUndamagable] {
 			env.ModDB.AddMod(mod.NewFlag("Condition:HaveDamageableMinion", true))
@@ -1655,7 +1655,7 @@ func performCalc(env *Environment, skipEHP bool) {
 	}
 	env.ModDB.Conditions["OnlyMinion"] = summonedMinions == 1
 
-	//pob:block:src/Modules/CalcPerform.lua:1514-1522
+	//pob:block:src/Modules/CalcPerform.lua:1516-1524
 	var breakdown *Breakdown
 	if env.BuildBreakdown {
 		breakdown = NewBreakdown(env.ModDB, env.Player.Output, env.Player)
@@ -1668,7 +1668,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		}
 	}
 
-	//pob:block:src/Modules/CalcPerform.lua:1524-1538
+	//pob:block:src/Modules/CalcPerform.lua:1526-1540
 	if env.ModDB.Flag(nil, "ConvertArmourESToLife") {
 		for _, slot := range []string{"Helmet", "Gloves", "Boots", "Body Armour", "Weapon 2", "Weapon 3"} {
 			item := env.Player.ItemList[slot]
@@ -1682,7 +1682,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		}
 	}
 
-	//pob:block:src/Modules/CalcPerform.lua:1540-1564
+	//pob:block:src/Modules/CalcPerform.lua:1542-1566
 	for _, element := range []string{"Lightning", "Fire", "Cold", "Chaos", "Physical"} {
 		if !env.ModDB.Flag(nil, element+"DamageAppliesTo"+element+"AuraEffect") {
 			continue
@@ -1711,7 +1711,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		}
 	}
 
-	//pob:block:src/Modules/CalcPerform.lua:1566-1576
+	//pob:block:src/Modules/CalcPerform.lua:1568-1578
 	if env.ModDB.Flag(nil, "MinionLifeAppliesToPlayer") {
 		// Minion Life conversion from Rigwald's Hunt
 		multiplier := utils.OrF(env.ModDB.Max(nil, "ImprovedMinionLifeAppliesToPlayer"), 100) / 100
@@ -1730,7 +1730,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		}
 	}
 
-	//pob:block:src/Modules/CalcPerform.lua:1578-1600
+	//pob:block:src/Modules/CalcPerform.lua:1580-1602
 	maxLeftActiveMagicUtility := env.ModDB.Sum(mod.TypeBase, nil, "LeftActiveMagicUtilityFlasks")
 	maxRightActiveMagicUtility := env.ModDB.Sum(mod.TypeBase, nil, "RightActiveMagicUtilityFlasks")
 	if maxLeftActiveMagicUtility > 0 || maxRightActiveMagicUtility > 0 {
@@ -1762,7 +1762,7 @@ func performCalc(env *Environment, skipEHP bool) {
 	}
 
 	// flask breakdown
-	//pob:block:src/Modules/CalcPerform.lua:1613-1635
+	//pob:block:src/Modules/CalcPerform.lua:1615-1637
 	if breakdown != nil {
 		chargesGenerated := env.ModDB.Sum(mod.TypeBase, nil, "FlaskChargesGenerated")
 		usedFlasks := float64(len(env.Flasks))
@@ -1783,13 +1783,13 @@ func performCalc(env *Environment, skipEHP bool) {
 
 	flaskMinion := newFlaskMinionState(env)
 
-	//pob:src/Modules/CalcPerform.lua:1851-1853
+	//pob:src/Modules/CalcPerform.lua:1872-1874
 	tinctureEffectInc := env.ModDB.Sum(mod.TypeIncrease, playerActorCfg, "TinctureEffect")
 	tinctureEffectIncMagic := env.ModDB.Sum(mod.TypeIncrease, playerActorCfg, "MagicTinctureEffect")
 	tinctureLimit := env.ModDB.Sum(mod.TypeBase, nil, "TinctureLimit")
 
 	// tincture breakdown
-	//pob:block:src/Modules/CalcPerform.lua:1855-1859
+	//pob:block:src/Modules/CalcPerform.lua:1876-1880
 	if breakdown != nil {
 		env.Player.Output["TinctureEffect"] = tinctureEffectInc
 		env.Player.Output["TinctureLimit"] = tinctureLimit
@@ -1799,7 +1799,7 @@ func performCalc(env *Environment, skipEHP bool) {
 	if env.ModeCombat {
 		flaskMinion.reset(env)
 		effectInc := env.ModDB.Sum(mod.TypeIncrease, playerActorCfg, "FlaskEffect")
-		//pob:block:src/Modules/CalcPerform.lua:1604
+		//pob:block:src/Modules/CalcPerform.lua:1606
 		effectIncMagicNoAdjacent := env.ModDB.Sum(mod.TypeIncrease, playerActorCfg, "MagicFlaskNoAdjacentEffect")
 		flaskBuffs := make(map[string]*moddb.ModList)
 		flaskBuffOrder := make([]string, 0, len(env.Flasks)*2)
@@ -1830,7 +1830,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			if item.Rarity == RarityMagic && !(isLifeFlask || isManaFlask) {
 				flaskEffectInc += env.ModDB.Sum(mod.TypeIncrease, playerActorCfg, "MagicUtilityFlaskEffect")
 			}
-			//pob:block:src/Modules/CalcPerform.lua:1708-1717
+			//pob:block:src/Modules/CalcPerform.lua:1716-1725
 			if item.Rarity == RarityMagic && effectIncMagicNoAdjacent != 0 {
 				if flaskSlotNum, ok := env.flaskSlotMap[item]; ok {
 					hasAdjacent := env.flaskSlotOccupied[flaskSlotNum-1] || env.flaskSlotOccupied[flaskSlotNum+1]
@@ -1845,14 +1845,14 @@ func performCalc(env *Environment, skipEHP bool) {
 			// so utility flasks are grouped by base, unique flasks are grouped by name, and magic flasks by their modifiers
 			effectMod := 1 + (effectInc+flaskEffectInc)/100
 
-			//pob:block:src/Modules/CalcPerform.lua:1722
+			//pob:block:src/Modules/CalcPerform.lua:1730
 			isUtilityFlask := !(isLifeFlask || isManaFlask)
 
 			if len(item.BuffModList) > 0 {
 				srcList := moddb.NewModList()
 				srcList.ScaleAddList(asModList(item.BuffModList), effectMod)
 				flaskBuffOrder = mergeFlaskBuff(srcList, flaskBuffs, flaskBuffOrder, item.BaseName)
-				//pob:block:src/Modules/CalcPerform.lua:1733-1735
+				//pob:block:src/Modules/CalcPerform.lua:1741-1743
 				if !isUtilityFlask {
 					flaskBuffNonUtilityOrder = mergeFlaskBuff(srcList, flaskBuffsNonUtility, flaskBuffNonUtilityOrder, item.BaseName)
 				}
@@ -1865,15 +1865,15 @@ func performCalc(env *Environment, skipEHP bool) {
 					key = flaskModKey(item.Mods)
 				}
 				flaskBuffOrder = mergeFlaskBuff(srcList, flaskBuffs, flaskBuffOrder, key)
-				//pob:block:src/Modules/CalcPerform.lua:1760-1762
+				//pob:block:src/Modules/CalcPerform.lua:1768-1770
 				if !isUtilityFlask {
 					flaskBuffNonUtilityOrder = mergeFlaskBuff(srcList, flaskBuffsNonUtility, flaskBuffNonUtilityOrder, key)
 				}
 			}
-			//pob:block:src/Modules/CalcPerform.lua:1737-1742
+			//pob:block:src/Modules/CalcPerform.lua:1745-1750
 			flaskMinion.calcFlaskMods(item, item.BaseName, item.BuffModList, item.Mods)
 		}
-		//pob:block:src/Modules/CalcPerform.lua:1818-1828
+		//pob:block:src/Modules/CalcPerform.lua:1839-1849
 		if !env.ModDB.Flag(nil, "FlasksDoNotApplyToPlayer") {
 			if env.ModDB.Flag(nil, "UtilityFlasksDoNotApplyToPlayer") {
 				env.ModDB.Conditions["UsingFlask"] = usingNonUtilityFlask
@@ -1900,7 +1900,7 @@ func performCalc(env *Environment, skipEHP bool) {
 	// Calculate attributes and life/mana pools
 	doActorAttribsPoolsConditions(env, env.Player)
 
-	//pob:src/Modules/CalcPerform.lua:1644-1656
+	//pob:src/Modules/CalcPerform.lua:1646-1658
 	if env.Minion != nil {
 		for _, value := range env.Player.MainSkill.SkillModList.List(env.Player.MainSkill.SkillCfg, "MinionModifier") {
 			minionMod, ok := value.(mod.MinionModifier)
@@ -1928,7 +1928,7 @@ func performCalc(env *Environment, skipEHP bool) {
 	env.Player.Output["uncancellable_LifeReservation"] = env.ModDB.Sum(mod.TypeBase, nil, "ExtraLifeReserved")
 	env.Player.Output["uncancellable_ManaReservation"] = env.ModDB.Sum(mod.TypeBase, nil, "ExtraManaReserved")
 	for _, activeSkill := range env.Player.ActiveSkillList {
-		//pob:block:src/Modules/CalcPerform.lua:1979
+		//pob:block:src/Modules/CalcPerform.lua:2017
 		if (activeSkill.SkillTypes[data.SkillTypeHasReservation] || activeSkill.SkillData.TriggeredByAutoexertion) &&
 			!activeSkill.SkillTypes[data.SkillTypeReservationBecomesCost] && !activeSkill.SkillFlags[SkillFlagDisable] {
 			skillModList := activeSkill.SkillModList
@@ -1962,7 +1962,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			manaReservedBaseSet := false
 			for name, values := range pool {
 				rn := reservationNames[name]
-				//pob:block:src/Modules/CalcPerform.lua:2005-2007
+				//pob:block:src/Modules/CalcPerform.lua:2043-2045
 				values["resourceMore"] = skillModList.More(skillCfg, rn.reserved)
 				values["genericMore"] = skillModList.More(skillCfg, "Reserved")
 				values["more"] = values["resourceMore"] * values["genericMore"]
@@ -1974,7 +1974,7 @@ func performCalc(env *Environment, skipEHP bool) {
 				if utils.GetOr[*float64](activeSkill.SkillData, rn.flatForced, nil) != nil {
 					values["reservedFlat"] = *utils.GetOr[*float64](activeSkill.SkillData, rn.flatForced, nil)
 				} else {
-					//pob:block:src/Modules/CalcPerform.lua:2016-2024
+					//pob:block:src/Modules/CalcPerform.lua:2054-2062
 					baseFlatVal := utils.ModF(values["baseFlat"] * mult)
 					values["reservedFlat"] = 0
 					if baseFlatVal != 0 {
@@ -1988,7 +1988,7 @@ func performCalc(env *Environment, skipEHP bool) {
 				if utils.GetOr[*float64](activeSkill.SkillData, rn.percentForced, nil) != nil {
 					values["reservedPercent"] = *utils.GetOr[*float64](activeSkill.SkillData, rn.percentForced, nil)
 				} else {
-					//pob:block:src/Modules/CalcPerform.lua:2029-2036
+					//pob:block:src/Modules/CalcPerform.lua:2067-2074
 					basePercentVal := utils.ModF(values["basePercent"] * 100 * mult)
 					values["reservedPercent"] = 0
 					if basePercentVal != 0 {
@@ -2002,7 +2002,7 @@ func performCalc(env *Environment, skipEHP bool) {
 					values["reservedFlat"] = values["reservedFlat"] * *activeSkill.ActiveMineCount
 					values["reservedPercent"] = values["reservedPercent"] * *activeSkill.ActiveMineCount
 				}
-				//pob:block:src/Modules/CalcPerform.lua:2042-2046
+				//pob:block:src/Modules/CalcPerform.lua:2080-2084
 				if activeSkill.SkillCfg.SkillName == "Blood Sacrament" {
 					values["reservedFlat"] = values["reservedFlat"] * (activeSkill.ActiveStageCount + 1)
 					values["reservedPercent"] = values["reservedPercent"] * (activeSkill.ActiveStageCount + 1)
@@ -2055,13 +2055,13 @@ func performCalc(env *Environment, skipEHP bool) {
 	}
 
 	// Set the life/mana reservations (hold off on GrantReserved<pool>AsAura)
-	//pob:src/Modules/CalcPerform.lua:2091-2092
+	//pob:src/Modules/CalcPerform.lua:2125-2126
 	doActorLifeManaReservation(env.Player, !env.ModDB.Flag(nil, "ManaIncreasedByOvercappedLightningRes"))
 	if env.Minion != nil {
 		doActorLifeManaReservation(env.Minion.Actor, false)
 	}
 
-	//pob:src/Modules/CalcPerform.lua:2094-2096
+	//pob:src/Modules/CalcPerform.lua:2128-2130
 	if env.ModeCombat {
 		mergeTinctures(env, tinctureEffectInc, tinctureEffectIncMagic, tinctureLimit)
 	}
@@ -2092,7 +2092,7 @@ func performCalc(env *Environment, skipEHP bool) {
 					attributereq := math.Floor(attrVal * reqMult)
 					req = math.Floor(attributereq * omniReqMult)
 				}
-				//pob:block:src/Modules/CalcPerform.lua:2126-2129
+				//pob:block:src/Modules/CalcPerform.lua:2160-2163
 				if req > out {
 					outSource = reqSource
 				}
@@ -2119,7 +2119,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		if out > (env.Player.Output["Req"+breakdownAttr]) {
 			env.Player.Output["Req"+breakdownAttr+"String"] = out
 			env.Player.Output["Req"+breakdownAttr] = out
-			//pob:block:src/Modules/CalcPerform.lua:2156
+			//pob:block:src/Modules/CalcPerform.lua:2190
 			env.Player.OutputStrings["Req"+breakdownAttr+"Item"] = requirementSourceName(outSource)
 			/*
 				TODO Breakdown
@@ -2144,7 +2144,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		}
 	*/
 
-	//pob:src/Modules/CalcPerform.lua:1843-1853
+	//pob:src/Modules/CalcPerform.lua:1864-1874
 	if env.ModeBuffs {
 		heraldList := make(map[string]bool)
 		auraList := make(map[string]bool)
@@ -2164,7 +2164,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		}
 	}
 
-	//pob:src/Modules/CalcPerform.lua:2180-2188
+	//pob:src/Modules/CalcPerform.lua:2214-2222
 	if env.ModDB.Flag(nil, "ManaAppliesToShockEffect") {
 		// Maximum Mana conversion from Lightning Mastery
 		multiplier := utils.OrF(env.ModDB.Max(nil, "ImprovedManaAppliesToShockEffect"), 100) / 100
@@ -2191,10 +2191,10 @@ func performCalc(env *Environment, skipEHP bool) {
 	exports := newPartyBuffExports(env)
 	minionCurses := make([]*curseEntry, 0)
 	minionCurseLimit := 1
-	//pob:block:src/Modules/CalcPerform.lua:1310-1311
+	//pob:block:src/Modules/CalcPerform.lua:1312-1313
 	partyMembers := env.partyMembers()
 	env.Player.partyMembers = partyMembers
-	//pob:block:src/Modules/CalcPerform.lua:2206
+	//pob:block:src/Modules/CalcPerform.lua:2240
 	allyBuffs := partyMembers.Aura
 	hasActiveSpectreSkill := false
 	activeSpectreTypes := make(map[string]bool)
@@ -2230,7 +2230,7 @@ func performCalc(env *Environment, skipEHP bool) {
 					}
 				}
 			}
-			//pob:src/Modules/CalcPerform.lua:2241-2270
+			//pob:src/Modules/CalcPerform.lua:2275-2304
 			for _, modData := range spectreData.ModList {
 				name := modData.Name()
 				if name == "EnemyCurseLimit" {
@@ -2263,7 +2263,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			}
 		}
 	}
-	//pob:block:src/Modules/CalcPerform.lua:2278-2304
+	//pob:block:src/Modules/CalcPerform.lua:2312-2338
 	for _, activeSkill := range env.Player.ActiveSkillList {
 		if activeSkill.SkillFlags[SkillFlagDisable] {
 			continue
@@ -2312,7 +2312,7 @@ func performCalc(env *Environment, skipEHP bool) {
 	affectedByAura := make(map[*Actor]bool)
 	affectedByCurse := make(map[*Actor]bool)
 	warcryList := make(map[string]bool)
-	//pob:block:src/Modules/CalcPerform.lua:2306
+	//pob:block:src/Modules/CalcPerform.lua:2340
 	appliedCombustion := false
 	for _, activeSkill := range env.Player.ActiveSkillList {
 		skillModList := activeSkill.SkillModList
@@ -2348,12 +2348,12 @@ func performCalc(env *Environment, skipEHP bool) {
 						srcList.ScaleAddList(buff.ModList, (1+inc/100)*more)
 						mergeBuff(srcList, buffs, buff.Name)
 						mergeBuff(buff.UnscalableModList, buffs, buff.Name)
-						//pob:src/Modules/CalcPerform.lua:2330-2332
+						//pob:src/Modules/CalcPerform.lua:2364-2366
 						if activeSkill.SkillData.ThisIsNotABuff {
 							notBuff[buff.Name] = true
 						}
 					}
-					//pob:block:src/Modules/CalcPerform.lua:2334-2342
+					//pob:block:src/Modules/CalcPerform.lua:2368-2376
 					if env.Minion != nil && (env.Minion.MinionData == nil || !env.Minion.MinionData.Hostile) &&
 						(buff.ApplyMinions || buff.ApplyAllies || skillModList.Flag(nil, "BuffAppliesToAllies")) {
 						activeSkill.MinionBuffSkill = true
@@ -2367,7 +2367,7 @@ func performCalc(env *Environment, skipEHP bool) {
 						mergeBuff(srcList, minionBuffs, buff.Name)
 						mergeBuff(buff.UnscalableModList, minionBuffs, buff.Name)
 					}
-					//pob:block:src/Modules/CalcPerform.lua:2343-2348
+					//pob:block:src/Modules/CalcPerform.lua:2377-2382
 					if exports != nil && (buff.ApplyAllies || skillModList.Flag(nil, "BuffAppliesToAllies") || skillModList.Flag(nil, "BuffAppliesToPartyMembers")) {
 						inc := modStore.Sum(mod.TypeIncrease, skillCfg, "BuffEffect") + skillModList.Sum(mod.TypeIncrease, skillCfg, buffNameKey+"Effect")
 						more := modStore.More(skillCfg, "BuffEffect")
@@ -2392,7 +2392,7 @@ func performCalc(env *Environment, skipEHP bool) {
 				}
 			} else if buff.Type == "Aura" {
 				if env.ModeBuffs {
-					//pob:src/Modules/CalcPerform.lua:2446-2460
+					//pob:src/Modules/CalcPerform.lua:2480-2494
 					extraAuraModList := moddb.NewModList()
 					for _, value := range env.ModDB.List(skillCfg, "ExtraAuraEffect") {
 						extra, ok := value.(mod.ExtraAuraEffect)
@@ -2415,11 +2415,11 @@ func performCalc(env *Environment, skipEHP bool) {
 						inc := skillModList.Sum(mod.TypeIncrease, skillCfg, "AuraEffect", "BuffEffect", "BuffEffectOnSelf", "AuraEffectOnSelf", "AuraBuffEffect", "SkillAuraEffectOnSelf")
 						more := skillModList.More(skillCfg, "AuraEffect", "BuffEffect", "BuffEffectOnSelf", "AuraEffectOnSelf", "AuraBuffEffect", "SkillAuraEffectOnSelf")
 						mult := (1 + inc/100) * more
-						//pob:block:src/Modules/CalcPerform.lua:2465
+						//pob:block:src/Modules/CalcPerform.lua:2499
 						if env.ModDB.Flag(nil, "AlliesAurasCannotAffectSelf") || !allyBuffs.strongerThan("Aura", buff.Name, mult) {
 							activeSkill.BuffSkill = true
 							affectedByAura[env.Player] = true
-							//pob:block:src/Modules/CalcPerform.lua:1972-1974
+							//pob:block:src/Modules/CalcPerform.lua:2006-2008
 							if strings.HasPrefix(buff.Name, "Vaal") {
 								base := ""
 								if len(buff.Name) > 5 {
@@ -2430,13 +2430,13 @@ func performCalc(env *Environment, skipEHP bool) {
 							env.ModDB.Conditions["AffectedBy"+buffNameKey] = true
 							srcList := moddb.NewModList()
 							srcList.ScaleAddList(buff.ModList, mult)
-							//pob:src/Modules/CalcPerform.lua:2195
+							//pob:src/Modules/CalcPerform.lua:2229
 							srcList.ScaleAddList(extraAuraModList, mult)
 							mergeBuff(srcList, buffs, buff.Name)
 							mergeBuff(buff.UnscalableModList, buffs, buff.Name)
 						}
 					}
-					//pob:src/Modules/CalcPerform.lua:2478-2482
+					//pob:src/Modules/CalcPerform.lua:2512-2516
 					if env.Minion != nil && !(env.ModDB.Flag(nil, "SelfAurasCannotAffectAllies") ||
 						env.ModDB.Flag(nil, "SelfAurasOnlyAffectYou") ||
 						env.ModDB.Flag(nil, "SelfAuraSkillsCannotAffectAllies")) {
@@ -2457,7 +2457,7 @@ func performCalc(env *Environment, skipEHP bool) {
 							mergeBuff(buff.UnscalableModList, minionBuffs, buff.Name)
 						}
 					}
-					//pob:block:src/Modules/CalcPerform.lua:2493-2502
+					//pob:block:src/Modules/CalcPerform.lua:2527-2536
 					if exports != nil && !(env.ModDB.Flag(nil, "SelfAurasCannotAffectAllies") ||
 						env.ModDB.Flag(nil, "SelfAurasOnlyAffectYou") ||
 						env.ModDB.Flag(nil, "SelfAuraSkillsCannotAffectAllies")) {
@@ -2465,7 +2465,7 @@ func performCalc(env *Environment, skipEHP bool) {
 						more := skillModList.More(skillCfg, "AuraEffect", "BuffEffect")
 						exports.setAura(buff.Name, (1+inc/100)*more, joinModLists(buff.ModList, buff.UnscalableModList, extraAuraModList))
 					}
-					//pob:block:src/Modules/CalcPerform.lua:2503-2516
+					//pob:block:src/Modules/CalcPerform.lua:2537-2550
 					if !(env.ModDB.Flag(nil, "SelfAurasCannotAffectAllies") ||
 						env.ModDB.Flag(nil, "SelfAurasOnlyAffectYou") ||
 						env.ModDB.Flag(nil, "SelfAuraSkillsCannotAffectAllies")) &&
@@ -2484,7 +2484,7 @@ func performCalc(env *Environment, skipEHP bool) {
 						mergeBuff(srcList, debuffs, buff.Name)
 						mergeBuff(buff.UnscalableModList, debuffs, buff.Name)
 					}
-					//pob:block:src/Modules/CalcPerform.lua:2518-2547
+					//pob:block:src/Modules/CalcPerform.lua:2552-2581
 					if env.Player.MainSkill.SkillFlags[SkillFlagTotem] &&
 						!(env.ModDB.Flag(nil, "SelfAurasCannotAffectAllies") ||
 							env.ModDB.Flag(nil, "SelfAuraSkillsCannotAffectAllies")) {
@@ -2529,7 +2529,7 @@ func performCalc(env *Environment, skipEHP bool) {
 						}
 					}
 
-					//pob:src/Modules/CalcPerform.lua:2378
+					//pob:src/Modules/CalcPerform.lua:2412
 					if !activeSkill.SkillModList.Flag(nil, "CannotShareWarcryBuffs") {
 						warcryPower := utils.Or(
 							env.ModDB.Override(nil, "WarcryPower"),
@@ -2549,7 +2549,7 @@ func performCalc(env *Environment, skipEHP bool) {
 							uptime = 1
 						}
 
-						//pob:src/Modules/CalcPerform.lua:2390-2403
+						//pob:src/Modules/CalcPerform.lua:2424-2437
 						if !env.ModDB.Flag(nil, "CannotGainWarcryBuffs") && !buff.ApplyNotPlayer {
 							activeSkill.BuffSkill = true
 							env.ModDB.Conditions["AffectedBy"+warcryKey] = true
@@ -2563,7 +2563,7 @@ func performCalc(env *Environment, skipEHP bool) {
 							mergeBuff(buff.UnscalableModList, buffs, buff.Name)
 						}
 
-						//pob:src/Modules/CalcPerform.lua:2404-2413
+						//pob:src/Modules/CalcPerform.lua:2438-2447
 						if env.Minion != nil {
 							activeSkill.MinionBuffSkill = true
 							env.Minion.ModDB.Conditions["AffectedBy"+warcryKey] = true
@@ -2593,7 +2593,7 @@ func performCalc(env *Environment, skipEHP bool) {
 							}
 							mergeBuff(srcList, minionBuffs, buff.Name)
 						}
-						//pob:block:src/Modules/CalcPerform.lua:2434-2441
+						//pob:block:src/Modules/CalcPerform.lua:2468-2475
 						if exports != nil {
 							inc := activeSkill.SkillModList.Sum(mod.TypeIncrease, skillCfg, "BuffEffect")
 							more := activeSkill.SkillModList.More(skillCfg, "BuffEffect")
@@ -2634,7 +2634,7 @@ func performCalc(env *Environment, skipEHP bool) {
 							if exports != nil {
 								exports.setAuraDebuff(buff.Name, mult, joinModLists(buff.ModList, buff.UnscalableModList))
 							}
-							//pob:block:src/Modules/CalcPerform.lua:2688-2690
+							//pob:block:src/Modules/CalcPerform.lua:2722-2724
 							if allyBuffs.strongerThan("AuraDebuff", buff.Name, mult) {
 								mult = 0
 							}
@@ -2667,7 +2667,7 @@ func performCalc(env *Environment, skipEHP bool) {
 						socketedCursesHexLimit: env.ModDB.Flag(activeSkill.SkillCfg, "SocketedCursesAdditionalLimit"),
 					}
 					inc := skillModList.Sum(mod.TypeIncrease, skillCfg, "CurseEffect") + env.EnemyModDB.Sum(mod.TypeIncrease, nil, "CurseEffectOnSelf")
-					//pob:src/Modules/CalcPerform.lua:2672
+					//pob:src/Modules/CalcPerform.lua:2706
 					if activeSkill.SkillTypes[data.SkillTypeAura] && !activeSkill.SkillTypes[data.SkillTypeRemoteMined] {
 						inc += skillModList.Sum(mod.TypeIncrease, skillCfg, "AuraEffect")
 					}
@@ -2678,7 +2678,7 @@ func performCalc(env *Environment, skipEHP bool) {
 						more *= env.EnemyModDB.More(nil, "CurseEffectOnSelf")
 					}
 					mult := 0.0
-					//pob:src/Modules/CalcPerform.lua:2682
+					//pob:src/Modules/CalcPerform.lua:2716
 					if !((env.ModDB.Flag(nil, "SelfAurasOnlyAffectYou") ||
 						skillModList.Flag(skillCfg, "SelfAurasAffectYouAndLinkedTarget")) &&
 						activeSkill.SkillTypes[data.SkillTypeAura]) {
@@ -2687,7 +2687,7 @@ func performCalc(env *Environment, skipEHP bool) {
 					if buff.Type == "Curse" {
 						curse.modList = moddb.NewModList()
 						curse.modList.ScaleAddList(buff.ModList, mult)
-						//pob:block:src/Modules/CalcPerform.lua:2688-2690
+						//pob:block:src/Modules/CalcPerform.lua:2722-2724
 						if exports != nil {
 							effectMult := (1 + inc/100) * moreMark
 							if curse.isMark {
@@ -2703,7 +2703,7 @@ func performCalc(env *Environment, skipEHP bool) {
 						buffInc := env.ModDB.Sum(mod.TypeIncrease, skillCfg, "BuffEffectOnSelf")
 						buffMore := env.ModDB.More(skillCfg, "BuffEffectOnSelf")
 						curse.buffModList.ScaleAddList(temp, (1+buffInc/100)*buffMore)
-						//pob:src/Modules/CalcPerform.lua:2699-2704
+						//pob:src/Modules/CalcPerform.lua:2733-2738
 						if env.Minion != nil {
 							curse.minionBuffModList = moddb.NewModList()
 							minionBuffInc := env.Minion.ModDB.Sum(mod.TypeIncrease, nil, "BuffEffectOnSelf")
@@ -2714,7 +2714,7 @@ func performCalc(env *Environment, skipEHP bool) {
 					curses = append(curses, curse)
 				}
 			} else if buff.Type == "Link" {
-				//pob:block:src/Modules/CalcPerform.lua:2708-2754
+				//pob:block:src/Modules/CalcPerform.lua:2742-2788
 				summonUndamageable := false
 				if env.Minion != nil && env.Minion.MainSkill != nil && env.Minion.MainSkill.SummonSkill != nil {
 					summonUndamageable = env.Minion.MainSkill.SummonSkill.SkillTypes[data.SkillTypeMinionsAreUndamagable]
@@ -2727,7 +2727,7 @@ func performCalc(env *Environment, skipEHP bool) {
 					!summonUndamageable
 
 				if env.ModeBuffs && len(linkSkills) < 1 && (exports != nil || linksApplyToMinions) {
-					//pob:block:src/Modules/CalcPerform.lua:2712-2730
+					//pob:block:src/Modules/CalcPerform.lua:2746-2764
 					extraLinkModList := moddb.NewModList()
 					for _, value := range utils.CastSlice[mod.MinionModifier](env.ModDB.List(skillCfg, "ExtraLinkEffect")) {
 						add := true
@@ -2751,7 +2751,7 @@ func performCalc(env *Environment, skipEHP bool) {
 					}
 					inc := skillModList.Sum(mod.TypeIncrease, skillCfg, "LinkEffect", "BuffEffect")
 					more := skillModList.More(skillCfg, "LinkEffect", "BuffEffect")
-					//pob:block:src/Modules/CalcPerform.lua:2734-2739
+					//pob:block:src/Modules/CalcPerform.lua:2768-2773
 					if exports != nil {
 						exports.link[buff.Name] = &partyBuffExport{effectMult: (1 + inc/100) * more, modList: joinModLists(buff.ModList, buff.UnscalableModList, extraLinkModList)}
 					}
@@ -2773,7 +2773,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			}
 		}
 
-		//pob:block:src/Modules/CalcPerform.lua:2756-2763
+		//pob:block:src/Modules/CalcPerform.lua:2790-2797
 		if activeSkill.SkillModList.Flag(nil, "Condition:CanWither") ||
 			(activeSkill.Minion != nil && env.Minion != nil && env.Minion.ModDB != nil &&
 				env.Minion.ModDB.Flag(nil, "Condition:CanWither")) {
@@ -2788,7 +2788,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			effect := math.Floor(6 * (1 + witherEffect/100))
 			env.ModDB.AddMod(mod.NewFloat("WitherEffectStack", mod.TypeMAX, effect))
 		}
-		//pob:block:src/Modules/CalcPerform.lua:2764-2776
+		//pob:block:src/Modules/CalcPerform.lua:2798-2810
 		if env.EnemyModDB.Flag(nil, "Condition:Ignited") && (activeSkill.SkillTypes[data.SkillTypeDamage] || activeSkill.SkillTypes[data.SkillTypeAttack]) && !appliedCombustion {
 			for _, support := range activeSkill.SupportList {
 				if support.GrantedEffect != nil && support.GrantedEffect.Name() == "Combustion" {
@@ -2803,10 +2803,10 @@ func performCalc(env *Environment, skipEHP bool) {
 			}
 		}
 
-		//pob:src/Modules/CalcPerform.lua:2777-2778
+		//pob:src/Modules/CalcPerform.lua:2811-2812
 		if activeSkill.Minion != nil && activeSkill.Minion.ActiveSkillList != nil {
 			castingMinion := activeSkill.Minion
-			//pob:block:src/Modules/CalcPerform.lua:2780-2792
+			//pob:block:src/Modules/CalcPerform.lua:2814-2826
 			setSpectreSource := func(modList *moddb.ModList, sourceSkill string) {
 				if !activeSkill.SkillFlags[SkillFlagSpectre] {
 					return
@@ -2828,7 +2828,7 @@ func performCalc(env *Environment, skipEHP bool) {
 				for _, buff := range minionSkill.BuffList {
 					minionBuffNameKey := strings.ReplaceAll(buff.Name, " ", "")
 					if buff.Type == "Buff" {
-						//pob:src/Modules/CalcPerform.lua:2797-2807
+						//pob:src/Modules/CalcPerform.lua:2831-2841
 						if env.ModeBuffs && minionSkill.SkillData.Enable {
 							var cfg *moddb.ListCfg
 							var modStore moddb.ModStoreFuncs = castingMinion.ModDB
@@ -2845,10 +2845,10 @@ func performCalc(env *Environment, skipEHP bool) {
 								srcList := moddb.NewModList()
 								srcList.ScaleAddList(buff.ModList, (1+inc/100)*more)
 								mergeBuff(srcList, buffs, buff.Name)
-								//pob:block:src/Modules/CalcPerform.lua:2808
+								//pob:block:src/Modules/CalcPerform.lua:2842
 								mergeBuff(buff.ModList, buffs, buff.Name)
 								mergeBuff(buff.UnscalableModList, buffs, buff.Name)
-								//pob:block:src/Modules/CalcPerform.lua:2809-2817
+								//pob:block:src/Modules/CalcPerform.lua:2843-2851
 								if minionSkill.SkillData.ThisIsNotABuff {
 									notBuff[buff.Name] = true
 								}
@@ -2875,7 +2875,7 @@ func performCalc(env *Environment, skipEHP bool) {
 								srcList := moddb.NewModList()
 								srcList.ScaleAddList(buff.ModList, (1+inc/100)*more)
 								mergeBuff(srcList, minionBuffs, buff.Name)
-								//pob:block:src/Modules/CalcPerform.lua:2832
+								//pob:block:src/Modules/CalcPerform.lua:2866
 								mergeBuff(buff.ModList, minionBuffs, buff.Name)
 								mergeBuff(buff.UnscalableModList, minionBuffs, buff.Name)
 								//pob:block:src/Modules/CalcPerform.lua:2833-2835
@@ -2885,8 +2885,8 @@ func performCalc(env *Environment, skipEHP bool) {
 							}
 						}
 					} else if buff.Type == "Aura" {
-						//pob:src/Modules/CalcPerform.lua:2154-2171
-						//pob:block:src/Modules/CalcPerform.lua:2838-2932
+						//pob:src/Modules/CalcPerform.lua:2188-2205
+						//pob:block:src/Modules/CalcPerform.lua:2872-2966
 						if env.ModeBuffs && minionSkill.SkillData.Enable {
 							extraAuraModList := moddb.NewModList()
 							for _, value := range castingMinion.ModDB.List(minionSkillCfg, "ExtraAuraEffect") {
@@ -2950,7 +2950,7 @@ func performCalc(env *Environment, skipEHP bool) {
 										mergeBuff(srcList, minionBuffs, buff.Name)
 									}
 								}
-								//pob:block:src/Modules/CalcPerform.lua:2889-2899
+								//pob:block:src/Modules/CalcPerform.lua:2923-2933
 								if exports != nil {
 									inc := minionSkillModList.Sum(mod.TypeIncrease, minionSkillCfg, "AuraEffect", "BuffEffect")
 									more := minionSkillModList.More(minionSkillCfg, "AuraEffect", "BuffEffect")
@@ -2990,7 +2990,7 @@ func performCalc(env *Environment, skipEHP bool) {
 							}
 						}
 					} else if buff.Type == "Curse" {
-						//pob:src/Modules/CalcPerform.lua:2172-2184
+						//pob:src/Modules/CalcPerform.lua:2206-2218
 						if env.ModeEffective && minionSkill.SkillData.Enable &&
 							(!env.EnemyModDB.Flag(nil, "Hexproof") || minionSkill.SkillTypes[data.SkillTypeMark]) {
 							curse := &curseEntry{
@@ -3006,7 +3006,7 @@ func performCalc(env *Environment, skipEHP bool) {
 							minionCurses = append(minionCurses, curse)
 						}
 					} else if buff.Type == "Debuff" || buff.Type == "AuraDebuff" {
-						//pob:block:src/Modules/CalcPerform.lua:2945-2991
+						//pob:block:src/Modules/CalcPerform.lua:2979-3025
 						var stackCount float64
 						if buff.StackVar != "" {
 							stackCount = minionSkillModList.Sum(mod.TypeBase, minionSkillCfg, "Multiplier:"+buff.StackVar)
@@ -3035,7 +3035,7 @@ func performCalc(env *Environment, skipEHP bool) {
 									if env.EnemyModDB.Conditions["AffectedBy"+minionBuffNameKey] {
 										mult = 0
 									} else if exports != nil {
-										//pob:block:src/Modules/CalcPerform.lua:2968
+										//pob:block:src/Modules/CalcPerform.lua:3002
 										exports.setAuraDebuff(buff.Name, mult, joinModLists(buff.ModList, buff.UnscalableModList))
 									}
 									if mult != 0 && allyBuffs.strongerThan("AuraDebuff", buff.Name, mult) {
@@ -3065,7 +3065,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		}
 	}
 
-	//pob:block:src/Modules/CalcPerform.lua:2997-3014
+	//pob:block:src/Modules/CalcPerform.lua:3031-3048
 	if others := allyBuffs.byType["otherEffects"]; others != nil {
 		for _, buffName := range sortedPartyBuffNames(others.buffs) {
 			buff := others.buffs[buffName]
@@ -3086,7 +3086,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			}
 		}
 	}
-	//pob:block:src/Modules/CalcPerform.lua:3015-3055
+	//pob:block:src/Modules/CalcPerform.lua:3049-3089
 	if auras := allyBuffs.byType["Aura"]; auras != nil {
 		for _, vaal := range []bool{false, true} {
 			list := auras.buffs
@@ -3120,7 +3120,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			}
 		}
 	}
-	//pob:block:src/Modules/CalcPerform.lua:3056-3081
+	//pob:block:src/Modules/CalcPerform.lua:3090-3115
 	if auraDebuffs := allyBuffs.byType["AuraDebuff"]; auraDebuffs != nil && env.ModeEffective {
 		for _, list := range []map[string]*partyBuff{auraDebuffs.buffs, auraDebuffs.vaal} {
 			for _, auraName := range sortedPartyBuffNames(list) {
@@ -3136,7 +3136,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			}
 		}
 	}
-	//pob:block:src/Modules/CalcPerform.lua:3082-3104
+	//pob:block:src/Modules/CalcPerform.lua:3116-3138
 	if warcries := partyMembers.Warcry.byType["Warcry"]; warcries != nil {
 		for _, warcryName := range sortedPartyBuffNames(warcries.buffs) {
 			warcry := warcries.buffs[warcryName]
@@ -3164,7 +3164,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			}
 		}
 	}
-	//pob:block:src/Modules/CalcPerform.lua:3105-3116
+	//pob:block:src/Modules/CalcPerform.lua:3139-3150
 	if links := partyMembers.Link.byType["Link"]; links != nil {
 		for _, linkName := range sortedPartyBuffNames(links.buffs) {
 			link := links.buffs[linkName]
@@ -3179,9 +3179,9 @@ func performCalc(env *Environment, skipEHP bool) {
 		}
 	}
 
-	//pob:block:src/Modules/CalcPerform.lua:3118-3122
+	//pob:block:src/Modules/CalcPerform.lua:3152-3156
 	if env.ModeCombat {
-		//pob:src/Modules/CalcPerform.lua:1602-1611
+		//pob:src/Modules/CalcPerform.lua:1604-1613
 		effectInc := env.ModDB.Sum(mod.TypeIncrease, playerActorCfg, "FlaskEffect")
 		flaskTotalRateInc := env.ModDB.Sum(mod.TypeIncrease, nil, "FlaskRecoveryRate")
 		flaskDurInc := env.ModDB.Sum(mod.TypeIncrease, nil, "FlaskDuration")
@@ -3191,7 +3191,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		flaskMinion.reset(env)
 		checkNonRecoveryFlasksForMinions := flaskMinion.nonUniqueApply
 
-		//pob:block:src/Modules/CalcPerform.lua:1804-1810
+		//pob:block:src/Modules/CalcPerform.lua:1825-1831
 		for _, item := range env.Flasks {
 			if item == nil || item.Base == nil || item.Base.Flask == nil {
 				continue
@@ -3212,13 +3212,13 @@ func performCalc(env *Environment, skipEHP bool) {
 						calcFlaskRecovery(env, "Mana", item, effectInc, flaskDurInc, flaskTotalRateInc), nil)
 				}
 			}
-			//pob:block:src/Modules/CalcPerform.lua:1811-1813
+			//pob:block:src/Modules/CalcPerform.lua:1832-1834
 			if checkNonRecoveryFlasksForMinions {
 				flaskMinion.calcFlaskMods(item, item.BaseName, item.BuffModList, item.Mods)
 			}
 		}
 
-		//pob:block:src/Modules/CalcPerform.lua:1818-1828
+		//pob:block:src/Modules/CalcPerform.lua:1839-1849
 		if !env.ModDB.Flag(nil, "FlasksDoNotApplyToPlayer") {
 			for _, key := range recoveryOrder {
 				env.ModDB.AddList(recoveryBuffs[key])
@@ -3227,7 +3227,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		flaskMinion.applyToMinion(env)
 	}
 
-	//pob:block:src/Modules/CalcPerform.lua:3124-3141
+	//pob:block:src/Modules/CalcPerform.lua:3158-3175
 	if env.ModeCombat {
 		if env.ModDB.Flag(nil, "UseEnduranceCharges") && env.ModDB.Flag(nil, "EnduranceChargesConvertToBrutalCharges") {
 			tripleDmgChancePerEndurance := env.ModDB.Sum(mod.TypeBase, nil, "PerBrutalTripleDamageChance")
@@ -3246,7 +3246,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		}
 	}
 
-	//pob:block:src/Modules/CalcPerform.lua:3143-3190
+	//pob:block:src/Modules/CalcPerform.lua:3177-3224
 	extraCurseSources := []struct {
 		dest  *[]*curseEntry
 		store *moddb.ModDB
@@ -3258,7 +3258,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		}{&minionCurses, env.Minion.ModDB})
 	}
 	for _, source := range extraCurseSources {
-		//pob:block:src/Modules/CalcPerform.lua:3145-3148
+		//pob:block:src/Modules/CalcPerform.lua:3179-3182
 		if env.ModeCombat && source.store.Flag(nil, "Condition:OnConsecratedGround") {
 			effect := 1 + source.store.Sum(mod.TypeIncrease, nil, "ConsecratedGroundEffect")/100
 			source.store.AddMod(mod.NewFloat("CurseEffectOnSelf", mod.TypeIncrease, -50*effect).Source("Consecrated Ground"))
@@ -3294,7 +3294,7 @@ func performCalc(env *Environment, skipEHP bool) {
 						gemModList.Sum(mod.TypeIncrease, nil, "CurseEffectAgainstPlayer")
 					more := source.store.More(cfg, "CurseEffectOnSelf") *
 						gemModList.More(nil, "CurseEffectAgainstPlayer")
-					//pob:block:src/Modules/CalcPerform.lua:3176
+					//pob:block:src/Modules/CalcPerform.lua:3210
 					source.store.ScaleAddList(curseModList, max((1+inc/100)*more, 0))
 				}
 				continue
@@ -3316,7 +3316,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		}
 	}
 
-	//pob:block:src/Modules/CalcPerform.lua:3191-3212
+	//pob:block:src/Modules/CalcPerform.lua:3225-3246
 	allyCurses := make([]*curseEntry, 0)
 	allyCurseLimit := 0
 	if allyPartyCurses := partyMembers.Curse.byType["Curse"]; allyPartyCurses != nil {
@@ -3351,7 +3351,7 @@ func performCalc(env *Environment, skipEHP bool) {
 	} else {
 		env.Player.Output["EnemyCurseLimit"] = env.ModDB.Sum(mod.TypeBase, nil, "EnemyCurseLimit")
 	}
-	//pob:src/Modules/CalcPerform.lua:3218
+	//pob:src/Modules/CalcPerform.lua:3252
 	if exports != nil {
 		exports.curseLimit = env.Player.Output["EnemyCurseLimit"]
 	}
@@ -3369,7 +3369,7 @@ func performCalc(env *Environment, skipEHP bool) {
 	for _, curse := range minionCurses {
 		curseCandidates = append(curseCandidates, curseCandidate{curse, minionCurseLimit})
 	}
-	//pob:block:src/Modules/CalcPerform.lua:3224
+	//pob:block:src/Modules/CalcPerform.lua:3258
 	for _, curse := range allyCurses {
 		curseCandidates = append(curseCandidates, curseCandidate{curse, allyCurseLimit})
 	}
@@ -3387,7 +3387,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		// Check if we need to disable a certain curse aura.
 		for _, activeSkill := range env.Player.ActiveSkillList {
 			if len(activeSkill.BuffList) > 0 && curse.name == activeSkill.BuffList[0].Name && activeSkill.SkillTypes[data.SkillTypeAura] {
-				//pob:src/Modules/CalcPerform.lua:3233
+				//pob:src/Modules/CalcPerform.lua:3267
 				if env.ModDB.Flag(nil, "SelfAurasOnlyAffectYou") ||
 					activeSkill.SkillModList.Flag(env.Player.MainSkill.SkillCfg, "SelfAurasAffectYouAndLinkedTarget") {
 					skipAddingCurse = true
@@ -3437,7 +3437,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		}
 	}
 
-	//pob:src/Modules/CalcPerform.lua:2236
+	//pob:src/Modules/CalcPerform.lua:2270
 	for _, candidate := range curseCandidates {
 		curse := candidate.curse
 		if curse.ignoreHexLimit {
@@ -3513,17 +3513,17 @@ func performCalc(env *Environment, skipEHP bool) {
 		env.ModDB.Conditions["AffectedBy"+strings.ReplaceAll(guard.name, " ", "")] = true
 		mergeBuff(guard.modList, buffs, guard.name)
 	}
-	//pob:block:src/Modules/CalcPerform.lua:3341
+	//pob:block:src/Modules/CalcPerform.lua:3375
 	env.Player.Output["GuardSkillActive"] = utils.Ternary(env.ModDB.Conditions["AffectedByGuardSkill"], 1.0, 0.0)
 
 	for _, name := range sortedModListKeys(buffs) {
 		modList := buffs[name]
 		env.ModDB.AddList(modList)
-		//pob:src/Modules/CalcPerform.lua:3343-3348
+		//pob:src/Modules/CalcPerform.lua:3377-3382
 		if !notBuff[name] {
 			env.ModDB.Multipliers["BuffOnSelf"]++
 		}
-		//pob:src/Modules/CalcPerform.lua:3349-3351
+		//pob:src/Modules/CalcPerform.lua:3383-3385
 		if env.Minion != nil {
 			for _, value := range modList.List(env.Player.MainSkill.SkillCfg, "MinionModifier") {
 				minionMod, ok := value.(mod.MinionModifier)
@@ -3535,7 +3535,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		}
 	}
 
-	//pob:src/Modules/CalcPerform.lua:3353-3357
+	//pob:src/Modules/CalcPerform.lua:3387-3391
 	if env.Minion != nil {
 		for _, name := range sortedModListKeys(minionBuffs) {
 			env.Minion.ModDB.AddList(minionBuffs[name])
@@ -4066,7 +4066,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			}
 		}
 	*/
-	//pob:src/Modules/CalcTriggers.lua:1181-1183
+	//pob:src/Modules/CalcTriggers.lua:1197-1199
 	if ms := env.Player.MainSkill; ms != nil && ms.SkillData != nil && ms.SkillData.TriggeredByDamageTaken != 0 {
 		env.Player.Output["CWDTThreshold"] = ms.SkillData.TriggeredByDamageTaken *
 			calclib.Mod(ms.SkillModList, nil, "CWDTThreshold")
@@ -4286,7 +4286,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		}
 	*/
 
-	//pob:block:src/Modules/CalcPerform.lua:3378-3382
+	//pob:block:src/Modules/CalcPerform.lua:3412-3416
 	for _, activeSkill := range guaranteedChillSkills {
 		effect := *data.NonDamagingAilments[data.AilmentChill].Default *
 			calclib.Mod(activeSkill.SkillModList, activeSkill.SkillCfg, "EnemyChillEffect")
@@ -4306,7 +4306,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		env.EnemyModDB.ReplaceMod(mod.NewFloat("Multiplier:ImpaleStacks", mod.TypeBase, maxImpaleStacks).Source("Config").Tag(mod.Condition("Combat")))
 	}
 
-	//pob:block:src/Modules/CalcPerform.lua:3394-3409
+	//pob:block:src/Modules/CalcPerform.lua:3428-3443
 	if env.ModDB.Flag(nil, "ManaIncreasedByOvercappedLightningRes") {
 		tempModDB := moddb.NewModDB()
 		tempModDB.Parent = env.ModDB
@@ -4324,7 +4324,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		doActorLifeManaReservation(env.Player, true)
 	}
 
-	//pob:block:src/Modules/CalcPerform.lua:3411-3415
+	//pob:block:src/Modules/CalcPerform.lua:3445-3449
 	if env.ModDB.Flag(env.Player.MainSkill.SkillCfg, "Condition:CanInflictHallowingFlame") {
 		magnitude := utils.Or(env.ModDB.Override(nil, "HallowingFlameMagnitude"), env.ModDB.Sum(mod.TypeIncrease, nil, "HallowingFlameMagnitude"))
 		val := math.Floor(25 * (1 + magnitude/100))
@@ -4336,14 +4336,14 @@ func performCalc(env *Environment, skipEHP bool) {
 		}))
 	}
 
-	//pob:src/Modules/CalcPerform.lua:3418
+	//pob:src/Modules/CalcPerform.lua:3452
 	if exports != nil {
 		exports.aura["extraAura"] = &partyBuffExport{effectMult: 1}
 	}
 	for _, value := range env.ModDB.List(nil, "ExtraAura") {
 		extraAura := value.(mod.ExtraAura)
 		modList := asModList([]mod.Mod{extraAura.Mod})
-		//pob:block:src/Modules/CalcPerform.lua:3429-3435
+		//pob:block:src/Modules/CalcPerform.lua:3463-3469
 		if exports != nil && (extraAura.FromAllies || !env.ModDB.Flag(nil, "SelfAurasCannotAffectAllies")) {
 			exports.aura["extraAura"].modList = append(exports.aura["extraAura"].modList, extraAura.Mod)
 		}
@@ -4365,7 +4365,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			env.Minion.ModDB.AddList(scaled)
 		}
 
-		//pob:block:src/Modules/CalcPerform.lua:3350-3359
+		//pob:block:src/Modules/CalcPerform.lua:3384-3393
 		totemModBlacklist := extraAura.Mod.Name() == "Speed" ||
 			extraAura.Mod.Name() == "CritMultiplier" ||
 			extraAura.Mod.Name() == "CritChance"
@@ -4382,7 +4382,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		}
 	}
 
-	//pob:block:src/Modules/CalcPerform.lua:3448-3460
+	//pob:block:src/Modules/CalcPerform.lua:3482-3494
 	if extra := allyBuffs.byType["extraAura"]; extra != nil {
 		for _, name := range sortedPartyBuffNames(extra.buffs) {
 			modList := extra.buffs[name].modList
@@ -4412,7 +4412,7 @@ func performCalc(env *Environment, skipEHP bool) {
 	// Merge keystones again to catch any that were added by buffs
 	mergeKeystones(env, env.ModDB)
 
-	//pob:block:src/Modules/CalcPerform.lua:3365-3374
+	//pob:block:src/Modules/CalcPerform.lua:3399-3408
 	if env.ModDB.Flag(nil, "DisableWeapons") {
 		env.Player.WeaponData1 = unarmedWeaponData(env.Spec.ClassID)
 		env.ModDB.Conditions["Unarmed"] = true
@@ -4422,14 +4422,14 @@ func performCalc(env *Environment, skipEHP bool) {
 	}
 
 	// Process prerequisites for conditionals.
-	//pob:block:src/Modules/CalcPerform.lua:3483-3487
+	//pob:block:src/Modules/CalcPerform.lua:3517-3521
 	DefenceForConditionals(env.Player)
 	if env.Minion != nil {
 		DefenceForConditionals(env.Minion.Actor)
 	}
 
 	// Process misc buffs/modifiers
-	//pob:src/Modules/CalcPerform.lua:3489-3495
+	//pob:src/Modules/CalcPerform.lua:3523-3529
 	DoActorCharges(env, env.Player)
 	DoActorMisc(env, env.Player)
 	if env.Minion != nil {
@@ -4438,7 +4438,7 @@ func performCalc(env *Environment, skipEHP bool) {
 	}
 
 	// Calculate maximum and apply the strongest non-damaging ailments.
-	//pob:block:src/Modules/CalcPerform.lua:3497-3622
+	//pob:block:src/Modules/CalcPerform.lua:3531-3656
 	nonDamagingAilments := []struct {
 		ailment   data.Ailment
 		condition string
@@ -4516,7 +4516,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			if scalesWithSource {
 				effect *= calclib.Mod(env.ModDB, nil, "Enemy"+ailment+"Effect")
 			}
-			//pob:src/Modules/CalcPerform.lua:3589
+			//pob:src/Modules/CalcPerform.lua:3623
 			effect = float64(effect * calclib.Mod(env.EnemyModDB, nil, "Self"+ailment+"Effect"))
 
 			if scalesWithSource {
@@ -4592,7 +4592,7 @@ func performCalc(env *Environment, skipEHP bool) {
 				for _, Mod := range env.Player.ModDB.Tabulate("BASE", nil, "ExtraExposure", "Extra"+element+"Exposure") {
 					Min = Min + Mod.Value
 				}
-				//pob:block:src/Modules/CalcPerform.lua:3649-3653
+				//pob:block:src/Modules/CalcPerform.lua:3683-3687
 				exposureEffectInc := env.Player.ModDB.Sum(mod.TypeIncrease, nil, "ExposureEffect", element+"ExposureEffect")
 				if exposureEffectInc != 0 {
 					Min = Min * (1 + exposureEffectInc/100)
@@ -4610,7 +4610,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		env.EnemyModDB.AddMod(mod.NewFloat("DamageTaken", "INC", math.Floor(env.EnemyModDB.Sum(mod.TypeIncrease, nil, "DamageTakenConsecratedGround")*effect)).Source("Consecrated Ground"))
 	}
 
-	//pob:block:src/Modules/CalcPerform.lua:3667-3670
+	//pob:block:src/Modules/CalcPerform.lua:3701-3704
 	needsAllyLife := !env.skipEHP && env.ModDB.Sum(mod.TypeBase, nil, allyLifeRedirects...) != 0
 	env.Player.allyLifeList = map[string][]*allyLifeEntry{}
 	if needsAllyLife {
@@ -4641,7 +4641,7 @@ func performCalc(env *Environment, skipEHP bool) {
 				continue
 			}
 			var pools []allyLifePool
-			//pob:src/Modules/CalcPerform.lua:3678
+			//pob:src/Modules/CalcPerform.lua:3712
 			var skillPool allyLifePool
 			var hasSkillPool bool
 			isSpectre := activeSkill.SkillFlags[SkillFlagSpectre]
@@ -4691,9 +4691,9 @@ func performCalc(env *Environment, skipEHP bool) {
 					}
 					calculatedLifePool[pool.life] = true
 				}
-				//pob:src/Modules/CalcPerform.lua:3705
-				//pob:src/Modules/CalcPerform.lua:3733-3736
-				//pob:src/Modules/CalcPerform.lua:3743
+				//pob:src/Modules/CalcPerform.lua:3739
+				//pob:src/Modules/CalcPerform.lua:3767-3770
+				//pob:src/Modules/CalcPerform.lua:3777
 				if pool.key == spectrePool.key {
 					if spectreCount >= spectreLimit {
 						continue
@@ -4721,7 +4721,7 @@ func performCalc(env *Environment, skipEHP bool) {
 		}
 
 		if firstSpectreLife > 0 && spectreCount < spectreLimit {
-			//pob:block:src/Modules/CalcPerform.lua:3755-3756
+			//pob:block:src/Modules/CalcPerform.lua:3789-3790
 			firstSpectreEntry.count += spectreLimit - spectreCount
 			firstSpectreEntry.life += float64(firstSpectreLife * (spectreLimit - spectreCount))
 			env.ModDB.AddMod(mod.NewFloat(spectrePool.life, mod.TypeBase,
@@ -4751,13 +4751,13 @@ func performCalc(env *Environment, skipEHP bool) {
 		nearestIsVaal := vaalTotem != nil && (normalTotem == nil || vaalLife > normalLife) && totemOverride == nil
 		if normalTotem != nil && !nearestIsVaal && totemRedirect != 0 && totemOverride == nil {
 			env.ModDB.AddMod(mod.NewFloat("TotalTotemLife", mod.TypeBase, normalLife).Source("Totem"))
-			//pob:src/Modules/CalcPerform.lua:3783
+			//pob:src/Modules/CalcPerform.lua:3817
 			env.Player.allyLifeList["TotalTotemLife"] = []*allyLifeEntry{{name: normalTotem.ActiveEffect.GrantedEffect.Name(), life: normalLife}}
 		}
 		if vaalTotem != nil && env.ModDB.Override(nil, "TotalVaalRejuvenationTotemLife") == nil &&
 			(env.ModDB.Sum(mod.TypeBase, nil, "takenFromVaalRejuvenationTotemsBeforeYou") != 0 || (nearestIsVaal && totemRedirect != 0)) {
 			env.ModDB.AddMod(mod.NewFloat("TotalVaalRejuvenationTotemLife", mod.TypeBase, vaalLife).Source("Vaal Rejuvenation Totem"))
-			//pob:src/Modules/CalcPerform.lua:3787
+			//pob:src/Modules/CalcPerform.lua:3821
 			env.Player.allyLifeList["TotalVaalRejuvenationTotemLife"] = []*allyLifeEntry{{name: vaalTotem.ActiveEffect.GrantedEffect.Name(), life: vaalLife}}
 		}
 	}
@@ -4765,7 +4765,7 @@ func performCalc(env *Environment, skipEHP bool) {
 	// Defence/offence calculations
 	CalculateDefence(env, env.Player)
 
-	//pob:src/Modules/CalcPerform.lua:3797
+	//pob:src/Modules/CalcPerform.lua:3831
 	calcsTriggers(env, env.Player)
 
 	performMirageArcher(env)
@@ -4821,13 +4821,13 @@ func performCalc(env *Environment, skipEHP bool) {
 	if env.Minion != nil {
 		CalculateDefence(env, env.Minion.Actor)
 
-		//pob:src/Modules/CalcPerform.lua:3807
+		//pob:src/Modules/CalcPerform.lua:3844
 		calcsTriggers(env, env.Minion.Actor)
 
 		CalculateOffence(env, env.Minion.Actor, env.Minion.MainSkill)
 	}
 
-	//pob:block:src/Modules/CalcPerform.lua:3812-3931
+	//pob:block:src/Modules/CalcPerform.lua:3849-3968
 	if exports != nil {
 		exports.collectEnemyAndPlayer(env, env.Player.Output)
 		env.partyExports = exports
@@ -4845,7 +4845,7 @@ func performCalc(env *Environment, skipEHP bool) {
 
 // Calculate life/mana reservation
 //
-//pob:src/Modules/CalcPerform.lua:549-584
+//pob:src/Modules/CalcPerform.lua:551-586
 func doActorLifeManaReservation(actor *Actor, addAura bool) {
 	for _, pool := range []string{"Life", "Mana"} {
 		pn := poolReservationNames[pool]
@@ -4899,7 +4899,7 @@ func setAllOneHandedCondition(actor *Actor, cond string, added **bool, extra boo
 	actor.ModDB.Conditions[cond] = true
 }
 
-//pob:src/Modules/CalcPerform.lua:138-547
+//pob:src/Modules/CalcPerform.lua:140-549
 func doActorAttribsPoolsConditions(env *Environment, actor *Actor) {
 	/*
 		local modDB = actor.modDB
@@ -5184,7 +5184,7 @@ func doActorAttribsPoolsConditions(env *Environment, actor *Actor) {
 
 //pob:src/Modules/CalcPerform.lua:69-133
 func doActorLifeMana(actor *Actor) {
-	//pob:block:src/Modules/CalcPerform.lua:77-80
+	//pob:block:src/Modules/CalcPerform.lua:78-81
 	lowLifePerc := actor.ModDB.Sum(mod.TypeBase, nil, "LowLifePercentage")
 	actor.Output["LowLifePercentage"] = 100 * utils.Ternary(lowLifePerc > 0, lowLifePerc, data.LowPoolThreshold)
 	fullLifePerc := actor.ModDB.Sum(mod.TypeBase, nil, "FullLifePercentage")
@@ -5207,7 +5207,7 @@ func doActorLifeMana(actor *Actor) {
 		} else {
 			actor.Output["Life"] = max(utils.RoundTo(base*(1+inc/100)*more*(1-conv/100), 0), 1)
 		}
-		//pob:block:src/Modules/CalcPerform.lua:94-109
+		//pob:block:src/Modules/CalcPerform.lua:95-110
 		if actor.Breakdown != nil {
 			if inc != 0 || more != 1 || conv != 0 || override != nil {
 				actor.Breakdown.Data["Life"] = &Entry{Lines: []string{luaSprintf("%.6g ^8(base)", base)}}
@@ -5229,7 +5229,7 @@ func doActorLifeMana(actor *Actor) {
 	base := actor.ModDB.Sum(mod.TypeBase, nil, "Mana")
 	inc := actor.ModDB.Sum(mod.TypeIncrease, nil, "Mana")
 	more := actor.ModDB.More(nil, "Mana")
-	//pob:block:src/Modules/CalcPerform.lua:116-131
+	//pob:block:src/Modules/CalcPerform.lua:117-132
 	if actor.Breakdown != nil {
 		if inc != 0 || more != 1 || manaConv != 0 {
 			actor.Breakdown.Data["Mana"] = &Entry{Lines: []string{luaSprintf("%.6g ^8(base)", base)}}
@@ -5282,7 +5282,7 @@ func mergeKeystones(env *Environment, modDB interface {
 	}
 }
 
-//pob:src/Modules/CalcPerform.lua:1141-1151
+//pob:src/Modules/CalcPerform.lua:1143-1153
 func CalcActionSpeedMod(actor *Actor) float64 {
 	minimumActionSpeed := actor.ModDB.Max(nil, "MinimumActionSpeed")
 	actionSpeedMod := 1 + (math.Max(-data.TemporalChainsEffectCap, actor.ModDB.Sum(mod.TypeIncrease, nil, "TemporalChainsActionSpeed"))+actor.ModDB.Sum(mod.TypeIncrease, nil, "ActionSpeed"))/100
@@ -5293,27 +5293,27 @@ func CalcActionSpeedMod(actor *Actor) float64 {
 	return actionSpeedMod
 }
 
-//pob:src/Modules/CalcPerform.lua:980-1139
+//pob:src/Modules/CalcPerform.lua:982-1141
 func DoActorCharges(env *Environment, actor *Actor) {
 	modDB := actor.ModDB
 
 	// Calculate current and maximum charges.
-	//pob:block:src/Modules/CalcPerform.lua:985-1017
+	//pob:block:src/Modules/CalcPerform.lua:987-1019
 	actor.Output["PowerChargesMin"] = max(modDB.Sum(mod.TypeBase, nil, "PowerChargesMin"), 0)
 	actor.Output["PowerChargesMax"] = chargesMax(modDB, "PowerChargesMax", modDB.Sum(mod.TypeBase, nil, "PowerChargesMax"))
-	//pob:block:src/Modules/CalcPerform.lua:988
+	//pob:block:src/Modules/CalcPerform.lua:990
 	actor.Output["PowerChargesDuration"] = math.Floor(modDB.Sum(mod.TypeBase, nil, "ChargeDuration") * calclib.Mod(modDB, nil, "PowerChargesDuration", "ChargeDuration"))
 	replaceChargesMaxFromFlag(modDB, "MaximumFrenzyChargesIsMaximumPowerCharges", "FrenzyChargesMax", actor.Output["PowerChargesMax"])
 	actor.Output["FrenzyChargesMin"] = max(modDB.Sum(mod.TypeBase, nil, "FrenzyChargesMin"), 0)
 	actor.Output["FrenzyChargesMax"] = chargesMax(modDB, "FrenzyChargesMax",
 		utils.Ternary(modDB.Flag(nil, "MaximumFrenzyChargesIsMaximumPowerCharges"), actor.Output["PowerChargesMax"], modDB.Sum(mod.TypeBase, nil, "FrenzyChargesMax")))
-	//pob:block:src/Modules/CalcPerform.lua:995
+	//pob:block:src/Modules/CalcPerform.lua:997
 	actor.Output["FrenzyChargesDuration"] = math.Floor(modDB.Sum(mod.TypeBase, nil, "ChargeDuration") * calclib.Mod(modDB, nil, "FrenzyChargesDuration", "ChargeDuration"))
 	replaceChargesMaxFromFlag(modDB, "MaximumEnduranceChargesIsMaximumFrenzyCharges", "EnduranceChargesMax", actor.Output["FrenzyChargesMax"])
 	actor.Output["EnduranceChargesMin"] = max(modDB.Sum(mod.TypeBase, nil, "EnduranceChargesMin"), 0)
 	actor.Output["EnduranceChargesMax"] = chargesMax(modDB, "EnduranceChargesMax",
 		utils.Ternary(modDB.Flag(nil, "MaximumEnduranceChargesIsMaximumFrenzyCharges"), actor.Output["FrenzyChargesMax"], modDB.Sum(mod.TypeBase, nil, "EnduranceChargesMax")))
-	//pob:block:src/Modules/CalcPerform.lua:1002
+	//pob:block:src/Modules/CalcPerform.lua:1004
 	actor.Output["EnduranceChargesDuration"] = math.Floor(modDB.Sum(mod.TypeBase, nil, "ChargeDuration") * calclib.Mod(modDB, nil, "EnduranceChargesDuration", "ChargeDuration"))
 	actor.Output["SiphoningChargesMax"] = max(modDB.Sum(mod.TypeBase, nil, "SiphoningChargesMax"), 0)
 	actor.Output["ChallengerChargesMax"] = max(modDB.Sum(mod.TypeBase, nil, "ChallengerChargesMax"), 0)
@@ -5323,7 +5323,7 @@ func DoActorCharges(env *Environment, actor *Actor) {
 	actor.Output["BrutalChargesMin"] = max(utils.Ternary(modDB.Flag(nil, "MinimumEnduranceChargesEqualsMinimumBrutalCharges"),
 		utils.Ternary(modDB.Flag(nil, "MinimumEnduranceChargesIsMaximumEnduranceCharges"), actor.Output["EnduranceChargesMax"], actor.Output["EnduranceChargesMin"]), 0), 0)
 	actor.Output["BrutalChargesMax"] = max(utils.Ternary(modDB.Flag(nil, "MaximumEnduranceChargesEqualsMaximumBrutalCharges"), actor.Output["EnduranceChargesMax"], 0), 0)
-	//pob:block:src/Modules/CalcPerform.lua:1010
+	//pob:block:src/Modules/CalcPerform.lua:1012
 	actor.Output["BrineChargesMax"] = max(actor.Output["EnduranceChargesMax"], 0)
 	actor.Output["AbsorptionChargesMin"] = max(utils.Ternary(modDB.Flag(nil, "MinimumPowerChargesEqualsMinimumAbsorptionCharges"),
 		utils.Ternary(modDB.Flag(nil, "MinimumPowerChargesIsMaximumPowerCharges"), actor.Output["PowerChargesMax"], actor.Output["PowerChargesMin"]), 0), 0)
@@ -5380,7 +5380,7 @@ func DoActorCharges(env *Environment, actor *Actor) {
 	actor.Output["RemovableFrenzyCharges"] = max(actor.Output["FrenzyCharges"]-actor.Output["FrenzyChargesMin"], 0)
 	if modDB.Flag(nil, "UseEnduranceCharges") {
 		actor.Output["EnduranceCharges"] = utils.Or(modDB.Override(nil, "EnduranceCharges"), actor.Output["EnduranceChargesMax"])
-		//pob:block:src/Modules/CalcPerform.lua:1072-1074
+		//pob:block:src/Modules/CalcPerform.lua:1074-1076
 		if modDB.Flag(nil, "CanGainBrineCharges") {
 			actor.Output["BrineCharges"] = actor.Output["BrineChargesMax"]
 		}
@@ -5414,7 +5414,7 @@ func DoActorCharges(env *Environment, actor *Actor) {
 	actor.Output["SpiritInfusions"] = min(utils.Or(modDB.Override(nil, "SpiritInfusion"), 0), actor.Output["SpiritInfusionsMax"])
 
 	actor.Output["CrabBarriers"] = min(utils.Or(modDB.Override(nil, "CrabBarriers"), actor.Output["CrabBarriersMax"]), actor.Output["CrabBarriersMax"])
-	//pob:block:src/Modules/CalcPerform.lua:1106-1114
+	//pob:block:src/Modules/CalcPerform.lua:1108-1116
 	if modDB.Flag(nil, "HaveMaximumPowerCharges") {
 		actor.Output["PowerCharges"] = actor.Output["PowerChargesMax"]
 	}
@@ -5531,7 +5531,7 @@ func DoActorMisc(env *Environment, actor *Actor) {
 			modDB.AddMod(mod.NewFloat("MovementSpeed", mod.TypeIncrease, effect).Source("Onslaught"))
 		}
 
-		//pob:block:src/Modules/CalcPerform.lua:712-734
+		//pob:block:src/Modules/CalcPerform.lua:714-736
 		if modDB.Conditions["AffectedByArcaneSurge"] || modDB.Flag(nil, "Condition:ArcaneSurge") {
 			modDB.Conditions["AffectedByArcaneSurge"] = true
 			effect := 1 + modDB.Sum(mod.TypeIncrease, nil, "ArcaneSurgeEffect", "BuffEffectOnSelf")/100
@@ -5550,7 +5550,7 @@ func DoActorMisc(env *Environment, actor *Actor) {
 			if damage := modDB.Max(nil, "ArcaneSurgeDamage"); damage != 0 {
 				modDB.AddMod(mod.NewFloat("Damage", mod.TypeMore, damage*effect).Source("Arcane Surge").Flag(mod.MFlagSpell))
 			}
-			//pob:block:src/Modules/CalcPerform.lua:726-733
+			//pob:block:src/Modules/CalcPerform.lua:728-735
 			prefix := "ArcaneSurgeAlso"
 			for _, additional := range []struct {
 				name    string
@@ -5568,7 +5568,7 @@ func DoActorMisc(env *Environment, actor *Actor) {
 			modDB.AddMod(mod.NewFloat("Cost", mod.TypeMore, -effect).Source("Fanaticism").Flag(mod.MFlagCast))
 			modDB.AddMod(mod.NewFloat("AreaOfEffect", mod.TypeIncrease, effect).Source("Fanaticism").Flag(mod.MFlagCast))
 		}
-		//pob:src/Modules/CalcPerform.lua:741-749
+		//pob:src/Modules/CalcPerform.lua:743-751
 		if modDB.Flag(nil, "Condition:CanGainSpiritInfusion") {
 			globalEffect := func() *mod.GlobalEffectTag {
 				return mod.GlobalEffect("Buff").Name("Spirit Infusion").Unscalable(true)
@@ -5580,7 +5580,7 @@ func DoActorMisc(env *Environment, actor *Actor) {
 			modDB.AddMod(mod.NewFloat("Cost", mod.TypeMore, 10).Source("Spirit Infusion").KeywordFlag(mod.KeywordFlagSpell).
 				Tag(mod.SkillType(string(data.SkillTypeChannel)), mod.Multiplier("SpiritInfusion"), globalEffect()))
 		}
-		//pob:src/Modules/CalcPerform.lua:750-758
+		//pob:src/Modules/CalcPerform.lua:752-760
 		if modDB.Flag(nil, "UnholyMight") {
 			effect := 1 + modDB.Sum(mod.TypeIncrease, nil, "BuffEffectOnSelf")/100
 			modDB.AddMod(mod.NewFloat("PhysicalDamageConvertToChaos", mod.TypeBase, math.Floor(100*effect)).Source("Unholy Might"))
@@ -5603,7 +5603,7 @@ func DoActorMisc(env *Environment, actor *Actor) {
 			effect := math.Floor(8 * (1 + modDB.Sum(mod.TypeIncrease, nil, "TailwindEffectOnSelf", "BuffEffectOnSelf")/100))
 			modDB.AddMod(mod.NewFloat("ActionSpeed", mod.TypeIncrease, effect).Source("Tailwind"))
 		}
-		//pob:block:src/Modules/CalcPerform.lua:771-773
+		//pob:block:src/Modules/CalcPerform.lua:773-775
 		if modDB.Flag(nil, "Condition:TotemTailwind") {
 			modDB.AddMod(mod.NewFloat("TotemActionSpeed", mod.TypeIncrease, 8).Source("Tailwind"))
 		}
@@ -5636,7 +5636,7 @@ func DoActorMisc(env *Environment, actor *Actor) {
 			modDB.AddMod(mod.NewFloat("Speed", mod.TypeIncrease, 20).Source("Her Embrace").Flag(mod.MFlagCast))
 			modDB.AddMod(mod.NewFloat("MovementSpeed", mod.TypeIncrease, 20).Source("Her Embrace"))
 		}
-		//pob:block:src/Modules/CalcPerform.lua:804-808
+		//pob:block:src/Modules/CalcPerform.lua:806-810
 		if modDB.Flag(nil, "Condition:OnConsecratedGround") {
 			effect := 1 + modDB.Sum(mod.TypeIncrease, nil, "ConsecratedGroundEffect")/100
 			modDB.AddMod(mod.NewFloat("LifeRegenPercent", mod.TypeBase, 5*effect).Source("Consecrated Ground"))
@@ -5669,11 +5669,11 @@ func DoActorMisc(env *Environment, actor *Actor) {
 				totalElusiveEffectDuration := elusiveEffectIncreaseDuration + elusiveEffectDecreaseDuration
 				averageIncreaseEffect := (elusiveEffectMod + peakElusiveEffect) / 2
 				averageDecreaseEffect := (peakElusiveEffect + elusiveEffectMinThreshold) / 2
-				//pob:src/Modules/CalcPerform.lua:830
+				//pob:src/Modules/CalcPerform.lua:832
 				actor.Output["ElusiveEffectMod"] = (float64(averageIncreaseEffect*elusiveEffectIncreaseDuration) +
 					float64(averageDecreaseEffect*elusiveEffectDecreaseDuration)) / totalElusiveEffectDuration
 			} else {
-				//pob:src/Modules/CalcPerform.lua:832
+				//pob:src/Modules/CalcPerform.lua:834
 				actor.Output["ElusiveEffectMod"] = (elusiveEffectMod + elusiveEffectMinThreshold) / 2
 			}
 			// if we want the max skill to not be noted as its own breakdown table entry, comment out below
@@ -5710,7 +5710,7 @@ func DoActorMisc(env *Environment, actor *Actor) {
 			}
 		}
 		if modDB.Flag(nil, "Chill") {
-			//pob:block:src/Modules/CalcPerform.lua:868-881
+			//pob:block:src/Modules/CalcPerform.lua:870-883
 			//	local chillValue = m_max(modDB:Sum("BASE", nil, "SelfChillOverride"),
 			//	                         modDB:Override(nil, "ChillVal")) or ailmentData.Chill.default
 			chillValue := max(modDB.Sum(mod.TypeBase, nil, "SelfChillOverride"),
@@ -5744,7 +5744,7 @@ func DoActorMisc(env *Environment, actor *Actor) {
 			}
 			modDB.AddMod(mod.NewFloat("ActionSpeed", mod.TypeIncrease, effect*utils.Ternary[float64](modDB.Flag(nil, "SelfChillEffectIsReversed"), 1, -1)).Source("Chill"))
 		}
-		//pob:block:src/Modules/CalcPerform.lua:882-891
+		//pob:block:src/Modules/CalcPerform.lua:884-893
 		if modDB.Flag(nil, "Shock") {
 			shockValue := max(modDB.Sum(mod.TypeBase, nil, "SelfShockOverride"),
 				utils.Or(modDB.Override(nil, "ShockVal"), 0))
@@ -5767,7 +5767,7 @@ func DoActorMisc(env *Environment, actor *Actor) {
 				modDB.AddMod(mod.NewFloat("DamageTaken", mod.TypeIncrease, effect).Source("Shock"))
 			}
 		}
-		//pob:block:src/Modules/CalcPerform.lua:892-901
+		//pob:block:src/Modules/CalcPerform.lua:894-903
 		if modDB.Flag(nil, "Scorch") {
 			scorchValue := max(modDB.Sum(mod.TypeBase, nil, "SelfScorchOverride"),
 				utils.Or(modDB.Override(nil, "ScorchVal"), 0))
@@ -5801,7 +5801,7 @@ func DoActorMisc(env *Environment, actor *Actor) {
 			modDB.Conditions["Leeching"] = true
 			modDB.Conditions["LeechingLife"] = true
 		}
-		//pob:src/Modules/CalcPerform.lua:910-913
+		//pob:src/Modules/CalcPerform.lua:912-915
 		if modDB.Flag(nil, "CanLeechEnergyShieldOnFullEnergyShield") {
 			modDB.Conditions["Leeching"] = true
 			modDB.Conditions["LeechingEnergyShield"] = true
@@ -5820,7 +5820,7 @@ func DoActorMisc(env *Environment, actor *Actor) {
 			actor.Output["MaximumRage"] = maxRageStacks
 			actor.Output["Rage"] = rageStacks
 			modDB.AddMod(mod.NewFloat("Multiplier:Rage", mod.TypeBase, rageStacks).Source("Base"))
-			//pob:block:src/Modules/CalcPerform.lua:919-928
+			//pob:block:src/Modules/CalcPerform.lua:921-930
 			actor.Output["RageEffect"] = math.Floor(actor.Output["Rage"] * calclib.Mod(modDB, nil, "RageEffect"))
 			modDB.AddMod(mod.NewFloat("Multiplier:RageEffect", mod.TypeBase, actor.Output["RageEffect"]).Source("Base"))
 			if modDB.Flag(nil, "Condition:RageSpellDamage") {
@@ -5831,14 +5831,14 @@ func DoActorMisc(env *Environment, actor *Actor) {
 			if rageStacks == maxRageStacks {
 				modDB.AddMod(mod.NewFlag("Condition:HaveMaximumRage", true))
 			}
-			//pob:block:src/Modules/CalcPerform.lua:932-933
+			//pob:block:src/Modules/CalcPerform.lua:934-935
 			actor.Output["InherentRageLossDelay"] = 2 + modDB.Sum(mod.TypeBase, nil, "InherentRageLossDelay")
 			actor.Output["InherentRageLoss"] = 0
 			if !modDB.Flag(nil, "InherentRageLossIsPrevented") {
 				actor.Output["InherentRageLoss"] = 10 * (1 + modDB.Sum(mod.TypeIncrease, nil, "InherentRageLoss")/100)
 			}
 		}
-		//pob:block:src/Modules/CalcPerform.lua:935-948
+		//pob:block:src/Modules/CalcPerform.lua:937-950
 		if manaBurnConfig := env.Build.GetNumberOption("multiplierManaBurnStacks"); manaBurnConfig > 0 {
 			maxManaBurn := modDB.Sum(mod.TypeBase, nil, "MaxManaBurnStacks")
 			if maxManaBurn == 0 {
@@ -5872,7 +5872,7 @@ func DoActorMisc(env *Environment, actor *Actor) {
 		if modDB.Flag(nil, "HasShapersPresence") {
 			modDB.AddMod(mod.NewFloat("BuffExpireFaster", mod.TypeMore, -20).Source("Shapers Presence"))
 		}
-		//pob:block:src/Modules/CalcPerform.lua:968-972
+		//pob:block:src/Modules/CalcPerform.lua:970-974
 		if modDB.Flag(nil, "Condition:CanHaveSoulEater") {
 			soulEaterMax := modDB.Sum(mod.TypeBase, nil, "SoulEaterMax")
 			if o := modDB.Override(nil, "SoulEaterMax"); o != nil {
@@ -5885,11 +5885,11 @@ func DoActorMisc(env *Environment, actor *Actor) {
 		}
 	}
 
-	//pob:block:src/Modules/CalcPerform.lua:975-976
+	//pob:block:src/Modules/CalcPerform.lua:977-978
 	applyEnemyModifiers(actor, false)
 }
 
-//pob:src/Modules/CalcPerform.lua:619-633
+//pob:src/Modules/CalcPerform.lua:621-635
 func applyEnemyModifiers(actor *Actor, clearCache bool) {
 	if clearCache || actor.appliedEnemyModifiers == nil {
 		actor.appliedEnemyModifiers = make(map[mod.Mod]int)
@@ -5981,7 +5981,7 @@ func initMinionModDB(env *Environment, activeSkill *ActiveSkill, output map[stri
 		evasionMult = 1
 	}
 	minion.ModDB.AddMod(mod.NewFloat("Evasion", mod.TypeBase, utils.RoundTo(data.MonsterEvasionTable[minion.Level]*evasionMult, 0)).Source("Base"))
-	//pob:block:src/Modules/CalcPerform.lua:1175-1179
+	//pob:block:src/Modules/CalcPerform.lua:1177-1181
 	if env.ModDB.Flag(nil, "MinionAccuracyEqualsAccuracy") {
 		dexBonus := env.ModDB.Override(nil, "DexAccBonusOverride")
 		perDex := data.AccuracyPerDexBase
@@ -5994,18 +5994,18 @@ func initMinionModDB(env *Environment, activeSkill *ActiveSkill, output map[stri
 		minion.ModDB.AddMod(mod.NewFlag("CannotBeEvaded", true).Source("Minion Attacks always hit"))
 	}
 	minion.ModDB.AddMod(mod.NewFloat("CritMultiplier", mod.TypeBase, 30).Source("Base"))
-	//pob:block:src/Modules/CalcPerform.lua:1181
+	//pob:block:src/Modules/CalcPerform.lua:1183
 	minion.ModDB.AddMod(mod.NewFloat("DotMultiplier", mod.TypeBase, 30).Source("Base").Tag(mod.Condition("CriticalStrike")))
 	minion.ModDB.AddMod(mod.NewFloat("FireResist", mod.TypeBase, minion.MinionData.FireResist).Source("Base"))
 	minion.ModDB.AddMod(mod.NewFloat("ColdResist", mod.TypeBase, minion.MinionData.ColdResist).Source("Base"))
 	minion.ModDB.AddMod(mod.NewFloat("LightningResist", mod.TypeBase, minion.MinionData.LightningResist).Source("Base"))
 	minion.ModDB.AddMod(mod.NewFloat("ChaosResist", mod.TypeBase, minion.MinionData.ChaosResist).Source("Base"))
-	//pob:block:src/Modules/CalcPerform.lua:1186
+	//pob:block:src/Modules/CalcPerform.lua:1188
 	minion.ModDB.AddMod(mod.NewFloat("CritChance", mod.TypeIncrease, data.CriticalStrikeChancePlusPercentPerPowerCharge).Source("Base").Tag(mod.Multiplier("PowerCharge")))
 	minion.ModDB.AddMod(mod.NewFloat("Speed", mod.TypeIncrease, 4).Source("Base").Flag(mod.MFlagAttack).Tag(mod.Multiplier("FrenzyCharge")))
 	minion.ModDB.AddMod(mod.NewFloat("Speed", mod.TypeIncrease, 4).Source("Base").Flag(mod.MFlagCast).Tag(mod.Multiplier("FrenzyCharge")))
 	minion.ModDB.AddMod(mod.NewFloat("Damage", mod.TypeMore, 4).Source("Base").Tag(mod.Multiplier("FrenzyCharge")))
-	//pob:block:src/Modules/CalcPerform.lua:1190-1191
+	//pob:block:src/Modules/CalcPerform.lua:1192-1193
 	minion.ModDB.AddMod(mod.NewFloat("PhysicalDamageReduction", mod.TypeBase, data.PhysicalDamageReductionPercentPerEnduranceCharge).Source("Base").Tag(mod.Multiplier("EnduranceCharge")))
 	minion.ModDB.AddMod(mod.NewFloat("ElementalDamageReduction", mod.TypeBase, data.ElementalDamageReductionPercentPerEnduranceCharge).Source("Base").Tag(mod.Multiplier("EnduranceCharge")))
 	minion.ModDB.AddMod(mod.NewFloat("ProjectileCount", mod.TypeBase, 1).Source("Base"))
@@ -6044,7 +6044,7 @@ func initMinionModDB(env *Environment, activeSkill *ActiveSkill, output map[stri
 			minion.ModDB.AddList(weapon1.SlotModList[1])
 		}
 	}
-	//pob:block:src/Modules/CalcPerform.lua:1258-1276
+	//pob:block:src/Modules/CalcPerform.lua:1260-1278
 	if minion.ItemSet != nil || minion.Uses != nil {
 		for _, slot := range orderedItemSlots {
 			if !minion.Uses[slot.name] {
@@ -6092,7 +6092,7 @@ func initMinionModDB(env *Environment, activeSkill *ActiveSkill, output map[stri
 	}
 }
 
-//pob:block:src/Modules/CalcPerform.lua:1247-1253
+//pob:block:src/Modules/CalcPerform.lua:1249-1255
 func addMinionModifiers(modList *moddb.ModList, skillCfg *moddb.ListCfg, minion *ActorMinion) {
 	if modList == nil {
 		return
@@ -6111,7 +6111,7 @@ type allyLifeEntry struct {
 	life, count float64
 }
 
-//pob:block:src/Modules/CalcPerform.lua:3739-3741
+//pob:block:src/Modules/CalcPerform.lua:3773-3775
 func (a *Actor) addAllyLife(pool string, minion *Actor, life, count float64) *allyLifeEntry {
 	entry := &allyLifeEntry{life: life, count: count}
 	if minion.MinionData != nil {
@@ -6146,7 +6146,7 @@ func prepareAllyMinion(env *Environment, activeSkill *ActiveSkill) {
 	doActorAttribsPoolsConditions(env, minion.Actor)
 }
 
-//pob:block:src/Modules/CalcPerform.lua:2380-2384
+//pob:block:src/Modules/CalcPerform.lua:2414-2418
 func warcryPowerBonus(m mod.Mod, warcryPower float64) float64 {
 	for _, tag := range m.Tags() {
 		get, ok := tag.(*mod.GlobalEffectTag)
@@ -6168,7 +6168,7 @@ func singleModList(m mod.Mod) *moddb.ModList {
 	return list
 }
 
-//pob:block:src/Modules/CalcPerform.lua:3524
+//pob:block:src/Modules/CalcPerform.lua:3558
 func ailmentStacksMax(modDB *moddb.ModDB, name string) float64 {
 	return utils.Or(modDB.Override(nil, name), modDB.Sum(mod.TypeBase, nil, name))
 }
@@ -6177,7 +6177,7 @@ func chargesMax(modDB *moddb.ModDB, name string, fallback float64) float64 {
 	return utils.Or(modDB.Override(nil, name), math.Max(fallback, 0))
 }
 
-//pob:block:src/Modules/CalcPerform.lua:989-992
+//pob:block:src/Modules/CalcPerform.lua:991-994
 func replaceChargesMaxFromFlag(modDB *moddb.ModDB, flagName string, chargeName string, value float64) {
 	if !modDB.Flag(nil, flagName) {
 		return
@@ -6189,12 +6189,12 @@ func replaceChargesMaxFromFlag(modDB *moddb.ModDB, flagName string, chargeName s
 	modDB.ReplaceMod(mod.NewFloat(chargeName, mod.TypeOverride, value).Source(source))
 }
 
-//pob:block:src/Modules/CalcPerform.lua:3387
+//pob:block:src/Modules/CalcPerform.lua:3421
 func impaleStacksCap(modDB *moddb.ModDB) float64 {
 	return modDB.Sum(mod.TypeBase, nil, "ImpaleStacksMax") * (1 + modDB.Sum(mod.TypeBase, nil, "ImpaleAdditionalDurationChance")/100)
 }
 
-//pob:block:src/Modules/CalcPerform.lua:295-397
+//pob:block:src/Modules/CalcPerform.lua:297-399
 func applyShrineBuffs(actor *Actor) {
 	modDB := actor.ModDB
 	shrineEffectMod := 1 + modDB.Sum(mod.TypeIncrease, nil, "BuffEffectOnSelf", "ShrineBuffEffect")/100
@@ -6282,7 +6282,7 @@ func applyShrineBuffs(actor *Actor) {
 		modDB.AddMod(mod.NewFloat("ElementalResistMax", mod.TypeBase, floorEffect(2)).Source("Lesser Resistance Shrine"))
 		modDB.AddMod(mod.NewFloat("ChaosResistMax", mod.TypeBase, floorEffect(2)).Source("Lesser Resistance Shrine"))
 	}
-	//pob:block:src/Modules/CalcPerform.lua:379-396
+	//pob:block:src/Modules/CalcPerform.lua:381-398
 	if modDB.Flag(nil, "BloodShrineOfRats") {
 		modDB.AddMod(mod.NewFloat("ElementalDamageGainAsChaos", mod.TypeBase, floorEffect(30)).Source("Blood Shrine of Rats"))
 	}
@@ -6303,7 +6303,7 @@ func applyShrineBuffs(actor *Actor) {
 	}
 }
 
-//pob:block:src/Modules/CalcPerform.lua:2657-2661
+//pob:block:src/Modules/CalcPerform.lua:2691-2695
 func balanceOfTerrorSelfOnly(env *Environment, buffNameKey string) bool {
 	if env.Build == nil {
 		return false
@@ -6319,7 +6319,7 @@ func balanceOfTerrorSelfOnly(env *Environment, buffNameKey string) bool {
 
 //pob:src/Modules/CalcPerform.lua:1851-1932
 func mergeTinctures(env *Environment, effectInc, effectIncMagic, tinctureLimit float64) {
-	//pob:src/Modules/CalcPerform.lua:1863-1867
+	//pob:src/Modules/CalcPerform.lua:1884-1888
 	tincturesNotInflictManaBurn := math.Min(env.ModDB.Sum(mod.TypeBase, nil, "TincturesNotInflictManaBurn"), 100)
 	canGainRequiredBurn := env.ModDB.Flag(nil, "Condition:WeepingWoundsInsteadOfManaBurn") ||
 		(tincturesNotInflictManaBurn < 100 && env.Player.Output["ManaUnreserved"] > 0)
@@ -6340,7 +6340,7 @@ func mergeTinctures(env *Environment, effectInc, effectIncMagic, tinctureLimit f
 		tinctureConditions["UsingTincture"] = true
 		tinctureConditions["Using"+strings.Join(strings.Fields(item.BaseName), "")] = true
 
-		//pob:src/Modules/CalcPerform.lua:1872-1880
+		//pob:src/Modules/CalcPerform.lua:1893-1901
 		tinctureEffectInc := effectInc + item.TinctureData["effectInc"]
 		if item.Rarity == RarityMagic {
 			tinctureEffectInc += effectIncMagic
@@ -6367,7 +6367,7 @@ func mergeTinctures(env *Environment, effectInc, effectIncMagic, tinctureLimit f
 		}
 	}
 
-	//pob:src/Modules/CalcPerform.lua:1915-1920
+	//pob:src/Modules/CalcPerform.lua:1949-1954
 	for cond, status := range tinctureConditions {
 		env.ModDB.Conditions[cond] = status
 	}
@@ -6375,7 +6375,7 @@ func mergeTinctures(env *Environment, effectInc, effectIncMagic, tinctureLimit f
 		env.ModDB.AddList(tinctureBuffs[key])
 	}
 
-	//pob:src/Modules/CalcPerform.lua:1921-1931
+	//pob:src/Modules/CalcPerform.lua:1955-1965
 	if env.ModDB.Flag(nil, "TinctureRangedWeapons") {
 		for _, key := range tinctureBuffOrder {
 			for _, buff := range tinctureBuffs[key].Mods() {
@@ -6391,7 +6391,7 @@ func mergeTinctures(env *Environment, effectInc, effectIncMagic, tinctureLimit f
 	}
 }
 
-//pob:block:src/Modules/CalcTriggers.lua:742-752
+//pob:block:src/Modules/CalcTriggers.lua:757-767
 func dualWieldChance(env *Environment, source *ActiveSkill, combined, mainHand, offHand float64) float64 {
 	if source.SkillData == nil || !source.SkillData.DoubleHitsWhenDualWielding {
 		return combined

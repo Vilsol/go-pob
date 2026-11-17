@@ -13,7 +13,7 @@ func (m *MiscCalculator) over(change func(b *pob.PathOfBuilding)) *MiscCalculato
 	return &MiscCalculator{build: &b, cache: m.cache, base: m.base}
 }
 
-//pob:block:src/Classes/TreeTab.lua:67-72
+//pob:block:src/Classes/TreeTab.lua:66-71
 func (m *MiscCalculator) CalcSpec(specID int) *Environment {
 	return m.over(func(b *pob.PathOfBuilding) { b.SetActiveSpec(specID) }).Calc(&CalcOverride{})
 }

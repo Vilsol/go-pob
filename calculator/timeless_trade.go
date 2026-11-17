@@ -31,12 +31,12 @@ var timelessJewelTradeIDs = map[int]timelessTradeIDs{
 	6: {keystone: []string{"explicit.pseudo_timeless_jewel_vorana", "explicit.pseudo_timeless_jewel_uhtred", "explicit.pseudo_timeless_jewel_medved"}},
 }
 
-//pob:block:src/Classes/TreeTab.lua:2412-2418
+//pob:block:src/Classes/TreeTab.lua:2400-2406
 var TimelessTradeTypes = []string{
 	"Instant buyout", "Instant buyout and in person", "In person (online in league)", "In person (online)", "Any (includes offline)",
 }
 
-//pob:block:src/Classes/TreeTab.lua:2351-2353
+//pob:block:src/Classes/TreeTab.lua:2339-2341
 var TimelessRealms = []string{"PC", "Sony", "Xbox"}
 
 type TimelessTradeQuery struct {

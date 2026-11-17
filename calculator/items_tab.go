@@ -150,7 +150,7 @@ func (m *MiscCalculator) additionalRingSlot() bool {
 	return m.base.InitialNodeModDB != nil && m.base.InitialNodeModDB.Flag(nil, "AdditionalRingSlot")
 }
 
-//pob:block:src/Classes/ItemsTab.lua:4910-5018
+//pob:block:src/Classes/ItemsTab.lua:5020-5128
 func (m *MiscCalculator) CompareItemSlots(item *Item) []ItemSlotCompare {
 	if item == nil || item.Base == nil || item.Base.Flask != nil || item.Base.Tincture != nil {
 		return nil
@@ -258,7 +258,7 @@ func (m *MiscCalculator) CompareItemSlots(item *Item) []ItemSlotCompare {
 	return out
 }
 
-//pob:block:src/Classes/ItemsTab.lua:4866-4872
+//pob:block:src/Classes/ItemsTab.lua:4976-4982
 func (m *MiscCalculator) FlaskActive(item *Item) bool {
 	active := m.base.Flasks
 	if item.Base != nil && item.Base.Tincture != nil {
@@ -272,7 +272,7 @@ func (m *MiscCalculator) FlaskActive(item *Item) bool {
 	return false
 }
 
-//pob:block:src/Classes/ItemsTab.lua:1652-1656,src/Classes/ItemSlotControl.lua:105-122
+//pob:block:src/Classes/ItemsTab.lua:1719-1723,src/Classes/ItemSlotControl.lua:105-122
 func PopulateSlots(build *pob.PathOfBuilding) {
 	for _, s := range orderedItemSlots {
 		set, byID := setItems(build)
@@ -355,7 +355,7 @@ func EquipItemID(build *pob.PathOfBuilding, slotName string, itemID int) bool {
 	return true
 }
 
-//pob:src/Classes/ItemsTab.lua:1686-1710
+//pob:src/Classes/ItemsTab.lua:1756-1780
 func (m *MiscCalculator) AddItem(text string) (int, string) {
 	item := ParseItem(text)
 	ring := m.additionalRingSlot()
@@ -369,7 +369,7 @@ func (m *MiscCalculator) AddItem(text string) (int, string) {
 			break
 		}
 	}
-	//pob:block:src/Classes/ItemsTab.lua:1812
+	//pob:block:src/Classes/ItemsTab.lua:1882
 	AddForbiddenJewelCounterpart(m.build, item)
 	PopulateSlots(m.build)
 	return id, slotName
@@ -381,7 +381,7 @@ func (m *MiscCalculator) ReplaceItem(id int, text string) bool {
 	if !ok || !m.build.SetItemText(id, text) {
 		return false
 	}
-	//pob:block:src/Classes/ItemsTab.lua:1806,src/Classes/ItemsTab.lua:1811-1812
+	//pob:block:src/Classes/ItemsTab.lua:1876,src/Classes/ItemsTab.lua:1881-1882
 	item := ParseItem(text)
 	UpdateForbiddenJewelCounterpart(m.build, id, parseItemGlobal(oldText), item)
 	AddForbiddenJewelCounterpart(m.build, item)
@@ -402,7 +402,7 @@ func selectedVariantName(item *Item) string {
 	return item.VariantList[*item.Variant-1]
 }
 
-//pob:src/Classes/ItemsTab.lua:1728-1771
+//pob:src/Classes/ItemsTab.lua:1798-1841
 func AddForbiddenJewelCounterpart(build *pob.PathOfBuilding, item *Item) int {
 	otherTitle := forbiddenJewelCounterpart[item.Title]
 	variantName := selectedVariantName(item)
@@ -430,7 +430,7 @@ func AddForbiddenJewelCounterpart(build *pob.PathOfBuilding, item *Item) int {
 	return build.AddItem(buildRawText(newItem))
 }
 
-//pob:src/Classes/ItemsTab.lua:1774-1801
+//pob:src/Classes/ItemsTab.lua:1844-1871
 func UpdateForbiddenJewelCounterpart(build *pob.PathOfBuilding, id int, oldItem, item *Item) {
 	otherTitle := forbiddenJewelCounterpart[item.Title]
 	if otherTitle == "" || oldItem == nil || oldItem.Title != item.Title {
@@ -478,7 +478,7 @@ func FormatModLine(ml ModLine) (string, ModLineKind, bool) {
 	return formatModLine(ml, false)
 }
 
-//pob:src/Modules/ItemTools.lua:361-382
+//pob:src/Modules/ItemTools.lua:431-452
 func formatModLine(ml ModLine, dbMode bool) (string, ModLineKind, bool) {
 	line := ml.Line
 	if !dbMode && (ml.Range != nil || ml.CorruptedRange != nil) {

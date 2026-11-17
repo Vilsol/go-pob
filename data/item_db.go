@@ -51,7 +51,7 @@ func loadItemDB() {
 	}
 }
 
-//pob:block:src/Modules/Data.lua:1456-1478
+//pob:block:src/Modules/Data.lua:1479-1501
 func Uniques() []ItemDBEntry {
 	itemDBOnce.Do(loadItemDB)
 	return itemDB.Uniques
@@ -63,7 +63,7 @@ func Rares() []ItemDBEntry {
 	return itemDB.Rares
 }
 
-//pob:block:src/Modules/Data.lua:1480-1482
+//pob:block:src/Modules/Data.lua:1503-1505
 func FoulbornMap(title string) map[string]string {
 	itemDBOnce.Do(loadItemDB)
 	return itemDB.FoulbornMap[title]

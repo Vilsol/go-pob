@@ -167,7 +167,7 @@ func printModList(w io.Writer, list *moddb.ModList) {
 	}
 }
 
-//pob:src/Modules/Common.lua:590-608
+//pob:src/Modules/Common.lua:591-609
 func prettyPrintTable(w io.Writer, v reflect.Value, pre string) {
 	for v.Kind() == reflect.Pointer || v.Kind() == reflect.Interface {
 		if v.IsNil() {
@@ -287,7 +287,7 @@ func SetItemModDebug(on bool) {
 	itemModDebug = on
 }
 
-//pob:block:src/Classes/ItemsTab.lua:4652-4658
+//pob:block:src/Classes/ItemsTab.lua:4758-4764
 func appendItemModDebug(t *calculator.ItemTooltip, item *calculator.Item) {
 	if !itemModDebug {
 		return

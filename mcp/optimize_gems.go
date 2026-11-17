@@ -22,7 +22,7 @@ const (
 // corrupted, one level more (not an Awakened gem, SkillsTab.lua:1136-1141) or quality up to 23 (SkillsTab.lua:145),
 // never both from one corruption.
 //
-//pob:block:src/Classes/SkillsTab.lua:1129-1143
+//pob:block:src/Classes/SkillsTab.lua:1139-1153
 func legalGem(p gemPair, natural int, awakened, corrupted bool) bool {
 	if p.level < 1 || p.quality < 0 {
 		return false

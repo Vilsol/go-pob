@@ -249,7 +249,7 @@ var (
 	modLineRangeRe  = regexp.MustCompile(`\(-?#-#\)`)
 )
 
-//pob:block:src/Classes/Item.lua:1361-1371
+//pob:block:src/Classes/Item.lua:1373-1383
 func dumpItemModStatOrder() (any, error) {
 	x, err := newModsExport()
 	if err != nil {

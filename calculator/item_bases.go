@@ -201,7 +201,7 @@ var itemBaseAliases = map[string]string{
 	"Metadata/Items/Rings/Ring14": "Two-Stone Ring (Fire/Cold)",
 }
 
-//pob:block:src/Data/Bases/boots.lua:546,src/Data/Bases/boots.lua:659,src/Data/Bases/boots.lua:794
+//pob:block:src/Data/Bases/boots.lua:598,src/Data/Bases/boots.lua:722,src/Data/Bases/boots.lua:870
 func twoTonedBootsVariant(req ItemBaseReq) string {
 	switch {
 	case req.Str > 0 && req.Int > 0:
@@ -219,7 +219,7 @@ var (
 	itemBases     map[string]*ItemBase
 )
 
-//pob:block:src/Modules/Data.lua:1239-1242
+//pob:block:src/Modules/Data.lua:1240-1243
 func ItemBases() map[string]*ItemBase {
 	itemBasesOnce.Do(buildItemBases)
 	return itemBases

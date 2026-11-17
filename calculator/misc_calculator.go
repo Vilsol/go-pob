@@ -9,7 +9,7 @@ import (
 	"github.com/Vilsol/go-pob/pob"
 )
 
-//pob:src/Modules/CalcSetup.lua:485
+//pob:src/Modules/CalcSetup.lua:497
 type CalcOverride struct {
 	Conditions     []string
 	AddNodes       []int64

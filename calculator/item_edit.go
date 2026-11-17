@@ -100,7 +100,7 @@ func foldModRanges(raw string) string {
 					continue
 				}
 				next = k + 1
-				//pob:block:src/Classes/Item.lua:1854-1856
+				//pob:block:src/Classes/Item.lua:1883-1885
 				if ml.Range != nil && rawRangeLineRe.MatchString(first) && !rangeTokenRe.MatchString(lines[k]) {
 					lines[k] = "{range:" + strconv.FormatFloat(utils.RoundTo(*ml.Range, 6), 'f', -1, 64) + "}" + strings.TrimSpace(lines[k])
 				}
@@ -169,7 +169,7 @@ func displayModLines(lines []string, item *Item) []DisplayModLine {
 					d.Range = *ml.Range
 				}
 			}
-			//pob:block:src/Classes/ItemsTab.lua:2433-2455
+			//pob:block:src/Classes/ItemsTab.lua:2507-2529
 			if (section == "explicit" || section == "crucible") && raw >= 0 && (ml.Custom || ml.Crafted || ml.Crucible) &&
 				(item.RareLikeUnique || item.Rarity == RarityMagic || item.Rarity == RarityRare || len(item.CrucibleModLines) > 0) {
 				d.Removable = true
@@ -230,7 +230,7 @@ type DisplayVariantOption struct {
 	Label   string
 }
 
-//pob:src/Classes/ItemsTab.lua:1976-2027
+//pob:src/Classes/ItemsTab.lua:2046-2097
 func displayVariantGroups(item *Item) *DisplayVariantGroups {
 	out := &DisplayVariantGroups{Versions: item.VersionList}
 	if item.SelectedVersion != nil {
@@ -259,7 +259,7 @@ func displayVariantGroups(item *Item) *DisplayVariantGroups {
 	return out
 }
 
-//pob:block:src/Classes/ItemsTab.lua:389-514,src/Classes/ItemsTab.lua:581-697
+//pob:block:src/Classes/ItemsTab.lua:400-525,src/Classes/ItemsTab.lua:581-697
 func DisplayItem(raw string) (DisplayItemInfo, bool) {
 	item := ParseItem(raw)
 	if item.Base == nil {
@@ -294,7 +294,7 @@ func DisplayItem(raw string) (DisplayItemInfo, bool) {
 	info.SocketLimit = max(item.Base.SocketLimit, len(item.Sockets)) - int(item.AbyssalSocketCount)
 	info.DefaultColor = item.defaultSocketColor()
 	info.Influence = influenceNames(item.Influence)
-	//pob:block:src/Classes/ItemsTab.lua:680-682
+	//pob:block:src/Classes/ItemsTab.lua:696-698
 	hasModTags := false
 	for _, ml := range item.ExplicitModLines {
 		if len(ml.ModTags) > 0 {
@@ -344,7 +344,7 @@ type ItemEdit struct {
 
 var altVariantSpecs = []string{"Selected Variant", "Selected Alt Variant", "Selected Alt Variant Two", "Selected Alt Variant Three", "Selected Alt Variant Four", "Selected Alt Variant Five"}
 
-//pob:block:src/Classes/ItemsTab.lua:402-514,src/Classes/ItemsTab.lua:586-697,src/Classes/ItemsTab.lua:2123-2136,src/Classes/ItemsTab.lua:2456-2466
+//pob:block:src/Classes/ItemsTab.lua:413-525,src/Classes/ItemsTab.lua:586-697,src/Classes/ItemsTab.lua:2197-2210,src/Classes/ItemsTab.lua:2530-2540
 func EditItem(raw string, e ItemEdit) (string, error) {
 	raw = foldModRanges(raw)
 	item := ParseItem(raw)
@@ -526,7 +526,7 @@ func CraftBaseGroups() []CraftBaseGroup {
 	return out
 }
 
-//pob:block:src/Classes/ItemsTab.lua:2624-2668
+//pob:block:src/Classes/ItemsTab.lua:2710-2754
 func CraftItemText(rarity int, title string, baseName string) (string, bool) {
 	base := ItemBaseByName(baseName)
 	if base == nil || rarity < 0 || rarity > 4 {
@@ -551,7 +551,7 @@ func CraftItemText(rarity int, title string, baseName string) (string, bool) {
 	case "Amulet", "Belt", "Jewel", "Quiver", "Ring", "Graft":
 	default:
 		quality := 0
-		//pob:block:src/Classes/Item.lua:1683-1691
+		//pob:block:src/Classes/Item.lua:1712-1720
 		if base.Armour != nil || base.Weapon != nil || base.Flask != nil || base.Tincture != nil {
 			quality = 20
 		}

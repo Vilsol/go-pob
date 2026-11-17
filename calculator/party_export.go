@@ -16,7 +16,7 @@ type partyBuffExport struct {
 	warcryPowerBonus map[mod.Mod]float64
 }
 
-//pob:block:src/Modules/CalcPerform.lua:2380-2384
+//pob:block:src/Modules/CalcPerform.lua:2414-2418
 func warcryPowerBonuses(mods []mod.Mod, warcryPower float64) map[mod.Mod]float64 {
 	out := map[mod.Mod]float64{}
 	for _, m := range mods {
@@ -29,7 +29,7 @@ func warcryPowerBonuses(mods []mod.Mod, warcryPower float64) map[mod.Mod]float64
 	return out
 }
 
-//pob:src/Modules/CalcPerform.lua:2207
+//pob:src/Modules/CalcPerform.lua:2241
 type partyBuffExports struct {
 	aura, curse, warcry, link map[string]*partyBuffExport
 	otherEffects              map[string]*partyBuffExport
@@ -39,7 +39,7 @@ type partyBuffExports struct {
 	curseLimit                float64
 }
 
-//pob:block:src/Modules/CalcPerform.lua:1312
+//pob:block:src/Modules/CalcPerform.lua:1314
 func newPartyBuffExports(env *Environment) *partyBuffExports {
 	if env.Build == nil || !env.Build.ExportParty() || env.Mode == OutputModeCalculator {
 		return nil
@@ -77,7 +77,7 @@ func (e *partyBuffExports) setAuraDebuff(name string, mult float64, mods []mod.M
 	e.aura[name] = &partyBuffExport{effectMult: mult, modList: mods}
 }
 
-//pob:block:src/Modules/CalcPerform.lua:3812-3930
+//pob:block:src/Modules/CalcPerform.lua:3849-3967
 func (e *partyBuffExports) collectEnemyAndPlayer(env *Environment, output map[string]float64) {
 	enemyDB := env.EnemyModDB
 	for _, k := range sortedExportNames(enemyDB.Mods) {
@@ -180,7 +180,7 @@ func (e *partyBuffExports) collectEnemyAndPlayer(env *Environment, output map[st
 	}
 }
 
-//pob:block:src/Modules/CalcPerform.lua:3826-3828
+//pob:block:src/Modules/CalcPerform.lua:3863-3865
 func enemyTagHolds(enemyDB *moddb.ModDB, v mod.Mod) bool {
 	tags := v.Tags()
 	if len(tags) == 0 {

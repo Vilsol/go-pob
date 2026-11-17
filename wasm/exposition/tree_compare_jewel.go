@@ -12,7 +12,7 @@ func TreeCompareJewelExports(r bind.Registry) {
 	r.Func(CompareSpecJewelTooltip)
 }
 
-//pob:block:src/Classes/PassiveTreeView.lua:1779-1786
+//pob:block:src/Classes/PassiveTreeView.lua:1789-1796
 func CompareSpecJewelTooltip(build *pob.PathOfBuilding, specID int, nodeID int, stats calculator.ItemTooltipStats) (calculator.ItemTooltip, bool) {
 	if build == nil || specID < 1 || specID > len(build.Tree.Specs) {
 		return calculator.ItemTooltip{}, false

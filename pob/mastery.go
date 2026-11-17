@@ -26,7 +26,7 @@ func SpecMasterySelections(spec Spec) []MasterySelection {
 	return out
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:202-205,src/Classes/PassiveSpec.lua:215
+//pob:block:src/Classes/PassiveSpec.lua:202-205,src/Classes/PassiveSpec.lua:221
 func formatMasterySelections(sel []MasterySelection) string {
 	parts := make([]string, 0, len(sel))
 	for _, s := range sel {
@@ -35,7 +35,7 @@ func formatMasterySelections(sel []MasterySelection) string {
 	return strings.Join(parts, ",")
 }
 
-//pob:block:src/Classes/TreeTab.lua:1010
+//pob:block:src/Classes/TreeTab.lua:1009
 func (b *PathOfBuilding) SetMasteryEffect(nodeID int64, effectID int64) {
 	spec := b.activeSpec()
 	if spec == nil {
@@ -55,7 +55,7 @@ func (b *PathOfBuilding) SetMasteryEffect(nodeID int64, effectID int64) {
 	spec.MasteryEffects = formatMasterySelections(sel)
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:823-826
+//pob:block:src/Classes/PassiveSpec.lua:847-850
 func (b *PathOfBuilding) dropMasterySelections(nodeIDs []int64) {
 	spec := b.activeSpec()
 	if spec == nil || spec.MasteryEffects == "" {

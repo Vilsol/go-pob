@@ -12,7 +12,7 @@ var rarityColorCodes = map[ItemRarity]string{
 	"RELIC":  "^x60C060",
 }
 
-//pob:src/Classes/ItemsTab.lua:3982-3991
+//pob:src/Classes/ItemsTab.lua:4088-4097
 func ItemSetTooltip(build *pob.PathOfBuilding, set pob.ItemSet) []string {
 	if build == nil {
 		return nil

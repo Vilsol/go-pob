@@ -180,13 +180,13 @@ func VestigialModMappings() map[string]string {
 	return itemCraft.VestigialMods
 }
 
-//pob:block:src/Classes/ItemsTab.lua:3150-3155
+//pob:block:src/Classes/ItemsTab.lua:3254-3260
 func SpecialCorruptionMods() []AffixMod {
 	itemCraftOnce.Do(loadItemCraft)
 	return itemCraft.SpecialCorrupt
 }
 
-//pob:block:src/Classes/ItemsTab.lua:3513-3514,src/Classes/ItemsTab.lua:3704-3709
+//pob:block:src/Classes/ItemsTab.lua:3619-3620,src/Classes/ItemsTab.lua:3810-3815
 func DropRestricted(source string) []DropRestrictedMod {
 	itemCraftOnce.Do(loadItemCraft)
 	return itemCraft.DropRestricted[source]

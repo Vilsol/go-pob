@@ -45,7 +45,7 @@ func allocSet(build *pob.PathOfBuilding, tree *data.Tree) map[int64]bool {
 	return alloc
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:576,src/Classes/PassiveSpec.lua:601-602,src/Classes/PassiveSpec.lua:637-639
+//pob:block:src/Classes/PassiveSpec.lua:600,src/Classes/PassiveSpec.lua:625-626,src/Classes/PassiveSpec.lua:661-663
 func startNodeIDs(build *pob.PathOfBuilding, tree *data.Tree) []int64 {
 	classID, ok := pob.ClassIDByName(build.Build.ClassName)
 	if !ok {
@@ -75,7 +75,7 @@ func walksOutward(from, to data.Node) bool {
 	return (from.AscendancyName != nil && *from.AscendancyName != "") || to.AscendancyName == nil || *to.AscendancyName == ""
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:870-899
+//pob:block:src/Classes/PassiveSpec.lua:894-923
 func connectedToStart(tree *data.Tree, alloc map[int64]bool, starts []int64) map[int64]bool {
 	seen := make(map[int64]bool, len(alloc))
 	queue := make([]int64, 0, len(alloc))
@@ -108,7 +108,7 @@ func connectedToStart(tree *data.Tree, alloc map[int64]bool, starts []int64) map
 	return seen
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:846-859
+//pob:block:src/Classes/PassiveSpec.lua:870-883
 func CountAllocNodes(build *pob.PathOfBuilding) int {
 	tree := specTree(build)
 	used := 0
@@ -122,7 +122,7 @@ func CountAllocNodes(build *pob.PathOfBuilding) int {
 	return used
 }
 
-//pob:src/Classes/PassiveSpec.lua:668-691
+//pob:src/Classes/PassiveSpec.lua:692-715
 func IsClassConnected(build *pob.PathOfBuilding, classID pob.ClassID) bool {
 	tree := specTree(build)
 	start, ok := tree.Nodes[classStartNodeID(tree, classID)]
@@ -145,7 +145,7 @@ func IsClassConnected(build *pob.PathOfBuilding, classID pob.ClassID) bool {
 	return false
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1982-1995
+//pob:block:src/Classes/PassiveSpec.lua:2067-2080
 func clusterAnchor(tree *data.Tree, id int64) (int64, bool) {
 	if node, ok := tree.Nodes[nodeKey(id)]; ok {
 		if node.ExpansionJewel == nil || node.ExpansionJewel.Parent == nil {
@@ -166,7 +166,7 @@ func clusterAnchor(tree *data.Tree, id int64) (int64, bool) {
 	return tree.LargeClusterAnchor((id >> 6) & 7)
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1553-1567,src/Classes/PassiveSpec.lua:2485-2494
+//pob:block:src/Classes/PassiveSpec.lua:1578-1592,src/Classes/PassiveSpec.lua:2544-2553
 func leapHeld(build *pob.PathOfBuilding, tree *data.Tree, alloc map[int64]bool) map[int64]bool {
 	i := build.ActiveSpecIndex()
 	if i < 0 {
@@ -234,7 +234,7 @@ func leapHeldBy(tree *data.Tree, sockets []pob.Socket, texts map[int]string, all
 	return held
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1061-1089,src/Classes/PassiveSpec.lua:1128-1139,src/Classes/PassiveSpec.lua:1169-1190
+//pob:block:src/Classes/PassiveSpec.lua:1085-1113,src/Classes/PassiveSpec.lua:1152-1163,src/Classes/PassiveSpec.lua:1194-1215
 func leapJewels(build *pob.PathOfBuilding, tree *data.Tree, alloc map[int64]bool) []data.LeapJewel {
 	i := build.ActiveSpecIndex()
 	if i < 0 {
@@ -298,7 +298,7 @@ func leapJewels(build *pob.PathOfBuilding, tree *data.Tree, alloc map[int64]bool
 	return out
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:881-886
+//pob:block:src/Classes/PassiveSpec.lua:905-910
 func allocatedStarts(tree *data.Tree, alloc map[int64]bool) []int64 {
 	var out []int64
 	for id := range alloc {
@@ -310,7 +310,7 @@ func allocatedStarts(tree *data.Tree, alloc map[int64]bool) []int64 {
 	return out
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1548-1582
+//pob:block:src/Classes/PassiveSpec.lua:1573-1607
 func pruneOrphans(build *pob.PathOfBuilding) {
 	pruneOrphansOn(build, specTree(build))
 }
@@ -321,7 +321,7 @@ func pruneOrphansOn(build *pob.PathOfBuilding, tree *data.Tree) {
 	}
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1548-1582
+//pob:block:src/Classes/PassiveSpec.lua:1573-1607
 func orphanNodes(build *pob.PathOfBuilding, tree *data.Tree) []int64 {
 	alloc := allocSet(build, tree)
 	reached := connectedToStart(tree, alloc, allocatedStarts(tree, alloc))
@@ -362,7 +362,7 @@ func setStartNodes(build *pob.PathOfBuilding, tree *data.Tree, old []int64) {
 	}
 }
 
-//pob:src/Classes/PassiveSpec.lua:573-596
+//pob:src/Classes/PassiveSpec.lua:597-620
 func SelectClass(build *pob.PathOfBuilding, className pob.ClassName) {
 	tree := specTree(build)
 	old := startNodeIDs(build, tree)
@@ -372,7 +372,7 @@ func SelectClass(build *pob.PathOfBuilding, className pob.ClassName) {
 	pruneOrphans(build)
 }
 
-//pob:src/Classes/PassiveSpec.lua:610-628
+//pob:src/Classes/PassiveSpec.lua:634-652
 func SelectAscendClass(build *pob.PathOfBuilding, name pob.AscendancyName) {
 	tree := specTree(build)
 	old := startNodeIDs(build, tree)
@@ -381,7 +381,7 @@ func SelectAscendClass(build *pob.PathOfBuilding, name pob.AscendancyName) {
 	pruneOrphans(build)
 }
 
-//pob:src/Classes/PassiveSpec.lua:630-666
+//pob:src/Classes/PassiveSpec.lua:654-690
 func SelectSecondaryAscendClass(build *pob.PathOfBuilding, ascendClassID int) {
 	tree := specTree(build)
 	i := build.ActiveSpecIndex()
@@ -409,7 +409,7 @@ func isMainTreeNode(node data.Node) bool {
 		!isClassStartNode(node) && !isAscendClassStartNode(node)
 }
 
-//pob:src/Classes/PassiveSpec.lua:693-765
+//pob:src/Classes/PassiveSpec.lua:717-789
 func ConnectToClass(build *pob.PathOfBuilding, classID pob.ClassID) bool {
 	tree := specTree(build)
 	targetKey := classStartNodeID(tree, classID)
@@ -458,7 +458,7 @@ func ConnectToClass(build *pob.PathOfBuilding, classID pob.ClassID) bool {
 	return true
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:781-818
+//pob:block:src/Classes/PassiveSpec.lua:805-842
 func allocPathTo(build *pob.PathOfBuilding, nodeID int64) {
 	tree := specTree(build)
 	alloc := allocSet(build, tree)
@@ -514,7 +514,7 @@ func ascendancyOwner(tree *data.Tree, ascendancyID string) (pob.ClassID, pob.Asc
 	return 0, "", false
 }
 
-//pob:block:src/Classes/PassiveTreeView.lua:400-507
+//pob:block:src/Classes/PassiveTreeView.lua:402-509
 func ClickAscendancyNode(build *pob.PathOfBuilding, nodeID int64, decision ClassDecision) ClassChange {
 	tree := specTree(build)
 	node, ok := tree.Nodes[nodeKey(nodeID)]

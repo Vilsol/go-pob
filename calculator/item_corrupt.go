@@ -23,7 +23,7 @@ type craftFlags struct {
 	only                     map[string]bool
 }
 
-//pob:block:src/Classes/Item.lua:1212-1265
+//pob:block:src/Classes/Item.lua:1224-1277
 func itemCraftFlags(item *Item) craftFlags {
 	f := craftFlags{no: map[string]bool{}, only: map[string]bool{}}
 	for _, list := range [][]ModLine{item.EnchantModLines, item.ScourgeModLines, item.ClassRequirementModLines, item.ImplicitModLines, item.ExplicitModLines} {
@@ -73,7 +73,7 @@ func modSpawnWeight(item *Item, mod *data.AffixMod) float64 {
 	return modSpawnWeightTags(item, mod, nil, nil, nil)
 }
 
-//pob:src/Classes/Item.lua:1693-1752
+//pob:src/Classes/Item.lua:1722-1781
 func modSpawnWeightTags(item *Item, mod *data.AffixMod, includeTags, excludeTags map[string]bool, baseTags []string) float64 {
 	if item.Base == nil {
 		return 0
@@ -133,7 +133,7 @@ type rareLikeUnique struct {
 	allowDuplicateGroups bool
 }
 
-//pob:block:src/Modules/Data.lua:1330-1384
+//pob:block:src/Modules/Data.lua:1353-1407
 var (
 	subsumeTheSourceMods = sync.OnceValue(func() []data.AffixMod {
 		t, _ := data.AffixTable("JewelAbyss")
@@ -208,7 +208,7 @@ func baseWithTags(name string, tags func() []string) func() [][]string {
 	})
 }
 
-//pob:block:src/Modules/Data.lua:1398-1455
+//pob:block:src/Modules/Data.lua:1421-1478
 var rareLikeUniques = map[string]rareLikeUnique{
 	"subsume the source": {
 		validBases:           baseListTags("Jewel", "Abyss"),
@@ -269,7 +269,7 @@ var rareLikeUniques = map[string]rareLikeUnique{
 	},
 }
 
-//pob:block:src/Classes/Item.lua:1032-1040
+//pob:block:src/Classes/Item.lua:1043-1051
 func itemAffixes(item *Item) []data.AffixMod {
 	if rl, ok := item.rareLike(); ok {
 		return rl.affixes()
@@ -329,7 +329,7 @@ func corruptSortKey(m data.AffixMod) string {
 	return corruptSortDigitRe.ReplaceAllString(corruptSortSignRe.ReplaceAllString(s, ""), "$")
 }
 
-//pob:src/Classes/ItemsTab.lua:3145-3175
+//pob:src/Classes/ItemsTab.lua:3249-3280
 func buildImplicitList(item *Item, modType string) []CorruptMod {
 	var mods []data.AffixMod
 	if modType == corruptGlimpse {
@@ -420,7 +420,7 @@ func ItemCorruptChoices(raw string) (CorruptChoices, bool) {
 	return out, true
 }
 
-//pob:src/Classes/ItemsTab.lua:3350-3354
+//pob:src/Classes/ItemsTab.lua:3455-3459
 func CorruptedRangeLine(raw string, index int, value float64) string {
 	item := ParseItem(raw)
 	if index < 0 || index >= len(item.ExplicitModLines) {
@@ -479,7 +479,7 @@ func markCorrupted(b *implicitBlock) {
 	}
 }
 
-//pob:src/Classes/ItemsTab.lua:3290-3343
+//pob:src/Classes/ItemsTab.lua:3395-3448
 func CorruptItemText(raw string, source string, ids []string, downside []string, rolls map[int]float64) (string, bool) {
 	item := ParseItem(raw)
 	if item.Base == nil {
@@ -507,7 +507,7 @@ func CorruptItemText(raw string, source string, ids []string, downside []string,
 			if scourge {
 				b.scourge = lines
 			} else {
-				//pob:block:src/Classes/ItemsTab.lua:3294-3303,src/Classes/ItemsTab.lua:3325-3327
+				//pob:block:src/Classes/ItemsTab.lua:3399-3408,src/Classes/ItemsTab.lua:3430-3432
 				if special := specialCorruptLine(item); special != nil {
 					lines = append([]string{writeRawModLine(*special)}, lines...)
 				}
@@ -539,7 +539,7 @@ func CorruptItemText(raw string, source string, ids []string, downside []string,
 	return strings.Join(lines, "\n"), true
 }
 
-//pob:src/Classes/ItemsTab.lua:3219-3243
+//pob:src/Classes/ItemsTab.lua:3324-3348
 func (m *MiscCalculator) CorruptSortValues(raw string, source string, modType string, ids []string, stat string) []float64 {
 	ps, ok := powerStatByName(stat)
 	item := ParseItem(raw)

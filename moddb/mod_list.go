@@ -160,7 +160,7 @@ func (m *ModList) NewMod(name string, modType mod.Type, value float64, source mo
 	m.AddMod(newMod)
 }
 
-//pob:src/Modules/Common.lua:709-715
+//pob:src/Modules/Common.lua:710-716
 func modScaleRound(v float64) float64 {
 	return math.Floor(float64(v*100)+0.5) / 100
 }

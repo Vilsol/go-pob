@@ -286,7 +286,7 @@ func compareGemEffect(gem pob.Gem) *poe.GrantedEffect {
 	return effect
 }
 
-//pob:block:src/Classes/SkillsTab.lua:1168-1201
+//pob:block:src/Classes/SkillsTab.lua:1178-1211
 func compareGemName(gem pob.Gem) (string, *poe.GrantedEffect) {
 	gemData, effect := resolveGemInstance(gem)
 	if gemData != nil {

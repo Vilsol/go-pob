@@ -89,7 +89,7 @@ func isAscendancyInTree(tree *data.Tree, className string) bool {
 	return false
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:263-269
+//pob:block:src/Classes/PassiveSpec.lua:281-287
 func importClassIDs(tree *data.Tree, className string) (pob.ClassID, pob.AscendancyID, bool) {
 	for classID, class := range tree.Classes {
 		if string(class.Name) == className {
@@ -106,7 +106,7 @@ func importClassIDs(tree *data.Tree, className string) (pob.ClassID, pob.Ascenda
 	return 0, 0, false
 }
 
-//pob:block:src/Classes/ImportTab.lua:1184-1196,src/Classes/PassiveTree.lua:208-223
+//pob:block:src/Classes/ImportTab.lua:1184-1196,src/Classes/PassiveTree.lua:233-248
 func importSecondaryAscendancy(tree *data.Tree, raw json.RawMessage) int {
 	if len(raw) == 0 || string(raw) == "null" {
 		return 0
@@ -125,7 +125,7 @@ func importSecondaryAscendancy(tree *data.Tree, raw json.RawMessage) int {
 	return id
 }
 
-//pob:block:src/Classes/PassiveTree.lua:134-139
+//pob:block:src/Classes/PassiveTree.lua:159-164
 var legacyAlternateAscendancy = map[string]bool{"Warden": true, "Warlock": true, "Primalist": true}
 
 //pob:block:src/Classes/ImportTab.lua:1229-1235,src/Modules/ConfigOptions.lua:136-150
@@ -143,7 +143,7 @@ func setSelByVal(build *pob.PathOfBuilding, name string, value string) {
 	}
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1832-1845,src/Classes/PassiveSpec.lua:1859-1871,src/Classes/PassiveSpec.lua:2029-2069,src/Classes/PassiveSpec.lua:2342-2347
+//pob:block:src/Classes/PassiveSpec.lua:1859-1872,src/Classes/PassiveSpec.lua:1888-1900,src/Classes/PassiveSpec.lua:2114-2154,src/Classes/PassiveSpec.lua:2401-2406
 func importedSubgraphNodes(build *pob.PathOfBuilding, tree *data.Tree, charPassives characterPassives) []int64 {
 	type importedNode struct {
 		id         string
@@ -177,7 +177,7 @@ func importedSubgraphNodes(build *pob.PathOfBuilding, tree *data.Tree, charPassi
 			return false
 		}
 		for _, imported := range importedNodes {
-			//pob:block:src/Classes/PassiveSpec.lua:2055-2057
+			//pob:block:src/Classes/PassiveSpec.lua:2140-2142
 			matches := node.Type == "Keystone" && imported.isKeystone || (node.OrbitIndex == imported.orbitIndex && !imported.isMastery)
 			if proxyGroup == imported.group && matches {
 				id, err := strconv.ParseInt(imported.id, 10, 64)
@@ -244,7 +244,7 @@ func importPassiveTreeAndJewels(build *pob.PathOfBuilding, charData *characterDa
 		phreciaSuffix = ""
 	}
 
-	//pob:block:src/Classes/PassiveSpec.lua:256-312
+	//pob:block:src/Classes/PassiveSpec.lua:274-330
 	two := 2
 	classID, ascendClassID, _ := importClassIDs(tree, charData.Class)
 	spec = &build.Tree.Specs[build.ActiveSpecIndex()]

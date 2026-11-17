@@ -47,7 +47,7 @@ var powerStatList = []PowerStat{
 	{"SpellBlockChance", "Spell Block Chance", false, false}, {"SpellSuppressionChance", "Spell Suppression Chance", false, false},
 }
 
-//pob:block:src/Modules/Data.lua:214-235,src/Classes/TreeTab.lua:264-269
+//pob:block:src/Modules/Data.lua:214-235,src/Classes/TreeTab.lua:263-268
 func PowerStats() []PowerStat {
 	notMinion := map[string]bool{"AverageDamage": true, "TotalDot": true, "Str": true, "Dex": true, "Int": true, "Spirit": true,
 		"EffectiveLootRarityMod": true, "LightRadiusMod": true}
@@ -185,7 +185,7 @@ func (b *PowerBuilder) treeNode(id int64) data.Node {
 	return b.subgraph[id]
 }
 
-//pob:block:src/Classes/PassiveTree.lua:546-577
+//pob:block:src/Classes/PassiveTree.lua:571-602
 func powerNodeType(n data.Node) string {
 	switch {
 	case isClassStartNode(n):
@@ -204,7 +204,7 @@ func powerNodeType(n data.Node) string {
 	return "Normal"
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:54,src/Classes/PassiveTree.lua:132-163
+//pob:block:src/Classes/PassiveSpec.lua:54,src/Classes/PassiveTree.lua:157-188
 func specNode(tree *data.Tree, n data.Node) bool {
 	if n.Group == nil || (n.IsProxy != nil && *n.IsProxy) || (n.ExpansionJewel != nil && n.ExpansionJewel.Parent != nil) {
 		return false
@@ -233,7 +233,7 @@ func allocationPath(paths map[int64]int64, id int64) []int64 {
 	return nil
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1470-1624
+//pob:block:src/Classes/PassiveSpec.lua:1495-1649
 func (b *PowerBuilder) depends(id int64) []int64 {
 	if len(b.dependsOf) == 0 {
 		extra := map[int64][]int64{}
@@ -321,14 +321,14 @@ func (m *MiscCalculator) NewPowerBuilder(stat PowerStat, maxDepth int) *PowerBui
 	if b.subgraph != nil {
 		b.graph = newPowerGraph(b.tree, m.base.clusterNodes)
 	}
-	//pob:block:src/Classes/PassiveSpec.lua:1169
+	//pob:block:src/Classes/PassiveSpec.lua:1194
 	leap := map[int64]bool{}
 	for id := range leapHeld(m.build, b.tree, allocSet(m.build, b.tree)) {
 		if n := b.treeNode(id); powerNodeType(n) != "ClassStart" && powerNodeType(n) != "Socket" && (n.AscendancyName == nil || *n.AscendancyName == "") {
 			leap[id] = true
 		}
 	}
-	//pob:block:src/Classes/PassiveSpec.lua:1627-1692
+	//pob:block:src/Classes/PassiveSpec.lua:1652-1717
 	seeds := m.build.Build.PassiveNodes
 	if len(leap) > 0 {
 		roots := slices.Clone(b.roots)
@@ -387,7 +387,7 @@ func (m *MiscCalculator) NewPowerBuilder(stat PowerStat, maxDepth int) *PowerBui
 			}
 			continue
 		}
-		//pob:block:src/Classes/CalcsTab.lua:579-584,src/Classes/PassiveSpec.lua:1169
+		//pob:block:src/Classes/CalcsTab.lua:579-584,src/Classes/PassiveSpec.lua:1194
 		if leap[id] {
 			pathDist = 1
 		}
@@ -458,7 +458,7 @@ func heldBy(selections map[int64]int64, effect int64) (int64, bool) {
 	return 0, false
 }
 
-//pob:block:src/Classes/PassiveTree.lua:840-850
+//pob:block:src/Classes/PassiveTree.lua:887-897
 func statsModKey(stats []string) string {
 	ml := moddb.NewModList()
 	processStats(&Environment{}, ml, "", "", stats)
@@ -468,7 +468,7 @@ func statsModKey(stats []string) string {
 	return strings.Join(stats, "\n")
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1697-1706,src/Classes/PassiveSpec.lua:2468-2476
+//pob:block:src/Classes/PassiveSpec.lua:1722-1731,src/Classes/PassiveSpec.lua:2527-2535
 func (b *PowerBuilder) specNodeStats(id int64) (string, []string) {
 	n := b.treeNode(id)
 	name := ""
@@ -654,7 +654,7 @@ func (b *PowerBuilder) masteryTask(id int64, effect data.MasteryEffect) {
 	p.path, p.hasPath = max(p.path, ep.path), true
 }
 
-//pob:block:src/Classes/PassiveTree.lua:810-818
+//pob:block:src/Classes/PassiveTree.lua:857-865
 func splitStatLines(stats []string) []string {
 	var out []string
 	for _, s := range stats {
@@ -693,7 +693,7 @@ func (b *PowerBuilder) Current() int64 {
 	return 0
 }
 
-//pob:block:src/Classes/TreeTab.lua:1099-1154
+//pob:block:src/Classes/TreeTab.lua:1098-1153
 func (b *PowerBuilder) Report() []PowerReportEntry {
 	selections := map[int64]int64{}
 	for _, s := range activeMasterySelections(b.misc.build) {
@@ -879,7 +879,7 @@ func (f *pathFrontier) Pop() any {
 	return x
 }
 
-//pob:src/Classes/PassiveSpec.lua:548-585
+//pob:src/Classes/PassiveSpec.lua:572-609
 func (g *powerGraph) allocationPaths(activeNodes []int64, rootNodes []int64) map[int64]int64 {
 	hops := map[int64]int64{}
 	frontier := &pathFrontier{distances: map[int64]int64{}}
@@ -928,7 +928,7 @@ func (g *powerGraph) allocationPaths(activeNodes []int64, rootNodes []int64) map
 	return hops
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1472-1529
+//pob:block:src/Classes/PassiveSpec.lua:1497-1554
 func (g *powerGraph) dependentNodes(activeNodes []int64, target int64, rootNodes []int64) []int64 {
 	rootsFor := func(list []int64) []int64 {
 		out := slices.Clone(rootNodes)
@@ -953,7 +953,7 @@ func (g *powerGraph) dependentNodes(activeNodes []int64, target int64, rootNodes
 	return out
 }
 
-//pob:src/Classes/PassiveSpec.lua:868-899
+//pob:src/Classes/PassiveSpec.lua:892-923
 func (g *powerGraph) prunable(activeNodes []int64, rootNodes []int64) []int64 {
 	active := map[int64]bool{}
 	for _, id := range activeNodes {

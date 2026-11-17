@@ -14,7 +14,7 @@ var (
 	sanitiseTags = regexp.MustCompile(`<[^<>]*>`)
 )
 
-//pob:src/Classes/SkillsTab.lua:694-706
+//pob:src/Classes/SkillsTab.lua:695-707
 func (b *PathOfBuilding) CopySocketGroup(socketGroup int) string {
 	set := b.Skills.SkillSets[b.ActiveSkillSetIndex()]
 	if socketGroup < 0 || socketGroup >= len(set.Skills) {
@@ -42,7 +42,7 @@ func (b *PathOfBuilding) CopySocketGroup(socketGroup int) string {
 	return skillText
 }
 
-//pob:src/Classes/SkillsTab.lua:708-740
+//pob:src/Classes/SkillsTab.lua:709-741
 func (b *PathOfBuilding) PasteSocketGroup(text string) int {
 	skillText := sanitiseText(text)
 	newGroup := Skill{Enabled: true}

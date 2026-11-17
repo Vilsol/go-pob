@@ -154,7 +154,7 @@ func (b *basesExport) base(st *baseState, args string) error {
 	}
 	out.Implicit = strings.Join(implicitLines, "\n")
 	out.CannotBeAnointed = len(baseItemType.EnchantMods) > 0
-	//pob:block:src/Export/Scripts/bases.lua:307-316
+	//pob:block:src/Export/Scripts/bases.lua:308-317
 	if k := baseItemType.FlavourTextKey; k != nil {
 		out.FlavourText = cleanAndSplit(poe.FlavourTexts[*k].Text)
 	}
@@ -170,7 +170,7 @@ func luaPatternRe(pattern string) (*regexp.Regexp, error) {
 	return re, nil
 }
 
-//pob:block:src/Export/Scripts/bases.lua:328-346
+//pob:block:src/Export/Scripts/bases.lua:329-347
 func (b *basesExport) baseMatch(st *baseState, argstr string) error {
 	args := strings.Fields(argstr)
 	if len(args) == 0 {
@@ -202,7 +202,7 @@ func (b *basesExport) baseMatch(st *baseState, argstr string) error {
 	return nil
 }
 
-//pob:block:src/Export/Scripts/bases.lua:443-445
+//pob:block:src/Export/Scripts/bases.lua:445-447
 func dumpItemBases(pobDir string) (map[string]craftBase, error) {
 	ctx, cache := gameDataContext(), assetCache()
 	if err := poe.InitializeBaseItemTypes(ctx, raw.LatestVersion, cache); err != nil {

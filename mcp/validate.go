@@ -257,7 +257,7 @@ func unparsedWarnings(env *calculator.Environment) []string {
 // unparsedNodeLines are a node's stat lines PassiveTree:ProcessStats leaves with no mod list or with extra text,
 // after trying to combine each with the lines that follow it.
 //
-//pob:block:src/Classes/PassiveTree.lua:807-851
+//pob:block:src/Classes/PassiveTree.lua:854-898
 func unparsedNodeLines(stats []string) []string {
 	var sd []string
 	for _, l := range stats {

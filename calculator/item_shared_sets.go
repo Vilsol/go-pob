@@ -90,7 +90,7 @@ func AddSharedItem(build *pob.PathOfBuilding, text string, slotName string) (int
 	return id, true
 }
 
-//pob:block:src/Classes/ItemsTab.lua:1906-1945
+//pob:block:src/Classes/ItemsTab.lua:1976-2015
 func CopyAnointsAndEldritchImplicits(build *pob.PathOfBuilding, newItem *Item, copyEldritchImplicits, overwrite bool, sourceSlotName string) {
 	newItemType := sourceSlotName
 	if newItemType == "" {
@@ -131,7 +131,7 @@ func CopyAnointsAndEldritchImplicits(build *pob.PathOfBuilding, newItem *Item, c
 	}
 }
 
-//pob:block:src/Classes/ItemsTab.lua:1948-1958
+//pob:block:src/Classes/ItemsTab.lua:2018-2028
 func NormaliseDisplayItem(build *pob.PathOfBuilding, text string, copyEldritchImplicits bool) string {
 	newItem := ParseItem(text)
 	if newItem.Base == nil {

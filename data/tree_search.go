@@ -38,7 +38,7 @@ func (f *SearchState) Pop() any {
 	return x
 }
 
-//pob:src/Classes/PassiveSpec.lua:548-585
+//pob:src/Classes/PassiveSpec.lua:572-609
 func (v *TreeVersionData) CalculateAllocationPaths(activeNodes []int64, rootNodes []int64) map[int64]int64 {
 	_, adjacencyMap := v.getGraph()
 
@@ -129,7 +129,7 @@ func (v *TreeVersionData) pathRuleSets() (map[int64]bool, map[int64]bool) {
 	return blockedTargets, masteryParents
 }
 
-//pob:src/Classes/PassiveSpec.lua:868-899
+//pob:src/Classes/PassiveSpec.lua:892-923
 func (v *TreeVersionData) CalculatePrunableNodes(activeNodes []int64, rootNodes []int64) []int64 {
 	return v.prunableNodes(activeNodes, rootNodes, nil)
 }
@@ -285,7 +285,7 @@ func (v *TreeVersionData) CalculateDependentNodesWith(activeNodes []int64, targe
 	return out
 }
 
-//pob:block:src/Classes/PassiveTree.lua:546-577,src/Classes/PassiveTree.lua:628-653
+//pob:block:src/Classes/PassiveTree.lua:571-602,src/Classes/PassiveTree.lua:653-678
 func (v *TreeVersionData) SpecDependsNode(id int64) (DependsNode, bool) {
 	n, ok := v.Tree().Nodes[strconv.FormatInt(id, 10)]
 	if !ok {
@@ -341,7 +341,7 @@ type dependsState struct {
 	leaps            []int64
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1061-1089,src/Classes/PassiveSpec.lua:1128-1209,src/Classes/PassiveSpec.lua:1470-1624
+//pob:block:src/Classes/PassiveSpec.lua:1085-1113,src/Classes/PassiveSpec.lua:1128-1209,src/Classes/PassiveSpec.lua:1495-1649
 func SpecDepends(allocNodes []int64, node func(int64) (DependsNode, bool), jewels []LeapJewel) map[int64][]int64 {
 	nodes := map[int64]*dependsState{}
 	get := func(id int64) *dependsState {

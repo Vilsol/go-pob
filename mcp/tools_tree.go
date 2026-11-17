@@ -376,7 +376,7 @@ func applyTreeOp(ec *editCtx, op treeOp) *ToolError {
 		if op.WithDependents == nil || *op.WithDependents {
 			cut = append(cut, deps...)
 		} else if len(deps) > 0 {
-			//pob:block:src/Classes/PassiveSpec.lua:311
+			//pob:block:src/Classes/PassiveSpec.lua:329
 			ec.note(fmt.Sprintf("with_dependents:false leaves %d nodes cut off from the class start; PoB drops them from the calculation", len(deps)))
 		}
 		b.DeallocateNodes(cut)
@@ -485,7 +485,7 @@ func allocateNode(ec *editCtx, n treeNode, withPath bool, plan pathPlan) *ToolEr
 }
 
 // checkConnected refuses a path:false allocation the calculation dropped as cut off from the class start
-// (PassiveSpec.lua:311); a mastery without an effect is dropped for that reason instead and has its own hint.
+// (PassiveSpec.lua:329); a mastery without an effect is dropped for that reason instead and has its own hint.
 func checkConnected(env *calculator.Environment, n treeNode, opIndex int) *ToolError {
 	b := env.Build
 	if !slices.Contains(b.Build.PassiveNodes, n.ID) {

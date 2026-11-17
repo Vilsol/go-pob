@@ -364,7 +364,7 @@ func (b *Breakdown) GetData() map[string]*Entry {
 	return out
 }
 
-//pob:block:src/Modules/CalcOffence.lua:2006,src/Modules/CalcOffence.lua:2023
+//pob:block:src/Modules/CalcOffence.lua:2029,src/Modules/CalcOffence.lua:2046
 func newHandBreakdown(skillModList moddb.ModStoreFuncs, output map[string]float64) *Breakdown {
 	return &Breakdown{Output: output, Data: make(map[string]*Entry), modStore: skillModList}
 }

@@ -126,7 +126,7 @@ func legacyGemBase(name string) string {
 
 // gemRowByName finds the gem a name-only gem (no gem or skill id) resolves to, legacy gems included.
 //
-//pob:block:src/Classes/SkillsTab.lua:1193-1201
+//pob:block:src/Classes/SkillsTab.lua:1203-1211
 func gemRowByName(name string) (raw.PoBGem, bool) {
 	for _, rows := range []map[string]raw.PoBGem{raw.Gems, raw.GemVariants} {
 		for _, row := range rows {
@@ -332,7 +332,7 @@ func gemLevelReq(skillID string, level int) int {
 
 // usableGemLevel is the highest gem level up to level whose requirement charLevel meets, at least 1.
 //
-//pob:block:src/Classes/SkillsTab.lua:1144-1153
+//pob:block:src/Classes/SkillsTab.lua:1154-1163
 func usableGemLevel(skillID string, level, charLevel int) int {
 	for lv := level; lv > 1; lv-- {
 		if gemLevelReq(skillID, lv) <= charLevel {
@@ -344,8 +344,8 @@ func usableGemLevel(skillID string, level, charLevel int) int {
 
 // addedGem is g as PoB's skills tab adds it to a group: the build's default level and quality, unless given.
 //
-//pob:block:src/Classes/SkillsTab.lua:795-798
-//pob:block:src/Classes/SkillsTab.lua:826-828
+//pob:block:src/Classes/SkillsTab.lua:796-799
+//pob:block:src/Classes/SkillsTab.lua:827-829
 func addedGem(b *pob.PathOfBuilding, g gemEntry, level, quality *int) pob.Gem {
 	q := 0
 	if b.Skills.DefaultGemQuality != nil {
@@ -360,7 +360,7 @@ func addedGem(b *pob.PathOfBuilding, g gemEntry, level, quality *int) pob.Gem {
 // replacedGem is g chosen in the skills tab slot that held old: the slot keeps its quality, count and enable states and
 // the level is the new gem's default, unless given.
 //
-//pob:block:src/Classes/SkillsTab.lua:823-830
+//pob:block:src/Classes/SkillsTab.lua:824-831
 func replacedGem(b *pob.PathOfBuilding, old pob.Gem, g gemEntry, level, quality *int) pob.Gem {
 	gem := keepSlot(newGem(g, gemLevel(b, g, level), 0), old)
 	if quality != nil {
@@ -371,7 +371,7 @@ func replacedGem(b *pob.PathOfBuilding, old pob.Gem, g gemEntry, level, quality 
 
 // gemLabels names gems as PoB's skill text does, "name level/quality".
 //
-//pob:block:src/Classes/SkillsTab.lua:703
+//pob:block:src/Classes/SkillsTab.lua:704
 func gemLabels(list []pob.Gem) string {
 	out := make([]string, len(list))
 	for i, g := range list {
@@ -386,7 +386,7 @@ func gemLabels(list []pob.Gem) string {
 // keepSlot is old with gem's identity and level: PoB's skills tab changes a slot's gemId and level in the same gem
 // instance, so its quality, enable states, count and skill part, minion and stage choices stay.
 //
-//pob:block:src/Classes/SkillsTab.lua:823-828
+//pob:block:src/Classes/SkillsTab.lua:824-829
 func keepSlot(gem, old pob.Gem) pob.Gem {
 	out := old
 	out.GemID, out.NameSpec, out.SkillID, out.VariantID, out.Level = gem.GemID, gem.NameSpec, gem.SkillID, gem.VariantID, gem.Level
@@ -473,7 +473,7 @@ func (ec *editCtx) noteGroupIndexes() {
 
 // groupGemCount is the count Full DPS takes for a group without its own count: its first enabled active gem's.
 //
-//pob:block:src/Modules/Calcs.lua:119-135
+//pob:block:src/Modules/Calcs.lua:126-142
 func groupGemCount(gems []pob.Gem) int {
 	for _, gem := range gems {
 		if gem.Enabled && !gemIsSupport(gem) && gem.Count != nil {

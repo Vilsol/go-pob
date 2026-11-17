@@ -71,7 +71,7 @@ func SpecNodes(spec Spec) []int64 {
 	return out
 }
 
-//pob:block:src/Classes/TreeTab.lua:495
+//pob:block:src/Classes/TreeTab.lua:494
 func SpecTitle(spec Spec) string {
 	if spec.Title == nil {
 		return "Default"
@@ -79,7 +79,7 @@ func SpecTitle(spec Spec) string {
 	return *spec.Title
 }
 
-//pob:src/Classes/TreeTab.lua:549-585
+//pob:src/Classes/TreeTab.lua:548-584
 func (b *PathOfBuilding) SetActiveSpec(specID int) {
 	if len(b.Tree.Specs) == 0 {
 		return

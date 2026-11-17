@@ -26,7 +26,7 @@ func isClusterNodeID(nodeID string) bool {
 
 var clusterNodeMaps sync.Map
 
-//pob:block:src/Classes/PassiveTree.lua:619-621
+//pob:block:src/Classes/PassiveTree.lua:644-646
 func clusterNodeMap(version pob.TreeVersion) map[string]data.Node {
 	if cached, ok := clusterNodeMaps.Load(version); ok {
 		return cached.(map[string]data.Node)
@@ -67,7 +67,7 @@ type clusterJewelData struct {
 	smallsAreNothingness bool
 }
 
-//pob:block:src/Classes/Item.lua:2514-2516
+//pob:block:src/Classes/Item.lua:2553-2555
 func (c *clusterJewelData) valid() bool {
 	if c.keystone != "" {
 		return true
@@ -78,7 +78,7 @@ func (c *clusterJewelData) valid() bool {
 	return c.overrideOK && c.nothingSet
 }
 
-//pob:block:src/Classes/Item.lua:1267-1293
+//pob:block:src/Classes/Item.lua:1279-1305
 func readClusterJewelData(item *Item) *clusterJewelData {
 	if item == nil || item.Type != "Jewel" {
 		return nil
@@ -197,7 +197,7 @@ func buildClusterJewelLayout(env *Environment, version pob.TreeVersion, withLayo
 	if withLayout {
 		b.layout = make(map[string]*clusterNodeLayout)
 	}
-	//pob:block:src/Classes/PassiveSpec.lua:106,src/Classes/PassiveSpec.lua:1735
+	//pob:block:src/Classes/PassiveSpec.lua:106,src/Classes/PassiveSpec.lua:1760
 	if specs := env.Build.Tree.Specs; len(specs) > 0 {
 		idx := env.Build.Tree.ActiveSpec - 1
 		if idx < 0 || idx >= len(specs) {
@@ -218,7 +218,7 @@ func buildClusterJewelLayout(env *Environment, version pob.TreeVersion, withLayo
 	for _, slot := range b.tree.JewelSlots {
 		socketID := strconv.FormatInt(slot, 10)
 		socket, ok := b.tree.Nodes[socketID]
-		//pob:block:src/Classes/PassiveSpec.lua:1849
+		//pob:block:src/Classes/PassiveSpec.lua:1876
 		if !ok || !b.allocated[socketID] || socket.ExpansionJewel == nil || socket.ExpansionJewel.Size != 2 {
 			continue
 		}
@@ -232,7 +232,7 @@ func buildClusterJewelLayout(env *Environment, version pob.TreeVersion, withLayo
 	return b.nodes, b.layout
 }
 
-//pob:src/Classes/PassiveSpec.lua:901-910
+//pob:src/Classes/PassiveSpec.lua:925-934
 func socketedClusterJewels(env *Environment) map[string]*clusterJewelData {
 	specs := env.Build.Tree.Specs
 	if len(specs) == 0 {
@@ -294,7 +294,7 @@ func (b *clusterBuilder) buildSubgraph(jewel *clusterJewelData, parentSocketID s
 		subOrder = append(subOrder, id)
 		subLayout[id] = &clusterNodeLayout{kind: kind, group: *proxyNode.Group, orbit: orbit, orbitIndex: orbitIndex}
 	}
-	//pob:block:src/Classes/PassiveSpec.lua:2018-2020
+	//pob:block:src/Classes/PassiveSpec.lua:2103-2105
 	linkNodes := func(a, c string) {
 		for _, pair := range [2][2]string{{a, c}, {c, a}} {
 			if node, ok := subNodes[pair[0]]; ok {
@@ -320,7 +320,7 @@ func (b *clusterBuilder) buildSubgraph(jewel *clusterJewelData, parentSocketID s
 		if b.layout != nil {
 			b.layout[strconv.Itoa(nodeID)] = &clusterNodeLayout{kind: "Keystone", group: *proxyNode.Group, orbit: 0, orbitIndex: 1}
 		}
-		//pob:block:src/Classes/PassiveSpec.lua:2094
+		//pob:block:src/Classes/PassiveSpec.lua:2179
 		b.linkNodes(strconv.Itoa(nodeID), parentSocketID)
 		return
 	}
@@ -373,7 +373,7 @@ func (b *clusterBuilder) buildSubgraph(jewel *clusterJewelData, parentSocketID s
 	}
 	smallCount := nodeCount - socketCount - notableCount
 
-	//pob:block:src/Classes/PassiveSpec.lua:2109,src/Classes/PassiveSpec.lua:2138-2151
+	//pob:block:src/Classes/PassiveSpec.lua:2194,src/Classes/PassiveSpec.lua:2223-2236
 	nodeOrbit := clusterJewel.SizeIndex + 1
 	if skill.MasteryIcon != "" {
 		masteryID := strconv.Itoa(nodeID + 12)
@@ -384,7 +384,7 @@ func (b *clusterBuilder) buildSubgraph(jewel *clusterJewelData, parentSocketID s
 
 	indicies := make(map[int]string)
 
-	//pob:src/Classes/PassiveSpec.lua:1334-1353
+	//pob:src/Classes/PassiveSpec.lua:1359-1378
 	makeJewel := func(nodeIndex, jewelIndex int) {
 		socket := b.findSocket(proxyGroup, int64(jewelIndex))
 		if socket == nil {
@@ -500,7 +500,7 @@ func (b *clusterBuilder) buildSubgraph(jewel *clusterJewelData, parentSocketID s
 		place(indicies[nodeIndex], "Normal", nodeOrbit, nodeIndex)
 	}
 
-	//pob:block:src/Classes/PassiveSpec.lua:2306-2309
+	//pob:block:src/Classes/PassiveSpec.lua:2365-2368
 	if len(b.tree.Constants.SkillsPerOrbit) > nodeOrbit {
 		skillsPerOrbit := int(b.tree.Constants.SkillsPerOrbit[nodeOrbit])
 		proxyID, _ := strconv.Atoi(expansionJewel.Proxy)
@@ -512,7 +512,7 @@ func (b *clusterBuilder) buildSubgraph(jewel *clusterJewelData, parentSocketID s
 		}
 	}
 
-	//pob:src/Classes/PassiveSpec.lua:2322-2340
+	//pob:src/Classes/PassiveSpec.lua:2381-2399
 	entrance := indicies[0]
 	if entrance == "" {
 		return
@@ -536,7 +536,7 @@ func (b *clusterBuilder) buildSubgraph(jewel *clusterJewelData, parentSocketID s
 	}
 	linkNodes(entrance, parentSocketID)
 
-	//pob:block:src/Classes/PassiveSpec.lua:2342-2356
+	//pob:block:src/Classes/PassiveSpec.lua:2401-2415
 	for _, subID := range subOrder {
 		if node, ok := subNodes[subID]; ok {
 			b.nodes[subID] = node
@@ -546,7 +546,7 @@ func (b *clusterBuilder) buildSubgraph(jewel *clusterJewelData, parentSocketID s
 		}
 		if subLayout[subID].kind == "Socket" {
 			nested, socketed := b.jewels[subID]
-			//pob:block:src/Classes/PassiveSpec.lua:2351-2352
+			//pob:block:src/Classes/PassiveSpec.lua:2410-2411
 			if b.allocated[subID] && socketed && nested.valid() {
 				b.buildSubgraph(nested, subID, b.nodes[subID], id, depth+1)
 			}
@@ -554,7 +554,7 @@ func (b *clusterBuilder) buildSubgraph(jewel *clusterJewelData, parentSocketID s
 	}
 }
 
-//pob:src/Classes/PassiveSpec.lua:1916-1933
+//pob:src/Classes/PassiveSpec.lua:2001-2018
 func translateClusterOrbitIndex(srcOidx, srcNodesPerOrbit, destNodesPerOrbit int) int {
 	var table []int
 	switch {
@@ -577,13 +577,13 @@ func translateClusterOrbitIndex(srcOidx, srcNodesPerOrbit, destNodesPerOrbit int
 	return table[srcOidx]
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:2018-2027
+//pob:block:src/Classes/PassiveSpec.lua:2103-2112
 func (b *clusterBuilder) linkNodes(a, c string) {
 	b.addLink(a, c)
 	b.addLink(c, a)
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:2019-2020
+//pob:block:src/Classes/PassiveSpec.lua:2104-2105
 func (b *clusterBuilder) addLink(id, other string) {
 	node, ok := b.nodes[id]
 	if !ok {
@@ -597,7 +597,7 @@ func (b *clusterBuilder) addLink(id, other string) {
 	b.nodes[id] = node
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:2114-2126
+//pob:block:src/Classes/PassiveSpec.lua:2199-2211
 func (b *clusterBuilder) sortOrder(node data.Node) int {
 	if node.Name == nil {
 		return len(b.sortOrde)
@@ -613,7 +613,7 @@ type clusterSocket struct {
 	node data.Node
 }
 
-//pob:src/Classes/PassiveSpec.lua:1262-1270
+//pob:src/Classes/PassiveSpec.lua:1287-1295
 func (b *clusterBuilder) findSocket(group data.Group, index int64) *clusterSocket {
 	for _, nodeID := range group.Nodes {
 		node, ok := b.tree.Nodes[nodeID]

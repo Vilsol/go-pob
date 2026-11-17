@@ -9,7 +9,7 @@ import (
 	"github.com/Vilsol/go-pob/data"
 )
 
-//pob:block:src/Modules/Data.lua:1417-1421
+//pob:block:src/Modules/Data.lua:1440-1444
 var rareLikeUniqueCustomSources = map[string]map[string]bool{
 	"dread captain's cutlass": {"ESSENCE": true, "VEILED": true, "CUSTOM": true},
 }
@@ -21,12 +21,12 @@ func supportsCustomModifiers(item *Item) map[string]bool {
 	return rareLikeUniqueCustomSources[luaLower(item.Title)]
 }
 
-//pob:src/Classes/ItemsTab.lua:997-999
+//pob:src/Classes/ItemsTab.lua:1013-1015
 func addCustomShown(item *Item) bool {
 	return item.Rarity == RarityMagic || item.Rarity == RarityRare || supportsCustomModifiers(item) != nil
 }
 
-//pob:block:src/Classes/ItemsTab.lua:3750-3797
+//pob:block:src/Classes/ItemsTab.lua:3856-3903
 func customModSources(raw string, item *Item) []ImplicitSource {
 	var out []ImplicitSource
 	t := item.Base.Type
@@ -68,7 +68,7 @@ type CustomModChoices struct {
 	Mods    map[string][]CustomMod
 }
 
-//pob:src/Classes/Item.lua:1754-1765
+//pob:src/Classes/Item.lua:1783-1794
 func necropolisModSpawnWeight(item *Item, mod *data.AffixMod) int {
 	tags := data.CraftBaseInfo(item.Base.Name).Tags
 	for k, key := range mod.WeightKey {
@@ -92,7 +92,7 @@ func prefixFirst(a, b data.AffixMod, ai, bi string) int {
 	return strings.Compare(ai, bi)
 }
 
-//pob:src/Classes/ItemsTab.lua:3612-3749
+//pob:src/Classes/ItemsTab.lua:3718-3855
 func buildCustomMods(raw string, item *Item, sourceID string) []CustomMod {
 	type entry struct {
 		id    string
@@ -169,7 +169,7 @@ func buildCustomMods(raw string, item *Item, sourceID string) []CustomMod {
 			}
 			return b.Level - a.Level
 		})
-	//pob:block:src/Classes/ItemsTab.lua:3579-3602,src/Classes/ItemsTab.lua:3704-3709
+	//pob:block:src/Classes/ItemsTab.lua:3685-3708,src/Classes/ItemsTab.lua:3810-3815
 	case "DELVE", "INCURSION":
 		base := item.Base
 		subTypeName := ""
@@ -202,7 +202,7 @@ func buildCustomMods(raw string, item *Item, sourceID string) []CustomMod {
 			case "NECROPOLIS":
 				ok = necropolisModSpawnWeight(item, &mod) > 0
 			case "FOSSIL":
-				//pob:block:src/Classes/Item.lua:1767-1769
+				//pob:block:src/Classes/Item.lua:1796-1798
 				ok = (mod.Affix == "Subterranean" || mod.Affix == "of the Underground") && modSpawnWeight(item, &mod) > 0
 			}
 			if ok {
@@ -257,7 +257,7 @@ func customModLines(m CustomMod, nodes map[string]data.Node) []string {
 	return out
 }
 
-//pob:src/Classes/ItemsTab.lua:3799-3817
+//pob:src/Classes/ItemsTab.lua:3905-3923
 func CustomModText(raw string, sourceID string, modID string, custom string) (string, bool) {
 	item := ParseItem(raw)
 	if item.Base == nil {
@@ -279,7 +279,7 @@ func CustomModText(raw string, sourceID string, modID string, custom string) (st
 	return raw, false
 }
 
-//pob:src/Classes/ItemsTab.lua:3528-3543
+//pob:src/Classes/ItemsTab.lua:3634-3649
 func (m *MiscCalculator) CustomModSortValues(raw string, sourceID string, ids []string, stat string) []float64 {
 	ps, ok := powerStatByName(stat)
 	item := ParseItem(raw)

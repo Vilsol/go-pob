@@ -18,7 +18,7 @@ type listSlot struct {
 	inactive bool
 }
 
-//pob:block:src/Classes/ItemsTab.lua:220-234
+//pob:block:src/Classes/ItemsTab.lua:232-246
 func treeSocketIDs() []int {
 	var ids []int
 	for key, node := range data.TreeVersions[data.LatestTreeVersion].Tree().Nodes {
@@ -248,7 +248,7 @@ type socketCut struct {
 	depends []int64
 }
 
-//pob:block:src/Classes/ItemsTab.lua:1878-1894
+//pob:block:src/Classes/ItemsTab.lua:1948-1964
 func socketCuts(build *pob.PathOfBuilding, itemID int) map[int][]socketCut {
 	cuts := map[int][]socketCut{}
 	for k, spec := range build.Tree.Specs {
@@ -283,7 +283,7 @@ func specShadow(build *pob.PathOfBuilding, k int) (*pob.PathOfBuilding, *data.Tr
 	return &shadow, data.TreeVersions[hostedTreeVersion(build.Tree.Specs[k].TreeVersion)].Tree()
 }
 
-//pob:block:src/Classes/ItemListControl.lua:37-48,src/Classes/ItemsTab.lua:1857-1904
+//pob:block:src/Classes/ItemListControl.lua:37-48,src/Classes/ItemsTab.lua:1927-1974
 func DeleteItems(build *pob.PathOfBuilding, itemIDs []int) bool {
 	changed := false
 	for i := len(itemIDs) - 1; i >= 0; i-- {
@@ -371,7 +371,7 @@ func DeleteAllItems(build *pob.PathOfBuilding) {
 	PopulateSlots(build)
 }
 
-//pob:src/Classes/ItemsTab.lua:1820-1854
+//pob:src/Classes/ItemsTab.lua:1890-1924
 func SortItems(build *pob.PathOfBuilding) {
 	slots := orderedListSlots(build)
 	slotOrder := make(map[string]int, len(slots))

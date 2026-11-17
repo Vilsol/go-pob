@@ -40,7 +40,7 @@ var resistElems = []string{"Fire", "Cold", "Lightning", "Chaos"}
 // headroom is each resistance's margin over its cap: ResistOverCap above it, minus MissingResist below it.
 func headroom(env *calculator.Environment) map[string]float64 {
 	out := make(map[string]float64, len(resistElems))
-	//pob:block:src/Modules/CalcDefence.lua:627-629
+	//pob:block:src/Modules/CalcDefence.lua:629-631
 	for _, el := range resistElems {
 		over, _ := statValue(env, el+"ResistOverCap")
 		missing, _ := statValue(env, "Missing"+el+"Resist")
@@ -693,7 +693,7 @@ func evalChange(b *pob.PathOfBuilding, ch change) *calculator.Environment {
 
 // slotSockets is how many gems the item in slot can hold and how many enabled gems its groups socket there.
 //
-//pob:block:src/Modules/CalcSetup.lua:1309-1331
+//pob:block:src/Modules/CalcSetup.lua:1345-1367
 func slotSockets(b *pob.PathOfBuilding, slot string) (int, int) {
 	sockets, gemsIn := 0, 0
 	if slot == "" {
@@ -916,7 +916,7 @@ func uniqueTitle(name string) string {
 // coloursDiffer reports whether it's sockets take a different colour than old's, or match differently, in a socket the slot's gems fill;
 // PoB's item comparison keeps the equipped item's colour matches (SkillsTab.lua:1257-1264), the equipped change does not.
 //
-//pob:block:src/Classes/SkillsTab.lua:1245-1265
+//pob:block:src/Classes/SkillsTab.lua:1255-1275
 func coloursDiffer(old, it *calculator.Item, gems int) bool {
 	if it.SocketColourAlwaysMatches || old.SocketColourAlwaysMatches {
 		return it.SocketColourAlwaysMatches != old.SocketColourAlwaysMatches

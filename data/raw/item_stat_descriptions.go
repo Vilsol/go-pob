@@ -93,7 +93,7 @@ func itemStatLimit(c rawdata.Condition) [2]any {
 	return [2]any{end(c.Min), end(c.Max)}
 }
 
-//pob:block:src/Export/Scripts/statdesc.lua:70-97
+//pob:block:src/Export/Scripts/statdesc.lua:71-98
 func itemStatFlags(handlers []rawdata.IndexHandler) []ItemStatDescriptionFlag {
 	var tokens []string
 	for _, h := range handlers {
@@ -123,7 +123,7 @@ func itemStatFlags(handlers []rawdata.IndexHandler) []ItemStatDescriptionFlag {
 	return flags
 }
 
-//pob:src/Modules/Common.lua:1110-1116
+//pob:src/Modules/Common.lua:1111-1117
 func escapeGGGString(text string) string {
 	text = gggMarkupRe.ReplaceAllString(text, "$1")
 	text = gggLinkRe.ReplaceAllString(text, "$1")

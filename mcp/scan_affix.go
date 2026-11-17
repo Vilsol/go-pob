@@ -43,7 +43,7 @@ func affixPool(item *calculator.Item) []data.AffixMod {
 
 // delveMods are the base's Delve drop-restricted mods, PoB's "Delve Drop-restricted" modifier source.
 //
-//pob:block:src/Classes/ItemsTab.lua:3579-3602
+//pob:block:src/Classes/ItemsTab.lua:3685-3708
 func delveMods(item *calculator.Item) []data.AffixMod {
 	sub := ""
 	if item.Base.SubType != "" {
@@ -77,7 +77,7 @@ var affixRecordLineRe = regexp.MustCompile(`^(Prefix|Suffix): (?:\{fractured\})?
 // recordedAffixes are a PoB-crafted item's Prefix:/Suffix: records that name a mod of the base's pool, by mod id or
 // else by affix name; "None" and unknown records hold nothing.
 //
-//pob:block:src/Classes/Item.lua:799-820,src/Classes/Item.lua:1500-1515
+//pob:block:src/Classes/Item.lua:810-831,src/Classes/Item.lua:1512-1527
 func recordedAffixes(item *calculator.Item) []data.AffixMod {
 	if !item.Crafted {
 		return nil
@@ -128,7 +128,7 @@ func (a itemAffixes) open(typ string) bool {
 // count inexact.
 func countAffixes(item *calculator.Item) itemAffixes {
 	a := itemAffixes{craftLimit: 1, limit: 3, ilvl: 100, exact: true, groups: map[string]bool{}}
-	//pob:block:src/Classes/Item.lua:1478-1491
+	//pob:block:src/Classes/Item.lua:1490-1503
 	if item.Rarity == calculator.RarityMagic {
 		a.limit = 1
 	} else if item.Base.Type == "Jewel" {
@@ -248,7 +248,7 @@ func countAffixes(item *calculator.Item) itemAffixes {
 		}
 	}
 	// a magic item's name carries its affixes: a word before the base is its prefix, "of ..." after it its suffix
-	//pob:block:src/Classes/Item.lua:979-981
+	//pob:block:src/Classes/Item.lua:990-992
 	if item.Rarity == calculator.RarityMagic {
 		if strings.TrimSpace(item.NamePrefix) != "" {
 			a.pre = max(a.pre, 1)
@@ -425,7 +425,7 @@ func addModText(text, src, id string, rng float64) (string, bool) {
 
 // affixRecord is the line of a PoB-crafted item's first empty record for a PREFIX or SUFFIX mod, else -1.
 //
-//pob:block:src/Classes/Item.lua:1808-1817,src/Classes/ItemsTab.lua:3767-3770
+//pob:block:src/Classes/Item.lua:1837-1846,src/Classes/ItemsTab.lua:3873-3876
 func affixRecord(lines []string, src string) int {
 	empty := map[string]string{"PREFIX": "Prefix: None", "SUFFIX": "Suffix: None"}[src]
 	if empty == "" || !slices.ContainsFunc(lines, func(l string) bool { return strings.TrimSpace(l) == "Crafted: true" }) {

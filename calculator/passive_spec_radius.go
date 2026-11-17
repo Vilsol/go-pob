@@ -64,7 +64,7 @@ func treeSockets(tree *data.Tree) []int64 {
 	return out
 }
 
-//pob:block:src/Classes/PassiveTreeView.lua:1167-1214,src/Classes/PassiveTreeView.lua:1245-1256
+//pob:block:src/Classes/PassiveTreeView.lua:1177-1224,src/Classes/PassiveTreeView.lua:1255-1266
 func TreeJewelRings(build *pob.PathOfBuilding, compared []int64) []TreeJewelRing {
 	tree := specTree(build)
 	alloc := allocSet(build, tree)

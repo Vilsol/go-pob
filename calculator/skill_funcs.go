@@ -30,7 +30,7 @@ var brandPreDamageFunc skillFunc = func(activeSkill *ActiveSkill, _ map[string]f
 		activeSkill.SkillModList.More(activeSkill.SkillCfg, "BrandActivationFrequency")
 }
 
-//pob:block:src/Data/Skills/act_int.lua:21107-21131
+//pob:block:src/Data/Skills/act_int.lua:21275-21299
 var wintertideBrandPreDamageFunc skillFunc = func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 	activeSkill.SkillData.CountsAttachedBrandsInDamage = activeSkill.SkillPart == 1
 	activeSkill.SkillData.HitTimeOverride = activeSkill.SkillData.RepeatFrequency /
@@ -71,7 +71,7 @@ var wintertideBrandPreDamageFunc skillFunc = func(activeSkill *ActiveSkill, _ ma
 	list.AddMod(mod.NewFloat("Damage", mod.TypeMore, dpsMultiplier).Source("Wintertide Brand Average Multiplier"))
 }
 
-//pob:block:src/Data/Skills/act_int.lua:13809-13811
+//pob:block:src/Data/Skills/act_int.lua:13892-13894
 var penanceBrandPreDamageFunc skillFunc = func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 	activeSkill.SkillData.HitTimeOverride = activeSkill.SkillData.RepeatFrequency *
 		activeSkill.SkillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, "Multiplier:PenanceBrandMaxEnergy") /
@@ -123,7 +123,7 @@ var shrapnelBallistaPreDamage skillFunc = func(activeSkill *ActiveSkill, output 
 	}
 }
 
-//pob:block:src/Data/Skills/act_dex.lua:10234-10241, src/Data/Skills/act_dex.lua:10337-10344
+//pob:block:src/Data/Skills/act_dex.lua:10236-10243, src/Data/Skills/act_dex.lua:10339-10346
 func lancingSteelPreDamageFunc(source mod.Source) skillFunc {
 	return func(activeSkill *ActiveSkill, output map[string]float64, _ *Breakdown) {
 		if activeSkill.SkillPart != 2 {
@@ -141,7 +141,7 @@ func lancingSteelPreDamageFunc(source mod.Source) skillFunc {
 	}
 }
 
-//pob:block:src/Data/Skills/act_int.lua:18043-18047
+//pob:block:src/Data/Skills/act_int.lua:18126-18130
 func stormBurstRemainingZapDamage(activeSkill *ActiveSkill, output map[string]float64) {
 	skillData := activeSkill.SkillData
 	remainingJumps := math.Floor((float64(skillData.Duration*output["DurationMod"]) + 0.001) / skillData.RepeatFrequency)
@@ -149,7 +149,7 @@ func stormBurstRemainingZapDamage(activeSkill *ActiveSkill, output map[string]fl
 		math.Max(float64(skillData.RemainingDurationDamage*remainingJumps)-100, 0)).Source("Skill:StormBurst"))
 }
 
-//pob:block:src/Data/Skills/act_dex.lua:10017-10022
+//pob:block:src/Data/Skills/act_dex.lua:10019-10024
 var poisonousConcoctionPreDamageFunc skillFunc = func(activeSkill *ActiveSkill, output map[string]float64, _ *Breakdown) {
 	multiplier := activeSkill.SkillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, "ChaosPerLifeFlaskPercent")
 	addedFromFlask := output["LifeFlaskRecovery"] * (multiplier / 100)
@@ -157,7 +157,7 @@ var poisonousConcoctionPreDamageFunc skillFunc = func(activeSkill *ActiveSkill, 
 	activeSkill.SkillModList.AddMod(mod.NewFloat("ChaosMax", mod.TypeBase, addedFromFlask).Source("Life Flask charges consumed"))
 }
 
-//pob:block:src/Data/Skills/other.lua:6204-6252
+//pob:block:src/Data/Skills/other.lua:6367-6415
 var enemyExplodePreDamageFunc skillFunc = func(activeSkill *ActiveSkill, output map[string]float64, _ *Breakdown) {
 	skillData := activeSkill.SkillData
 	output["ExplodeChance"] = 0
@@ -270,7 +270,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 
 	"LancingSteelAltX": {"preDamageFunc": lancingSteelPreDamageFunc("Skill:LancingSteelAltX")},
 
-	//pob:block:src/Data/Skills/act_int.lua:12642-12662
+	//pob:block:src/Data/Skills/act_int.lua:12722-12742
 	"LightningTendrilsAltX": {
 		"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 			interval := activeSkill.SkillData.PulseInterval
@@ -361,7 +361,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 
 	"LancingSteel": {"preDamageFunc": lancingSteelPreDamageFunc("Skill:LancingSteel")},
 
-	//pob:src/Data/Skills/act_int.lua:4361-4386, src/Data/Skills/act_int.lua:7417
+	//pob:src/Data/Skills/act_int.lua:4362-4387, src/Data/Skills/act_int.lua:7497
 	"ForbiddenRite": {"preDamageFunc": func(activeSkill *ActiveSkill, output map[string]float64, _ *Breakdown) {
 		baseTakenNames := []string{"DamageTaken", "ChaosDamageTaken", "DamageTakenWhenHit", "ChaosDamageTakenWhenHit"}
 		baseTakenFlat := activeSkill.SkillModList.Sum(mod.TypeBase, nil, baseTakenNames...)
@@ -388,7 +388,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 		output["FRDamageTaken"] = selfDamageTakenLife + selfDamageTakenES + chaosFlat
 	}},
 
-	//pob:src/Data/Skills/act_int.lua:7549-7589
+	//pob:src/Data/Skills/act_int.lua:7629-7669
 	"ForbiddenRiteAltX": {"preDamageFunc": func(activeSkill *ActiveSkill, output map[string]float64, _ *Breakdown) {
 		baseTakenNames := []string{"DamageTaken", "ChaosDamageTaken", "DamageTakenWhenHit", "ChaosDamageTakenWhenHit"}
 		baseTakenFlat := activeSkill.SkillModList.Sum(mod.TypeBase, nil, baseTakenNames...)
@@ -414,7 +414,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 		output["FRDamageTaken"] = selfDamageTakenES + chaosFlat
 	}},
 
-	//pob:src/Data/Skills/act_int.lua:3889-3903
+	//pob:src/Data/Skills/act_int.lua:3890-3904
 	//pob:src/Data/Skills/sup_str.lua:2540-2548
 	"AvengingFlame": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		totemLife := 0.0
@@ -442,7 +442,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 		activeSkill.SkillData.ChaosMax += add
 	}},
 
-	//pob:block:src/Data/Skills/act_int.lua:4006-4022
+	//pob:block:src/Data/Skills/act_int.lua:4007-4023
 	"DarkPactAltX": {"preDamageFunc": func(activeSkill *ActiveSkill, output map[string]float64, _ *Breakdown) {
 		life := output["Life"]
 		if activeSkill.SkillFlags[SkillFlagTotem] {
@@ -461,7 +461,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 	"Bodyswap":     {"preDamageFunc": bodyswapSelfExplosion},
 	"BodyswapAltX": {"preDamageFunc": bodyswapSelfExplosion},
 
-	//pob:block:src/Data/Skills/act_int.lua:13527-13532
+	//pob:block:src/Data/Skills/act_int.lua:13610-13615
 	"Manabond": {"preDamageFunc": func(activeSkill *ActiveSkill, output map[string]float64, _ *Breakdown) {
 		missingUnreserved := utils.OrDefault(activeSkill.SkillData.ManabondMissingUnreservedManaPercentage, 100)
 		gained := math.Floor((activeSkill.SkillData.ManabondMissingManaGainPercent / 100) *
@@ -473,7 +473,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 
 	//pob:block:src/Data/Skills/act_str.lua:3363-3366
 	"Earthquake": {"preDamageFunc": durationScaledDamageInc("EarthquakeDurationIncDamage", "Skill:Earthquake")},
-	//pob:block:src/Data/Skills/act_int.lua:20445-20448
+	//pob:block:src/Data/Skills/act_int.lua:20528-20531
 	"VoltaxicBurst": {"preDamageFunc": durationScaledDamageInc("VoltaxicDurationIncDamage", "Skill:VoltaxicBurst")},
 
 	"BladeFlurry": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
@@ -502,7 +502,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 	"InfernalBlow":     {"preDamageFunc": infernalBlowDebuff("InfernalBlow")},
 	"InfernalBlowAltX": {"preDamageFunc": infernalBlowDebuff("InfernalBlowAltX")},
 
-	//pob:block:src/Data/Skills/act_int.lua:18036-18048
+	//pob:block:src/Data/Skills/act_int.lua:18119-18131
 	"StormBurst": {"preDamageFunc": func(activeSkill *ActiveSkill, output map[string]float64, _ *Breakdown) {
 		skillData := activeSkill.SkillData
 		switch activeSkill.SkillPart {
@@ -516,7 +516,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 		}
 	}},
 
-	//pob:src/Data/Skills/act_int.lua:15428-15433
+	//pob:src/Data/Skills/act_int.lua:15511-15516
 	"RighteousFire": {"preDamageFunc": func(activeSkill *ActiveSkill, output map[string]float64, _ *Breakdown) {
 		if activeSkill.SkillFlags[SkillFlagTotem] && output["TotemLife"] > 1 {
 			activeSkill.SkillData.FireDot = float64(output["TotemLife"]*activeSkill.SkillData.RFLifeMultiplier) +
@@ -560,7 +560,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 	"BladeBlast":     {"preDamageFunc": bladeBlastPreDamageFunc},
 	"BladeBlastAltX": {"preDamageFunc": bladeBlastPreDamageFunc},
 
-	//pob:block:src/Data/Skills/act_int.lua:8972-8976
+	//pob:block:src/Data/Skills/act_int.lua:9052-9056
 	"Hydrosphere": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		if activeSkill.SkillPart < 1 || activeSkill.SkillPart > 3 {
 			return
@@ -574,7 +574,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 			(1 + activeSkill.SkillModList.Sum(mod.TypeIncrease, activeSkill.SkillCfg, "HeraldStormFrequency")/100)
 	}},
 
-	//pob:src/Data/Skills/other.lua:2258-2260
+	//pob:src/Data/Skills/other.lua:2259-2261
 	"HeraldOfTheBreach": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		activeSkill.SkillData.HitTimeOverride = activeSkill.SkillData.RepeatFrequency /
 			(1 + activeSkill.SkillModList.Sum(mod.TypeIncrease, activeSkill.SkillCfg, "PulseFrequencyPerPressure")/100)
@@ -608,7 +608,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 		}
 	}},
 
-	//pob:block:src/Data/Skills/act_dex.lua:11851-11856
+	//pob:block:src/Data/Skills/act_dex.lua:11853-11858
 	"StormRainAltX": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		if activeSkill.SkillPart == 2 {
 			activeSkill.SkillData.HitTimeOverride = activeSkill.SkillData.HitFrequency /
@@ -618,7 +618,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 		}
 	}},
 
-	//pob:block:src/Data/Skills/act_dex.lua:11958-11964
+	//pob:block:src/Data/Skills/act_dex.lua:11960-11966
 	"StormRainAltY": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		if activeSkill.SkillPart == 2 {
 			activeSkill.SkillData.HitTimeOverride = activeSkill.SkillData.HitFrequency /
@@ -628,12 +628,12 @@ var skillFuncs = map[string]map[string]skillFunc{
 		}
 	}},
 
-	//pob:block:src/Data/Skills/act_dex.lua:16051-16062
-	//pob:src/Data/Skills/act_dex.lua:18034-18036
+	//pob:block:src/Data/Skills/act_dex.lua:16054-16065
+	//pob:src/Data/Skills/act_dex.lua:18037-18039
 	"Tornado": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		activeSkill.SkillData.HitTimeOverride = activeSkill.SkillData.DamageInterval
 	}},
-	//pob:src/Data/Skills/act_dex.lua:18127-18129
+	//pob:src/Data/Skills/act_dex.lua:18130-18132
 	"TornadoAltY": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		activeSkill.SkillData.HitTimeOverride = activeSkill.SkillData.DamageInterval
 		activeSkill.SkillData.DpsMultiplier = utils.OrDefault(activeSkill.SkillData.DpsMultiplier, 1) *
@@ -649,7 +649,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 	"VaalBladeVortex": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		bladeVortexHitTime(activeSkill, activeSkill.SkillData.VaalBladeVortexBlade)
 	}},
-	//pob:src/Data/Skills/act_dex.lua:2787-2789
+	//pob:src/Data/Skills/act_dex.lua:2788-2790
 	"BladefallAltZ": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		divisor := 1 + activeSkill.SkillData.IncVolleyFrequency/100
 		if divisor == 0 {
@@ -657,45 +657,45 @@ var skillFuncs = map[string]map[string]skillFunc{
 		}
 		activeSkill.SkillData.HitTimeOverride = activeSkill.SkillData.HitFrequency / divisor
 	}},
-	//pob:src/Data/Skills/act_int.lua:6800-6802
+	//pob:src/Data/Skills/act_int.lua:6880-6882
 	"Flameblast": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		flameblastHitTimeMultiplier(activeSkill, "Multiplier:FlameblastStage")
 	}},
-	//pob:src/Data/Skills/act_int.lua:6905-6907
+	//pob:src/Data/Skills/act_int.lua:6985-6987
 	"FlameblastAltX": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		flameblastHitTimeMultiplier(activeSkill, "Multiplier:FlameblastofCelerityStage")
 	}},
-	//pob:src/Data/Skills/act_int.lua:7008-7010
+	//pob:src/Data/Skills/act_int.lua:7088-7090
 	"FlameblastAltY": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		flameblastHitTimeMultiplier(activeSkill, "Multiplier:FlameblastofContractionStage")
 	}},
-	//pob:src/Data/Skills/act_int.lua:4602-4606
+	//pob:src/Data/Skills/act_int.lua:4603-4607
 	"DivineIre": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		if activeSkill.SkillPart != 2 {
 			return
 		}
 		activeSkill.SkillData.HitTimeMultiplier = activeSkill.SkillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, "Multiplier:DivineIreStage")
 	}},
-	//pob:src/Data/Skills/act_int.lua:4712-4716
+	//pob:src/Data/Skills/act_int.lua:4713-4717
 	"DivineIreAltX": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		if activeSkill.SkillPart != 2 {
 			return
 		}
 		activeSkill.SkillData.HitTimeMultiplier = activeSkill.SkillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, "Multiplier:DivineIreofHolyLightningStage")
 	}},
-	//pob:src/Data/Skills/act_int.lua:4823-4825
+	//pob:src/Data/Skills/act_int.lua:4824-4826
 	"DivineIreAltY": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		activeSkill.SkillData.HitTimeMultiplier = activeSkill.SkillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, "Multiplier:DivineIreofDisintegrationStage")
 	}},
-	//pob:src/Data/Skills/act_int.lua:10284-10288
+	//pob:src/Data/Skills/act_int.lua:10364-10368
 	"Incinerate": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		incinerateHitTimeMultiplier(activeSkill, "Multiplier:IncinerateStage")
 	}},
-	//pob:src/Data/Skills/act_int.lua:10422-10426
+	//pob:src/Data/Skills/act_int.lua:10502-10506
 	"IncinerateAltX": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		incinerateHitTimeMultiplier(activeSkill, "Multiplier:IncinerateofExpanseStage")
 	}},
-	//pob:src/Data/Skills/act_int.lua:10561-10565
+	//pob:src/Data/Skills/act_int.lua:10641-10645
 	"IncinerateAltY": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		incinerateHitTimeMultiplier(activeSkill, "Multiplier:IncinerateofVentingStage")
 	}},
@@ -707,7 +707,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 	"GalvanicFieldAltX": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		activeSkill.SkillData.HitTimeOverride = activeSkill.SkillData.RepeatFrequency
 	}},
-	//pob:src/Data/Skills/other.lua:2596-2598
+	//pob:src/Data/Skills/other.lua:2628-2630
 	"LightningBolt": {"preDamageFunc": func(activeSkill *ActiveSkill, output map[string]float64, _ *Breakdown) {
 		activeSkill.SkillData.HitTimeOverride = output["Cooldown"]
 	}},
@@ -761,7 +761,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 				(1 + activeSkill.SkillData.CremationFireRateIncrease)
 		}
 	}},
-	//pob:src/Data/Skills/act_dex.lua:4592-4594
+	//pob:src/Data/Skills/act_dex.lua:4594-4596
 	"CremationAltY": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		activeSkill.SkillData.HitTimeOverride = activeSkill.SkillData.CremationFireRate /
 			(1 + activeSkill.SkillData.CremationFireRateIncrease)
@@ -775,7 +775,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 		}
 	}},
 
-	//pob:src/Data/Skills/act_dex.lua:10017-10022
+	//pob:src/Data/Skills/act_dex.lua:10019-10024
 	"PoisonousConcoction": {"preDamageFunc": poisonousConcoctionPreDamageFunc},
 
 	"PoisonousConcoctionAltX": {"preDamageFunc": poisonousConcoctionPreDamageFunc},
@@ -786,17 +786,17 @@ var skillFuncs = map[string]map[string]skillFunc{
 	//pob:src/Data/Skills/act_dex.lua:4934-4947
 	"VaalCyclone": {"initialFunc": cycloneInitialFunc},
 
-	//pob:src/Data/Skills/act_dex.lua:4809-4822
+	//pob:src/Data/Skills/act_dex.lua:4811-4824
 	"CycloneAltX": {"initialFunc": cycloneAltXInitialFunc},
 
-	//pob:src/Data/Skills/act_dex.lua:7527-7529
-	//pob:block:src/Data/Skills/act_dex.lua:12990-12992
+	//pob:src/Data/Skills/act_dex.lua:7529-7531
+	//pob:block:src/Data/Skills/act_dex.lua:12992-12994
 	"ScourgeArrow": {"preDamageFunc": func(activeSkill *ActiveSkill, _ map[string]float64, _ *Breakdown) {
 		activeSkill.SkillData.HitTimeMultiplier = math.Max(
 			activeSkill.SkillModList.Sum(mod.TypeBase, nil, "Multiplier:ScourgeArrowStage")-0.5, 0.5)
 	}},
 
-	//pob:src/Data/Skills/other.lua:2335-2337
+	//pob:src/Data/Skills/other.lua:2336-2338
 
 	//pob:src/Data/Skills/act_int.lua:1086-1167
 	"BallLightning": {"preDamageFunc": func(activeSkill *ActiveSkill, output map[string]float64, breakdown *Breakdown) {
@@ -884,7 +884,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 		output["SkillDPSMultiplier"] = utils.OrDefault(output["SkillDPSMultiplier"], 1) * numStrikes
 	}},
 
-	//pob:block:src/Data/Skills/act_int.lua:18151-18157
+	//pob:block:src/Data/Skills/act_int.lua:18234-18240
 	"StormBurstAltX": {"preDamageFunc": func(activeSkill *ActiveSkill, output map[string]float64, _ *Breakdown) {
 		if activeSkill.SkillPart != 2 {
 			return
@@ -942,7 +942,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 		activeSkill.SkillModList.NewMod("Multiplier:RageSacrificed", mod.TypeBase, math.Min(stacks, maxSacrificedRage), "Skill:RageVortex")
 	}},
 
-	//pob:src/Data/Skills/act_int.lua:5518-5520
+	//pob:src/Data/Skills/act_int.lua:5519-5521
 	"EyeOfWinter": {"preDamageFunc": func(activeSkill *ActiveSkill, output map[string]float64, _ *Breakdown) {
 		ramp := projectileSpeedRamp(output, 60)
 		activeSkill.SkillModList.AddMod(mod.NewFloat("Damage", mod.TypeMore,
@@ -950,7 +950,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 			Source("Skill:EyeOfWinter").Tag(mod.DistanceRamp(ramp)))
 	}},
 
-	//pob:src/Data/Skills/act_int.lua:4509-4513
+	//pob:src/Data/Skills/act_int.lua:4510-4514
 	"FreezingPulse": {"preDamageFunc": func(activeSkill *ActiveSkill, output map[string]float64, _ *Breakdown) {
 		ramp := projectileSpeedRamp(output, 60)
 		activeSkill.SkillModList.AddMod(mod.NewFloat("Damage", mod.TypeMore, -50).
@@ -959,7 +959,7 @@ var skillFuncs = map[string]map[string]skillFunc{
 			Source("Skill:FreezingPulse").Tag(mod.DistanceRamp([][]float64{{0, 1}, {15 * output["ProjectileSpeedMod"], 0}})))
 	}},
 
-	//pob:block:src/Data/Skills/act_dex.lua:13622-13671
+	//pob:block:src/Data/Skills/act_dex.lua:13624-13673
 	"SeismicTrapAltX": {"preDamageFunc": func(activeSkill *ActiveSkill, output map[string]float64, _ *Breakdown) {
 		overlapChance := areaOverlapChance(activeSkill, output)
 		output["OverlapChance"] = overlapChance * 100
@@ -1013,20 +1013,20 @@ var skillFuncs = map[string]map[string]skillFunc{
 		applyDpsMultiplier(activeSkill, output, dpsMultiplier)
 	}},
 
-	//pob:block:src/Data/Skills/act_int.lua:11667-11788
+	//pob:block:src/Data/Skills/act_int.lua:11747-11868
 	"LightningSpireTrap": {"preDamageFunc": lightningSpireTrap("")},
-	//pob:block:src/Data/Skills/act_int.lua:11912-12028
+	//pob:block:src/Data/Skills/act_int.lua:11992-12108
 	"LightningSpireTrapAltX": {"preDamageFunc": lightningSpireTrap("AltX")},
-	//pob:block:src/Data/Skills/act_int.lua:12150-12260
+	//pob:block:src/Data/Skills/act_int.lua:12230-12340
 	"LightningSpireTrapAltY": {"preDamageFunc": lightningSpireTrap("AltY")},
 
-	//pob:block:src/Data/Skills/act_int.lua:7933-7936
+	//pob:block:src/Data/Skills/act_int.lua:8013-8016
 	"FrostBombAltY": {"preDamageFunc": func(activeSkill *ActiveSkill, output map[string]float64, _ *Breakdown) {
 		duration := math.Floor(activeSkill.SkillData.Duration * output["DurationMod"] * 10)
 		activeSkill.SkillModList.NewMod("Multiplier:100msFrostBombDuration", mod.TypeBase, duration, "Skill:FrostBombAltY")
 	}},
 
-	//pob:block:src/Data/Skills/act_dex.lua:7164-7176
+	//pob:block:src/Data/Skills/act_dex.lua:7166-7178
 	"ExplosiveTrap": {"preDamageFunc": func(activeSkill *ActiveSkill, output map[string]float64, _ *Breakdown) {
 		skillModList, skillCfg := activeSkill.SkillModList, activeSkill.SkillCfg
 		hitChance := func(enemyRadius, areaDamageRadius, areaSpreadRadius float64) float64 {
@@ -1120,7 +1120,7 @@ func lightningSpireTrap(variant string) skillFunc {
 	}
 }
 
-//pob:block:src/Data/Skills/act_dex.lua:7796-7804
+//pob:block:src/Data/Skills/act_dex.lua:7798-7806
 func areaOverlapChance(activeSkill *ActiveSkill, output map[string]float64) float64 {
 	skillModList, skillCfg := activeSkill.SkillModList, activeSkill.SkillCfg
 	enemyRadius := skillModList.Sum(mod.TypeBase, skillCfg, "EnemyRadius")
@@ -1170,7 +1170,7 @@ func applyDpsMultiplier(activeSkill *ActiveSkill, output map[string]float64, dps
 	output["SkillDPSMultiplier"] = utils.OrF(output["SkillDPSMultiplier"], 1) * dpsMultiplier
 }
 
-//pob:block:src/Data/Skills/act_int.lua:5519,src/Data/Skills/act_int.lua:4510-4511
+//pob:block:src/Data/Skills/act_int.lua:5520,src/Data/Skills/act_int.lua:4510-4511
 func projectileSpeedRamp(output map[string]float64, upper float64) [][]float64 {
 	return [][]float64{{0, 0}, {upper * output["ProjectileSpeedMod"], 1}}
 }
@@ -1323,7 +1323,7 @@ var bodyswapSelfExplosion skillFunc = func(activeSkill *ActiveSkill, output map[
 	activeSkill.SkillData.FireBonusMax = life * activeSkill.SkillData.SelfFireExplosionLifeMultiplier
 }
 
-//pob:block:src/Data/Skills/act_dex.lua:6699-6778
+//pob:block:src/Data/Skills/act_dex.lua:6701-6780
 func explosiveArrowFunc(activeSkill *ActiveSkill, output map[string]float64, globalOutput map[string]float64, env *Environment, enemyDB *moddb.ModDB) {
 	if activeSkill.SkillPart != 1 && activeSkill.SkillPart != 2 {
 		return
@@ -1387,14 +1387,14 @@ func bladeVortexHitTime(activeSkill *ActiveSkill, blades float64) {
 	activeSkill.SkillData.HitTimeOverride = activeSkill.SkillData.HitFrequency / divisor
 }
 
-//pob:src/Data/Skills/act_int.lua:6800-6802
+//pob:src/Data/Skills/act_int.lua:6880-6882
 func flameblastHitTimeMultiplier(activeSkill *ActiveSkill, stageMultiplier string) {
 	stages := activeSkill.SkillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, stageMultiplier)
 	minimum := activeSkill.SkillModList.Sum(mod.TypeBase, activeSkill.SkillCfg, "Multiplier:FlameblastMinimumStage")
 	activeSkill.SkillData.HitTimeMultiplier = math.Max(stages-minimum, 1)
 }
 
-//pob:src/Data/Skills/act_int.lua:10284-10288
+//pob:src/Data/Skills/act_int.lua:10364-10368
 func incinerateHitTimeMultiplier(activeSkill *ActiveSkill, stageMultiplier string) {
 	if activeSkill.SkillPart != 2 {
 		return

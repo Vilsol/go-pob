@@ -7,7 +7,7 @@ type tinctureBase struct {
 	Cooldown float64
 }
 
-//pob:block:src/Export/Scripts/bases.lua:272-275
+//pob:block:src/Export/Scripts/bases.lua:273-276
 func tinctureBaseOf(name string) tinctureBase {
 	for _, t := range raw.Tinctures() {
 		if base := t.GetBaseItem(); base != nil && base.Name == name {

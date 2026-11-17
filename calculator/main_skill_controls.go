@@ -261,7 +261,7 @@ func stageBuf(skillStageCount int, stagesMax float64) string {
 	return "1"
 }
 
-//pob:src/Classes/PassiveSpec.lua:846-866
+//pob:src/Classes/PassiveSpec.lua:870-890
 func (env *Environment) CountAllocNodes() (int, int, int, int) {
 	used, ascUsed, secondaryAscUsed, sockets := 0, 0, 0, 0
 	if env == nil || env.Build == nil {
@@ -281,7 +281,7 @@ func (env *Environment) CountAllocNodes() (int, int, int, int) {
 		if !ok || (node.Name == nil && node.Skill == nil) {
 			continue
 		}
-		//pob:block:src/Classes/PassiveSpec.lua:294,src/Classes/PassiveSpec.lua:1425-1452
+		//pob:block:src/Classes/PassiveSpec.lua:312,src/Classes/PassiveSpec.lua:1450-1477
 		if node.IsMastery != nil && *node.IsMastery && !masteryEffectSelected(env.Spec, id, node) {
 			continue
 		}

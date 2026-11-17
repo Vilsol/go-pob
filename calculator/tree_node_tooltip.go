@@ -10,7 +10,7 @@ import (
 	"github.com/Vilsol/go-pob/utils"
 )
 
-//pob:block:src/Classes/PassiveTreeView.lua:1626-1646
+//pob:block:src/Classes/PassiveTreeView.lua:1636-1656
 func NodeSkillTooltips(build *pob.PathOfBuilding, nodeID int64, ctx ItemTooltipContext) [][]TooltipLine {
 	node, ok := specTree(build).Nodes[strconv.FormatInt(nodeID, 10)]
 	if !ok {
@@ -74,7 +74,7 @@ type TreeCompareMastery struct {
 	Stats  []string
 }
 
-//pob:block:src/Classes/TreeTab.lua:110-132
+//pob:block:src/Classes/TreeTab.lua:109-131
 func TreeSpecCompare(build *pob.PathOfBuilding, specID int) TreeCompareSpec {
 	if specID < 1 || specID > len(build.Tree.Specs) {
 		return TreeCompareSpec{}
@@ -96,7 +96,7 @@ func TreeSpecCompare(build *pob.PathOfBuilding, specID int) TreeCompareSpec {
 	return out
 }
 
-//pob:block:src/Classes/GemTooltip.lua:239-258
+//pob:block:src/Classes/GemTooltip.lua:245-264
 func addSkillOnlyTooltip(t *ItemTooltip, ctx ItemTooltipContext, skillID string, level int) bool {
 	primary := newGemTooltipEffect(skillID)
 	if primary == nil {
@@ -121,7 +121,7 @@ func addSkillOnlyTooltip(t *ItemTooltip, ctx ItemTooltipContext, skillID string,
 	return true
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1011-1025
+//pob:block:src/Classes/PassiveSpec.lua:1035-1049
 func (m *MiscCalculator) SplitPersonalityPath() []int64 {
 	env := m.base
 	specs := env.Build.Tree.Specs
@@ -154,7 +154,7 @@ func (m *MiscCalculator) SplitPersonalityPath() []int64 {
 	return out
 }
 
-//pob:block:src/Classes/PassiveTreeView.lua:1512-1515,src/Classes/PassiveSpec.lua:1630-1632,src/Classes/PassiveSpec.lua:1688-1692
+//pob:block:src/Classes/PassiveTreeView.lua:1522-1525,src/Classes/PassiveSpec.lua:1655-1657,src/Classes/PassiveSpec.lua:1713-1717
 func (m *MiscCalculator) SocketDistanceToClassStart(nodeID int) int {
 	if m.base == nil || m.base.Spec == nil {
 		return 0

@@ -34,7 +34,7 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 		skills      = []SkillDPS{}
 	)
 
-	//pob:block:src/Modules/Calcs.lua:143
+	//pob:block:src/Modules/Calcs.lua:150
 	fullEnv, cachedPlayerDB, cachedEnemyDB, cachedMinionDB := initEnvSpec(build, cache, mode, false, override, specEnv)
 	fullEnv.triggerCache = env.triggerCache
 	if specEnv != nil && specEnv.spare != nil {
@@ -77,7 +77,7 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 		if minion := subEnv.Minion; minion != nil {
 			mout := minion.Output
 			if mout["TotalDPS"] > 0 {
-				//pob:block:src/Modules/Calcs.lua:178-179
+				//pob:block:src/Modules/Calcs.lua:186-187
 				haveMinionName = true
 				minionName := ""
 				if activeSkill.Minion != nil && activeSkill.Minion.MinionData != nil {
@@ -112,7 +112,7 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 				f.CullingMulti = mout["CullMultiplier"]
 			}
 			// This is a fix to prevent skills such as Absolution or Dominating Blow from being counted multiple times when increasing minions count
-			//pob:block:src/Modules/Calcs.lua:206-211
+			//pob:block:src/Modules/Calcs.lua:214-219
 			if (strings.Contains(skillName, "Absolution") && fullEnv.ModDB.Flag(nil, "Condition:AbsolutionSkillDamageCountedOnce")) ||
 				(strings.Contains(skillName, "Dominating Blow") && fullEnv.ModDB.Flag(nil, "Condition:DominatingBlowSkillDamageCountedOnce")) ||
 				(strings.Contains(skillName, "Holy Strike") && fullEnv.ModDB.Flag(nil, "Condition:HolyStrikeSkillDamageCountedOnce")) {
@@ -133,7 +133,7 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 			mirageCount *= activeSkillCount
 
 			if mout["TotalDPS"] > 0 {
-				//pob:block:src/Modules/Calcs.lua:217
+				//pob:block:src/Modules/Calcs.lua:225
 				skills = append(skills, SkillDPS{Name: mirage.Name + " (Mirage)", DPS: mout["TotalDPS"], Count: mirageCount, SkillPart: mirage.SkillPartName})
 				combinedDPS += float64(mout["TotalDPS"] * mirageCount)
 			}
@@ -177,7 +177,7 @@ func calcFullDPS(c *Calculator, env *Environment, mode OutputMode, cache *Enviro
 		}
 
 		if out["TotalDPS"] > 0 {
-			//pob:block:src/Modules/Calcs.lua:254
+			//pob:block:src/Modules/Calcs.lua:262
 			skillPart := activeSkill.SkillPartName
 			if haveMinionName && activeSkill.infoMessage2 != "" {
 				skillPart = activeSkill.infoMessage2
@@ -263,7 +263,7 @@ func takeSpareOutput(m *map[string]float64) map[string]float64 {
 	return out
 }
 
-//pob:block:src/Modules/Calcs.lua:293-301
+//pob:block:src/Modules/Calcs.lua:301-309
 func reinitFullDPSEnv(fullEnv *Environment, cache *EnvironmentCache, mode OutputMode, cachedPlayerDB, cachedEnemyDB, cachedMinionDB moddb.ModStoreFuncs) *Environment {
 	next, _, _, _ := initEnvSpec(fullEnv.Build, cache, mode, false, fullEnv.override, &calcSpecEnv{
 		cachedPlayerDB: cachedPlayerDB,
@@ -302,7 +302,7 @@ type fullDPSBuckets struct {
 	causticGroundSource   string
 }
 
-//pob:block:src/Modules/Calcs.lua:306-351
+//pob:block:src/Modules/Calcs.lua:314-359
 func (f fullDPSBuckets) rollUp(combinedDPS float64, skills *[]SkillDPS) (float64, float64) {
 	var totalDotDPS float64
 	if f.BleedDPS > 0 {

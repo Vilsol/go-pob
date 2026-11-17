@@ -63,7 +63,7 @@ func BuildOutputWithCache(c *Calculator, mode OutputMode, cache *EnvironmentCach
 	return env
 }
 
-//pob:src/Modules/Calcs.lua:384-387
+//pob:src/Modules/Calcs.lua:403-406
 func (c *Calculator) BuildOutput(mode OutputMode) *Environment {
 	return BuildOutputWithCache(c, mode, envCache)
 }

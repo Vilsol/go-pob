@@ -16,7 +16,7 @@ func (b *PathOfBuilding) TattooOn(nodeID int) string {
 	return ""
 }
 
-//pob:src/Classes/TreeTab.lua:351-357
+//pob:src/Classes/TreeTab.lua:350-356
 func (b *PathOfBuilding) RemoveTattoo(nodeID int) bool {
 	spec := b.activeSpec()
 	if spec == nil {
@@ -27,7 +27,7 @@ func (b *PathOfBuilding) RemoveTattoo(nodeID int) bool {
 	return len(spec.Overrides) != n
 }
 
-//pob:block:src/Classes/TreeTab.lua:962-978
+//pob:block:src/Classes/TreeTab.lua:961-977
 func (b *PathOfBuilding) TattooCount() int {
 	count := 0
 	if spec := b.activeSpec(); spec != nil {
@@ -40,7 +40,7 @@ func (b *PathOfBuilding) TattooCount() int {
 	return count
 }
 
-//pob:src/Classes/TreeTab.lua:885-894
+//pob:src/Classes/TreeTab.lua:884-893
 func (b *PathOfBuilding) SetTattoo(o Override) {
 	spec := b.activeSpec()
 	if spec == nil {

@@ -74,7 +74,7 @@ func specAllocCounts(tree *data.Tree, subgraph map[string]data.Node, spec pob.Sp
 	return used, ascUsed
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:860-862
+//pob:block:src/Classes/PassiveSpec.lua:884-886
 func specSocketCount(tree *data.Tree, subgraph map[string]data.Node, spec pob.Spec) int {
 	n := 0
 	seen := make(map[int64]bool)
@@ -88,7 +88,7 @@ func specSocketCount(tree *data.Tree, subgraph map[string]data.Node, spec pob.Sp
 	return n
 }
 
-//pob:block:src/Classes/TreeTab.lua:492-498,src/Classes/PassiveSpecListControl.lua:76-84
+//pob:block:src/Classes/TreeTab.lua:491-497,src/Classes/PassiveSpecListControl.lua:76-84
 func TreeSpecs(build *pob.PathOfBuilding) []TreeSpecRow {
 	rows := make([]TreeSpecRow, 0, len(build.Tree.Specs))
 	for _, spec := range build.Tree.Specs {
@@ -121,7 +121,7 @@ func TreeSpecsPoints(build *pob.PathOfBuilding) []TreeSpecPoints {
 	return out
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1735
+//pob:block:src/Classes/PassiveSpec.lua:1760
 func specSubgraph(build *pob.PathOfBuilding, specID int, spec pob.Spec) map[string]data.Node {
 	if !slices.ContainsFunc(pob.SpecNodes(spec), func(id int64) bool { return id >= 1<<16 }) {
 		return nil
@@ -141,7 +141,7 @@ func specOrSubgraphNode(tree *data.Tree, subgraph map[string]data.Node, id int64
 	return n, ok
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:614-624
+//pob:block:src/Classes/PassiveSpec.lua:638-648
 func classAscendancyStartNodeID(tree *data.Tree, classID pob.ClassID, name pob.AscendancyName) string {
 	if int(classID) < 0 || int(classID) >= len(tree.Classes) {
 		return ""
@@ -154,7 +154,7 @@ func classAscendancyStartNodeID(tree *data.Tree, classID pob.ClassID, name pob.A
 	return ""
 }
 
-//pob:block:src/Classes/PassiveTree.lua:552-555
+//pob:block:src/Classes/PassiveTree.lua:577-580
 func ascendancyStartNodeID(tree *data.Tree, name pob.AscendancyName) string {
 	for id, node := range tree.Nodes {
 		if isAscendClassStartNode(node) && node.AscendancyName != nil && *node.AscendancyName == string(name) {
@@ -164,7 +164,7 @@ func ascendancyStartNodeID(tree *data.Tree, name pob.AscendancyName) string {
 	return ""
 }
 
-//pob:block:src/Classes/PassiveSpecListControl.lua:39-44,src/Classes/PassiveSpec.lua:588-591,src/Classes/PassiveSpec.lua:619-624
+//pob:block:src/Classes/PassiveSpecListControl.lua:39-44,src/Classes/PassiveSpec.lua:612-615,src/Classes/PassiveSpec.lua:619-624
 func NewTreeSpec(build *pob.PathOfBuilding, title string) {
 	tree := data.TreeVersions[data.LatestTreeVersion].Tree()
 	var classID pob.ClassID

@@ -13,7 +13,7 @@ type TreeSpecRespec struct {
 	Ascendancy int
 }
 
-//pob:block:src/Classes/TreeTab.lua:73-101
+//pob:block:src/Classes/TreeTab.lua:72-100
 func TreeSpecRespecCost(build *pob.PathOfBuilding, index int) TreeSpecRespec {
 	active := build.ActiveSpecIndex()
 	if index < 0 || index >= len(build.Tree.Specs) || active < 0 || index == active {

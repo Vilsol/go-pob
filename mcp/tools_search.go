@@ -239,7 +239,7 @@ func searchUniques(in searchIn, b *pob.PathOfBuilding) ([]hit, *ToolError) {
 			continue
 		}
 		r, ok := matchQuery(in.Query, it.Name, it.BaseName+" "+itemText(it))
-		//pob:block:src/Classes/ItemDBControl.lua:155-162
+		//pob:block:src/Classes/ItemDBControl.lua:158-165
 		foulborn := slices.ContainsFunc(it.ExplicitModLines, func(ml calculator.ModLine) bool { return ml.NewModID != "" })
 		if f, fok := matchQuery(in.Query, "Foulborn "+it.Name, ""); foulborn && fok && (!ok || f < r) {
 			r, ok = f, true

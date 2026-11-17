@@ -24,7 +24,7 @@ func idSet(spec string) map[int]bool {
 	return out
 }
 
-//pob:block:src/Classes/Item.lua:912-934
+//pob:block:src/Classes/Item.lua:923-945
 func (i *Item) registerVariantGroups(ml ModLine) {
 	if ml.VariantGroupList == nil || ml.VariantList == nil {
 		return
@@ -134,7 +134,7 @@ func (i *Item) normaliseVariantSelections() {
 	}
 }
 
-//pob:block:src/Classes/Item.lua:2121-2137
+//pob:block:src/Classes/Item.lua:2150-2166
 func (i *Item) checkModLineVariantGroups(ml ModLine) bool {
 	if ml.VersionList != nil && (i.SelectedVersion == nil || !ml.VersionList[*i.SelectedVersion]) {
 		return false
@@ -153,7 +153,7 @@ func (i *Item) checkModLineVariantGroups(ml ModLine) bool {
 	return ml.VariantList == nil
 }
 
-//pob:block:src/Classes/Item.lua:1928-1946
+//pob:block:src/Classes/Item.lua:1957-1975
 func (i *Item) variantGroupRawLines() []string {
 	var out []string
 	for _, name := range i.VersionList {
@@ -175,7 +175,7 @@ func (i *Item) variantGroupSelectionLines() []string {
 	return out
 }
 
-//pob:block:src/Classes/ItemsTab.lua:4258-4267
+//pob:block:src/Classes/ItemsTab.lua:4364-4373
 func (i *Item) selectedGroupVariants() []string {
 	var out []string
 	for _, groupID := range slices.Sorted(maps.Keys(i.VariantGroups)) {

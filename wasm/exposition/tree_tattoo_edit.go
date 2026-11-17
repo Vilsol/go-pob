@@ -36,7 +36,7 @@ func tattooTreeNode(nodeID int64) (data.Node, bool) {
 	return n, ok
 }
 
-//pob:block:src/Classes/PassiveTree.lua:336-384
+//pob:block:src/Classes/PassiveTree.lua:361-409
 func tattooNodeType(n data.Node) string {
 	switch {
 	case n.ClassStartIndex != nil:
@@ -55,7 +55,7 @@ func tattooNodeType(n data.Node) string {
 	return "Normal"
 }
 
-//pob:block:src/Classes/PassiveTreeView.lua:1670-1680
+//pob:block:src/Classes/PassiveTreeView.lua:1680-1690
 func TattooEditKind(build *pob.PathOfBuilding, nodeID int64) string {
 	n, ok := tattooTreeNode(nodeID)
 	if !ok {
@@ -79,7 +79,7 @@ func TattooEditKind(build *pob.PathOfBuilding, nodeID int64) string {
 	return "tattoo"
 }
 
-//pob:block:src/Classes/TreeTab.lua:852-884
+//pob:block:src/Classes/TreeTab.lua:851-883
 func GetTattooChoices(build *pob.PathOfBuilding, nodeID int64, showLegacy bool) []TattooChoice {
 	n, ok := tattooTreeNode(nodeID)
 	if !ok || TattooEditKind(build, nodeID) == "" {
@@ -117,7 +117,7 @@ func GetTattooChoices(build *pob.PathOfBuilding, nodeID int64, showLegacy bool) 
 	return out
 }
 
-//pob:block:src/Classes/TreeTab.lua:885-894
+//pob:block:src/Classes/TreeTab.lua:884-893
 func AddTattoo(build *pob.PathOfBuilding, nodeID int64, dn string) error {
 	if !slices.ContainsFunc(GetTattooChoices(build, nodeID, true), func(c TattooChoice) bool { return c.DN == dn }) {
 		return fmt.Errorf("%s is not offered for node %d", dn, nodeID)

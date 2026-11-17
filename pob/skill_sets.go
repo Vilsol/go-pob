@@ -10,7 +10,7 @@ func (b *PathOfBuilding) nextSkillSetID() int {
 	return id
 }
 
-//pob:src/Classes/SkillsTab.lua:1452-1462
+//pob:src/Classes/SkillsTab.lua:1466-1476
 func (b *PathOfBuilding) NewSkillSet(title string) int {
 	id := b.nextSkillSetID()
 	b.Skills.SkillSets = append(b.Skills.SkillSets, SkillSet{ID: id, Title: &title, Skills: []Skill{}})
@@ -57,7 +57,7 @@ func (b *PathOfBuilding) DeleteSkillSet(skillSetID int) {
 	}
 }
 
-//pob:src/Classes/ImportTab.lua:1901-1911
+//pob:src/Classes/ImportTab.lua:1915-1925
 func (b *PathOfBuilding) GuessMainSocketGroup() int {
 	largestGroupSize, largestGroupIndex := 0, 1
 	if len(b.Skills.SkillSets) == 0 {

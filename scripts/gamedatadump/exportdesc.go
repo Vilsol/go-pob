@@ -72,7 +72,7 @@ func (e *exportDescriber) parseStatFile(name string, order int) (int, error) {
 	return order, nil
 }
 
-//pob:src/Export/statdesc.lua:120-169
+//pob:src/Export/statdesc.lua:121-170
 func loadStatFile(name string) (*exportDescriber, error) {
 	e := &exportDescriber{descriptors: map[string]*edDescriptor{}}
 	if _, err := e.parseStatFile(name, 1); err != nil {
@@ -81,7 +81,7 @@ func loadStatFile(name string) (*exportDescriber, error) {
 	return e, nil
 }
 
-//pob:src/Export/statdesc.lua:110-118
+//pob:src/Export/statdesc.lua:111-119
 func (e *exportDescriber) nextOrder() int {
 	nextOrder := 1
 	for _, d := range e.descriptors {
@@ -92,7 +92,7 @@ func (e *exportDescriber) nextOrder() int {
 	return nextOrder
 }
 
-//pob:src/Export/statdesc.lua:120-160
+//pob:src/Export/statdesc.lua:121-161
 func loadStatFiles(name string, appends ...string) (*exportDescriber, error) {
 	e, err := loadStatFile(name)
 	if err != nil {
@@ -121,7 +121,7 @@ func edLimitNumber(v any) (float64, bool) {
 	return float64(n), ok
 }
 
-//pob:src/Export/statdesc.lua:175-193
+//pob:src/Export/statdesc.lua:208-226
 func edMatchLimit(variants []sdVariant, val []*edRange) *sdVariant {
 	for i := range variants {
 		desc := &variants[i]
@@ -148,7 +148,7 @@ func edMatchLimit(variants []sdVariant, val []*edRange) *sdVariant {
 	return nil
 }
 
-//pob:src/Modules/Common.lua:709-715
+//pob:src/Modules/Common.lua:710-716
 func luaRound(val float64, dec int) float64 {
 	p := math.Pow(10, float64(dec))
 	return math.Floor(val*p+0.5) / p

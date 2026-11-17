@@ -550,7 +550,7 @@ var skillExplainMods = map[string][]string{
 // avoidExplainMods are the rows CalcSections.lua:1891-1909 lists for the avoidance and immunity stats; immunities are
 // flags, listed as sources without a total.
 //
-//pob:block:src/Modules/CalcSections.lua:1891-1909
+//pob:block:src/Modules/CalcSections.lua:1892-1910
 var avoidExplainMods = map[string][]string{
 	"BlindAvoidChance":         {"AvoidBlind", "BlindImmune"},
 	"ShockAvoidChance":         {"AvoidShock", "AvoidElementalAilments", "AvoidAilments", "ShockImmune", "ElementalAilmentImmune"},
@@ -677,7 +677,7 @@ func explainStat(env *calculator.Environment, key string) map[string]any {
 		return out
 	}
 	if key == "FullDPS" {
-		//pob:block:src/Modules/Calcs.lua:254-255
+		//pob:block:src/Modules/Calcs.lua:262-263
 		list := make([]map[string]string, 0, len(env.Player.SkillDPS))
 		for _, sk := range env.Player.SkillDPS {
 			name := sk.Name

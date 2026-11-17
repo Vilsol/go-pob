@@ -400,7 +400,7 @@ func (b *PathOfBuilding) MoveSocketGroup(from int, to int) {
 	}
 }
 
-//pob:block:src/Classes/SkillsTab.lua:1489-1491
+//pob:block:src/Classes/SkillsTab.lua:1502-1504
 func (b *PathOfBuilding) ActiveSkillSetIndex() int {
 	for i, set := range b.Skills.SkillSets {
 		if set.ID == b.Skills.ActiveSkillSet {
@@ -410,7 +410,7 @@ func (b *PathOfBuilding) ActiveSkillSetIndex() int {
 	return 0
 }
 
-//pob:src/Classes/SkillsTab.lua:1478-1502
+//pob:src/Classes/SkillsTab.lua:1491-1515
 func (b *PathOfBuilding) SetActiveSkillSet(skillSetID int) {
 	if len(b.Skills.SkillSets) == 0 {
 		b.Skills.SkillSets = []SkillSet{{ID: 1}}
@@ -430,7 +430,7 @@ func (b *PathOfBuilding) SetActiveSkillSet(skillSetID int) {
 	b.Skills.ActiveSkillSet = skillSetID
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:583,src/Classes/PassiveSpec.lua:595
+//pob:block:src/Classes/PassiveSpec.lua:607,src/Classes/PassiveSpec.lua:619
 func (b *PathOfBuilding) SetClass(className ClassName) {
 	b.Build.ClassName = className
 	if spec := b.activeSpec(); spec != nil {
@@ -540,7 +540,7 @@ func (s *ItemSet) slot(slotName string) *Slot {
 	return &s.Slots[len(s.Slots)-1]
 }
 
-//pob:src/Classes/ItemsTab.lua:1591-1617
+//pob:src/Classes/ItemsTab.lua:1658-1684
 func (b *PathOfBuilding) SetActiveItemSet(itemSetID int) {
 	b.activeItemSet()
 	found := false

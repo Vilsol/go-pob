@@ -9,12 +9,12 @@ import (
 	"github.com/Vilsol/go-pob/data"
 )
 
-//pob:src/Classes/ItemsTab.lua:1008-1010
+//pob:src/Classes/ItemsTab.lua:1024-1026
 func addCrucibleShown(item *Item) bool {
 	return item.getPrimarySlot() == "Weapon 1" || item.Base.Type == "Shield" || itemCraftFlags(item).shieldCrucibleTree
 }
 
-//pob:src/Classes/Item.lua:2706-2736
+//pob:src/Classes/Item.lua:2747-2777
 func canHaveMod(item *Item, mod *data.AffixMod, includeTags map[string]bool) bool {
 	include := maps.Clone(includeTags)
 	if include == nil {
@@ -70,7 +70,7 @@ func crucibleLines(raw string) []string {
 	return out
 }
 
-//pob:block:src/Classes/ItemsTab.lua:3872-3917,src/Classes/ItemsTab.lua:3939-3966
+//pob:block:src/Classes/ItemsTab.lua:3978-4023,src/Classes/ItemsTab.lua:4045-4072
 func ItemCrucibleChoices(raw string) (CrucibleChoices, bool) {
 	item := ParseItem(raw)
 	if item.Base == nil || !addCrucibleShown(item) {
@@ -130,7 +130,7 @@ func ItemCrucibleChoices(raw string) (CrucibleChoices, bool) {
 	return out, true
 }
 
-//pob:src/Classes/ItemsTab.lua:3918-3938
+//pob:src/Classes/ItemsTab.lua:4024-4044
 func CrucibleText(raw string, ids []string) (string, bool) {
 	item := ParseItem(raw)
 	c, ok := ItemCrucibleChoices(raw)

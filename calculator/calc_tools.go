@@ -88,7 +88,7 @@ func gemIsSupport(gem *poe.SkillGem) bool {
 	return pobGem.Tags["support"]
 }
 
-//pob:block:src/Classes/SkillsTab.lua:466-478
+//pob:block:src/Classes/SkillsTab.lua:467-479
 func pobGemForVariant(gem *poe.SkillGem, grantedEffectID string) (raw2.PoBGem, bool) {
 	if grantedEffectID != "" {
 		if row, ok := raw2.GemVariants[grantedEffectID]; ok {

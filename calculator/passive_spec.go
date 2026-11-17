@@ -47,7 +47,7 @@ type PassiveSpec struct {
 
 // CalcTreeVersion is the tree the active spec is calculated and drawn on.
 //
-//pob:block:src/Classes/TreeTab.lua:517
+//pob:block:src/Classes/TreeTab.lua:516
 func CalcTreeVersion(build *pob.PathOfBuilding) pob.TreeVersion {
 	if i := build.ActiveSpecIndex(); i >= 0 {
 		return hostedTreeVersion(build.Tree.Specs[i].TreeVersion)
@@ -97,12 +97,12 @@ func (p *PassiveSpec) Tree() *data.Tree {
 	return data.TreeVersions[p.TreeVersion].Tree()
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:584-585
+//pob:block:src/Classes/PassiveSpec.lua:608-609
 func (p *PassiveSpec) Class() data.Class {
 	return p.Tree().Classes[p.ClassID]
 }
 
-//pob:src/Classes/PassiveSpec.lua:573-596
+//pob:src/Classes/PassiveSpec.lua:597-620
 func (p *PassiveSpec) SelectClass(classID pob.ClassID) {
 	/*
 		TODO Implement
@@ -128,7 +128,7 @@ func (p *PassiveSpec) SelectClass(classID pob.ClassID) {
 	p.SelectAscendancyClass(pob.ClassAscendancies[p.ClassID][0])
 }
 
-//pob:src/Classes/PassiveSpec.lua:610-628
+//pob:src/Classes/PassiveSpec.lua:634-652
 func (p *PassiveSpec) SelectAscendancyClass(ascendancyID pob.AscendancyID) {
 	p.AscendancyID = ascendancyID
 	p.AscendancyName = pob.AscendancyNameByID[ascendancyID]
@@ -217,7 +217,7 @@ type socketedLegionJewel struct {
 	jewel        mod.LegionJewel
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1130-1132
+//pob:block:src/Classes/PassiveSpec.lua:1154-1156
 func socketedLegionJewels(env *Environment) []socketedLegionJewel {
 	specs := env.Build.Tree.Specs
 	if len(specs) == 0 {
@@ -270,7 +270,7 @@ func socketedLegionJewels(env *Environment) []socketedLegionJewel {
 	return jewels
 }
 
-//pob:block:src/Classes/Item.lua:2477-2479
+//pob:block:src/Classes/Item.lua:2512-2514
 func itemConqueredBy(item *Item) (mod.LegionJewel, bool) {
 	for _, m := range item.Mods {
 		if m.Name() != "JewelData" {
@@ -287,7 +287,7 @@ func itemConqueredBy(item *Item) (mod.LegionJewel, bool) {
 	return mod.LegionJewel{}, false
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1211-1223,src/Classes/PassiveSpec.lua:1365-1403
+//pob:block:src/Classes/PassiveSpec.lua:1236-1248,src/Classes/PassiveSpec.lua:1390-1428
 func nodeRewrites(env *Environment) map[string]nodeRewrite {
 	tattoos := tattooedNodes(env)
 
@@ -524,7 +524,7 @@ func abyssSocketConquests(treeVersion pob.TreeVersion, jewelType tjdata.JewelTyp
 	return out
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1253-1269
+//pob:block:src/Classes/PassiveSpec.lua:1278-1294
 func abyssModification(jewelType tjdata.JewelType, seed int, graphID string, render func(data.LegionNode, tjdata.StatRolls) []string) (*data.LegionNode, []string, bool) {
 	if err := raw.EnsureTimelessSources(); err != nil {
 		return nil, nil, false
@@ -622,7 +622,7 @@ func abyssSockets(env *Environment) []abyssSocket {
 	return out
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:968-1009
+//pob:block:src/Classes/PassiveSpec.lua:992-1033
 func shortestPathToClassStart(env *Environment, tree *data.Tree, rootID string) map[string]bool {
 	if _, allocated := env.AllocatedNodes[rootID]; !allocated {
 		return nil
@@ -668,7 +668,7 @@ func shortestPathToClassStart(env *Environment, tree *data.Tree, rootID string) 
 	return nil
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1234-1251
+//pob:block:src/Classes/PassiveSpec.lua:1259-1276
 func legionStatLine(template string, stat data.LegionStat, value float64) string {
 	if stat.Key == "" {
 		return template
@@ -701,7 +701,7 @@ func luaNum(v float64) string {
 
 // local ward = (isValueInArray(attributes, node.dn) or node.isTattoo) and "1" or "2"
 //
-//pob:block:src/Classes/PassiveSpec.lua:1391-1393
+//pob:block:src/Classes/PassiveSpec.lua:1416-1418
 func legionWardLine(isAttribute bool) string {
 	if isAttribute {
 		return "1% increased Ward"
@@ -711,7 +711,7 @@ func legionWardLine(isAttribute bool) string {
 
 // local str = isValueInArray(attributes, node.dn) and "2" or "4"
 //
-//pob:block:src/Classes/PassiveSpec.lua:1385-1390
+//pob:block:src/Classes/PassiveSpec.lua:1410-1415
 func legionAttributeLine(isAttribute bool, attribute string) string {
 	if isAttribute {
 		return "+2 to " + attribute
@@ -719,7 +719,7 @@ func legionAttributeLine(isAttribute bool, attribute string) string {
 	return "+4 to " + attribute
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:970-985
+//pob:block:src/Classes/PassiveSpec.lua:994-1009
 func buildDistanceToClassStart(allocNodes map[string]data.Node, classStartID string) map[string]int {
 	distances := make(map[string]int)
 	if classStartID == "" {
@@ -771,7 +771,7 @@ func buildDistanceToClassStart(allocNodes map[string]data.Node, classStartID str
 	return distances
 }
 
-//pob:src/Classes/PassiveSpec.lua:569-609
+//pob:src/Classes/PassiveSpec.lua:593-633
 func setNodeDistanceToClassStart(root string, allocNodes map[string]data.Node, classStartID string) int {
 	if _, allocated := allocNodes[root]; !allocated {
 		return 0
@@ -805,7 +805,7 @@ func setNodeDistanceToClassStart(root string, allocNodes map[string]data.Node, c
 	return 0
 }
 
-//pob:block:src/Classes/PassiveTree.lua:546-557
+//pob:block:src/Classes/PassiveTree.lua:571-582
 func isMasteryNode(node data.Node) bool {
 	return node.IsMastery != nil && *node.IsMastery
 }
@@ -827,7 +827,7 @@ func linkedNodeIDs(node data.Node) []string {
 
 var classStartIDs sync.Map
 
-//pob:block:src/Classes/PassiveTree.lua:547-550
+//pob:block:src/Classes/PassiveTree.lua:572-575
 func classStartNodeID(tree *data.Tree, classID pob.ClassID) string {
 	starts, ok := classStartIDs.Load(tree)
 	if !ok {

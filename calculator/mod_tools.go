@@ -4,7 +4,7 @@ import (
 	"github.com/Vilsol/go-pob/mod"
 )
 
-//pob:src/Modules/ModParser.lua:2012-2014
+//pob:src/Modules/ModParser.lua:2026-2028
 func FLAG(modName string) mod.Mod {
 	return MOD(modName, mod.TypeFlag, true)
 }

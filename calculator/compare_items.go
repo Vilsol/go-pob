@@ -44,7 +44,7 @@ func (i *Item) compareModLists() [][]ModLine {
 	return [][]ModLine{i.EnchantModLines, i.ScourgeModLines, i.ImplicitModLines, i.ExplicitModLines, i.CrucibleModLines}
 }
 
-//pob:src/Classes/TradeHelpers.lua:401-416
+//pob:src/Classes/TradeHelpers.lua:423-438
 func tradeBuildModMap(item *Item) map[string]tradeModEntry {
 	out := map[string]tradeModEntry{}
 	if item == nil {
