@@ -12,13 +12,9 @@ Every 4 seconds, Regenerate 35% of Life over one second if 2 Hunter Items are Eq
 Every 4 seconds, Regenerate Energy Shield equal to 1% of Evasion Rating over 1 second
 Every 4 seconds, Regenerate Life equal to 1% of Armour and Evasion Rating over 1 second
 Gain additional Elemental Damage Reduction equal to half your Chaos Resistance
-If Amethyst Flask Charges are consumed, 37% of Physical Damage as Extra Chaos Damage
-If Diamond Flask Charges are consumed, 250% increased Critical Strike Chance
 Mark Skills Cost no Mana
 Minion Life is increased by their Overcapped Fire Resistance
 Minions gain Added Physical Damage equal to 8% of Maximum Energy Shield on your Equipped Helmet
-Nearby Enemies are Covered in Ash if you haven't moved in the past 2 seconds
-Prevent +15% of Suppressed Spell Damage while on Full Energy Shield
 Prevent +6% of Suppressed Spell Damage while on Full Energy Shield
 Recover 1% of Life per Withered Debuff on each Enemy you Kill
 Skeletons gain Added Chaos Damage equal to 25% of Maximum Energy Shield on your Equipped Shield
@@ -39,7 +35,6 @@ Your Curses have 25% increased Effect if 50% of Curse Duration expired
 Deal 1% more Damage with Hits and Ailments to Rare and Unique Enemies for each second they've ever been in your Presence, up to a maximum of 100%
 Deal 1% more Damage with Hits and Ailments to Rare and Unique Enemies for every 2 seconds they've ever been in your Presence, up to a maximum of 50%
 Gain Unholy Might on Block for 3 seconds
-If Bismuth Flask Charges are consumed, Penetrate 25% Elemental Resistances
 Minions deal 20% more Damage while they are on Low Life
 Skills used by Totems deal 10% more Damage per maximum number of Summoned Totems
 Skills used by Totems have 10% more Area of Effect per maximum number of Summoned Totems
@@ -80,7 +75,6 @@ Projectiles gain Damage as they travel farther, dealing up to 60% increased Dama
 Unaffected by Curses
 You gain Divinity for 10 seconds on reaching maximum Divine Charges
 Grants Level 20 Shaper's Despair, which will be used by Shaper Memory
-Grants Level 20 Snipe Skill
 Socketed Vaal Skills require 30% less Souls per Use
 Trigger Level 15 Feast of Flesh every 5 seconds
 Grants Call of Steel
@@ -110,11 +104,9 @@ Gain 18 Energy Shield for each Enemy you Hit which is affected by a Spider's Web
 Hits with this Weapon Freeze Enemies as though dealing 175% more Damage
 Projectiles deal 20% increased Damage with Hits and Ailments for each Enemy Pierced
 100% increased Quantity of Items Dropped by Slain Normal Enemies
-125% increased Rarity of Items Dropped by Slain Magic Enemies
 12% increased effect of Non-Curse Auras from your skills while your Ward is Broken
 15% increased Quantity of Items Dropped by Slain Frozen Enemies
 30% increased Effect of Blind from Melee Weapons
-30% increased Rarity of Items Dropped by Slain Shocked Enemies
 Gain 5 Life for each Ignited Enemy hit with Attacks
 Gain Onslaught for 4 seconds on Hit while at maximum Frenzy Charges
 Hits with this Weapon have +10% to Critical Strike Multiplier per Enemy Power
@@ -136,7 +128,6 @@ Flasks applied to you have 1% increased Effect per Level
 Flasks gain 1 Charge per second if you've Hit a Unique Enemy Recently
 Increases and Reductions to Minion Cast Speed also affect you
 Intimidate Enemies for 4 seconds on Hit with Attacks while at maximum Endurance Charges
-Iron Flasks gain 2 charges when your Ward Breaks
 Life Flasks used while on Low Life apply Recovery Instantly
 Minions deal no Non-Cold Damage
 Non-Critical Strikes deal no Damage
@@ -178,8 +169,6 @@ Arrows deal 50% increased Damage with Hits and Ailments to Targets they Pierce
 2% chance to deal Double Damage against Enemies for each type of Ailment you have inflicted on them
 25% of Damage taken while Frozen Recouped as Life
 30% more Area of Effect with Bow Attacks that fire a single Projectile
-5% increased Attack and Cast Speed for each nearby Enemy, up to a maximum of 30%
-5% increased Movement Speed for each nearby Enemy, up to a maximum of 50%
 50% increased Duration of Ailments of types you haven't inflicted Recently
 70% of Damage taken while Frozen Recouped as Life
 Enemies Shocked by you are Debilitated

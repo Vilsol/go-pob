@@ -19,7 +19,7 @@ func TestSeismicTrapOfSwellsOverlap(t *testing.T) {
 func TestEquippedFlaskSetsHaveCondition(t *testing.T) {
 	requireGameData(t, "3.30")
 	env := corpusEnvForLoadedData(t, "1634-pathfinder-seismic-trap-of-swells.xml")
-	for k, want := range map[string]float64{"CritChance": 68.5251, "TotalDPS": 10354067.932831} {
+	for k, want := range map[string]float64{"CritChance": 68.5251, "TotalDPS": 2503166.5856761} {
 		if got := env.Player.Output[k]; !oracleClose(got, want, oracleDumpTolerance) {
 			t.Errorf("%s = %v, want %v (PoB)", k, got, want)
 		}

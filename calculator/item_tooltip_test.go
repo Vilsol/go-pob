@@ -95,7 +95,7 @@ func TestAddItemTooltipAgainstPoB(t *testing.T) {
 	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
-	f, err := os.Open(filepath.Join("..", "testdata", "item-tooltip", "item_tooltip-3.29.json.gz"))
+	f, err := os.Open(filepath.Join("..", "testdata", "item-tooltip", "item_tooltip-3.30.json.gz"))
 	if err != nil {
 		t.Fatalf("REFUSING: %v", err)
 	}

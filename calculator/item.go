@@ -65,6 +65,8 @@ type ModLine struct {
 
 	Order *float64
 
+	RangeFromValue bool
+
 	ModID            string
 	NewModID         string
 	ModGroup         string
@@ -441,9 +443,12 @@ func parseModRangeElements(raw string) []modRange {
 	return out
 }
 
-//pob:block:src/Classes/ItemsTab.lua:1246-1263
+// enchants added from the base data (countSavedModLines) are not ported, so every list counts in full
+//
+//pob:block:src/Classes/ItemsTab.lua:1297-1330
 func (i *Item) applyModRanges(ranges []modRange) {
-	if len(ranges) == 0 {
+	if len(ranges) == 0 ||
+		len(ranges) > len(i.EnchantModLines)+len(i.ScourgeModLines)+len(i.ImplicitModLines)+len(i.ExplicitModLines)+len(i.CrucibleModLines) {
 		return
 	}
 	lists := [...][]ModLine{
@@ -458,7 +463,7 @@ func (i *Item) applyModRanges(ranges []modRange) {
 		id := mr.ID
 		for _, list := range lists {
 			if id <= len(list) {
-				if id >= 1 {
+				if id >= 1 && !list[id-1].RangeFromValue {
 					v := mr.Range
 					list[id-1].Range = &v
 				}
@@ -561,6 +566,8 @@ func (i *Item) parseRaw(raw string, rarity ItemRarity, highQuality bool) {
 	var importedLevelReq *int
 	gameModeStage := "FINDIMPLICIT"
 	foundExplicit, foundImplicit := false, false
+	//pob:block:src/Classes/Item.lua:508-510
+	hasModifierHeaders := false
 
 	processInfluenceLine := func(line string) bool {
 		for _, inf := range influenceDisplay {
@@ -581,6 +588,13 @@ func (i *Item) parseRaw(raw string, rarity ItemRarity, highQuality bool) {
 			line == "Take this to the Wickerman in a town or hideout to attach it."):
 		case line == "--------":
 			i.CheckSection = true
+		//pob:block:src/Classes/Item.lua:584-590
+		//
+		// the modifier name and tags the header carries (591-645) are not read
+		case strings.HasPrefix(line, "{ "):
+			i.AdvancedCopy = true
+			hasModifierHeaders = true
+			i.Crafted = true
 		case line == "Corrupted":
 			i.Corrupted = true
 		case line == "Fractured Item":
@@ -656,7 +670,7 @@ func (i *Item) parseRaw(raw string, rarity ItemRarity, highQuality bool) {
 		l++
 	}
 
-	i.assignUniqueModStatOrder()
+	i.assignUniqueModStatOrder(hasModifierHeaders)
 
 	if i.Base != nil {
 		if _, ok := i.Requirements["level"]; !ok {
@@ -679,8 +693,8 @@ func (i *Item) parseRaw(raw string, rarity ItemRarity, highQuality bool) {
 
 	i.applyModMagnitude()
 
-	//pob:src/Classes/Item.lua:1471-1473
-	if i.AdvancedCopy && len(i.ExplicitModLines) > 1 {
+	//pob:src/Classes/Item.lua:1483-1485
+	if hasModifierHeaders && len(i.ExplicitModLines) > 1 {
 		sortCraftedModLines(i.ExplicitModLines)
 	}
 
@@ -977,9 +991,9 @@ func luaLower(s string) string {
 	return string(b)
 }
 
-//pob:block:src/Classes/Item.lua:1360-1377
-func (i *Item) assignUniqueModStatOrder() {
-	if !i.AdvancedCopy || (i.Rarity != RarityUnique && i.Rarity != RarityRelic) {
+//pob:block:src/Classes/Item.lua:1372-1389
+func (i *Item) assignUniqueModStatOrder(hasModifierHeaders bool) {
+	if !hasModifierHeaders || (i.Rarity != RarityUnique && i.Rarity != RarityRelic) {
 		return
 	}
 	for k := range i.ExplicitModLines {
@@ -2128,8 +2142,11 @@ func (i *Item) parseModLine(line string, l int, mode string, implicitLines int, 
 
 	var bestPrecision *float64
 	line, bestPrecision = advancedCopyRollRanges(line)
+	//pob:block:src/Classes/Item.lua:1193-1195
+	rangeFromValue := false
 	if bestPrecision != nil {
 		lineRange = bestPrecision
+		rangeFromValue = true
 	}
 
 	rangedLine := data.ApplyRange(line, 1, &catalystScalar, corruptedRange)
@@ -2232,6 +2249,7 @@ func (i *Item) parseModLine(line string, l int, mode string, implicitLines int, 
 		if lineRange != nil {
 			newLine.Range = lineRange
 		}
+		newLine.RangeFromValue = rangeFromValue
 		*target2 = append(*target2, newLine)
 
 		if mode == "GAME" {

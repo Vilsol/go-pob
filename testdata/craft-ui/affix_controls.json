@@ -229,7 +229,7 @@
        "ItemFoundRarityIncreasePrefix2",
        "ItemFoundRarityIncreasePrefix3"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -349,7 +349,7 @@
        "ItemFoundRarityIncreasePrefix2",
        "ItemFoundRarityIncreasePrefix3"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -469,7 +469,7 @@
        "ItemFoundRarityIncreasePrefix2",
        "ItemFoundRarityIncreasePrefix3"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -571,7 +571,7 @@
        "ItemFoundRarityIncrease3",
        "ItemFoundRarityIncrease4"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -644,7 +644,7 @@
       "ids": [
        "MercenaryModFortificationDamageAura"
       ],
-      "label": "Nearby Enemies take 1% increased Physical Damage per two Fortification on you"
+      "label": "Enemies within 6 metres take 1% increased Physical Damage per two Fortification on you"
      },
      {
       "ids": [
@@ -732,7 +732,7 @@
        "ItemFoundRarityIncrease3",
        "ItemFoundRarityIncrease4"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -805,7 +805,7 @@
       "ids": [
        "MercenaryModFortificationDamageAura"
       ],
-      "label": "Nearby Enemies take 1% increased Physical Damage per two Fortification on you"
+      "label": "Enemies within 6 metres take 1% increased Physical Damage per two Fortification on you"
      },
      {
       "ids": [
@@ -893,7 +893,7 @@
        "ItemFoundRarityIncrease3",
        "ItemFoundRarityIncrease4"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -966,7 +966,7 @@
       "ids": [
        "MercenaryModFortificationDamageAura"
       ],
-      "label": "Nearby Enemies take 1% increased Physical Damage per two Fortification on you"
+      "label": "Enemies within 6 metres take 1% increased Physical Damage per two Fortification on you"
      },
      {
       "ids": [
@@ -1112,7 +1112,7 @@
        "ItemFoundRarityIncreasePrefix3",
        "ItemFoundRarityIncreasePrefix4_"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -1266,7 +1266,7 @@
        "ItemFoundRarityIncrease3",
        "ItemFoundRarityIncrease4"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -1675,7 +1675,7 @@
       "ids": [
        "FasterAilmentDamageJewel"
       ],
-      "label": "Damaging Ailments deal damage (4-6)% faster"
+      "label": "Damaging Ailments deal damage (4-6)% Faster"
      }
     ],
     [
@@ -1959,7 +1959,7 @@
       "ids": [
        "FasterAilmentDamageJewel"
       ],
-      "label": "Damaging Ailments deal damage (4-6)% faster"
+      "label": "Damaging Ailments deal damage (4-6)% Faster"
      }
     ],
     [
@@ -3560,24 +3560,24 @@
     [
      {
       "ids": [
-       "ProjectileDamageUber1",
-       "ProjectileDamageUber2",
-       "ProjectileDamageUber3",
-       "ProjectileDamageUberMaven_"
-      ],
-      "label": "Socketed Gems are Supported by Level # Slower Projectiles/#% increased Projectile Damage"
-     },
-     {
-      "ids": [
        "SupportedByManaLeechUber1"
       ],
-      "label": "Socketed Gems are Supported by Level 15 Mana Leech"
+      "label": "Socketed Gems are Supported by Level 15 Mana Leech Support"
      },
      {
       "ids": [
        "SupportedByManaLeechUberMaven__"
       ],
-      "label": "Socketed Gems are Supported by Level 20 Mana Leech/(20-30)% increased Maximum total Mana Recovery per second from Leech"
+      "label": "Socketed Gems are Supported by Level 20 Mana Leech Support/(20-30)% increased Maximum total Mana Recovery per second from Leech"
+     },
+     {
+      "ids": [
+       "ProjectileDamageUber1",
+       "ProjectileDamageUber2",
+       "ProjectileDamageUber3",
+       "ProjectileDamageUberMaven_"
+      ],
+      "label": "Socketed Gems are Supported by Level # Slower Projectiles Support/#% increased Projectile Damage"
      },
      {
       "ids": [
@@ -3706,7 +3706,7 @@
        "ItemFoundRarityIncreasePrefix1",
        "ItemFoundRarityIncreasePrefix2"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -3718,24 +3718,24 @@
     [
      {
       "ids": [
-       "ProjectileDamageUber1",
-       "ProjectileDamageUber2",
-       "ProjectileDamageUber3",
-       "ProjectileDamageUberMaven_"
-      ],
-      "label": "Socketed Gems are Supported by Level # Slower Projectiles/#% increased Projectile Damage"
-     },
-     {
-      "ids": [
        "SupportedByManaLeechUber1"
       ],
-      "label": "Socketed Gems are Supported by Level 15 Mana Leech"
+      "label": "Socketed Gems are Supported by Level 15 Mana Leech Support"
      },
      {
       "ids": [
        "SupportedByManaLeechUberMaven__"
       ],
-      "label": "Socketed Gems are Supported by Level 20 Mana Leech/(20-30)% increased Maximum total Mana Recovery per second from Leech"
+      "label": "Socketed Gems are Supported by Level 20 Mana Leech Support/(20-30)% increased Maximum total Mana Recovery per second from Leech"
+     },
+     {
+      "ids": [
+       "ProjectileDamageUber1",
+       "ProjectileDamageUber2",
+       "ProjectileDamageUber3",
+       "ProjectileDamageUberMaven_"
+      ],
+      "label": "Socketed Gems are Supported by Level # Slower Projectiles Support/#% increased Projectile Damage"
      },
      {
       "ids": [
@@ -3864,7 +3864,7 @@
        "ItemFoundRarityIncreasePrefix1",
        "ItemFoundRarityIncreasePrefix2"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -3876,24 +3876,24 @@
     [
      {
       "ids": [
-       "ProjectileDamageUber1",
-       "ProjectileDamageUber2",
-       "ProjectileDamageUber3",
-       "ProjectileDamageUberMaven_"
-      ],
-      "label": "Socketed Gems are Supported by Level # Slower Projectiles/#% increased Projectile Damage"
-     },
-     {
-      "ids": [
        "SupportedByManaLeechUber1"
       ],
-      "label": "Socketed Gems are Supported by Level 15 Mana Leech"
+      "label": "Socketed Gems are Supported by Level 15 Mana Leech Support"
      },
      {
       "ids": [
        "SupportedByManaLeechUberMaven__"
       ],
-      "label": "Socketed Gems are Supported by Level 20 Mana Leech/(20-30)% increased Maximum total Mana Recovery per second from Leech"
+      "label": "Socketed Gems are Supported by Level 20 Mana Leech Support/(20-30)% increased Maximum total Mana Recovery per second from Leech"
+     },
+     {
+      "ids": [
+       "ProjectileDamageUber1",
+       "ProjectileDamageUber2",
+       "ProjectileDamageUber3",
+       "ProjectileDamageUberMaven_"
+      ],
+      "label": "Socketed Gems are Supported by Level # Slower Projectiles Support/#% increased Projectile Damage"
      },
      {
       "ids": [
@@ -4022,7 +4022,7 @@
        "ItemFoundRarityIncreasePrefix1",
        "ItemFoundRarityIncreasePrefix2"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -4035,53 +4035,19 @@
      {
       "ids": [
        "TrapDamageCooldownUber1_",
-       "TrapDamageCooldownUber2",
-       "TrapDamageCooldownUber3_",
-       "TrapDamageCooldownUberMaven"
-      ],
-      "label": "Socketed Gems are Supported by Level # Advanced Traps/#% increased Trap Damage"
-     },
-     {
-      "ids": [
-       "TrapSpeedCooldownUber1",
-       "TrapSpeedCooldownUber2",
-       "TrapSpeedCooldownUber3",
-       "TrapSpeedCooldownUberMaven_"
-      ],
-      "label": "Socketed Gems are Supported by Level # Advanced Traps/#% increased Trap Throwing Speed"
-     },
-     {
-      "ids": [
+       "TrapDamageMineUber1",
        "TrapDamageUber1",
+       "TrapDamageCooldownUber2",
+       "TrapDamageMineUber2_",
        "TrapDamageUber2",
+       "TrapDamageCooldownUber3_",
+       "TrapDamageMineUber3",
        "TrapDamageUber3",
+       "TrapDamageCooldownUberMaven",
+       "TrapDamageMineUberMaven",
        "TrapDamageUberMaven_"
       ],
-      "label": "Socketed Gems are Supported by Level # Trap/#% increased Trap Damage"
-     },
-     {
-      "ids": [
-       "AdditionalTrapsThrownSupportedUberMaven"
-      ],
-      "label": "Socketed Gems are Supported by Level 25 Trap/Skills which Throw Traps throw up to 1 additional Trap"
-     },
-     {
-      "ids": [
-       "TrapDamageMineUber1",
-       "TrapDamageMineUber2_",
-       "TrapDamageMineUber3",
-       "TrapDamageMineUberMaven"
-      ],
-      "label": "Socketed Gems are Supported by Level # Trap And Mine Damage/#% increased Trap Damage"
-     },
-     {
-      "ids": [
-       "BlindOnHitSupportedUber1",
-       "BlindOnHitSupportedUber2",
-       "BlindOnHitSupportedUber3",
-       "BlindOnHitSupportedUberMaven"
-      ],
-      "label": "Socketed Gems are supported by Level # Blind/#% Global chance to Blind Enemies on hit"
+      "label": "Socketed Gems are Supported by Level # Advanced Traps Support/#% increased Trap Damage"
      },
      {
       "ids": [
@@ -4090,7 +4056,31 @@
        "IncreasedCastSpeedUber3",
        "IncreasedCastSpeedUberMaven_"
       ],
-      "label": "Socketed Gems are Supported by Level # Faster Casting/#% increased Cast Speed"
+      "label": "Socketed Gems are Supported by Level # Faster Casting Support/#% increased Cast Speed"
+     },
+     {
+      "ids": [
+       "TrapSpeedCooldownUber1",
+       "TrapSpeedCooldownUber2",
+       "TrapSpeedCooldownUber3",
+       "TrapSpeedCooldownUberMaven_"
+      ],
+      "label": "Socketed Gems are Supported by Level # Advanced Traps Support/#% increased Trap Throwing Speed"
+     },
+     {
+      "ids": [
+       "BlindOnHitSupportedUber1",
+       "BlindOnHitSupportedUber2",
+       "BlindOnHitSupportedUber3",
+       "BlindOnHitSupportedUberMaven"
+      ],
+      "label": "Socketed Gems are Supported by Level # Blind Support/#% Global chance to Blind Enemies on hit"
+     },
+     {
+      "ids": [
+       "AdditionalTrapsThrownSupportedUberMaven"
+      ],
+      "label": "Socketed Gems are Supported by Level 25 Trap Support/Skills which Throw Traps throw up to 1 additional Trap"
      },
      {
       "ids": [
@@ -4201,7 +4191,7 @@
        "ItemFoundRarityIncrease1",
        "ItemFoundRarityIncrease2"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -4331,53 +4321,19 @@
      {
       "ids": [
        "TrapDamageCooldownUber1_",
-       "TrapDamageCooldownUber2",
-       "TrapDamageCooldownUber3_",
-       "TrapDamageCooldownUberMaven"
-      ],
-      "label": "Socketed Gems are Supported by Level # Advanced Traps/#% increased Trap Damage"
-     },
-     {
-      "ids": [
-       "TrapSpeedCooldownUber1",
-       "TrapSpeedCooldownUber2",
-       "TrapSpeedCooldownUber3",
-       "TrapSpeedCooldownUberMaven_"
-      ],
-      "label": "Socketed Gems are Supported by Level # Advanced Traps/#% increased Trap Throwing Speed"
-     },
-     {
-      "ids": [
+       "TrapDamageMineUber1",
        "TrapDamageUber1",
+       "TrapDamageCooldownUber2",
+       "TrapDamageMineUber2_",
        "TrapDamageUber2",
+       "TrapDamageCooldownUber3_",
+       "TrapDamageMineUber3",
        "TrapDamageUber3",
+       "TrapDamageCooldownUberMaven",
+       "TrapDamageMineUberMaven",
        "TrapDamageUberMaven_"
       ],
-      "label": "Socketed Gems are Supported by Level # Trap/#% increased Trap Damage"
-     },
-     {
-      "ids": [
-       "AdditionalTrapsThrownSupportedUberMaven"
-      ],
-      "label": "Socketed Gems are Supported by Level 25 Trap/Skills which Throw Traps throw up to 1 additional Trap"
-     },
-     {
-      "ids": [
-       "TrapDamageMineUber1",
-       "TrapDamageMineUber2_",
-       "TrapDamageMineUber3",
-       "TrapDamageMineUberMaven"
-      ],
-      "label": "Socketed Gems are Supported by Level # Trap And Mine Damage/#% increased Trap Damage"
-     },
-     {
-      "ids": [
-       "BlindOnHitSupportedUber1",
-       "BlindOnHitSupportedUber2",
-       "BlindOnHitSupportedUber3",
-       "BlindOnHitSupportedUberMaven"
-      ],
-      "label": "Socketed Gems are supported by Level # Blind/#% Global chance to Blind Enemies on hit"
+      "label": "Socketed Gems are Supported by Level # Advanced Traps Support/#% increased Trap Damage"
      },
      {
       "ids": [
@@ -4386,7 +4342,31 @@
        "IncreasedCastSpeedUber3",
        "IncreasedCastSpeedUberMaven_"
       ],
-      "label": "Socketed Gems are Supported by Level # Faster Casting/#% increased Cast Speed"
+      "label": "Socketed Gems are Supported by Level # Faster Casting Support/#% increased Cast Speed"
+     },
+     {
+      "ids": [
+       "TrapSpeedCooldownUber1",
+       "TrapSpeedCooldownUber2",
+       "TrapSpeedCooldownUber3",
+       "TrapSpeedCooldownUberMaven_"
+      ],
+      "label": "Socketed Gems are Supported by Level # Advanced Traps Support/#% increased Trap Throwing Speed"
+     },
+     {
+      "ids": [
+       "BlindOnHitSupportedUber1",
+       "BlindOnHitSupportedUber2",
+       "BlindOnHitSupportedUber3",
+       "BlindOnHitSupportedUberMaven"
+      ],
+      "label": "Socketed Gems are Supported by Level # Blind Support/#% Global chance to Blind Enemies on hit"
+     },
+     {
+      "ids": [
+       "AdditionalTrapsThrownSupportedUberMaven"
+      ],
+      "label": "Socketed Gems are Supported by Level 25 Trap Support/Skills which Throw Traps throw up to 1 additional Trap"
      },
      {
       "ids": [
@@ -4497,7 +4477,7 @@
        "ItemFoundRarityIncrease1",
        "ItemFoundRarityIncrease2"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -4627,53 +4607,19 @@
      {
       "ids": [
        "TrapDamageCooldownUber1_",
-       "TrapDamageCooldownUber2",
-       "TrapDamageCooldownUber3_",
-       "TrapDamageCooldownUberMaven"
-      ],
-      "label": "Socketed Gems are Supported by Level # Advanced Traps/#% increased Trap Damage"
-     },
-     {
-      "ids": [
-       "TrapSpeedCooldownUber1",
-       "TrapSpeedCooldownUber2",
-       "TrapSpeedCooldownUber3",
-       "TrapSpeedCooldownUberMaven_"
-      ],
-      "label": "Socketed Gems are Supported by Level # Advanced Traps/#% increased Trap Throwing Speed"
-     },
-     {
-      "ids": [
+       "TrapDamageMineUber1",
        "TrapDamageUber1",
+       "TrapDamageCooldownUber2",
+       "TrapDamageMineUber2_",
        "TrapDamageUber2",
+       "TrapDamageCooldownUber3_",
+       "TrapDamageMineUber3",
        "TrapDamageUber3",
+       "TrapDamageCooldownUberMaven",
+       "TrapDamageMineUberMaven",
        "TrapDamageUberMaven_"
       ],
-      "label": "Socketed Gems are Supported by Level # Trap/#% increased Trap Damage"
-     },
-     {
-      "ids": [
-       "AdditionalTrapsThrownSupportedUberMaven"
-      ],
-      "label": "Socketed Gems are Supported by Level 25 Trap/Skills which Throw Traps throw up to 1 additional Trap"
-     },
-     {
-      "ids": [
-       "TrapDamageMineUber1",
-       "TrapDamageMineUber2_",
-       "TrapDamageMineUber3",
-       "TrapDamageMineUberMaven"
-      ],
-      "label": "Socketed Gems are Supported by Level # Trap And Mine Damage/#% increased Trap Damage"
-     },
-     {
-      "ids": [
-       "BlindOnHitSupportedUber1",
-       "BlindOnHitSupportedUber2",
-       "BlindOnHitSupportedUber3",
-       "BlindOnHitSupportedUberMaven"
-      ],
-      "label": "Socketed Gems are supported by Level # Blind/#% Global chance to Blind Enemies on hit"
+      "label": "Socketed Gems are Supported by Level # Advanced Traps Support/#% increased Trap Damage"
      },
      {
       "ids": [
@@ -4682,7 +4628,31 @@
        "IncreasedCastSpeedUber3",
        "IncreasedCastSpeedUberMaven_"
       ],
-      "label": "Socketed Gems are Supported by Level # Faster Casting/#% increased Cast Speed"
+      "label": "Socketed Gems are Supported by Level # Faster Casting Support/#% increased Cast Speed"
+     },
+     {
+      "ids": [
+       "TrapSpeedCooldownUber1",
+       "TrapSpeedCooldownUber2",
+       "TrapSpeedCooldownUber3",
+       "TrapSpeedCooldownUberMaven_"
+      ],
+      "label": "Socketed Gems are Supported by Level # Advanced Traps Support/#% increased Trap Throwing Speed"
+     },
+     {
+      "ids": [
+       "BlindOnHitSupportedUber1",
+       "BlindOnHitSupportedUber2",
+       "BlindOnHitSupportedUber3",
+       "BlindOnHitSupportedUberMaven"
+      ],
+      "label": "Socketed Gems are Supported by Level # Blind Support/#% Global chance to Blind Enemies on hit"
+     },
+     {
+      "ids": [
+       "AdditionalTrapsThrownSupportedUberMaven"
+      ],
+      "label": "Socketed Gems are Supported by Level 25 Trap Support/Skills which Throw Traps throw up to 1 additional Trap"
      },
      {
       "ids": [
@@ -4793,7 +4763,7 @@
        "ItemFoundRarityIncrease1",
        "ItemFoundRarityIncrease2"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -5590,12 +5560,6 @@
      },
      {
       "ids": [
-       "AbyssAvoidElementalAilmentsWhileElusiveJewel1"
-      ],
-      "label": "(10-20)% chance to Avoid Elemental Ailments while you have Elusive"
-     },
-     {
-      "ids": [
        "AbyssCastSpeedIfCriticalStrikeDealtRecentlyJewel1"
       ],
       "label": "(5-7)% increased Cast Speed if you've dealt a Critical Strike Recently"
@@ -5627,12 +5591,6 @@
      },
      {
       "ids": [
-       "AbyssSelfCurseEffectOnConsecratedGroundJewel1__"
-      ],
-      "label": "(15-25)% reduced Effect of Curses on you while on Consecrated Ground"
-     },
-     {
-      "ids": [
        "AbyssDamagePenetratesElementalResistancesIfNoEnemySlainRecentlyJewel1"
       ],
       "label": "Damage Penetrates 2% Elemental Resistances if you haven't Killed Recently"
@@ -5642,36 +5600,6 @@
        "AbyssDamageIfEnemySlainRecentlyJewel1"
       ],
       "label": "(15-20)% increased Damage if you've Killed Recently"
-     },
-     {
-      "ids": [
-       "AbyssBlindedEnemiesCriticalStrikeChanceJewel1"
-      ],
-      "label": "Enemies Blinded by you have (20-30)% reduced Critical Strike Chance"
-     },
-     {
-      "ids": [
-       "AbyssHinderedEnemiesLifeRegenerationRateJewel1"
-      ],
-      "label": "Enemies Hindered by you have (25-35)% reduced Life Regeneration rate"
-     },
-     {
-      "ids": [
-       "AbyssIntimidatedEnemiesStunDurationJewel1"
-      ],
-      "label": "Enemies Intimidated by you have (10-15)% increased duration of stuns against them"
-     },
-     {
-      "ids": [
-       "AbyssMaimedEnemiesDamageOverTimeJewel1"
-      ],
-      "label": "Enemies Maimed by you take (4-5)% increased Damage Over Time"
-     },
-     {
-      "ids": [
-       "AbyssWitheredEnemiesAllResistanceJewel1___"
-      ],
-      "label": "Enemies Withered by you have -2% to all Resistances"
      },
      {
       "ids": [
@@ -5956,12 +5884,6 @@
      },
      {
       "ids": [
-       "AbyssAvoidElementalAilmentsWhileElusiveJewel1"
-      ],
-      "label": "(10-20)% chance to Avoid Elemental Ailments while you have Elusive"
-     },
-     {
-      "ids": [
        "AbyssCastSpeedIfCriticalStrikeDealtRecentlyJewel1"
       ],
       "label": "(5-7)% increased Cast Speed if you've dealt a Critical Strike Recently"
@@ -5993,12 +5915,6 @@
      },
      {
       "ids": [
-       "AbyssSelfCurseEffectOnConsecratedGroundJewel1__"
-      ],
-      "label": "(15-25)% reduced Effect of Curses on you while on Consecrated Ground"
-     },
-     {
-      "ids": [
        "AbyssDamagePenetratesElementalResistancesIfNoEnemySlainRecentlyJewel1"
       ],
       "label": "Damage Penetrates 2% Elemental Resistances if you haven't Killed Recently"
@@ -6008,36 +5924,6 @@
        "AbyssDamageIfEnemySlainRecentlyJewel1"
       ],
       "label": "(15-20)% increased Damage if you've Killed Recently"
-     },
-     {
-      "ids": [
-       "AbyssBlindedEnemiesCriticalStrikeChanceJewel1"
-      ],
-      "label": "Enemies Blinded by you have (20-30)% reduced Critical Strike Chance"
-     },
-     {
-      "ids": [
-       "AbyssHinderedEnemiesLifeRegenerationRateJewel1"
-      ],
-      "label": "Enemies Hindered by you have (25-35)% reduced Life Regeneration rate"
-     },
-     {
-      "ids": [
-       "AbyssIntimidatedEnemiesStunDurationJewel1"
-      ],
-      "label": "Enemies Intimidated by you have (10-15)% increased duration of stuns against them"
-     },
-     {
-      "ids": [
-       "AbyssMaimedEnemiesDamageOverTimeJewel1"
-      ],
-      "label": "Enemies Maimed by you take (4-5)% increased Damage Over Time"
-     },
-     {
-      "ids": [
-       "AbyssWitheredEnemiesAllResistanceJewel1___"
-      ],
-      "label": "Enemies Withered by you have -2% to all Resistances"
      },
      {
       "ids": [
@@ -6180,7 +6066,7 @@
        "ItemFoundRarityIncreasePrefix2",
        "ItemFoundRarityIncreasePrefix3"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -6292,7 +6178,7 @@
        "ItemFoundRarityIncreasePrefix2",
        "ItemFoundRarityIncreasePrefix3"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -6404,7 +6290,7 @@
        "ItemFoundRarityIncreasePrefix2",
        "ItemFoundRarityIncreasePrefix3"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -6506,7 +6392,7 @@
        "ItemFoundRarityIncrease3",
        "ItemFoundRarityIncrease4"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -6579,7 +6465,7 @@
       "ids": [
        "MercenaryModFortificationDamageAura"
       ],
-      "label": "Nearby Enemies take 1% increased Physical Damage per two Fortification on you"
+      "label": "Enemies within 6 metres take 1% increased Physical Damage per two Fortification on you"
      },
      {
       "ids": [
@@ -6652,7 +6538,7 @@
        "ItemFoundRarityIncrease3",
        "ItemFoundRarityIncrease4"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -6725,7 +6611,7 @@
       "ids": [
        "MercenaryModFortificationDamageAura"
       ],
-      "label": "Nearby Enemies take 1% increased Physical Damage per two Fortification on you"
+      "label": "Enemies within 6 metres take 1% increased Physical Damage per two Fortification on you"
      },
      {
       "ids": [
@@ -6798,7 +6684,7 @@
        "ItemFoundRarityIncrease3",
        "ItemFoundRarityIncrease4"
       ],
-      "label": "#% increased Rarity of Items found"
+      "label": "+#% to Item Rarity"
      },
      {
       "ids": [
@@ -6871,7 +6757,7 @@
       "ids": [
        "MercenaryModFortificationDamageAura"
       ],
-      "label": "Nearby Enemies take 1% increased Physical Damage per two Fortification on you"
+      "label": "Enemies within 6 metres take 1% increased Physical Damage per two Fortification on you"
      },
      {
       "ids": [
@@ -6890,9 +6776,9 @@
   },
   {
    "explicit": [
-    "(60-90)% increased Unveiled Modifier magnitudes",
     "7% increased Attack and Cast Speed",
-    "20% increased Attack and Cast Speed if you've Consumed a Corpse Recently"
+    "20% increased Attack and Cast Speed if you've Consumed a Corpse Recently",
+    "(60-90)% increased Unveiled Modifier magnitudes"
    ],
    "level": 49,
    "limit": 4,
@@ -6907,21 +6793,11 @@
      },
      {
       "ids": [
-       "JunMasterVeiledSupportedByArcaneSurgeAndSpellDamage"
-      ],
-      "label": "Socketed Gems are Supported by Level 1 Arcane Surge/(80-89)% increased Spell Damage"
-     },
-     {
-      "ids": [
+       "JunMasterVeiledSupportedByArcaneSurgeAndSpellDamage",
+       "JunMasterVeiledSupportedByCastOnCritAndSpellDamage",
        "JunMasterVeiledSupportedByCastWhileChannelingAndSpellDamage"
       ],
-      "label": "Socketed Gems are Supported by Level 1 Cast While Channelling/(80-89)% increased Spell Damage"
-     },
-     {
-      "ids": [
-       "JunMasterVeiledSupportedByCastOnCritAndSpellDamage"
-      ],
-      "label": "Socketed Gems are supported by Level 1 Cast On Critical Strike/(80-89)% increased Spell Damage"
+      "label": "Socketed Gems are Supported by Level # Arcane Surge Support/#% increased Spell Damage"
      },
      {
       "ids": [
@@ -6939,7 +6815,7 @@
       "ids": [
        "JunMasterVeiledLocalIncreasedPhysicalDamageAndBlindChanceCrafted_"
       ],
-      "label": "(120-139)% increased Physical Damage/(21-25)% chance to Blind Enemies on hit"
+      "label": "(120-139)% increased Physical Damage/(21-25)% chance to Blind Enemies on Hit"
      },
      {
       "ids": [
@@ -7017,21 +6893,11 @@
      },
      {
       "ids": [
-       "JunMasterVeiledSupportedByArcaneSurgeAndSpellDamage"
-      ],
-      "label": "Socketed Gems are Supported by Level 1 Arcane Surge/(80-89)% increased Spell Damage"
-     },
-     {
-      "ids": [
+       "JunMasterVeiledSupportedByArcaneSurgeAndSpellDamage",
+       "JunMasterVeiledSupportedByCastOnCritAndSpellDamage",
        "JunMasterVeiledSupportedByCastWhileChannelingAndSpellDamage"
       ],
-      "label": "Socketed Gems are Supported by Level 1 Cast While Channelling/(80-89)% increased Spell Damage"
-     },
-     {
-      "ids": [
-       "JunMasterVeiledSupportedByCastOnCritAndSpellDamage"
-      ],
-      "label": "Socketed Gems are supported by Level 1 Cast On Critical Strike/(80-89)% increased Spell Damage"
+      "label": "Socketed Gems are Supported by Level # Arcane Surge Support/#% increased Spell Damage"
      },
      {
       "ids": [
@@ -7049,7 +6915,7 @@
       "ids": [
        "JunMasterVeiledLocalIncreasedPhysicalDamageAndBlindChanceCrafted_"
       ],
-      "label": "(120-139)% increased Physical Damage/(21-25)% chance to Blind Enemies on hit"
+      "label": "(120-139)% increased Physical Damage/(21-25)% chance to Blind Enemies on Hit"
      },
      {
       "ids": [
@@ -7195,7 +7061,7 @@
       "ids": [
        "JunMasterVeiledAttackSpeedPercentIfRareOrUniqueEnemyNearby2h"
       ],
-      "label": "(27-30)% increased Attack Speed while a Rare or Unique Enemy is Nearby"
+      "label": "(27-30)% increased Attack Speed while a Rare or Unique Enemy is within 6 metres"
      },
      {
       "ids": [
@@ -7213,7 +7079,7 @@
       "ids": [
        "JunMasterVeiledCriticalStrikeMultiplierIfRareOrUniqueEnemyNearby2h"
       ],
-      "label": "+(54-60)% Critical Strike Multiplier while a Rare or Unique Enemy is Nearby"
+      "label": "+(54-60)% Critical Strike Multiplier while a Rare or Unique Enemy is within 6 metres"
      },
      {
       "ids": [
@@ -7299,7 +7165,7 @@
       "ids": [
        "JunMasterVeiledAttackSpeedPercentIfRareOrUniqueEnemyNearby2h"
       ],
-      "label": "(27-30)% increased Attack Speed while a Rare or Unique Enemy is Nearby"
+      "label": "(27-30)% increased Attack Speed while a Rare or Unique Enemy is within 6 metres"
      },
      {
       "ids": [
@@ -7317,7 +7183,7 @@
       "ids": [
        "JunMasterVeiledCriticalStrikeMultiplierIfRareOrUniqueEnemyNearby2h"
       ],
-      "label": "+(54-60)% Critical Strike Multiplier while a Rare or Unique Enemy is Nearby"
+      "label": "+(54-60)% Critical Strike Multiplier while a Rare or Unique Enemy is within 6 metres"
      },
      {
       "ids": [
@@ -7330,9 +7196,9 @@
   },
   {
    "explicit": [
+    "+236 to Accuracy Rating",
     "(120-240)% increased Explicit Modifier magnitudes",
     "Has 4 Abyssal Sockets",
-    "+236 to Accuracy Rating",
     "Socketed Rare Abyssal Jewels will be Consumed",
     "One modifier from Consumed Jewels will be retained",
     "Cannot have non-Abyssal sockets"
@@ -8407,12 +8273,6 @@
      },
      {
       "ids": [
-       "AbyssAvoidElementalAilmentsWhileElusiveJewel1"
-      ],
-      "label": "(10-20)% chance to Avoid Elemental Ailments while you have Elusive"
-     },
-     {
-      "ids": [
        "AbyssCooldownRecoverySpeed1_",
        "AbyssCooldownRecoverySpeed2__"
       ],
@@ -8457,12 +8317,6 @@
      },
      {
       "ids": [
-       "AbyssSelfCurseEffectOnConsecratedGroundJewel1__"
-      ],
-      "label": "(15-25)% reduced Effect of Curses on you while on Consecrated Ground"
-     },
-     {
-      "ids": [
        "AbyssDamagePenetratesElementalResistancesIfNoEnemySlainRecentlyJewel1"
       ],
       "label": "Damage Penetrates 2% Elemental Resistances if you haven't Killed Recently"
@@ -8472,36 +8326,6 @@
        "AbyssDamageIfEnemySlainRecentlyJewel1"
       ],
       "label": "(15-20)% increased Damage if you've Killed Recently"
-     },
-     {
-      "ids": [
-       "AbyssBlindedEnemiesCriticalStrikeChanceJewel1"
-      ],
-      "label": "Enemies Blinded by you have (20-30)% reduced Critical Strike Chance"
-     },
-     {
-      "ids": [
-       "AbyssHinderedEnemiesLifeRegenerationRateJewel1"
-      ],
-      "label": "Enemies Hindered by you have (25-35)% reduced Life Regeneration rate"
-     },
-     {
-      "ids": [
-       "AbyssIntimidatedEnemiesStunDurationJewel1"
-      ],
-      "label": "Enemies Intimidated by you have (10-15)% increased duration of stuns against them"
-     },
-     {
-      "ids": [
-       "AbyssMaimedEnemiesDamageOverTimeJewel1"
-      ],
-      "label": "Enemies Maimed by you take (4-5)% increased Damage Over Time"
-     },
-     {
-      "ids": [
-       "AbyssWitheredEnemiesAllResistanceJewel1___"
-      ],
-      "label": "Enemies Withered by you have -2% to all Resistances"
      },
      {
       "ids": [
@@ -9656,12 +9480,6 @@
      },
      {
       "ids": [
-       "AbyssAvoidElementalAilmentsWhileElusiveJewel1"
-      ],
-      "label": "(10-20)% chance to Avoid Elemental Ailments while you have Elusive"
-     },
-     {
-      "ids": [
        "AbyssCooldownRecoverySpeed1_",
        "AbyssCooldownRecoverySpeed2__"
       ],
@@ -9706,12 +9524,6 @@
      },
      {
       "ids": [
-       "AbyssSelfCurseEffectOnConsecratedGroundJewel1__"
-      ],
-      "label": "(15-25)% reduced Effect of Curses on you while on Consecrated Ground"
-     },
-     {
-      "ids": [
        "AbyssDamagePenetratesElementalResistancesIfNoEnemySlainRecentlyJewel1"
       ],
       "label": "Damage Penetrates 2% Elemental Resistances if you haven't Killed Recently"
@@ -9721,36 +9533,6 @@
        "AbyssDamageIfEnemySlainRecentlyJewel1"
       ],
       "label": "(15-20)% increased Damage if you've Killed Recently"
-     },
-     {
-      "ids": [
-       "AbyssBlindedEnemiesCriticalStrikeChanceJewel1"
-      ],
-      "label": "Enemies Blinded by you have (20-30)% reduced Critical Strike Chance"
-     },
-     {
-      "ids": [
-       "AbyssHinderedEnemiesLifeRegenerationRateJewel1"
-      ],
-      "label": "Enemies Hindered by you have (25-35)% reduced Life Regeneration rate"
-     },
-     {
-      "ids": [
-       "AbyssIntimidatedEnemiesStunDurationJewel1"
-      ],
-      "label": "Enemies Intimidated by you have (10-15)% increased duration of stuns against them"
-     },
-     {
-      "ids": [
-       "AbyssMaimedEnemiesDamageOverTimeJewel1"
-      ],
-      "label": "Enemies Maimed by you take (4-5)% increased Damage Over Time"
-     },
-     {
-      "ids": [
-       "AbyssWitheredEnemiesAllResistanceJewel1___"
-      ],
-      "label": "Enemies Withered by you have -2% to all Resistances"
      },
      {
       "ids": [
@@ -10905,12 +10687,6 @@
      },
      {
       "ids": [
-       "AbyssAvoidElementalAilmentsWhileElusiveJewel1"
-      ],
-      "label": "(10-20)% chance to Avoid Elemental Ailments while you have Elusive"
-     },
-     {
-      "ids": [
        "AbyssCooldownRecoverySpeed1_",
        "AbyssCooldownRecoverySpeed2__"
       ],
@@ -10955,12 +10731,6 @@
      },
      {
       "ids": [
-       "AbyssSelfCurseEffectOnConsecratedGroundJewel1__"
-      ],
-      "label": "(15-25)% reduced Effect of Curses on you while on Consecrated Ground"
-     },
-     {
-      "ids": [
        "AbyssDamagePenetratesElementalResistancesIfNoEnemySlainRecentlyJewel1"
       ],
       "label": "Damage Penetrates 2% Elemental Resistances if you haven't Killed Recently"
@@ -10970,36 +10740,6 @@
        "AbyssDamageIfEnemySlainRecentlyJewel1"
       ],
       "label": "(15-20)% increased Damage if you've Killed Recently"
-     },
-     {
-      "ids": [
-       "AbyssBlindedEnemiesCriticalStrikeChanceJewel1"
-      ],
-      "label": "Enemies Blinded by you have (20-30)% reduced Critical Strike Chance"
-     },
-     {
-      "ids": [
-       "AbyssHinderedEnemiesLifeRegenerationRateJewel1"
-      ],
-      "label": "Enemies Hindered by you have (25-35)% reduced Life Regeneration rate"
-     },
-     {
-      "ids": [
-       "AbyssIntimidatedEnemiesStunDurationJewel1"
-      ],
-      "label": "Enemies Intimidated by you have (10-15)% increased duration of stuns against them"
-     },
-     {
-      "ids": [
-       "AbyssMaimedEnemiesDamageOverTimeJewel1"
-      ],
-      "label": "Enemies Maimed by you take (4-5)% increased Damage Over Time"
-     },
-     {
-      "ids": [
-       "AbyssWitheredEnemiesAllResistanceJewel1___"
-      ],
-      "label": "Enemies Withered by you have -2% to all Resistances"
      },
      {
       "ids": [
@@ -12154,12 +11894,6 @@
      },
      {
       "ids": [
-       "AbyssAvoidElementalAilmentsWhileElusiveJewel1"
-      ],
-      "label": "(10-20)% chance to Avoid Elemental Ailments while you have Elusive"
-     },
-     {
-      "ids": [
        "AbyssCooldownRecoverySpeed1_",
        "AbyssCooldownRecoverySpeed2__"
       ],
@@ -12204,12 +11938,6 @@
      },
      {
       "ids": [
-       "AbyssSelfCurseEffectOnConsecratedGroundJewel1__"
-      ],
-      "label": "(15-25)% reduced Effect of Curses on you while on Consecrated Ground"
-     },
-     {
-      "ids": [
        "AbyssDamagePenetratesElementalResistancesIfNoEnemySlainRecentlyJewel1"
       ],
       "label": "Damage Penetrates 2% Elemental Resistances if you haven't Killed Recently"
@@ -12219,36 +11947,6 @@
        "AbyssDamageIfEnemySlainRecentlyJewel1"
       ],
       "label": "(15-20)% increased Damage if you've Killed Recently"
-     },
-     {
-      "ids": [
-       "AbyssBlindedEnemiesCriticalStrikeChanceJewel1"
-      ],
-      "label": "Enemies Blinded by you have (20-30)% reduced Critical Strike Chance"
-     },
-     {
-      "ids": [
-       "AbyssHinderedEnemiesLifeRegenerationRateJewel1"
-      ],
-      "label": "Enemies Hindered by you have (25-35)% reduced Life Regeneration rate"
-     },
-     {
-      "ids": [
-       "AbyssIntimidatedEnemiesStunDurationJewel1"
-      ],
-      "label": "Enemies Intimidated by you have (10-15)% increased duration of stuns against them"
-     },
-     {
-      "ids": [
-       "AbyssMaimedEnemiesDamageOverTimeJewel1"
-      ],
-      "label": "Enemies Maimed by you take (4-5)% increased Damage Over Time"
-     },
-     {
-      "ids": [
-       "AbyssWitheredEnemiesAllResistanceJewel1___"
-      ],
-      "label": "Enemies Withered by you have -2% to all Resistances"
      },
      {
       "ids": [
@@ -12350,12 +12048,6 @@
     [
      {
       "ids": [
-       "AnimalCharmStrengthAndIntelligence2"
-      ],
-      "label": "+(31-40) to Strength and Intelligence"
-     },
-     {
-      "ids": [
        "AnimalCharmSpellSuppressionChance2"
       ],
       "label": "+(10-15)% chance to Suppress Spell Damage"
@@ -12371,6 +12063,12 @@
        "AnimalCharmOfferingEffect2"
       ],
       "label": "Your Offerings have (21-30)% increased Effect on you"
+     },
+     {
+      "ids": [
+       "AnimalCharmStrengthAndIntelligence2"
+      ],
+      "label": "+(31-40) to Strength and Intelligence"
      },
      {
       "ids": [
@@ -12706,13 +12404,13 @@
       "ids": [
        "AnimalCharmNearbyEnemiesCannotGainCharges"
       ],
-      "label": "Nearby Enemies cannot gain Power, Frenzy or Endurance Charges"
+      "label": "Enemies within 6 metres cannot gain Power, Frenzy or Endurance Charges"
      },
      {
       "ids": [
        "AnimalCharmReservedManaGrantedAsArmour2"
       ],
-      "label": "Grants Armour equal to (5-6)% of your Reserved Mana to you and nearby Allies"
+      "label": "Grants Armour equal to (5-6)% of your Reserved Mana to you and Allies within 6 metres"
      },
      {
       "ids": [
@@ -12730,7 +12428,7 @@
       "ids": [
        "AnimalCharmElementalResistancesForAuraAffectedAllies2"
       ],
-      "label": "You and nearby Allies have +(15-20)% to Elemental Resistances"
+      "label": "You and Allies within 6 metres have +(15-20)% to Elemental Resistances"
      },
      {
       "ids": [
@@ -12988,7 +12686,7 @@
       "ids": [
        "AnimalCharmNearbyAlliesHaveOnslaughtIfYouHaveAtLeast5Nearby"
       ],
-      "label": "While there are at least five nearby Allies, you and nearby Allies have Onslaught"
+      "label": "While there are at least five Allies within 6 metres, you and Allies within 6 metres have Onslaught"
      },
      {
       "ids": [
@@ -13054,7 +12752,7 @@
       "ids": [
        "AnimalCharmNearbyEnemiesAreChilled"
       ],
-      "label": "Nearby Enemies are Chilled"
+      "label": "Enemies within 6 metres are Chilled"
      },
      {
       "ids": [
@@ -13156,13 +12854,13 @@
       "ids": [
        "AnimalCharmBlockChanceIfAttackedRecently2"
       ],
-      "label": "If you've Attacked Recently, you and nearby Allies have +(6-8)% Chance to Block Attack Damage"
+      "label": "If you've Attacked Recently, you and Allies within 6 metres have +(6-8)% Chance to Block Attack Damage"
      },
      {
       "ids": [
        "AnimalCharmSpellBlockChanceIfCastSpellRecently2"
       ],
-      "label": "If you've Cast a Spell Recently, you and nearby Allies have +(6-8)% Chance to Block Spell Damage"
+      "label": "If you've Cast a Spell Recently, you and Allies within 6 metres have +(6-8)% Chance to Block Spell Damage"
      },
      {
       "ids": [
@@ -13180,12 +12878,6 @@
     [
      {
       "ids": [
-       "AnimalCharmStrengthAndIntelligence2"
-      ],
-      "label": "+(31-40) to Strength and Intelligence"
-     },
-     {
-      "ids": [
        "AnimalCharmSpellSuppressionChance2"
       ],
       "label": "+(10-15)% chance to Suppress Spell Damage"
@@ -13201,6 +12893,12 @@
        "AnimalCharmOfferingEffect2"
       ],
       "label": "Your Offerings have (21-30)% increased Effect on you"
+     },
+     {
+      "ids": [
+       "AnimalCharmStrengthAndIntelligence2"
+      ],
+      "label": "+(31-40) to Strength and Intelligence"
      },
      {
       "ids": [
@@ -13536,13 +13234,13 @@
       "ids": [
        "AnimalCharmNearbyEnemiesCannotGainCharges"
       ],
-      "label": "Nearby Enemies cannot gain Power, Frenzy or Endurance Charges"
+      "label": "Enemies within 6 metres cannot gain Power, Frenzy or Endurance Charges"
      },
      {
       "ids": [
        "AnimalCharmReservedManaGrantedAsArmour2"
       ],
-      "label": "Grants Armour equal to (5-6)% of your Reserved Mana to you and nearby Allies"
+      "label": "Grants Armour equal to (5-6)% of your Reserved Mana to you and Allies within 6 metres"
      },
      {
       "ids": [
@@ -13560,7 +13258,7 @@
       "ids": [
        "AnimalCharmElementalResistancesForAuraAffectedAllies2"
       ],
-      "label": "You and nearby Allies have +(15-20)% to Elemental Resistances"
+      "label": "You and Allies within 6 metres have +(15-20)% to Elemental Resistances"
      },
      {
       "ids": [
@@ -13818,7 +13516,7 @@
       "ids": [
        "AnimalCharmNearbyAlliesHaveOnslaughtIfYouHaveAtLeast5Nearby"
       ],
-      "label": "While there are at least five nearby Allies, you and nearby Allies have Onslaught"
+      "label": "While there are at least five Allies within 6 metres, you and Allies within 6 metres have Onslaught"
      },
      {
       "ids": [
@@ -13884,7 +13582,7 @@
       "ids": [
        "AnimalCharmNearbyEnemiesAreChilled"
       ],
-      "label": "Nearby Enemies are Chilled"
+      "label": "Enemies within 6 metres are Chilled"
      },
      {
       "ids": [
@@ -13986,13 +13684,13 @@
       "ids": [
        "AnimalCharmBlockChanceIfAttackedRecently2"
       ],
-      "label": "If you've Attacked Recently, you and nearby Allies have +(6-8)% Chance to Block Attack Damage"
+      "label": "If you've Attacked Recently, you and Allies within 6 metres have +(6-8)% Chance to Block Attack Damage"
      },
      {
       "ids": [
        "AnimalCharmSpellBlockChanceIfCastSpellRecently2"
       ],
-      "label": "If you've Cast a Spell Recently, you and nearby Allies have +(6-8)% Chance to Block Spell Damage"
+      "label": "If you've Cast a Spell Recently, you and Allies within 6 metres have +(6-8)% Chance to Block Spell Damage"
      },
      {
       "ids": [
@@ -14010,12 +13708,6 @@
     [
      {
       "ids": [
-       "AnimalCharmStrengthAndIntelligence2"
-      ],
-      "label": "+(31-40) to Strength and Intelligence"
-     },
-     {
-      "ids": [
        "AnimalCharmSpellSuppressionChance2"
       ],
       "label": "+(10-15)% chance to Suppress Spell Damage"
@@ -14031,6 +13723,12 @@
        "AnimalCharmOfferingEffect2"
       ],
       "label": "Your Offerings have (21-30)% increased Effect on you"
+     },
+     {
+      "ids": [
+       "AnimalCharmStrengthAndIntelligence2"
+      ],
+      "label": "+(31-40) to Strength and Intelligence"
      },
      {
       "ids": [
@@ -14366,13 +14064,13 @@
       "ids": [
        "AnimalCharmNearbyEnemiesCannotGainCharges"
       ],
-      "label": "Nearby Enemies cannot gain Power, Frenzy or Endurance Charges"
+      "label": "Enemies within 6 metres cannot gain Power, Frenzy or Endurance Charges"
      },
      {
       "ids": [
        "AnimalCharmReservedManaGrantedAsArmour2"
       ],
-      "label": "Grants Armour equal to (5-6)% of your Reserved Mana to you and nearby Allies"
+      "label": "Grants Armour equal to (5-6)% of your Reserved Mana to you and Allies within 6 metres"
      },
      {
       "ids": [
@@ -14390,7 +14088,7 @@
       "ids": [
        "AnimalCharmElementalResistancesForAuraAffectedAllies2"
       ],
-      "label": "You and nearby Allies have +(15-20)% to Elemental Resistances"
+      "label": "You and Allies within 6 metres have +(15-20)% to Elemental Resistances"
      },
      {
       "ids": [
@@ -14648,7 +14346,7 @@
       "ids": [
        "AnimalCharmNearbyAlliesHaveOnslaughtIfYouHaveAtLeast5Nearby"
       ],
-      "label": "While there are at least five nearby Allies, you and nearby Allies have Onslaught"
+      "label": "While there are at least five Allies within 6 metres, you and Allies within 6 metres have Onslaught"
      },
      {
       "ids": [
@@ -14714,7 +14412,7 @@
       "ids": [
        "AnimalCharmNearbyEnemiesAreChilled"
       ],
-      "label": "Nearby Enemies are Chilled"
+      "label": "Enemies within 6 metres are Chilled"
      },
      {
       "ids": [
@@ -14816,13 +14514,13 @@
       "ids": [
        "AnimalCharmBlockChanceIfAttackedRecently2"
       ],
-      "label": "If you've Attacked Recently, you and nearby Allies have +(6-8)% Chance to Block Attack Damage"
+      "label": "If you've Attacked Recently, you and Allies within 6 metres have +(6-8)% Chance to Block Attack Damage"
      },
      {
       "ids": [
        "AnimalCharmSpellBlockChanceIfCastSpellRecently2"
       ],
-      "label": "If you've Cast a Spell Recently, you and nearby Allies have +(6-8)% Chance to Block Spell Damage"
+      "label": "If you've Cast a Spell Recently, you and Allies within 6 metres have +(6-8)% Chance to Block Spell Damage"
      },
      {
       "ids": [
@@ -14840,12 +14538,6 @@
     [
      {
       "ids": [
-       "AnimalCharmStrengthAndIntelligence2"
-      ],
-      "label": "+(31-40) to Strength and Intelligence"
-     },
-     {
-      "ids": [
        "AnimalCharmSpellSuppressionChance2"
       ],
       "label": "+(10-15)% chance to Suppress Spell Damage"
@@ -14861,6 +14553,12 @@
        "AnimalCharmOfferingEffect2"
       ],
       "label": "Your Offerings have (21-30)% increased Effect on you"
+     },
+     {
+      "ids": [
+       "AnimalCharmStrengthAndIntelligence2"
+      ],
+      "label": "+(31-40) to Strength and Intelligence"
      },
      {
       "ids": [
@@ -15196,13 +14894,13 @@
       "ids": [
        "AnimalCharmNearbyEnemiesCannotGainCharges"
       ],
-      "label": "Nearby Enemies cannot gain Power, Frenzy or Endurance Charges"
+      "label": "Enemies within 6 metres cannot gain Power, Frenzy or Endurance Charges"
      },
      {
       "ids": [
        "AnimalCharmReservedManaGrantedAsArmour2"
       ],
-      "label": "Grants Armour equal to (5-6)% of your Reserved Mana to you and nearby Allies"
+      "label": "Grants Armour equal to (5-6)% of your Reserved Mana to you and Allies within 6 metres"
      },
      {
       "ids": [
@@ -15220,7 +14918,7 @@
       "ids": [
        "AnimalCharmElementalResistancesForAuraAffectedAllies2"
       ],
-      "label": "You and nearby Allies have +(15-20)% to Elemental Resistances"
+      "label": "You and Allies within 6 metres have +(15-20)% to Elemental Resistances"
      },
      {
       "ids": [
@@ -15478,7 +15176,7 @@
       "ids": [
        "AnimalCharmNearbyAlliesHaveOnslaughtIfYouHaveAtLeast5Nearby"
       ],
-      "label": "While there are at least five nearby Allies, you and nearby Allies have Onslaught"
+      "label": "While there are at least five Allies within 6 metres, you and Allies within 6 metres have Onslaught"
      },
      {
       "ids": [
@@ -15544,7 +15242,7 @@
       "ids": [
        "AnimalCharmNearbyEnemiesAreChilled"
       ],
-      "label": "Nearby Enemies are Chilled"
+      "label": "Enemies within 6 metres are Chilled"
      },
      {
       "ids": [
@@ -15646,13 +15344,13 @@
       "ids": [
        "AnimalCharmBlockChanceIfAttackedRecently2"
       ],
-      "label": "If you've Attacked Recently, you and nearby Allies have +(6-8)% Chance to Block Attack Damage"
+      "label": "If you've Attacked Recently, you and Allies within 6 metres have +(6-8)% Chance to Block Attack Damage"
      },
      {
       "ids": [
        "AnimalCharmSpellBlockChanceIfCastSpellRecently2"
       ],
-      "label": "If you've Cast a Spell Recently, you and nearby Allies have +(6-8)% Chance to Block Spell Damage"
+      "label": "If you've Cast a Spell Recently, you and Allies within 6 metres have +(6-8)% Chance to Block Spell Damage"
      },
      {
       "ids": [
@@ -15671,10 +15369,10 @@
   },
   {
    "explicit": [
+    "8% increased Attack and Cast Speed",
     "(140-170)% increased Physical Damage",
     "(60-80)% increased Physical Damage",
     "(25-35)% increased Critical Strike Chance",
-    "8% increased Attack and Cast Speed",
     "50% chance to inflict Bleeding on Critical Strike with Attacks",
     "Enemies you inflict Bleeding on grant (60-100)% increased Flask Charges",
     "Adds (100-120) to (150-165) Physical Damage against Bleeding Enemies",
@@ -15755,7 +15453,7 @@
       "ids": [
        "JunMasterVeiledAttackSpeedPercentIfRareOrUniqueEnemyNearby2h"
       ],
-      "label": "(27-30)% increased Attack Speed while a Rare or Unique Enemy is Nearby"
+      "label": "(27-30)% increased Attack Speed while a Rare or Unique Enemy is within 6 metres"
      },
      {
       "ids": [
@@ -15773,7 +15471,7 @@
       "ids": [
        "JunMasterVeiledCriticalStrikeMultiplierIfRareOrUniqueEnemyNearby2h"
       ],
-      "label": "+(54-60)% Critical Strike Multiplier while a Rare or Unique Enemy is Nearby"
+      "label": "+(54-60)% Critical Strike Multiplier while a Rare or Unique Enemy is within 6 metres"
      },
      {
       "ids": [
@@ -15805,21 +15503,11 @@
      },
      {
       "ids": [
-       "JunMasterVeiledSupportedByArcaneSurgeAndSpellDamage"
-      ],
-      "label": "Socketed Gems are Supported by Level 1 Arcane Surge/(80-89)% increased Spell Damage"
-     },
-     {
-      "ids": [
+       "JunMasterVeiledSupportedByArcaneSurgeAndSpellDamage",
+       "JunMasterVeiledSupportedByCastOnCritAndSpellDamage",
        "JunMasterVeiledSupportedByCastWhileChannelingAndSpellDamage"
       ],
-      "label": "Socketed Gems are Supported by Level 1 Cast While Channelling/(80-89)% increased Spell Damage"
-     },
-     {
-      "ids": [
-       "JunMasterVeiledSupportedByCastOnCritAndSpellDamage"
-      ],
-      "label": "Socketed Gems are supported by Level 1 Cast On Critical Strike/(80-89)% increased Spell Damage"
+      "label": "Socketed Gems are Supported by Level # Arcane Surge Support/#% increased Spell Damage"
      },
      {
       "ids": [
@@ -15843,7 +15531,7 @@
       "ids": [
        "JunMasterVeiledLocalIncreasedPhysicalDamageAndBlindChanceCrafted_"
       ],
-      "label": "(120-139)% increased Physical Damage/(21-25)% chance to Blind Enemies on hit"
+      "label": "(120-139)% increased Physical Damage/(21-25)% chance to Blind Enemies on Hit"
      },
      {
       "ids": [
@@ -16006,21 +15694,11 @@
      },
      {
       "ids": [
-       "JunMasterVeiledSupportedByArcaneSurgeAndSpellDamage"
-      ],
-      "label": "Socketed Gems are Supported by Level 1 Arcane Surge/(80-89)% increased Spell Damage"
-     },
-     {
-      "ids": [
+       "JunMasterVeiledSupportedByArcaneSurgeAndSpellDamage",
+       "JunMasterVeiledSupportedByCastOnCritAndSpellDamage",
        "JunMasterVeiledSupportedByCastWhileChannelingAndSpellDamage"
       ],
-      "label": "Socketed Gems are Supported by Level 1 Cast While Channelling/(80-89)% increased Spell Damage"
-     },
-     {
-      "ids": [
-       "JunMasterVeiledSupportedByCastOnCritAndSpellDamage"
-      ],
-      "label": "Socketed Gems are supported by Level 1 Cast On Critical Strike/(80-89)% increased Spell Damage"
+      "label": "Socketed Gems are Supported by Level # Arcane Surge Support/#% increased Spell Damage"
      },
      {
       "ids": [
@@ -16044,7 +15722,7 @@
       "ids": [
        "JunMasterVeiledLocalIncreasedPhysicalDamageAndBlindChanceCrafted_"
       ],
-      "label": "(120-139)% increased Physical Damage/(21-25)% chance to Blind Enemies on hit"
+      "label": "(120-139)% increased Physical Damage/(21-25)% chance to Blind Enemies on Hit"
      },
      {
       "ids": [
@@ -16207,21 +15885,11 @@
      },
      {
       "ids": [
-       "JunMasterVeiledSupportedByArcaneSurgeAndSpellDamage"
-      ],
-      "label": "Socketed Gems are Supported by Level 1 Arcane Surge/(80-89)% increased Spell Damage"
-     },
-     {
-      "ids": [
+       "JunMasterVeiledSupportedByArcaneSurgeAndSpellDamage",
+       "JunMasterVeiledSupportedByCastOnCritAndSpellDamage",
        "JunMasterVeiledSupportedByCastWhileChannelingAndSpellDamage"
       ],
-      "label": "Socketed Gems are Supported by Level 1 Cast While Channelling/(80-89)% increased Spell Damage"
-     },
-     {
-      "ids": [
-       "JunMasterVeiledSupportedByCastOnCritAndSpellDamage"
-      ],
-      "label": "Socketed Gems are supported by Level 1 Cast On Critical Strike/(80-89)% increased Spell Damage"
+      "label": "Socketed Gems are Supported by Level # Arcane Surge Support/#% increased Spell Damage"
      },
      {
       "ids": [
@@ -16245,7 +15913,7 @@
       "ids": [
        "JunMasterVeiledLocalIncreasedPhysicalDamageAndBlindChanceCrafted_"
       ],
-      "label": "(120-139)% increased Physical Damage/(21-25)% chance to Blind Enemies on hit"
+      "label": "(120-139)% increased Physical Damage/(21-25)% chance to Blind Enemies on Hit"
      },
      {
       "ids": [
@@ -16470,7 +16138,7 @@
       "ids": [
        "JunMasterVeiledAttackSpeedPercentIfRareOrUniqueEnemyNearby1h"
       ],
-      "label": "(12-15)% increased Attack Speed while a Rare or Unique Enemy is Nearby"
+      "label": "(12-15)% increased Attack Speed while a Rare or Unique Enemy is within 6 metres"
      },
      {
       "ids": [
@@ -16488,7 +16156,7 @@
       "ids": [
        "JunMasterVeiledCriticalStrikeMultiplierIfRareOrUniqueEnemyNearby1h"
       ],
-      "label": "+(36-40)% Critical Strike Multiplier while a Rare or Unique Enemy is Nearby"
+      "label": "+(36-40)% Critical Strike Multiplier while a Rare or Unique Enemy is within 6 metres"
      },
      {
       "ids": [
@@ -16574,7 +16242,7 @@
       "ids": [
        "JunMasterVeiledAttackSpeedPercentIfRareOrUniqueEnemyNearby1h"
       ],
-      "label": "(12-15)% increased Attack Speed while a Rare or Unique Enemy is Nearby"
+      "label": "(12-15)% increased Attack Speed while a Rare or Unique Enemy is within 6 metres"
      },
      {
       "ids": [
@@ -16592,7 +16260,7 @@
       "ids": [
        "JunMasterVeiledCriticalStrikeMultiplierIfRareOrUniqueEnemyNearby1h"
       ],
-      "label": "+(36-40)% Critical Strike Multiplier while a Rare or Unique Enemy is Nearby"
+      "label": "+(36-40)% Critical Strike Multiplier while a Rare or Unique Enemy is within 6 metres"
      },
      {
       "ids": [
@@ -16678,7 +16346,7 @@
       "ids": [
        "JunMasterVeiledAttackSpeedPercentIfRareOrUniqueEnemyNearby1h"
       ],
-      "label": "(12-15)% increased Attack Speed while a Rare or Unique Enemy is Nearby"
+      "label": "(12-15)% increased Attack Speed while a Rare or Unique Enemy is within 6 metres"
      },
      {
       "ids": [
@@ -16696,7 +16364,7 @@
       "ids": [
        "JunMasterVeiledCriticalStrikeMultiplierIfRareOrUniqueEnemyNearby1h"
       ],
-      "label": "+(36-40)% Critical Strike Multiplier while a Rare or Unique Enemy is Nearby"
+      "label": "+(36-40)% Critical Strike Multiplier while a Rare or Unique Enemy is within 6 metres"
      },
      {
       "ids": [
@@ -16851,7 +16519,7 @@
       "ids": [
        "JunMasterVeiledEnergyShieldRegenerationRatePerMinuteIfRareOrUniqueEnemyNearby"
       ],
-      "label": "Regenerate 200 Energy Shield per second while a Rare or Unique Enemy is Nearby"
+      "label": "Regenerate 200 Energy Shield per second while a Rare or Unique Enemy is within 6 metres"
      },
      {
       "ids": [
@@ -16911,7 +16579,7 @@
       "ids": [
        "JunMasterVeiledLocalIncreasedPhysicalDamageAndBlindChanceCrafted_"
       ],
-      "label": "(120-139)% increased Physical Damage/(21-25)% chance to Blind Enemies on hit"
+      "label": "(120-139)% increased Physical Damage/(21-25)% chance to Blind Enemies on Hit"
      },
      {
       "ids": [
@@ -17051,7 +16719,7 @@
       "ids": [
        "JunMasterVeiledAttackSpeedPercentIfRareOrUniqueEnemyNearby1h"
       ],
-      "label": "(12-15)% increased Attack Speed while a Rare or Unique Enemy is Nearby"
+      "label": "(12-15)% increased Attack Speed while a Rare or Unique Enemy is within 6 metres"
      },
      {
       "ids": [
@@ -17069,7 +16737,7 @@
       "ids": [
        "JunMasterVeiledCriticalStrikeMultiplierIfRareOrUniqueEnemyNearby1h"
       ],
-      "label": "+(36-40)% Critical Strike Multiplier while a Rare or Unique Enemy is Nearby"
+      "label": "+(36-40)% Critical Strike Multiplier while a Rare or Unique Enemy is within 6 metres"
      },
      {
       "ids": [
@@ -17104,7 +16772,7 @@
       "ids": [
        "DeepwaterSwordCombustion"
       ],
-      "label": "Socketed Gems are Supported by Level 20 Combustion/(70-100)% increased Burning Damage"
+      "label": "Socketed Gems are Supported by Level 20 Combustion Support/(70-100)% increased Burning Damage"
      },
      {
       "ids": [
@@ -17210,7 +16878,7 @@
       "ids": [
        "DeepwaterSwordCombustion"
       ],
-      "label": "Socketed Gems are Supported by Level 20 Combustion/(70-100)% increased Burning Damage"
+      "label": "Socketed Gems are Supported by Level 20 Combustion Support/(70-100)% increased Burning Damage"
      },
      {
       "ids": [
@@ -17316,7 +16984,7 @@
       "ids": [
        "DeepwaterSwordCombustion"
       ],
-      "label": "Socketed Gems are Supported by Level 20 Combustion/(70-100)% increased Burning Damage"
+      "label": "Socketed Gems are Supported by Level 20 Combustion Support/(70-100)% increased Burning Damage"
      },
      {
       "ids": [

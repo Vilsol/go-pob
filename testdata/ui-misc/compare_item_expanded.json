@@ -701,8 +701,8 @@
     "^x33FF77+ ^x8888FF2.5% of Physical Attack Damage Leeched as Life",
     "^x33FF77+ ^xF0505010% chance to gain Adrenaline for 2 Seconds when Leech is ^8(Not supported in PoB yet)",
     "^x33FF77+ ^xF05050removed by Filling Unreserved Life ^8(Not supported in PoB yet)",
-    "^x33FF77+ ^xF05050removed by Filling Unreserved Life ^8(Not supported in PoB yet)",
     "^x33FF77+ ^xF0505010% chance to gain Onslaught for 4 Seconds when Leech is ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^xF05050removed by Filling Unreserved Life ^8(Not supported in PoB yet)",
     "^xDD0022Corrupted"
    ]
   ],
@@ -886,8 +886,8 @@
     "^x33FF77+ ^x8888FF2.5% of Physical Attack Damage Leeched as Life",
     "^x33FF77+ ^xF0505010% chance to gain Adrenaline for 2 Seconds when Leech is ^8(Not supported in PoB yet)",
     "^x33FF77+ ^xF05050removed by Filling Unreserved Life ^8(Not supported in PoB yet)",
-    "^x33FF77+ ^xF05050removed by Filling Unreserved Life ^8(Not supported in PoB yet)",
     "^x33FF77+ ^xF0505010% chance to gain Onslaught for 4 Seconds when Leech is ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^xF05050removed by Filling Unreserved Life ^8(Not supported in PoB yet)",
     "^xDD0022Corrupted"
    ],
    [
@@ -999,7 +999,7 @@
     "^x7F7F7FAPS: ^x8888FF1.25",
     "^x33FF77+ ^x8888FF22% increased Elemental Damage",
     "^x33FF77+ ^x8888FF+2 to Level of all Spell Skill Gems",
-    "^x33FF77+ ^xF0505010% Global chance to Blind Enemies on hit ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FF10% Global chance to Blind Enemies on hit",
     "^x33FF77+ ^x8888FFEnemies Blinded by you have Malediction",
     "^x33FF77+ ^x8888FF+2 Maximum Energy Shield per Level",
     "^x33FF77+ ^x8888FF+2 Maximum Mana per Level",
@@ -1162,7 +1162,7 @@
     "^x7F7F7FAPS: ^x8888FF1.25",
     "^x33FF77+ ^x8888FF22% increased Elemental Damage",
     "^x33FF77+ ^x8888FF+2 to Level of all Spell Skill Gems",
-    "^x33FF77+ ^xF0505010% Global chance to Blind Enemies on hit ^8(Not supported in PoB yet)",
+    "^x33FF77+ ^x8888FF10% Global chance to Blind Enemies on hit",
     "^x33FF77+ ^x8888FFEnemies Blinded by you have Malediction",
     "^x33FF77+ ^x8888FF+2 Maximum Energy Shield per Level",
     "^x33FF77+ ^x8888FF+2 Maximum Mana per Level",
@@ -1367,9 +1367,9 @@
    [
     "^xFFFF77Loath Hold, Bone Ring",
     "^x33FF77+ ^x8888FFMinions have +15% to all Elemental Resistances",
-    "^x33FF77+ ^xA29160-12 to Total Mana Cost of Skills",
     "^x33FF77+ ^x8888FF+18% to Global Critical Strike Multiplier",
     "^x33FF77+ ^x8888FF+15% to all Elemental Resistances",
+    "^x33FF77+ ^xA29160-12 to Total Mana Cost of Skills",
     "^x33FF77+ ^x8888FFMinions deal 32% increased Damage",
     "^x33FF77+ ^x8888FFMinions have 14% increased Attack and Cast Speed",
     "^x33FF77+ ^xB8DAF1+30 to maximum Energy Shield"
@@ -1666,9 +1666,9 @@
    [
     "^xFFFF77Loath Hold, Bone Ring",
     "^x33FF77+ ^x8888FFMinions have +15% to all Elemental Resistances",
-    "^x33FF77+ ^xA29160-12 to Total Mana Cost of Skills",
     "^x33FF77+ ^x8888FF+18% to Global Critical Strike Multiplier",
     "^x33FF77+ ^x8888FF+15% to all Elemental Resistances",
+    "^x33FF77+ ^xA29160-12 to Total Mana Cost of Skills",
     "^x33FF77+ ^x8888FFMinions deal 32% increased Damage",
     "^x33FF77+ ^x8888FFMinions have 14% increased Attack and Cast Speed",
     "^x33FF77+ ^xB8DAF1+30 to maximum Energy Shield"

@@ -909,7 +909,6 @@ func mcdTakeCensus(t *testing.T) mcdCensus {
 		want string
 	}{
 		{"+10 to maximum Life", c.both, "both"},
-		{" Wolf Alpha Talisman", c.neitherReal, "neither-real"},
 		{"Grants Call of Steel", c.neitherReal, "neither-real"},
 		{"(10-15)% increased Energy Shield Recharge Rate", c.neitherRng, "neither-range"},
 	} {

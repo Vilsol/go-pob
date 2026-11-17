@@ -123,7 +123,7 @@ func TestDecodeTreeURL(t *testing.T) {
 	if v := treeLinkVersion("https://www.pathofexile.com/passive-skill-tree/3.20.0/AAAA"); v != "3_20" {
 		t.Errorf("3.20 link: %s", v)
 	}
-	if v := treeLinkVersion("https://www.pathofexile.com/passive-skill-tree/ruthless/AAAA"); v != "3_29" {
+	if v := treeLinkVersion("https://www.pathofexile.com/passive-skill-tree/ruthless/AAAA"); v != "3_30" {
 		t.Errorf("ruthless link (no such tree here): %s", v)
 	}
 }

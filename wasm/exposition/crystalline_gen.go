@@ -21315,7 +21315,7 @@ func crystallineMarshalCalculatorModLine(v *calculator.ModLine) any {
 
 	if crystallineMarshalCalculatorModLineShape.IsUndefined() {
 		crystallineMarshalCalculatorModLineShape = crystallineShape("calculator.ModLine",
-			[]string{"Line", "Extra", "Range", "ModTags", "VariantList", "Crafted", "Custom", "Fractured", "Mutated", "Vestigial", "Scourge", "Implicit", "ValueScalar", "CorruptedRange", "Prefix", "Suffix", "Unveiled", "Disabled", "Order", "ModID", "NewModID", "ModGroup", "Crucible", "VersionList", "VariantGroupList"},
+			[]string{"Line", "Extra", "Range", "ModTags", "VariantList", "Crafted", "Custom", "Fractured", "Mutated", "Vestigial", "Scourge", "Implicit", "ValueScalar", "CorruptedRange", "Prefix", "Suffix", "Unveiled", "Disabled", "Order", "RangeFromValue", "ModID", "NewModID", "ModGroup", "Crucible", "VersionList", "VariantGroupList"},
 			func(v *calculator.ModLine, entry *crystallineEntry, field int) any {
 				switch field {
 				case 0:
@@ -21438,14 +21438,16 @@ func crystallineMarshalCalculatorModLine(v *calculator.ModLine) any {
 						return float64((*v.Order))
 					}()
 				case 19:
-					return string(v.ModID)
+					return bool(v.RangeFromValue)
 				case 20:
-					return string(v.NewModID)
+					return string(v.ModID)
 				case 21:
-					return string(v.ModGroup)
+					return string(v.NewModID)
 				case 22:
-					return bool(v.Crucible)
+					return string(v.ModGroup)
 				case 23:
+					return bool(v.Crucible)
+				case 24:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.VersionList; entries0 == nil {
 							b = append(b, "null"...)
@@ -21480,7 +21482,7 @@ func crystallineMarshalCalculatorModLine(v *calculator.ModLine) any {
 							return out
 						}()
 					})
-				case 24:
+				case 25:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.VariantGroupList; entries0 == nil {
 							b = append(b, "null"...)
@@ -21732,14 +21734,14 @@ func crystallineMarshalCalculatorModLine(v *calculator.ModLine) any {
 					})(value)
 				case 19:
 					(func(value js.Value) {
-						converted, err := crystallineToString(value)
+						converted, err := crystallineToBool(value)
 						if err != nil {
 							crystallineFail(err.Error())
 
 							return
 						}
 
-						v.ModID = converted
+						v.RangeFromValue = converted
 					})(value)
 				case 20:
 					(func(value js.Value) {
@@ -21750,7 +21752,7 @@ func crystallineMarshalCalculatorModLine(v *calculator.ModLine) any {
 							return
 						}
 
-						v.NewModID = converted
+						v.ModID = converted
 					})(value)
 				case 21:
 					(func(value js.Value) {
@@ -21761,9 +21763,20 @@ func crystallineMarshalCalculatorModLine(v *calculator.ModLine) any {
 							return
 						}
 
-						v.ModGroup = converted
+						v.NewModID = converted
 					})(value)
 				case 22:
+					(func(value js.Value) {
+						converted, err := crystallineToString(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.ModGroup = converted
+					})(value)
+				case 23:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -21774,7 +21787,7 @@ func crystallineMarshalCalculatorModLine(v *calculator.ModLine) any {
 
 						v.Crucible = converted
 					})(value)
-				case 23:
+				case 24:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfIntToBool(value)
 						if err != nil {
@@ -21785,7 +21798,7 @@ func crystallineMarshalCalculatorModLine(v *calculator.ModLine) any {
 
 						v.VersionList = converted
 					})(value)
-				case 24:
+				case 25:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfIntToBool(value)
 						if err != nil {

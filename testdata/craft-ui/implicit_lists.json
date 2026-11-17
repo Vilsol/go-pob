@@ -1245,17 +1245,6 @@
     },
     {
      "ids": [
-      "PhysicalDamageLifeLeechEldritchImplicit1",
-      "PhysicalDamageLifeLeechEldritchImplicit2",
-      "PhysicalDamageLifeLeechEldritchImplicit3",
-      "PhysicalDamageLifeLeechEldritchImplicit4",
-      "PhysicalDamageLifeLeechEldritchImplicit5",
-      "PhysicalDamageLifeLeechEldritchImplicit6"
-     ],
-     "label": "#% of Physical Damage Leeched as Life"
-    },
-    {
-     "ids": [
       "PhysicalDamageLifeLeechEldritchImplicitUniquePresence2",
       "PhysicalDamageLifeLeechEldritchImplicitUniquePresence3",
       "PhysicalDamageLifeLeechEldritchImplicitUniquePresence4",
@@ -1270,14 +1259,14 @@
     },
     {
      "ids": [
-      "FireDamageLifeLeechEldritchImplicit1",
-      "FireDamageLifeLeechEldritchImplicit2",
-      "FireDamageLifeLeechEldritchImplicit3",
-      "FireDamageLifeLeechEldritchImplicit4",
-      "FireDamageLifeLeechEldritchImplicit5",
-      "FireDamageLifeLeechEldritchImplicit6"
+      "PhysicalDamageLifeLeechEldritchImplicit1",
+      "PhysicalDamageLifeLeechEldritchImplicit2",
+      "PhysicalDamageLifeLeechEldritchImplicit3",
+      "PhysicalDamageLifeLeechEldritchImplicit4",
+      "PhysicalDamageLifeLeechEldritchImplicit5",
+      "PhysicalDamageLifeLeechEldritchImplicit6"
      ],
-     "label": "#% of Fire Damage Leeched as Life"
+     "label": "#% of Physical Damage Leeched as Life"
     },
     {
      "ids": [
@@ -1295,17 +1284,14 @@
     },
     {
      "ids": [
-      "ColdDamageLifeLeechEldritchImplicitUniquePresence2",
-      "ColdDamageLifeLeechEldritchImplicitUniquePresence3",
-      "ColdDamageLifeLeechEldritchImplicitUniquePresence4",
-      "ColdDamageLifeLeechEldritchImplicitUniquePresence5",
-      "ColdDamageLifeLeechEldritchImplicitUniquePresence6",
-      "ColdDamageLifeLeechEldritchImplicitPinnaclePresence3",
-      "ColdDamageLifeLeechEldritchImplicitPinnaclePresence4",
-      "ColdDamageLifeLeechEldritchImplicitPinnaclePresence5",
-      "ColdDamageLifeLeechEldritchImplicitPinnaclePresence6"
+      "FireDamageLifeLeechEldritchImplicit1",
+      "FireDamageLifeLeechEldritchImplicit2",
+      "FireDamageLifeLeechEldritchImplicit3",
+      "FireDamageLifeLeechEldritchImplicit4",
+      "FireDamageLifeLeechEldritchImplicit5",
+      "FireDamageLifeLeechEldritchImplicit6"
      ],
-     "label": "While a Unique Enemy is in your Presence, #% of Cold Damage Leeched as Life"
+     "label": "#% of Fire Damage Leeched as Life"
     },
     {
      "ids": [
@@ -1317,6 +1303,20 @@
       "ColdDamageLifeLeechEldritchImplicit6"
      ],
      "label": "#% of Cold Damage Leeched as Life"
+    },
+    {
+     "ids": [
+      "ColdDamageLifeLeechEldritchImplicitUniquePresence2",
+      "ColdDamageLifeLeechEldritchImplicitUniquePresence3",
+      "ColdDamageLifeLeechEldritchImplicitUniquePresence4",
+      "ColdDamageLifeLeechEldritchImplicitUniquePresence5",
+      "ColdDamageLifeLeechEldritchImplicitUniquePresence6",
+      "ColdDamageLifeLeechEldritchImplicitPinnaclePresence3",
+      "ColdDamageLifeLeechEldritchImplicitPinnaclePresence4",
+      "ColdDamageLifeLeechEldritchImplicitPinnaclePresence5",
+      "ColdDamageLifeLeechEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "While a Unique Enemy is in your Presence, #% of Cold Damage Leeched as Life"
     },
     {
      "ids": [
@@ -1345,17 +1345,6 @@
     },
     {
      "ids": [
-      "ChaosDamageLifeLeechEldritchImplicit1",
-      "ChaosDamageLifeLeechEldritchImplicit2",
-      "ChaosDamageLifeLeechEldritchImplicit3",
-      "ChaosDamageLifeLeechEldritchImplicit4",
-      "ChaosDamageLifeLeechEldritchImplicit5",
-      "ChaosDamageLifeLeechEldritchImplicit6"
-     ],
-     "label": "#% of Chaos Damage Leeched as Life"
-    },
-    {
-     "ids": [
       "ChaosDamageLifeLeechEldritchImplicitUniquePresence2",
       "ChaosDamageLifeLeechEldritchImplicitUniquePresence3",
       "ChaosDamageLifeLeechEldritchImplicitUniquePresence4",
@@ -1367,6 +1356,17 @@
       "ChaosDamageLifeLeechEldritchImplicitPinnaclePresence6"
      ],
      "label": "While a Unique Enemy is in your Presence, #% of Chaos Damage Leeched as Life"
+    },
+    {
+     "ids": [
+      "ChaosDamageLifeLeechEldritchImplicit1",
+      "ChaosDamageLifeLeechEldritchImplicit2",
+      "ChaosDamageLifeLeechEldritchImplicit3",
+      "ChaosDamageLifeLeechEldritchImplicit4",
+      "ChaosDamageLifeLeechEldritchImplicit5",
+      "ChaosDamageLifeLeechEldritchImplicit6"
+     ],
+     "label": "#% of Chaos Damage Leeched as Life"
     },
     {
      "ids": [
@@ -1440,6 +1440,17 @@
     },
     {
      "ids": [
+      "ConvertPhysicalToLightningEldritchImplicit1",
+      "ConvertPhysicalToLightningEldritchImplicit2",
+      "ConvertPhysicalToLightningEldritchImplicit3",
+      "ConvertPhysicalToLightningEldritchImplicit4",
+      "ConvertPhysicalToLightningEldritchImplicit5",
+      "ConvertPhysicalToLightningEldritchImplicit6"
+     ],
+     "label": "#% of Physical Damage Converted to Lightning Damage"
+    },
+    {
+     "ids": [
       "ConvertPhysicalToLightningEldritchImplicitUniquePresence2",
       "ConvertPhysicalToLightningEldritchImplicitUniquePresence3",
       "ConvertPhysicalToLightningEldritchImplicitUniquePresence4",
@@ -1454,28 +1465,6 @@
     },
     {
      "ids": [
-      "ConvertPhysicalToLightningEldritchImplicit1",
-      "ConvertPhysicalToLightningEldritchImplicit2",
-      "ConvertPhysicalToLightningEldritchImplicit3",
-      "ConvertPhysicalToLightningEldritchImplicit4",
-      "ConvertPhysicalToLightningEldritchImplicit5",
-      "ConvertPhysicalToLightningEldritchImplicit6"
-     ],
-     "label": "#% of Physical Damage Converted to Lightning Damage"
-    },
-    {
-     "ids": [
-      "ConvertPhysicalToChaosEldritchImplicit1",
-      "ConvertPhysicalToChaosEldritchImplicit2",
-      "ConvertPhysicalToChaosEldritchImplicit3",
-      "ConvertPhysicalToChaosEldritchImplicit4",
-      "ConvertPhysicalToChaosEldritchImplicit5",
-      "ConvertPhysicalToChaosEldritchImplicit6"
-     ],
-     "label": "#% of Physical Damage Converted to Chaos Damage"
-    },
-    {
-     "ids": [
       "ConvertPhysicalToChaosEldritchImplicitUniquePresence2",
       "ConvertPhysicalToChaosEldritchImplicitUniquePresence3",
       "ConvertPhysicalToChaosEldritchImplicitUniquePresence4",
@@ -1487,6 +1476,17 @@
       "ConvertPhysicalToChaosEldritchImplicitPinnaclePresence6"
      ],
      "label": "While a Unique Enemy is in your Presence, #% of Physical Damage Converted to Chaos Damage"
+    },
+    {
+     "ids": [
+      "ConvertPhysicalToChaosEldritchImplicit1",
+      "ConvertPhysicalToChaosEldritchImplicit2",
+      "ConvertPhysicalToChaosEldritchImplicit3",
+      "ConvertPhysicalToChaosEldritchImplicit4",
+      "ConvertPhysicalToChaosEldritchImplicit5",
+      "ConvertPhysicalToChaosEldritchImplicit6"
+     ],
+     "label": "#% of Physical Damage Converted to Chaos Damage"
     },
     {
      "ids": [
@@ -1550,17 +1550,6 @@
     },
     {
      "ids": [
-      "FlatAccuracyPerFrenzyChargeEldritchImplicit1",
-      "FlatAccuracyPerFrenzyChargeEldritchImplicit2",
-      "FlatAccuracyPerFrenzyChargeEldritchImplicit3",
-      "FlatAccuracyPerFrenzyChargeEldritchImplicit4",
-      "FlatAccuracyPerFrenzyChargeEldritchImplicit5",
-      "FlatAccuracyPerFrenzyChargeEldritchImplicit6"
-     ],
-     "label": "+# to Accuracy Rating per Frenzy Charge"
-    },
-    {
-     "ids": [
       "FlatAccuracyPerFrenzyChargeEldritchImplicitUniquePresence2",
       "FlatAccuracyPerFrenzyChargeEldritchImplicitUniquePresence3",
       "FlatAccuracyPerFrenzyChargeEldritchImplicitUniquePresence4",
@@ -1572,6 +1561,17 @@
       "FlatAccuracyPerFrenzyChargeEldritchImplicitPinnaclePresence6"
      ],
      "label": "While a Unique Enemy is in your Presence, +# to Accuracy Rating per Frenzy Charge"
+    },
+    {
+     "ids": [
+      "FlatAccuracyPerFrenzyChargeEldritchImplicit1",
+      "FlatAccuracyPerFrenzyChargeEldritchImplicit2",
+      "FlatAccuracyPerFrenzyChargeEldritchImplicit3",
+      "FlatAccuracyPerFrenzyChargeEldritchImplicit4",
+      "FlatAccuracyPerFrenzyChargeEldritchImplicit5",
+      "FlatAccuracyPerFrenzyChargeEldritchImplicit6"
+     ],
+     "label": "+# to Accuracy Rating per Frenzy Charge"
     },
     {
      "ids": [
@@ -1735,17 +1735,6 @@
     },
     {
      "ids": [
-      "EvasionRatingHelmetBootsEldritchImplicit1",
-      "EvasionRatingHelmetBootsEldritchImplicit2",
-      "EvasionRatingHelmetBootsEldritchImplicit3",
-      "EvasionRatingHelmetBootsEldritchImplicit4",
-      "EvasionRatingHelmetBootsEldritchImplicit5",
-      "EvasionRatingHelmetBootsEldritchImplicit6"
-     ],
-     "label": "#% increased Evasion Rating from Equipped Helmet and Boots"
-    },
-    {
-     "ids": [
       "EvasionRatingHelmetBootsEldritchImplicitUniquePresence2",
       "EvasionRatingHelmetBootsEldritchImplicitUniquePresence3",
       "EvasionRatingHelmetBootsEldritchImplicitUniquePresence4",
@@ -1757,6 +1746,17 @@
       "EvasionRatingHelmetBootsEldritchImplicitPinnaclePresence6"
      ],
      "label": "While a Unique Enemy is in your Presence, #% increased Evasion Rating from Equipped Helmet and Boots"
+    },
+    {
+     "ids": [
+      "EvasionRatingHelmetBootsEldritchImplicit1",
+      "EvasionRatingHelmetBootsEldritchImplicit2",
+      "EvasionRatingHelmetBootsEldritchImplicit3",
+      "EvasionRatingHelmetBootsEldritchImplicit4",
+      "EvasionRatingHelmetBootsEldritchImplicit5",
+      "EvasionRatingHelmetBootsEldritchImplicit6"
+     ],
+     "label": "#% increased Evasion Rating from Equipped Helmet and Boots"
     },
     {
      "ids": [
@@ -2102,6 +2102,17 @@
     },
     {
      "ids": [
+      "MaximumColdResistanceEldritchImplicit1",
+      "MaximumColdResistanceEldritchImplicit2",
+      "MaximumColdResistanceEldritchImplicit3",
+      "MaximumColdResistanceEldritchImplicit4",
+      "MaximumColdResistanceEldritchImplicit5",
+      "MaximumColdResistanceEldritchImplicit6"
+     ],
+     "label": "+#% to maximum Cold Resistance"
+    },
+    {
+     "ids": [
       "MaximumColdResistanceEldritchImplicitUniquePresence2",
       "MaximumColdResistanceEldritchImplicitUniquePresence3",
       "MaximumColdResistanceEldritchImplicitUniquePresence4",
@@ -2113,17 +2124,6 @@
       "MaximumColdResistanceEldritchImplicitPinnaclePresence6"
      ],
      "label": "While a Unique Enemy is in your Presence, +#% to maximum Cold Resistance"
-    },
-    {
-     "ids": [
-      "MaximumColdResistanceEldritchImplicit1",
-      "MaximumColdResistanceEldritchImplicit2",
-      "MaximumColdResistanceEldritchImplicit3",
-      "MaximumColdResistanceEldritchImplicit4",
-      "MaximumColdResistanceEldritchImplicit5",
-      "MaximumColdResistanceEldritchImplicit6"
-     ],
-     "label": "+#% to maximum Cold Resistance"
     },
     {
      "ids": [
@@ -4768,6 +4768,12 @@
     },
     {
      "ids": [
+      "DivergentAttackSpeedIfUsedAttackMovementSkillRecentlyUnique__1"
+     ],
+     "label": "^xCBA5F120% increased Attack Speed if you've used an Attack Movement Skill Recently"
+    },
+    {
+     "ids": [
       "DivergentAvianAspectBuffEffectUnique__1"
      ],
      "label": "^xCBA5F1100% increased Aspect of the Avian Buff Effect"
@@ -4866,13 +4872,13 @@
      "ids": [
       "DivergentDisplayGrantsBloodOfferingUnique__1_"
      ],
-     "label": "^xCBA5F1Grants Level 15 Blood Offering Skill"
+     "label": "^xCBA5F1Grants Level 15 Blood Offering"
     },
     {
      "ids": [
       "DivergentDisplaySocketedGemGetsSpellTotemBodyInt7"
      ],
-     "label": "^xCBA5F1Socketed Gems are Supported by Level 1 Spell Totem"
+     "label": "^xCBA5F1Socketed Gems are Supported by Level 1 Spell Totem Support"
     },
     {
      "ids": [
@@ -4884,7 +4890,13 @@
      "ids": [
       "DivergentDisplaySupportedByAddedColdDamageUnique__2"
      ],
-     "label": "^xCBA5F1Socketed Gems are Supported by Level 17 Added Cold Damage"
+     "label": "^xCBA5F1Socketed Gems are Supported by Level 17 Added Cold Damage Support"
+    },
+    {
+     "ids": [
+      "DivergentDisplaySupportedByUnleashUnique__2"
+     ],
+     "label": "^xCBA5F1Socketed Gems are Supported by Level 15 Unleash Support"
     },
     {
      "ids": [
@@ -4962,19 +4974,19 @@
      "ids": [
       "DivergentGrantsSummonBeastRhoaUnique__1"
      ],
-     "label": "^xCBA5F1Grants Level 20 Summon Bestial Rhoa Skill"
+     "label": "^xCBA5F1Grants Level 20 Summon Bestial Rhoa"
     },
     {
      "ids": [
       "DivergentGrantsSummonBeastSnakeUnique__1"
      ],
-     "label": "^xCBA5F1Grants Level 20 Summon Bestial Snake Skill"
+     "label": "^xCBA5F1Grants Level 20 Summon Bestial Snake"
     },
     {
      "ids": [
       "DivergentGrantsSummonBeastUrsaUnique__1"
      ],
-     "label": "^xCBA5F1Grants Level 20 Summon Bestial Ursa Skill"
+     "label": "^xCBA5F1Grants Level 20 Summon Bestial Ursa"
     },
     {
      "ids": [
@@ -5034,7 +5046,7 @@
      "ids": [
       "DivergentItemFoundRarityIncreaseUniqueBodyStr5"
      ],
-     "label": "^xCBA5F150% increased Rarity of Items found"
+     "label": "^xCBA5F1+50% to Item Rarity"
     },
     {
      "ids": [
@@ -5148,7 +5160,7 @@
      "ids": [
       "DivergentNearbyEnemiesCannotCritUnique__1"
      ],
-     "label": "^xCBA5F1Nearby Enemies cannot deal Critical Strikes"
+     "label": "^xCBA5F1Enemies within 6 metres cannot deal Critical Strikes"
     },
     {
      "ids": [
@@ -5208,25 +5220,13 @@
      "ids": [
       "DivergentShareEnduranceChargesWithParty"
      ],
-     "label": "^xCBA5F1Share Endurance Charges with nearby party members"
+     "label": "^xCBA5F1Share Endurance Charges with Party members within 12 metres"
     },
     {
      "ids": [
       "DivergentShockedEnemiesExplodeUnique__1_"
      ],
      "label": "^xCBA5F1Shocked Enemies you Kill Explode, dealing 3% of/their Life as Lightning Damage which cannot Shock"
-    },
-    {
-     "ids": [
-      "DivergentSocketedGemsGetElementalProliferationUniqueBodyInt5"
-     ],
-     "label": "^xCBA5F1Socketed Gems are Supported by Level 5 Elemental Proliferation"
-    },
-    {
-     "ids": [
-      "DivergentSocketedGemsHaveAddedChaosDamageUnique__3"
-     ],
-     "label": "^xCBA5F1Socketed Gems are Supported by Level 17 Added Chaos Damage"
     },
     {
      "ids": [
@@ -5250,7 +5250,7 @@
      "ids": [
       "DivergentSocketedGemsSupportedByPierceUniqueBodyStr6"
      ],
-     "label": "^xCBA5F1Socketed Gems are Supported by Level 15 Pierce"
+     "label": "^xCBA5F1Socketed Gems are Supported by Level 15 Pierce Support"
     },
     {
      "ids": [
@@ -5268,7 +5268,7 @@
      "ids": [
       "DivergentSupportedByLesserPoisonUnique__1"
      ],
-     "label": "^xCBA5F1Socketed Gems are Supported by Level 10 Chance to Poison"
+     "label": "^xCBA5F1Socketed Gems are Supported by Level 10 Chance to Poison Support"
     },
     {
      "ids": [
@@ -6553,6 +6553,12 @@
     },
     {
      "ids": [
+      "DivergentAttackSpeedIfUsedAttackMovementSkillRecentlyUnique__1"
+     ],
+     "label": "^xCBA5F120% increased Attack Speed if you've used an Attack Movement Skill Recently"
+    },
+    {
+     "ids": [
       "DivergentAvianAspectBuffEffectUnique__1"
      ],
      "label": "^xCBA5F1100% increased Aspect of the Avian Buff Effect"
@@ -6645,13 +6651,13 @@
      "ids": [
       "DivergentDisplayGrantsBloodOfferingUnique__1_"
      ],
-     "label": "^xCBA5F1Grants Level 15 Blood Offering Skill"
+     "label": "^xCBA5F1Grants Level 15 Blood Offering"
     },
     {
      "ids": [
       "DivergentDisplaySocketedGemGetsSpellTotemBodyInt7"
      ],
-     "label": "^xCBA5F1Socketed Gems are Supported by Level 1 Spell Totem"
+     "label": "^xCBA5F1Socketed Gems are Supported by Level 1 Spell Totem Support"
     },
     {
      "ids": [
@@ -6663,7 +6669,13 @@
      "ids": [
       "DivergentDisplaySupportedByAddedColdDamageUnique__2"
      ],
-     "label": "^xCBA5F1Socketed Gems are Supported by Level 17 Added Cold Damage"
+     "label": "^xCBA5F1Socketed Gems are Supported by Level 17 Added Cold Damage Support"
+    },
+    {
+     "ids": [
+      "DivergentDisplaySupportedByUnleashUnique__2"
+     ],
+     "label": "^xCBA5F1Socketed Gems are Supported by Level 15 Unleash Support"
     },
     {
      "ids": [
@@ -6741,19 +6753,19 @@
      "ids": [
       "DivergentGrantsSummonBeastRhoaUnique__1"
      ],
-     "label": "^xCBA5F1Grants Level 20 Summon Bestial Rhoa Skill"
+     "label": "^xCBA5F1Grants Level 20 Summon Bestial Rhoa"
     },
     {
      "ids": [
       "DivergentGrantsSummonBeastSnakeUnique__1"
      ],
-     "label": "^xCBA5F1Grants Level 20 Summon Bestial Snake Skill"
+     "label": "^xCBA5F1Grants Level 20 Summon Bestial Snake"
     },
     {
      "ids": [
       "DivergentGrantsSummonBeastUrsaUnique__1"
      ],
-     "label": "^xCBA5F1Grants Level 20 Summon Bestial Ursa Skill"
+     "label": "^xCBA5F1Grants Level 20 Summon Bestial Ursa"
     },
     {
      "ids": [
@@ -6819,7 +6831,7 @@
      "ids": [
       "DivergentItemFoundRarityIncreaseUniqueBodyStr5"
      ],
-     "label": "^xCBA5F150% increased Rarity of Items found"
+     "label": "^xCBA5F1+50% to Item Rarity"
     },
     {
      "ids": [
@@ -6933,7 +6945,7 @@
      "ids": [
       "DivergentNearbyEnemiesCannotCritUnique__1"
      ],
-     "label": "^xCBA5F1Nearby Enemies cannot deal Critical Strikes"
+     "label": "^xCBA5F1Enemies within 6 metres cannot deal Critical Strikes"
     },
     {
      "ids": [
@@ -6993,25 +7005,13 @@
      "ids": [
       "DivergentShareEnduranceChargesWithParty"
      ],
-     "label": "^xCBA5F1Share Endurance Charges with nearby party members"
+     "label": "^xCBA5F1Share Endurance Charges with Party members within 12 metres"
     },
     {
      "ids": [
       "DivergentShockedEnemiesExplodeUnique__1_"
      ],
      "label": "^xCBA5F1Shocked Enemies you Kill Explode, dealing 3% of/their Life as Lightning Damage which cannot Shock"
-    },
-    {
-     "ids": [
-      "DivergentSocketedGemsGetElementalProliferationUniqueBodyInt5"
-     ],
-     "label": "^xCBA5F1Socketed Gems are Supported by Level 5 Elemental Proliferation"
-    },
-    {
-     "ids": [
-      "DivergentSocketedGemsHaveAddedChaosDamageUnique__3"
-     ],
-     "label": "^xCBA5F1Socketed Gems are Supported by Level 17 Added Chaos Damage"
     },
     {
      "ids": [
@@ -7035,7 +7035,7 @@
      "ids": [
       "DivergentSocketedGemsSupportedByPierceUniqueBodyStr6"
      ],
-     "label": "^xCBA5F1Socketed Gems are Supported by Level 15 Pierce"
+     "label": "^xCBA5F1Socketed Gems are Supported by Level 15 Pierce Support"
     },
     {
      "ids": [
@@ -7053,7 +7053,7 @@
      "ids": [
       "DivergentSupportedByLesserPoisonUnique__1"
      ],
-     "label": "^xCBA5F1Socketed Gems are Supported by Level 10 Chance to Poison"
+     "label": "^xCBA5F1Socketed Gems are Supported by Level 10 Chance to Poison Support"
     },
     {
      "ids": [
@@ -9277,512 +9277,7 @@
   {
    "EATER": [],
    "EXARCH": [],
-   "VESTIGIAL": [
-    {
-     "ids": [
-      "DivergentAddedPhysicalDamageUniqueShieldDex6"
-     ],
-     "label": "^xCBA5F1Adds 10 to 18 Physical Damage to Attacks"
-    },
-    {
-     "ids": [
-      "DivergentAdditionalBlockChanceUniqueShieldDex2"
-     ],
-     "label": "^xCBA5F1+5% Chance to Block"
-    },
-    {
-     "ids": [
-      "DivergentAreaOfEffectPerEnemyKilledRecentlyCapped25Unique__1"
-     ],
-     "label": "^xCBA5F11% increased Area of Effect per Enemy killed recently, up to 25%"
-    },
-    {
-     "ids": [
-      "DivergentArmourPerTotemUnique__1"
-     ],
-     "label": "^xCBA5F1+500 Armour per Summoned Totem"
-    },
-    {
-     "ids": [
-      "DivergentAuraEffectUniqueShieldInt2"
-     ],
-     "label": "^xCBA5F110% increased effect of Non-Curse Auras from your Skills"
-    },
-    {
-     "ids": [
-      "DivergentAvoidIgniteOnLowLifeUniqueShieldStrInt5"
-     ],
-     "label": "^xCBA5F1100% chance to Avoid being Ignited while on Low Life"
-    },
-    {
-     "ids": [
-      "DivergentBleedOnSelfDealChaosDamageUnique__1"
-     ],
-     "label": "^xCBA5F1You take Chaos Damage instead of Physical Damage from Bleeding"
-    },
-    {
-     "ids": [
-      "DivergentBlockChanceVersusCursedEnemiesUnique__1"
-     ],
-     "label": "^xCBA5F1+15% Chance to Block Attack Damage from Cursed Enemies"
-    },
-    {
-     "ids": [
-      "DivergentBlockVsProjectilesUniqueShieldStr2"
-     ],
-     "label": "^xCBA5F1+25% chance to Block Projectile Attack Damage"
-    },
-    {
-     "ids": [
-      "DivergentCannotBeFrozenUnique__1"
-     ],
-     "label": "^xCBA5F1Cannot be Frozen"
-    },
-    {
-     "ids": [
-      "DivergentChanceToSuppressSpellsUnique__1_"
-     ],
-     "label": "^xCBA5F1+15% chance to Suppress Spell Damage"
-    },
-    {
-     "ids": [
-      "DivergentChaosDamageDoesNotBypassESNotLowLifeOrManaUnique__1"
-     ],
-     "label": "^xCBA5F1Chaos Damage taken does not bypass Energy Shield while not on Low Life"
-    },
-    {
-     "ids": [
-      "DivergentColdHitAndDoTDamageTakenAsLightningUnique__1"
-     ],
-     "label": "^xCBA5F140% of Cold Damage taken as Lightning Damage"
-    },
-    {
-     "ids": [
-      "DivergentCommandmentOfInfernoOnCritUnique__1"
-     ],
-     "label": "^xCBA5F1Trigger Commandment of Inferno on Critical Strike"
-    },
-    {
-     "ids": [
-      "DivergentConvertPhysicalToFireUniqueShieldStr3"
-     ],
-     "label": "^xCBA5F125% of Physical Damage Converted to Fire Damage"
-    },
-    {
-     "ids": [
-      "DivergentCounterAttacksAddedColdDamageUnique__1"
-     ],
-     "label": "^xCBA5F1Adds 250 to 300 Cold Damage to Retaliation Skills"
-    },
-    {
-     "ids": [
-      "DivergentCreateSmokeCloudWhenTrapTriggeredUnique__1"
-     ],
-     "label": "^xCBA5F1Trigger Level 20 Fog of War when your Trap is triggered"
-    },
-    {
-     "ids": [
-      "DivergentCriticalMultiplierPerBlockChanceUnique__1"
-     ],
-     "label": "^xCBA5F1+1% to Critical Strike Multiplier per 1% Chance to Block Attack Damage"
-    },
-    {
-     "ids": [
-      "DivergentCriticalStrikeChancePerBrandUnique__1___"
-     ],
-     "label": "^xCBA5F120% increased Critical Strike Chance per Brand"
-    },
-    {
-     "ids": [
-      "DivergentDamageOverTimeMultiplierIfCrit8SecondsUnique__1_"
-     ],
-     "label": "^xCBA5F1+20% to Damage over Time Multiplier if you've dealt a Critical Strike in the past 8 seconds"
-    },
-    {
-     "ids": [
-      "DivergentDrainAllManaLightningDamageUnique__1"
-     ],
-     "label": "^xCBA5F1When you Cast a Spell, Sacrifice all Mana to gain Added Maximum Lightning Damage/equal to 25% of Sacrificed Mana for 4 seconds"
-    },
-    {
-     "ids": [
-      "DivergentElementalDamageTakenAsPhysicalUnique__1"
-     ],
-     "label": "^xCBA5F125% of Elemental Damage from Hits taken as Physical Damage"
-    },
-    {
-     "ids": [
-      "DivergentElementalWeaknessOnSpellBlockUniqueShieldInt4"
-     ],
-     "label": "^xCBA5F1Curse Enemies with Elemental Weakness when you Block their Spell Damage, ignoring Curse Limit"
-    },
-    {
-     "ids": [
-      "DivergentEnemiesBlockedAreIntimidatedUnique__1"
-     ],
-     "label": "^xCBA5F1Permanently Intimidate Enemies on Block"
-    },
-    {
-     "ids": [
-      "DivergentEnergyShieldGainedOnBlockUniqueShieldStrInt4"
-     ],
-     "label": "^xCBA5F1Recover Energy Shield equal to 1% of Armour when you Block"
-    },
-    {
-     "ids": [
-      "DivergentFireHitAndDoTDamageTakenAsLightningUnique__1"
-     ],
-     "label": "^xCBA5F140% of Fire Damage taken as Lightning Damage"
-    },
-    {
-     "ids": [
-      "DivergentGainLifeOnBlockUnique__1"
-     ],
-     "label": "^xCBA5F1Recover 150 Life when you Block"
-    },
-    {
-     "ids": [
-      "DivergentGhostFurnace1"
-     ],
-     "label": "^xCBA5F1Draugurflames burn enemies around you for 8 seconds after you Ignite a target"
-    },
-    {
-     "ids": [
-      "DivergentGrantAlliesFrenzyChargeOnHitUnique__1"
-     ],
-     "label": "^xCBA5F15% chance to grant a Frenzy Charge to nearby Allies on Hit"
-    },
-    {
-     "ids": [
-      "DivergentGrantAlliesPowerChargeOnKillUnique__1"
-     ],
-     "label": "^xCBA5F110% chance to grant a Power Charge to nearby Allies on Kill"
-    },
-    {
-     "ids": [
-      "DivergentGrantsAlliesEnduranceChargeOnHitUnique__1"
-     ],
-     "label": "^xCBA5F15% chance to grant an Endurance Charge to nearby Allies on Hit"
-    },
-    {
-     "ids": [
-      "DivergentGrantsAlliesFrenzyChargeOnKillUnique__1_"
-     ],
-     "label": "^xCBA5F110% chance to grant a Frenzy Charge to nearby Allies on Kill"
-    },
-    {
-     "ids": [
-      "DivergentHarbingerSkillOnEquipUnique2__3"
-     ],
-     "label": "^xCBA5F1Grants Summon Greater Harbinger of Focus Skill"
-    },
-    {
-     "ids": [
-      "DivergentHarbingerSkillOnEquipUnique__3"
-     ],
-     "label": "^xCBA5F1Grants Summon Harbinger of Focus Skill"
-    },
-    {
-     "ids": [
-      "DivergentHealAlliesOnDeathUniqueShieldDexInt2"
-     ],
-     "label": "^xCBA5F1Nearby allies Recover 1% of your Maximum Life when you Die"
-    },
-    {
-     "ids": [
-      "DivergentImmuneToElementalAilmentsWhileLifeAndManaCloseUnique__1"
-     ],
-     "label": "^xCBA5F1Unaffected by Ignite or Shock if Maximum Life and Maximum Mana are within 500"
-    },
-    {
-     "ids": [
-      "DivergentIncreaseSocketedSupportGemQualityUnique__1___"
-     ],
-     "label": "^xCBA5F1+30% to Quality of Socketed Support Gems"
-    },
-    {
-     "ids": [
-      "DivergentIncreasedItemRarityUniqueShieldStrDex2"
-     ],
-     "label": "^xCBA5F135% increased Rarity of Items found"
-    },
-    {
-     "ids": [
-      "DivergentIncreasedMaximumResistsUniqueShieldStrInt1"
-     ],
-     "label": "^xCBA5F1+2% to all maximum Resistances"
-    },
-    {
-     "ids": [
-      "DivergentIncreasedSpellDamagePerPowerChargeUnique__1"
-     ],
-     "label": "^xCBA5F18% increased Spell Damage per Power Charge"
-    },
-    {
-     "ids": [
-      "DivergentKeystoneCallToArmsUnique__2_"
-     ],
-     "label": "^xCBA5F1Call to Arms"
-    },
-    {
-     "ids": [
-      "DivergentKeystoneCorruptedSoulUnique__2_"
-     ],
-     "label": "^xCBA5F1Corrupted Soul"
-    },
-    {
-     "ids": [
-      "DivergentKeystoneDivineFleshUnique__1_"
-     ],
-     "label": "^xCBA5F1Divine Flesh"
-    },
-    {
-     "ids": [
-      "DivergentKeystoneEternalYouthUnique__2_"
-     ],
-     "label": "^xCBA5F1Eternal Youth"
-    },
-    {
-     "ids": [
-      "DivergentKeystoneEverlastingSacrificeUnique__1"
-     ],
-     "label": "^xCBA5F1Everlasting Sacrifice"
-    },
-    {
-     "ids": [
-      "DivergentKeystoneGlancingBlowsUnique__1___"
-     ],
-     "label": "^xCBA5F1Glancing Blows"
-    },
-    {
-     "ids": [
-      "DivergentKeystoneSoulTetherUnique__2"
-     ],
-     "label": "^xCBA5F1Immortal Ambition"
-    },
-    {
-     "ids": [
-      "DivergentKeystoneVaalPactUnique__2"
-     ],
-     "label": "^xCBA5F1Vaal Pact"
-    },
-    {
-     "ids": [
-      "DivergentLifeRegenerationFlatOnLowLifeUnique__1"
-     ],
-     "label": "^xCBA5F1Regenerate 100 Life per Second while on Low Life"
-    },
-    {
-     "ids": [
-      "DivergentMaximumResistanceWithNoEnduranceChargesUnique__1__"
-     ],
-     "label": "^xCBA5F1+2% to all maximum Resistances while you have no Endurance Charges"
-    },
-    {
-     "ids": [
-      "DivergentMaximumResistancesWhilePoisonedUnique__1"
-     ],
-     "label": "^xCBA5F1+3% to all maximum Resistances while Poisoned"
-    },
-    {
-     "ids": [
-      "DivergentPhasingIfBlockedRecentlyReplicaUnique__1"
-     ],
-     "label": "^xCBA5F1You have Phasing if you have Blocked Recently"
-    },
-    {
-     "ids": [
-      "DivergentPhasingIfBlockedRecentlyUnique__1"
-     ],
-     "label": "^xCBA5F1You have Phasing if you have Blocked Recently"
-    },
-    {
-     "ids": [
-      "DivergentPhysicalAddedAsColdUnique__2"
-     ],
-     "label": "^xCBA5F1Gain 15% of Physical Damage as Extra Cold Damage"
-    },
-    {
-     "ids": [
-      "DivergentPowerChargeOnTrapThrowChanceUniqueShieldDexInt1"
-     ],
-     "label": "^xCBA5F125% chance to gain a Power Charge when you Throw a Trap"
-    },
-    {
-     "ids": [
-      "DivergentProfaneGroundInsteadOfConsecratedGround__1_"
-     ],
-     "label": "^xCBA5F1Create Profane Ground instead of Consecrated Ground"
-    },
-    {
-     "ids": [
-      "DivergentProjectileAvoidUnique"
-     ],
-     "label": "^xCBA5F110% chance to avoid Projectiles"
-    },
-    {
-     "ids": [
-      "DivergentPunishmentOnMeleeBlockUniqueShieldInt4"
-     ],
-     "label": "^xCBA5F1Curse Enemies with Punishment when you Block their Melee Damage, ignoring Curse Limit"
-    },
-    {
-     "ids": [
-      "DivergentReflectDamageToAttackersOnBlockUniqueShieldDex5"
-     ],
-     "label": "^xCBA5F1Reflects 1000 to 10000 Physical Damage to Attackers on Block"
-    },
-    {
-     "ids": [
-      "DivergentRetaliateSkillUseWindowDuration_1"
-     ],
-     "label": "^xCBA5F1Retaliation Skills become Usable for 100% longer"
-    },
-    {
-     "ids": [
-      "DivergentSavageBarnacleMod_1"
-     ],
-     "label": "^xCBA5F1Grants Level 20 Savage Barnacle"
-    },
-    {
-     "ids": [
-      "DivergentScorchOnEnemiesOnBlockUnique__1"
-     ],
-     "label": "^xCBA5F1Scorch Enemies in Close Range when you Block"
-    },
-    {
-     "ids": [
-      "DivergentSharedSufferingUnique__1"
-     ],
-     "label": "^xCBA5F1Shared Suffering"
-    },
-    {
-     "ids": [
-      "DivergentShockProliferationUnique__2"
-     ],
-     "label": "^xCBA5F1Shocks you inflict spread to other Enemies within 1.5 metres"
-    },
-    {
-     "ids": [
-      "DivergentSocketedItemsHaveReducedReservationUniqueShieldStrInt2"
-     ],
-     "label": "^xCBA5F1Socketed Gems have 30% increased Reservation Efficiency"
-    },
-    {
-     "ids": [
-      "DivergentSpellBlockPercentageOnLowLifeUniqueShieldStrDex1_"
-     ],
-     "label": "^xCBA5F1+15% Chance to Block Spell Damage while on Low Life"
-    },
-    {
-     "ids": [
-      "DivergentSpellCriticalStrikeChancePerLifeUnique__1"
-     ],
-     "label": "^xCBA5F13% increased Spell Critical Strike Chance per 100 Player Maximum Life"
-    },
-    {
-     "ids": [
-      "DivergentSpellCriticalStrikeChancePerSpectreUnique__1_"
-     ],
-     "label": "^xCBA5F140% increased Spell Critical Strike Chance per Raised Spectre"
-    },
-    {
-     "ids": [
-      "DivergentStrUniqueShieldTriggerShieldShatterOnBlock"
-     ],
-     "label": "^xCBA5F1Trigger Level 15 Shield Shatter when you Block"
-    },
-    {
-     "ids": [
-      "DivergentTemporalChainsOnProjectileBlockUniqueShieldInt4"
-     ],
-     "label": "^xCBA5F1Curse Enemies with Temporal Chains when you Block their Projectile Attack Damage, ignoring Curse Limit"
-    },
-    {
-     "ids": [
-      "DivergentTotemLeechLifeToYouUnique__1"
-     ],
-     "label": "^xCBA5F10.5% of Damage dealt by your Totems is Leeched to you as Life"
-    },
-    {
-     "ids": [
-      "DivergentTreatResistancesAsMaxChanceUnique__1"
-     ],
-     "label": "^xCBA5F120% chance for Elemental Resistances to count as being 90% against Enemy Hits"
-    },
-    {
-     "ids": [
-      "DivergentTriggerSocketedElementalSpellOnBlockUnique__1"
-     ],
-     "label": "^xCBA5F1Trigger a Socketed Elemental Spell on Block, with a 0.25 second Cooldown"
-    },
-    {
-     "ids": [
-      "DivergentTriggeredColdAegisSkillUnique__1"
-     ],
-     "label": "^xCBA5F1Triggers Level 20 Cold Aegis when Equipped"
-    },
-    {
-     "ids": [
-      "DivergentTriggeredElementalAegisSkillUnique__1_"
-     ],
-     "label": "^xCBA5F1Triggers Level 20 Elemental Aegis when Equipped"
-    },
-    {
-     "ids": [
-      "DivergentTriggeredFireAegisSkillUnique__1_"
-     ],
-     "label": "^xCBA5F1Triggers Level 20 Fire Aegis when Equipped"
-    },
-    {
-     "ids": [
-      "DivergentTriggeredLightningAegisSkillUnique__1"
-     ],
-     "label": "^xCBA5F1Triggers Level 20 Lightning Aegis when Equipped"
-    },
-    {
-     "ids": [
-      "DivergentTriggeredPhysicalAegisSkillUnique__1"
-     ],
-     "label": "^xCBA5F1Triggers Level 20 Physical Aegis when Equipped"
-    },
-    {
-     "ids": [
-      "DivergentUnaffectedByCursesUnique__1"
-     ],
-     "label": "^xCBA5F1Unaffected by Curses"
-    },
-    {
-     "ids": [
-      "DivergentUnwaveringStanceUnique_2"
-     ],
-     "label": "^xCBA5F1Unwavering Stance"
-    },
-    {
-     "ids": [
-      "DivergentVulnerabilityOnBlockUniqueShieldStrDex3"
-     ],
-     "label": "^xCBA5F1Curse Enemies with Vulnerability on Block"
-    },
-    {
-     "ids": [
-      "DivergentWarcryCooldownSpeedUnique__1"
-     ],
-     "label": "^xCBA5F130% increased Warcry Cooldown Recovery Rate"
-    },
-    {
-     "ids": [
-      "DivergentWarcryCooldownSpeedUnique__2"
-     ],
-     "label": "^xCBA5F130% increased Warcry Cooldown Recovery Rate"
-    },
-    {
-     "ids": [
-      "DivergentWarcryGrantsArcaneSurgeUnique__1"
-     ],
-     "label": "^xCBA5F1Warcries grant Arcane Surge to you and Allies, with 10% increased effect per 5 power, up to 50%"
-    }
-   ],
+   "VESTIGIAL": [],
    "sources": [
     "VESTIGIAL"
    ]
@@ -9967,7 +9462,7 @@
       "FasterIgniteDamageEldritchImplicitPinnaclePresence5",
       "FasterIgniteDamageEldritchImplicitPinnaclePresence6"
      ],
-     "label": "Ignites you inflict deal Damage #% faster"
+     "label": "Ignites you inflict deal Damage #% Faster"
     },
     {
      "ids": [
@@ -10207,7 +9702,7 @@
       "FasterBleedDamageEldritchImplicitPinnaclePresence5",
       "FasterBleedDamageEldritchImplicitPinnaclePresence6"
      ],
-     "label": "Bleeding you inflict deals Damage #% faster"
+     "label": "Bleeding you inflict deals Damage #% Faster"
     },
     {
      "ids": [
@@ -10227,7 +9722,7 @@
       "FasterPoisonDamageEldritchImplicitPinnaclePresence5",
       "FasterPoisonDamageEldritchImplicitPinnaclePresence6"
      ],
-     "label": "Poisons you inflict deal Damage #% faster"
+     "label": "Poisons you inflict deal Damage #% Faster"
     },
     {
      "ids": [
@@ -10798,6 +10293,17 @@
     },
     {
      "ids": [
+      "SappedGroundWhileMovingEldritchImplicit1",
+      "SappedGroundWhileMovingEldritchImplicit2",
+      "SappedGroundWhileMovingEldritchImplicit3",
+      "SappedGroundWhileMovingEldritchImplicit4",
+      "SappedGroundWhileMovingEldritchImplicit5",
+      "SappedGroundWhileMovingEldritchImplicit6"
+     ],
+     "label": "Drops Sapped Ground while moving, lasting # seconds"
+    },
+    {
+     "ids": [
       "SappedGroundWhileMovingEldritchImplicitUniquePresence2",
       "SappedGroundWhileMovingEldritchImplicitUniquePresence3",
       "SappedGroundWhileMovingEldritchImplicitUniquePresence4",
@@ -10809,17 +10315,6 @@
       "SappedGroundWhileMovingEldritchImplicitPinnaclePresence6"
      ],
      "label": "While a Unique Enemy is in your Presence, Drops Sapped Ground while moving, lasting # seconds"
-    },
-    {
-     "ids": [
-      "SappedGroundWhileMovingEldritchImplicit1",
-      "SappedGroundWhileMovingEldritchImplicit2",
-      "SappedGroundWhileMovingEldritchImplicit3",
-      "SappedGroundWhileMovingEldritchImplicit4",
-      "SappedGroundWhileMovingEldritchImplicit5",
-      "SappedGroundWhileMovingEldritchImplicit6"
-     ],
-     "label": "Drops Sapped Ground while moving, lasting # seconds"
     },
     {
      "ids": [
@@ -10868,12 +10363,6 @@
     }
    ],
    "VESTIGIAL": [
-    {
-     "ids": [
-      "DivergentAbyssJewelSocketUnique__12"
-     ],
-     "label": "^xCBA5F1Has 1 Abyssal Socket"
-    },
     {
      "ids": [
       "DivergentAddedChaosDamageToAttacksPer50StrengthUnique__1"
@@ -11022,13 +10511,13 @@
      "ids": [
       "DivergentGrantsBirdAspect1_"
      ],
-     "label": "^xCBA5F1Grants Level 20 Aspect of the Avian Skill"
+     "label": "^xCBA5F1Grants Level 20 Aspect of the Avian"
     },
     {
      "ids": [
       "DivergentGrantsRavenousSkillUnique__1"
      ],
-     "label": "^xCBA5F1Grants Level 20 Ravenous Skill/Enemies display their Monster Category"
+     "label": "^xCBA5F1Grants Level 20 Ravenous/Enemies display their Monster Category"
     },
     {
      "ids": [
@@ -11088,13 +10577,13 @@
      "ids": [
       "DivergentItemFoundRarityIncreaseUnique__10"
      ],
-     "label": "^xCBA5F130% increased Rarity of Items found"
+     "label": "^xCBA5F1+30% to Item Rarity"
     },
     {
      "ids": [
       "DivergentItemRarityOnLowLifeUniqueBootsInt1"
      ],
-     "label": "^xCBA5F150% increased Rarity of Items found when on Low Life"
+     "label": "^xCBA5F1+50% to Item Rarity when on Low Life"
     },
     {
      "ids": [
@@ -11184,13 +10673,13 @@
      "ids": [
       "DivergentNearbyEnemiesAreScorchedUnique__1"
      ],
-     "label": "^xCBA5F1Nearby Enemies are Scorched"
+     "label": "^xCBA5F1Enemies within 3 metres are Scorched"
     },
     {
      "ids": [
       "DivergentNearbyStationaryEnemiesGainVinesUnique__1"
      ],
-     "label": "^xCBA5F1Nearby stationary Enemies gain a Grasping Vine every 0.5 seconds"
+     "label": "^xCBA5F1Stationary Enemies within 6 metres gain a Grasping Vine every 0.5 seconds"
     },
     {
      "ids": [
@@ -11226,25 +10715,25 @@
      "ids": [
       "DivergentPurityOfFireUnique__6"
      ],
-     "label": "^xCBA5F1Grants Level 30 Purity of Fire Skill"
+     "label": "^xCBA5F1Grants Level 30 Purity of Fire"
     },
     {
      "ids": [
       "DivergentPurityOfIceUnique__6"
      ],
-     "label": "^xCBA5F1Grants Level 30 Purity of Ice Skill"
+     "label": "^xCBA5F1Grants Level 30 Purity of Ice"
     },
     {
      "ids": [
       "DivergentPurityOfLightningUnique__6"
      ],
-     "label": "^xCBA5F1Grants Level 30 Purity of Lightning Skill"
+     "label": "^xCBA5F1Grants Level 30 Purity of Lightning"
     },
     {
      "ids": [
       "DivergentQuicksilverFlaskAppliesToAlliesUnique__1"
      ],
-     "label": "^xCBA5F1Quicksilver Flasks you Use also apply to nearby Allies"
+     "label": "^xCBA5F1Quicksilver Flasks you Use also apply to Allies within 6 metres"
     },
     {
      "ids": [
@@ -11304,7 +10793,7 @@
      "ids": [
       "DivergentTotemReflectFireDamageUnique__1_"
      ],
-     "label": "^xCBA5F1Totems Reflect 100% of their maximum Life as Fire Damage to nearby Enemies when Hit"
+     "label": "^xCBA5F1Totems Reflect 100% of their maximum Life as Fire Damage to Enemies within 1.8 metres when Hit"
     },
     {
      "ids": [
@@ -11379,17 +10868,6 @@
     },
     {
      "ids": [
-      "PhysicalDamageLifeLeechEldritchImplicit1",
-      "PhysicalDamageLifeLeechEldritchImplicit2",
-      "PhysicalDamageLifeLeechEldritchImplicit3",
-      "PhysicalDamageLifeLeechEldritchImplicit4",
-      "PhysicalDamageLifeLeechEldritchImplicit5",
-      "PhysicalDamageLifeLeechEldritchImplicit6"
-     ],
-     "label": "#% of Physical Damage Leeched as Life"
-    },
-    {
-     "ids": [
       "PhysicalDamageLifeLeechEldritchImplicitUniquePresence2",
       "PhysicalDamageLifeLeechEldritchImplicitUniquePresence3",
       "PhysicalDamageLifeLeechEldritchImplicitUniquePresence4",
@@ -11404,14 +10882,14 @@
     },
     {
      "ids": [
-      "FireDamageLifeLeechEldritchImplicit1",
-      "FireDamageLifeLeechEldritchImplicit2",
-      "FireDamageLifeLeechEldritchImplicit3",
-      "FireDamageLifeLeechEldritchImplicit4",
-      "FireDamageLifeLeechEldritchImplicit5",
-      "FireDamageLifeLeechEldritchImplicit6"
+      "PhysicalDamageLifeLeechEldritchImplicit1",
+      "PhysicalDamageLifeLeechEldritchImplicit2",
+      "PhysicalDamageLifeLeechEldritchImplicit3",
+      "PhysicalDamageLifeLeechEldritchImplicit4",
+      "PhysicalDamageLifeLeechEldritchImplicit5",
+      "PhysicalDamageLifeLeechEldritchImplicit6"
      ],
-     "label": "#% of Fire Damage Leeched as Life"
+     "label": "#% of Physical Damage Leeched as Life"
     },
     {
      "ids": [
@@ -11429,17 +10907,14 @@
     },
     {
      "ids": [
-      "ColdDamageLifeLeechEldritchImplicitUniquePresence2",
-      "ColdDamageLifeLeechEldritchImplicitUniquePresence3",
-      "ColdDamageLifeLeechEldritchImplicitUniquePresence4",
-      "ColdDamageLifeLeechEldritchImplicitUniquePresence5",
-      "ColdDamageLifeLeechEldritchImplicitUniquePresence6",
-      "ColdDamageLifeLeechEldritchImplicitPinnaclePresence3",
-      "ColdDamageLifeLeechEldritchImplicitPinnaclePresence4",
-      "ColdDamageLifeLeechEldritchImplicitPinnaclePresence5",
-      "ColdDamageLifeLeechEldritchImplicitPinnaclePresence6"
+      "FireDamageLifeLeechEldritchImplicit1",
+      "FireDamageLifeLeechEldritchImplicit2",
+      "FireDamageLifeLeechEldritchImplicit3",
+      "FireDamageLifeLeechEldritchImplicit4",
+      "FireDamageLifeLeechEldritchImplicit5",
+      "FireDamageLifeLeechEldritchImplicit6"
      ],
-     "label": "While a Unique Enemy is in your Presence, #% of Cold Damage Leeched as Life"
+     "label": "#% of Fire Damage Leeched as Life"
     },
     {
      "ids": [
@@ -11451,6 +10926,20 @@
       "ColdDamageLifeLeechEldritchImplicit6"
      ],
      "label": "#% of Cold Damage Leeched as Life"
+    },
+    {
+     "ids": [
+      "ColdDamageLifeLeechEldritchImplicitUniquePresence2",
+      "ColdDamageLifeLeechEldritchImplicitUniquePresence3",
+      "ColdDamageLifeLeechEldritchImplicitUniquePresence4",
+      "ColdDamageLifeLeechEldritchImplicitUniquePresence5",
+      "ColdDamageLifeLeechEldritchImplicitUniquePresence6",
+      "ColdDamageLifeLeechEldritchImplicitPinnaclePresence3",
+      "ColdDamageLifeLeechEldritchImplicitPinnaclePresence4",
+      "ColdDamageLifeLeechEldritchImplicitPinnaclePresence5",
+      "ColdDamageLifeLeechEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "While a Unique Enemy is in your Presence, #% of Cold Damage Leeched as Life"
     },
     {
      "ids": [
@@ -11479,17 +10968,6 @@
     },
     {
      "ids": [
-      "ChaosDamageLifeLeechEldritchImplicit1",
-      "ChaosDamageLifeLeechEldritchImplicit2",
-      "ChaosDamageLifeLeechEldritchImplicit3",
-      "ChaosDamageLifeLeechEldritchImplicit4",
-      "ChaosDamageLifeLeechEldritchImplicit5",
-      "ChaosDamageLifeLeechEldritchImplicit6"
-     ],
-     "label": "#% of Chaos Damage Leeched as Life"
-    },
-    {
-     "ids": [
       "ChaosDamageLifeLeechEldritchImplicitUniquePresence2",
       "ChaosDamageLifeLeechEldritchImplicitUniquePresence3",
       "ChaosDamageLifeLeechEldritchImplicitUniquePresence4",
@@ -11501,6 +10979,17 @@
       "ChaosDamageLifeLeechEldritchImplicitPinnaclePresence6"
      ],
      "label": "While a Unique Enemy is in your Presence, #% of Chaos Damage Leeched as Life"
+    },
+    {
+     "ids": [
+      "ChaosDamageLifeLeechEldritchImplicit1",
+      "ChaosDamageLifeLeechEldritchImplicit2",
+      "ChaosDamageLifeLeechEldritchImplicit3",
+      "ChaosDamageLifeLeechEldritchImplicit4",
+      "ChaosDamageLifeLeechEldritchImplicit5",
+      "ChaosDamageLifeLeechEldritchImplicit6"
+     ],
+     "label": "#% of Chaos Damage Leeched as Life"
     },
     {
      "ids": [
@@ -11574,6 +11063,17 @@
     },
     {
      "ids": [
+      "ConvertPhysicalToLightningEldritchImplicit1",
+      "ConvertPhysicalToLightningEldritchImplicit2",
+      "ConvertPhysicalToLightningEldritchImplicit3",
+      "ConvertPhysicalToLightningEldritchImplicit4",
+      "ConvertPhysicalToLightningEldritchImplicit5",
+      "ConvertPhysicalToLightningEldritchImplicit6"
+     ],
+     "label": "#% of Physical Damage Converted to Lightning Damage"
+    },
+    {
+     "ids": [
       "ConvertPhysicalToLightningEldritchImplicitUniquePresence2",
       "ConvertPhysicalToLightningEldritchImplicitUniquePresence3",
       "ConvertPhysicalToLightningEldritchImplicitUniquePresence4",
@@ -11588,28 +11088,6 @@
     },
     {
      "ids": [
-      "ConvertPhysicalToLightningEldritchImplicit1",
-      "ConvertPhysicalToLightningEldritchImplicit2",
-      "ConvertPhysicalToLightningEldritchImplicit3",
-      "ConvertPhysicalToLightningEldritchImplicit4",
-      "ConvertPhysicalToLightningEldritchImplicit5",
-      "ConvertPhysicalToLightningEldritchImplicit6"
-     ],
-     "label": "#% of Physical Damage Converted to Lightning Damage"
-    },
-    {
-     "ids": [
-      "ConvertPhysicalToChaosEldritchImplicit1",
-      "ConvertPhysicalToChaosEldritchImplicit2",
-      "ConvertPhysicalToChaosEldritchImplicit3",
-      "ConvertPhysicalToChaosEldritchImplicit4",
-      "ConvertPhysicalToChaosEldritchImplicit5",
-      "ConvertPhysicalToChaosEldritchImplicit6"
-     ],
-     "label": "#% of Physical Damage Converted to Chaos Damage"
-    },
-    {
-     "ids": [
       "ConvertPhysicalToChaosEldritchImplicitUniquePresence2",
       "ConvertPhysicalToChaosEldritchImplicitUniquePresence3",
       "ConvertPhysicalToChaosEldritchImplicitUniquePresence4",
@@ -11621,6 +11099,17 @@
       "ConvertPhysicalToChaosEldritchImplicitPinnaclePresence6"
      ],
      "label": "While a Unique Enemy is in your Presence, #% of Physical Damage Converted to Chaos Damage"
+    },
+    {
+     "ids": [
+      "ConvertPhysicalToChaosEldritchImplicit1",
+      "ConvertPhysicalToChaosEldritchImplicit2",
+      "ConvertPhysicalToChaosEldritchImplicit3",
+      "ConvertPhysicalToChaosEldritchImplicit4",
+      "ConvertPhysicalToChaosEldritchImplicit5",
+      "ConvertPhysicalToChaosEldritchImplicit6"
+     ],
+     "label": "#% of Physical Damage Converted to Chaos Damage"
     },
     {
      "ids": [
@@ -11684,17 +11173,6 @@
     },
     {
      "ids": [
-      "FlatAccuracyPerFrenzyChargeEldritchImplicit1",
-      "FlatAccuracyPerFrenzyChargeEldritchImplicit2",
-      "FlatAccuracyPerFrenzyChargeEldritchImplicit3",
-      "FlatAccuracyPerFrenzyChargeEldritchImplicit4",
-      "FlatAccuracyPerFrenzyChargeEldritchImplicit5",
-      "FlatAccuracyPerFrenzyChargeEldritchImplicit6"
-     ],
-     "label": "+# to Accuracy Rating per Frenzy Charge"
-    },
-    {
-     "ids": [
       "FlatAccuracyPerFrenzyChargeEldritchImplicitUniquePresence2",
       "FlatAccuracyPerFrenzyChargeEldritchImplicitUniquePresence3",
       "FlatAccuracyPerFrenzyChargeEldritchImplicitUniquePresence4",
@@ -11706,6 +11184,17 @@
       "FlatAccuracyPerFrenzyChargeEldritchImplicitPinnaclePresence6"
      ],
      "label": "While a Unique Enemy is in your Presence, +# to Accuracy Rating per Frenzy Charge"
+    },
+    {
+     "ids": [
+      "FlatAccuracyPerFrenzyChargeEldritchImplicit1",
+      "FlatAccuracyPerFrenzyChargeEldritchImplicit2",
+      "FlatAccuracyPerFrenzyChargeEldritchImplicit3",
+      "FlatAccuracyPerFrenzyChargeEldritchImplicit4",
+      "FlatAccuracyPerFrenzyChargeEldritchImplicit5",
+      "FlatAccuracyPerFrenzyChargeEldritchImplicit6"
+     ],
+     "label": "+# to Accuracy Rating per Frenzy Charge"
     },
     {
      "ids": [
@@ -11869,17 +11358,6 @@
     },
     {
      "ids": [
-      "EvasionRatingHelmetBootsEldritchImplicit1",
-      "EvasionRatingHelmetBootsEldritchImplicit2",
-      "EvasionRatingHelmetBootsEldritchImplicit3",
-      "EvasionRatingHelmetBootsEldritchImplicit4",
-      "EvasionRatingHelmetBootsEldritchImplicit5",
-      "EvasionRatingHelmetBootsEldritchImplicit6"
-     ],
-     "label": "#% increased Evasion Rating from Equipped Helmet and Boots"
-    },
-    {
-     "ids": [
       "EvasionRatingHelmetBootsEldritchImplicitUniquePresence2",
       "EvasionRatingHelmetBootsEldritchImplicitUniquePresence3",
       "EvasionRatingHelmetBootsEldritchImplicitUniquePresence4",
@@ -11891,6 +11369,17 @@
       "EvasionRatingHelmetBootsEldritchImplicitPinnaclePresence6"
      ],
      "label": "While a Unique Enemy is in your Presence, #% increased Evasion Rating from Equipped Helmet and Boots"
+    },
+    {
+     "ids": [
+      "EvasionRatingHelmetBootsEldritchImplicit1",
+      "EvasionRatingHelmetBootsEldritchImplicit2",
+      "EvasionRatingHelmetBootsEldritchImplicit3",
+      "EvasionRatingHelmetBootsEldritchImplicit4",
+      "EvasionRatingHelmetBootsEldritchImplicit5",
+      "EvasionRatingHelmetBootsEldritchImplicit6"
+     ],
+     "label": "#% increased Evasion Rating from Equipped Helmet and Boots"
     },
     {
      "ids": [
@@ -12236,6 +11725,17 @@
     },
     {
      "ids": [
+      "MaximumColdResistanceEldritchImplicit1",
+      "MaximumColdResistanceEldritchImplicit2",
+      "MaximumColdResistanceEldritchImplicit3",
+      "MaximumColdResistanceEldritchImplicit4",
+      "MaximumColdResistanceEldritchImplicit5",
+      "MaximumColdResistanceEldritchImplicit6"
+     ],
+     "label": "+#% to maximum Cold Resistance"
+    },
+    {
+     "ids": [
       "MaximumColdResistanceEldritchImplicitUniquePresence2",
       "MaximumColdResistanceEldritchImplicitUniquePresence3",
       "MaximumColdResistanceEldritchImplicitUniquePresence4",
@@ -12247,17 +11747,6 @@
       "MaximumColdResistanceEldritchImplicitPinnaclePresence6"
      ],
      "label": "While a Unique Enemy is in your Presence, +#% to maximum Cold Resistance"
-    },
-    {
-     "ids": [
-      "MaximumColdResistanceEldritchImplicit1",
-      "MaximumColdResistanceEldritchImplicit2",
-      "MaximumColdResistanceEldritchImplicit3",
-      "MaximumColdResistanceEldritchImplicit4",
-      "MaximumColdResistanceEldritchImplicit5",
-      "MaximumColdResistanceEldritchImplicit6"
-     ],
-     "label": "+#% to maximum Cold Resistance"
     },
     {
      "ids": [
@@ -12792,19 +12281,19 @@
      "ids": [
       "DivergentDisplaySupportedByUnleashUnique__1"
      ],
-     "label": "^xCBA5F1Socketed Gems are Supported by Level 18 Unleash"
+     "label": "^xCBA5F1Socketed Gems are Supported by Level 18 Unleash Support"
     },
     {
      "ids": [
       "DivergentEnemiesKilledApplyImpaleDamageUnique__1"
      ],
-     "label": "^xCBA5F150% chance for Impales on Enemies you Kill to Reflect Damage to surrounding Enemies"
+     "label": "^xCBA5F150% chance for Impales on Enemies you Kill to Reflect Damage to Enemies within 2.2 metres"
     },
     {
      "ids": [
       "DivergentEnemiesKilledCountAsYoursUnique__1"
      ],
-     "label": "^xCBA5F1Nearby Enemies Killed by anyone count as being Killed by you instead"
+     "label": "^xCBA5F1Enemies within 4 metres Killed by anyone count as being Killed by you instead"
     },
     {
      "ids": [
@@ -12870,19 +12359,19 @@
      "ids": [
       "DivergentGrantsSpiderAspect1"
      ],
-     "label": "^xCBA5F1Grants Level 20 Aspect of the Spider Skill"
+     "label": "^xCBA5F1Grants Level 20 Aspect of the Spider"
     },
     {
      "ids": [
       "DivergentGrantsTouchOfGodUnique__1"
      ],
-     "label": "^xCBA5F1Grants Level 20 Doryani's Touch Skill"
+     "label": "^xCBA5F1Grants Level 20 Doryani's Touch"
     },
     {
      "ids": [
       "DivergentGraspFromBeyondTrapUnique_1"
      ],
-     "label": "^xCBA5F1Grants Level 20 Will of the Lords Skill"
+     "label": "^xCBA5F1Grants Level 20 Will of the Lords"
     },
     {
      "ids": [
@@ -12904,21 +12393,15 @@
     },
     {
      "ids": [
-      "DivergentItemActsAsConcentratedAOESupportUnique__1"
-     ],
-     "label": "^xCBA5F1Socketed Gems are Supported by Level 5 Concentrated Effect"
-    },
-    {
-     "ids": [
       "DivergentItemFoundRarityIncreaseUniqueGlovesStrDex2"
      ],
-     "label": "^xCBA5F140% increased Rarity of Items found"
+     "label": "^xCBA5F1+40% to Item Rarity"
     },
     {
      "ids": [
       "DivergentItemFoundRarityIncreaseUnique__7"
      ],
-     "label": "^xCBA5F115% increased Rarity of Items found"
+     "label": "^xCBA5F1+15% to Item Rarity"
     },
     {
      "ids": [
@@ -13098,19 +12581,19 @@
      "ids": [
       "DivergentSupportedByFasterCastUnique__1"
      ],
-     "label": "^xCBA5F1Socketed Gems are Supported by Level 18 Faster Casting"
+     "label": "^xCBA5F1Socketed Gems are Supported by Level 18 Faster Casting Support"
     },
     {
      "ids": [
       "DivergentSupportedByRageUnique__1__"
      ],
-     "label": "^xCBA5F1Socketed Gems are Supported by Level 30 Rage"
+     "label": "^xCBA5F1Socketed Gems are Supported by Level 30 Rage Support"
     },
     {
      "ids": [
       "DivergentSupportedByVileToxinsUnique__1"
      ],
-     "label": "^xCBA5F1Socketed Gems are Supported by Level 20 Vile Toxins"
+     "label": "^xCBA5F1Socketed Gems are Supported by Level 20 Vile Toxins Support"
     },
     {
      "ids": [

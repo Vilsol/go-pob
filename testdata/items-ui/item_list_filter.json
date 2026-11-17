@@ -96,6 +96,25 @@
           19,
           22
         ],
+        "filter": "[3.29] Default"
+      },
+      {
+        "items": [
+          15,
+          9,
+          18,
+          20,
+          7,
+          21,
+          17,
+          10,
+          14,
+          13,
+          16,
+          12,
+          19,
+          22
+        ],
         "filter": "Default"
       }
     ],
@@ -104,6 +123,7 @@
       "Current Loadout",
       "Unused Items",
       "[3.28] Default",
+      "[3.29] Default",
       "Default"
     ]
   },
@@ -1036,6 +1056,28 @@
       },
       {
         "items": [
+          199,
+          99,
+          93,
+          168,
+          16,
+          96,
+          20,
+          24,
+          49,
+          286,
+          313,
+          318,
+          332,
+          350,
+          362,
+          365,
+          384
+        ],
+        "filter": "Lvl 80-90"
+      },
+      {
+        "items": [
           59,
           58,
           185,
@@ -1074,6 +1116,63 @@
           386
         ],
         "filter": "Levelling 80-100"
+      },
+      {
+        "items": [
+          206,
+          59,
+          209,
+          58,
+          17,
+          203,
+          182,
+          195,
+          81,
+          184,
+          110,
+          57,
+          147,
+          227,
+          230,
+          232,
+          234,
+          236,
+          238
+        ],
+        "filter": "Tanky Items Graven`s Secret-belt  and United in Dreams-sword"
+      },
+      {
+        "items": [
+          59,
+          207,
+          209,
+          58,
+          17,
+          203,
+          168,
+          81,
+          82,
+          110,
+          147,
+          217,
+          227,
+          230,
+          235,
+          236,
+          265,
+          268,
+          269
+        ],
+        "filter": "Variation Gladiator Rainbow Stride boots"
+      },
+      {
+        "items": [
+          351,
+          352,
+          354,
+          355
+        ],
+        "filter": "Animate Guardian"
       },
       {
         "items": [
@@ -1354,85 +1453,6 @@
           503
         ],
         "filter": "200M TT Total Tank Hybrid Life+Es Poison-HoA (Low budget)"
-      },
-      {
-        "items": [
-          199,
-          99,
-          93,
-          168,
-          16,
-          96,
-          20,
-          24,
-          49,
-          286,
-          313,
-          318,
-          332,
-          350,
-          362,
-          365,
-          384
-        ],
-        "filter": "Lvl 80-90"
-      },
-      {
-        "items": [
-          206,
-          59,
-          209,
-          58,
-          17,
-          203,
-          182,
-          195,
-          81,
-          184,
-          110,
-          57,
-          147,
-          227,
-          230,
-          232,
-          234,
-          236,
-          238
-        ],
-        "filter": "Tanky Items Graven`s Secret-belt  and United in Dreams-sword"
-      },
-      {
-        "items": [
-          59,
-          207,
-          209,
-          58,
-          17,
-          203,
-          168,
-          81,
-          82,
-          110,
-          147,
-          217,
-          227,
-          230,
-          235,
-          236,
-          265,
-          268,
-          269
-        ],
-        "filter": "Variation Gladiator Rainbow Stride boots"
-      },
-      {
-        "items": [
-          351,
-          352,
-          354,
-          355
-        ],
-        "filter": "Animate Guardian"
       }
     ],
     "filters": [
@@ -1440,18 +1460,18 @@
       "Current Loadout",
       "Unused Items",
       "Levelling Lvl 1-80",
+      "Lvl 80-90",
       "Levelling 80-100",
+      "Tanky Items Graven`s Secret-belt  and United in Dreams-sword",
+      "Variation Gladiator Rainbow Stride boots",
+      "Animate Guardian",
       "CI: Crit-HoA",
       "Hybrid Life+Es Poison-HoA without spectres",
       "250M Saqawal`s Nest Aspect of the Avian (Medium budget)",
       "600M Saqawal`s Nest Aspect of the Avian (U-High budget)",
       "1400M Bloodmagic U-Crit-HoA Saqawal`s Nest Aspect of the Avian (U-High budget)",
       "220M TT Total Tank Hybrid Movementspeed-HoA, cheap #3-flasks Mageblood (Low budget)",
-      "200M TT Total Tank Hybrid Life+Es Poison-HoA (Low budget)",
-      "Lvl 80-90",
-      "Tanky Items Graven`s Secret-belt  and United in Dreams-sword",
-      "Variation Gladiator Rainbow Stride boots",
-      "Animate Guardian"
+      "200M TT Total Tank Hybrid Life+Es Poison-HoA (Low budget)"
     ]
   },
   "0028-occultist-forbidden-rite-of-soul-sacrifice.xml": {
@@ -1542,6 +1562,34 @@
           22,
           23
         ],
+        "filter": "[3.29] Default"
+      },
+      {
+        "items": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
         "filter": "Default"
       }
     ],
@@ -1549,6 +1597,7 @@
       "Any Loadout",
       "Current Loadout",
       "Unused Items",
+      "[3.29] Default",
       "Default"
     ]
   },
@@ -1717,6 +1766,26 @@
           14,
           15
         ],
+        "filter": "[3.29] Default"
+      },
+      {
+        "items": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
         "filter": "Default"
       }
     ],
@@ -1724,6 +1793,7 @@
       "Any Loadout",
       "Current Loadout",
       "Unused Items",
+      "[3.29] Default",
       "Default"
     ]
   },

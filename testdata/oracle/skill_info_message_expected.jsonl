@@ -192,7 +192,7 @@
 {"file":"0192-elementalist-wintertide-brand-7.xml","info":"Average Damage for 3 attached Brands","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0193-occultist-lightning-tendrils.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0194-juggernaut-boneshatter-of-complex-trauma-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
-{"file":"0195-elementalist-kinetic-rain-of-impact.xml","info":"2 Sacred Wisps using Kinetic Rain of Impact","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0195-elementalist-kinetic-rain-of-impact.xml","info":"2 Sacred Wisps using Kinetic Rain of Impact (2 summoned per trigger)","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0196-slayer-whirling-blades.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0197-juggernaut-static-strike-of-gathering-lightning.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0198-hierophant-storm-burst.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
@@ -267,7 +267,7 @@
 {"file":"0267-chieftain-treeskill.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0268-juggernaut-boneshatter-of-complex-trauma-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0269-juggernaut-determination.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
-{"file":"0270-warden-elemental-hit-of-the-spectrum.xml","info":"2 Sacred Wisps using Elemental Hit of the Spectrum","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0270-warden-elemental-hit-of-the-spectrum.xml","info":"2 Sacred Wisps using Elemental Hit of the Spectrum (2 summoned per trigger)","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0271-occultist-doom-blast.xml","info":"Doom Blast triggering Hex: Temporal Chains","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0272-juggernaut-boneshatter-of-complex-trauma-4.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0273-chieftain-punishment.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
@@ -338,7 +338,7 @@
 {"file":"0338-occultist-lightning-tendrils-of-escalation-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0339-reliquarian-shield-crush-of-the-chieftain-2.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0340-hierophant-spark-of-the-nova-3.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
-{"file":"0341-necromancer-kinetic-blast-of-clustering.xml","info":"2 Sacred Wisps using Kinetic Blast of Clustering","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0341-necromancer-kinetic-blast-of-clustering.xml","info":"2 Sacred Wisps using Kinetic Blast of Clustering (2 summoned per trigger)","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0342-luminary-animate-guardian.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0343-hierophant-arc-of-oscillating.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0344-assassin-icicle-mine-of-fanning.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
@@ -387,7 +387,7 @@
 {"file":"0387-reliquarian-storm-burst-of-repulsion.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0388-luminary-flame-link.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0389-necromancer-triggered-summon-phantasm.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
-{"file":"0390-deadeye-kinetic-blast.xml","info":"2 Sacred Wisps using Kinetic Blast","info2":"","minionInfo":"","minionInfo2":""}
+{"file":"0390-deadeye-kinetic-blast.xml","info":"2 Sacred Wisps using Kinetic Blast (2 summoned per trigger)","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0391-chieftain-shield-crush-of-the-chieftain.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0392-inquisitor-righteous-fire.xml","info":"","info2":"","minionInfo":"","minionInfo2":""}
 {"file":"0393-elementalist-reap.xml","info":"Poet's Pen's Trigger: Kinetic Bolt","info2":"","minionInfo":"","minionInfo2":""}

@@ -61,10 +61,10 @@
       }],
     "type":"list",
     "valueTooltips":{
-      "Arakaali":"^8Soul of Arakaali\n^610% reduced Damage taken from Damage Over Time\n\n^8Maligaro the Mutilator\n^620% increased Recovery rate of Life and Energy Shield if you've stopped taking Damage Over Time Recently\n\n^8Armala, the Widow\n^6Debuffs on you expire 20% faster\n\n^8Drought-Maddened Rhoa\n^6+40% Chaos Resistance against Damage Over Time",
-      "Lunaris":"^8Soul of Lunaris\n^61% additional Physical Damage Reduction for each nearby Enemy, up to 8%\n1% increased Movement Speed for each nearby Enemy, up to 8%\n\n^8Captain Clayborne, The Accursed\n^610% chance to avoid Projectiles\n\n^8Fragment of Winter\n^66% reduced Elemental Damage taken if you have been Hit Recently\n\n^8Glace\n^6Avoid Projectiles that have Chained",
-      "Solaris":"^8Soul of Solaris\n^66% additional Physical Damage Reduction while there is only one nearby Enemy\n20% chance to take 50% less Area Damage from Hits\n\n^8Oak the Mighty\n^68% reduced Elemental Damage taken if you haven't been Hit Recently\n\n^8Kitava, The Destroyer\n^6Take no Extra Damage from Critical Strikes if you have taken a Critical Strike Recently\n\n^8Forest of Flames\n^650% chance to avoid Ailments from Critical Strikes",
-      "TheBrineKing":"^8Soul of the Brine King\n^6You cannot be Stunned if you've been Stunned or Blocked a Stunning Hit in the past 2 seconds\n\n^8Nassar, Lion of the Seas\n^630% increased Stun and Block Recovery\n\n^8Captain Tanner Lightfoot\n^6100% chance to Avoid being Frozen\n\n^8Shock and Horror\n^650% reduced Effect of Chill on you"
+      "Arakaali":"^8Soul of Arakaali\n^610% reduced Damage taken from Damage Over Time\n\n^8Thraxia\n^620% increased Recovery rate of Life and Energy Shield if you've stopped taking Damage Over Time Recently\n\n^8Enticer of Rot\n^6Debuffs on you expire 20% faster\n\n^8Armala, the Widow\n^6+40% Chaos Resistance against Damage Over Time",
+      "Lunaris":"^8Soul of Lunaris\n^61% additional Physical Damage Reduction for each Enemy within 6 metres, up to 8%\n1% increased Movement Speed for each Enemy within 6 metres, up to 8%\n\n^8Mutewind Leader\n^610% chance to avoid Projectiles\n\n^8Shock and Horror\n^66% reduced Elemental Damage taken if you have been Hit Recently\n\n^8Sebbert, Crescent's Point\n^6Avoid Projectiles that have Chained",
+      "Solaris":"^8Soul of Solaris\n^66% additional Physical Damage Reduction while there is only one Enemy within 6 metres\n20% chance to take 50% less Area Damage from Hits\n\n^8Forest of Flames\n^68% reduced Elemental Damage taken if you haven't been Hit Recently\n\n^8The Infernal King\n^6Take no Extra Damage from Critical Strikes if you have taken a Critical Strike Recently\n\n^8Jorus, Sky's Edge\n^650% chance to avoid Ailments from Critical Strikes",
+      "TheBrineKing":"^8Soul of the Brine King\n^6You cannot be Stunned if you've been Stunned or Blocked a Stunning Hit in the past 2 seconds\n\n^8Merveil, the Returned\n^630% increased Stun and Block Recovery\n\n^8Belcer, the Pirate Lord\n^6100% chance to Avoid being Frozen\n\n^8Nassar, Lion of the Seas\n^650% reduced Effect of Chill on you"
     },
     "var":"pantheonMajorGod"
   },{
@@ -101,7 +101,7 @@
     "type":"list",
     "valueTooltips":{
       "Abberath":"^8Soul of Abberath\n^660% less Duration of Ignite on You\n\n^8Mephod, the Earth Scorcher\n^6Unaffected by Burning Ground\n10% increased Movement Speed while on Burning Ground",
-      "Garukhan":"^8Soul of Garukhan\n^660% reduced Effect of Shock on you\n\n^8The Blacksmith\n^6Cannot be Blinded\nYou cannot be Maimed",
+      "Garukhan":"^8Soul of Garukhan\n^660% reduced Effect of Shock on you\n\n^8Stalker of the Endless Dunes\n^6Cannot be Blinded\nYou cannot be Maimed",
       "Gruthkul":"^8Soul of Gruthkul\n^61% additional Physical Damage Reduction for each Hit you've taken Recently up to a maximum of 5%\n\n^8Erebix, Light's Bane\n^6Enemies that have Hit you with an Attack Recently have 8% reduced Attack Speed",
       "Ralakesh":"^8Soul of Ralakesh\n^625% reduced Physical Damage over Time taken while moving\nMoving while Bleeding doesn't cause you to take extra Damage\n\n^8Drek, Apex Hunter\n^6Corrupted Blood cannot be inflicted on you if you have at least 5 Corrupted Blood Debuffs on you",
       "Ryslatha":"^8Soul of Ryslatha\n^6Life Flasks gain 3 Charges every 3 seconds if you haven't used a Life Flask Recently\n60% increased Life Recovery from Flasks used when on Low Life\n\n^8Gorulis, Will-Thief\n^6Enemies you've Hit Recently have 50% reduced Life Regeneration rate",
@@ -133,6 +133,12 @@
     "label":"Are you always on Full ^xE05030Life?",
     "type":"check",
     "var":"conditionFullLife"
+  },{
+    "ifStat":"MissingUnreservedLifePercent",
+    "label":"Missing unreserved Life % (override):",
+    "tooltip":"For recovery scaling per missing unreserved Life.\nBlank assumes full unreserved Life, or Petrified Blood's non-flask recovery limit:\n50% maximum Life (55% with the Low Life mastery), accounting for reservation.\nAn explicit value, including 0, overrides this assumption.\nDoes not change other Full/Low Life settings.",
+    "type":"countAllowZero",
+    "var":"missingUnreservedLifePercent"
   },{
     "dynamicTooltip":true,
     "ifCond":"LowLife",
@@ -792,6 +798,14 @@
     "type":"check",
     "var":"Disgorged"
   },{
+    "ifSkill":"Goreblossom",
+    "label":"Goreblossom:"
+  },{
+    "ifSkill":"Goreblossom",
+    "label":"# of Blooms nearby (if not maximum):",
+    "type":"count",
+    "var":"goreblossomBlooms"
+  },{
     "ifSkill":"Summon Greater Harbinger of Time",
     "label":"Greater Harbinger of Time:"
   },{
@@ -890,16 +904,16 @@
     "type":"count",
     "var":"OverloadedIntensity"
   },{
-    "ifSkill":["Destructive Link","Flame Link","Intuitive Link","Protective Link","Soul Link","Vampiric Link"],
+    "ifSkill":["Arcane Link","Destructive Link","Flame Link","Intuitive Link","Protective Link","Soul Link","Vampiric Link"],
     "label":"Link Skills:"
   },{
-    "ifSkill":["Destructive Link","Flame Link","Intuitive Link","Protective Link","Soul Link","Vampiric Link"],
+    "ifSkill":["Arcane Link","Destructive Link","Flame Link","Intuitive Link","Protective Link","Soul Link","Vampiric Link"],
     "label":"# of linked Targets:",
     "type":"count",
     "var":"multiplierLinkedTargets"
   },{
     "ifFlag":"Condition:HaveDamageableMinion",
-    "ifSkill":["Destructive Link","Flame Link","Intuitive Link","Protective Link","Soul Link","Vampiric Link"],
+    "ifSkill":["Arcane Link","Destructive Link","Flame Link","Intuitive Link","Protective Link","Soul Link","Vampiric Link"],
     "label":"Linked To Minion?",
     "type":"check",
     "var":"linkedToMinion"
@@ -1394,6 +1408,15 @@
     "label":"% Wave of Conviction duration expired:",
     "type":"count",
     "var":"multiplierWoCExpiredDuration"
+  },{
+    "ifSkill":"Witchhunter's Pyre",
+    "label":"Witchhunter's Pyre:"
+  },{
+    "ifSkill":"Witchhunter's Pyre",
+    "label":"# of burning debuffs on enemy:",
+    "tooltip":"Bonfires fire an additional projectile at a target for each burning debuff on it after the first.",
+    "type":"count",
+    "var":"witchhuntersPyreBurningDebuffs"
   },{
     "ifSkill":"Absolution",
     "includeTransfigured":true,
@@ -3134,6 +3157,11 @@
     "label":"Consumed 12 Steel Shards Recently?",
     "type":"check",
     "var":"conditionConsumed12SteelShardsRecently"
+  },{
+    "ifCond":"Consumed8SteelShardsRecently",
+    "label":"Consumed 8 Steel Shards Recently?",
+    "type":"check",
+    "var":"conditionConsumed8SteelShardsRecently"
   },{
     "ifCond":"GainedPowerChargeRecently",
     "label":"Gained a Power Charge Recently?",

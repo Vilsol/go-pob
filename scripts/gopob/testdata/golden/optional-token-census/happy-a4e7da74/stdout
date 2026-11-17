@@ -1,4 +1,4 @@
-pin keys 4218   with optionals 386   HARDCODED HERE 16
+pin keys 4293   with optionals 392   HARDCODED HERE 17
 
   ours has literally: ^chaos skills [hd][ae][va][el] a
   pin  pattern      : ^chaos skills [hd][ae][va][el] a? ?
@@ -47,4 +47,7 @@ pin keys 4218   with optionals 386   HARDCODED HERE 16
 
   ours has literally: while affected by no flasks
   pin  pattern      : while affected by no flasks?
+
+  ours has literally: while blinded
+  pin  pattern      : while blinde?d?
 

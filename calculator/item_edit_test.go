@@ -276,12 +276,12 @@ func TestEditItemVariantGroups(t *testing.T) {
 	}
 	info, _ := DisplayItem(text)
 	vg := info.VariantGroups
-	if vg == nil || len(vg.Groups) != 3 || vg.Groups[0].Selected != 1 || vg.Groups[1].Selected != 4 || vg.Groups[2].Selected != 9 {
+	if vg == nil || len(vg.Groups) != 4 || vg.Groups[0].Selected != 13 || vg.Groups[1].Selected != 1 || vg.Groups[2].Selected != 4 || vg.Groups[3].Selected != 5 {
 		t.Fatalf("groups %+v", vg)
 	}
-	out, _ := mustEdit(t, text, ItemEdit{Kind: "variantGroup", Index: 1, Value: 3})
+	out, _ := mustEdit(t, text, ItemEdit{Kind: "variantGroup", Index: 2, Value: 3})
 	item := ParseItem(out)
-	if item.VariantGroupSelections[1] != 3 || !strings.Contains(out, "Selected Variant Group: 1=3") {
+	if item.VariantGroupSelections[2] != 3 || !strings.Contains(out, "Selected Variant Group: 2=3") {
 		t.Fatalf("selections %v:\n%s", item.VariantGroupSelections, out)
 	}
 	var shown []string

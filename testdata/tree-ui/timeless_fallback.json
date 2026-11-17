@@ -1020,7 +1020,7 @@
     "type":5
   },{
     "build":"0010-elementalist-storm-burst-2.xml",
-    "list":"kalguur_notable_9, 1, 0, 0\nkalguur_notable_15, 3.511, 0, 0\nkalguur_notable_19, 0.882, 0, 0\nkalguur_notable_18, 1.429, 0, 0\nkalguur_notable_21, 1.077, 0, 0\nkalguur_notable_11, 1.705, 0, 0\nkalguur_notable_14, 0.98, 0, 0\nkalguur_notable_16, 3.511, 0, 0",
+    "list":"kalguur_notable_9, 0.953, 0, 0\nkalguur_notable_15, 3.488, 0, 0\nkalguur_notable_19, 0.893, 0, 0\nkalguur_notable_18, 1.423, 0, 0\nkalguur_notable_21, 1.123, 0, 0\nkalguur_notable_11, 1.607, 0, 0\nkalguur_notable_14, 0.953, 0, 0\nkalguur_notable_16, 3.488, 0, 0",
     "modes":[{
         "label":"Sort by Full DPS",
         "stat":"FullDPS"

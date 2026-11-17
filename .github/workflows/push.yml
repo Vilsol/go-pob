@@ -334,7 +334,7 @@ jobs:
 
       # both engines over the same builds; every output must be bit-identical
       - name: PoE1 corpus sample, TinyGo vs Go
-        run: node frontend/harness/engine_diff.mjs poe1 --sample 200 --jobs 2 testdata/corpus-3.29
+        run: node frontend/harness/engine_diff.mjs poe1 --sample 200 --jobs 2 testdata/corpus-3.30
 
       - name: PoE2 fixture builds, TinyGo vs Go
         run: node frontend/harness/engine_diff.mjs poe2 wasm2/exposition/testdata

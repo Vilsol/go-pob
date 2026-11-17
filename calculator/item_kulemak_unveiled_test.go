@@ -8,7 +8,7 @@ import (
 func TestCaneOfKulemakScalesUnveiledLines(t *testing.T) {
 	requireGameData(t, "3.30")
 	env := corpusEnvForLoadedData(t, "0012-occultist-unknown.xml")
-	for k, want := range map[string]float64{"TotalDotDPS": 2184602.4626516, "DurationMod": 0.9804} {
+	for k, want := range map[string]float64{"TotalDotDPS": 2243527.803802, "DurationMod": 0.969} {
 		if got := env.Player.Output[k]; !oracleClose(got, want, oracleDumpTolerance) {
 			t.Errorf("%s = %v, want %v (PoB)", k, got, want)
 		}

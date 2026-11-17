@@ -203,8 +203,8 @@ func TestGuardPickTakesTheOracleGuardFirst(t *testing.T) {
 // TestGuardPicksSkipBuffTypeNames pins the committed record against the AffectedBy<Name> ambiguity TestGenerateGuardPicks resolves.
 func TestGuardPicksSkipBuffTypeNames(t *testing.T) {
 	picks := loadGuardPicks(t)
-	if got := picks["2063-ladder-wizzardo1337_0658.wizicypangz.xml"]; got != "ImmortalCall" {
-		t.Errorf("2063 pinned to %q, want ImmortalCall — regenerate with TestGenerateGuardPicks", got)
+	if got := picks["14573-ladder-ripman1337_7167.HillaryLiedHarambeDied.xml"]; got != "MoltenShell" {
+		t.Errorf("14573 pinned to %q, want MoltenShell — regenerate with TestGenerateGuardPicks", got)
 	}
 }
 

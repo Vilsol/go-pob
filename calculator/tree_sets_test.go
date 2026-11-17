@@ -67,7 +67,7 @@ func TestTreeSpecsLabelsEachTree(t *testing.T) {
 	if len(rows) != 3 {
 		t.Fatalf("%d rows", len(rows))
 	}
-	want := []string{"Until Lab", "Lab 2", "White maps"}
+	want := []string{"[3.29] Until Lab", "[3.29] Lab 2", "[3.29] White maps"}
 	for i, r := range rows {
 		if r.Label != want[i] || r.ClassName != "Witch" || r.AscendClassName != "Elementalist" {
 			t.Errorf("row %d = %+v", i, r)

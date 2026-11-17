@@ -215,7 +215,7 @@ func TestPartyCursePickTakesTheOracleOrder(t *testing.T) {
 		t.Fatalf("unpinned walk: want Conductivity + Elemental Weakness (sorted names), got %v", got)
 	}
 	want := loadPairsPicks(t)["1106-luminary-lightning-tendrils-of-eccentricity.xml"][pairsPickPartyCurses]
-	if !slices.Equal(want, []string{"Conductivity", "Elemental Weakness"}) {
+	if !slices.Equal(want, []string{"Enfeeble", "Conductivity"}) {
 		t.Fatalf("1106 pinned to %q, want the oracle's CurseList order — regenerate with TestGeneratePairsPicks", want)
 	}
 	if got := cursed([]string{"Elemental Weakness", "Enfeeble"}); got["Conductivity"] || !got["Elemental Weakness"] || !got["Enfeeble"] {

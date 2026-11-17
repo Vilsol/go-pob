@@ -10,7 +10,7 @@ import (
 	"github.com/Vilsol/go-pob/utils"
 )
 
-var grantsSkillRe = regexp.MustCompile(`^Grants Level (\d+) (.+) Skill$`)
+var grantsSkillRe = regexp.MustCompile(`^Grants Level (\d+) (.+?)(?: Skill)?$`)
 
 // TestNodeSkillTooltips: every tree node whose line grants a skill.
 func TestNodeSkillTooltips(t *testing.T) {

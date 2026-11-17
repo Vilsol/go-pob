@@ -49,7 +49,7 @@
     "resistancePenalty":-60,
     "secondaryAscendClassId":11,
     "sockets":["13170:9","16218:4","21984:11","33631:5","36634:8","41263:1","48768:10","61419:3","6230:2","64583:7","7960:6"],
-    "treeVersion":"3_29"
+    "treeVersion":"3_30"
   },
   "second":{
     "ascendClassId":2,
@@ -101,7 +101,7 @@
     "resistancePenalty":-60,
     "secondaryAscendClassId":11,
     "sockets":["13170:9","16218:4","21984:11","33631:5","36634:8","41263:1","48768:10","61419:3","6230:2","64583:7","7960:6"],
-    "treeVersion":"3_29"
+    "treeVersion":"3_30"
   },
   "third":{
     "ascendClassId":2,
@@ -153,6 +153,6 @@
     "resistancePenalty":-60,
     "secondaryAscendClassId":11,
     "sockets":["13170:9","16218:4","21984:11","33631:5","36634:8","41263:1","48768:10","61419:3","6230:2","64583:7","7960:6"],
-    "treeVersion":"3_29"
+    "treeVersion":"3_30"
   }
 }

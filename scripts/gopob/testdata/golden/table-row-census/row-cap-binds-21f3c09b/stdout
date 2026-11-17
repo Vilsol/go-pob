@@ -1,14 +1,14 @@
-pin keys 4160   pin keys absent here 802
+pin keys 4234   pin keys absent here 877
 
  MISS   PIN  HAVE  FAMILY  (only families with >= 1 missing, and at least one row ALREADY ported -- that is the partial-port signal)
+    9    33    24  increases and reductions to
+                     - increases and reductions to # damage also apply to effect of auras from # skills at # of their value
+                     - increases and reductions to effect of flasks applied to you also applies to effect of arcane surge o
+                     - increases and reductions to light radius also apply to life regeneration rate at # value
     8    20    12  trigger level when you
                      - trigger level # # when you attack with a non vaal slam or strike skill near an enemy
                      - trigger level # # when you attack with this weapon
                      - trigger level # # when you block damage from a unique enemy
-    7    31    24  increases and reductions to
-                     - increases and reductions to # damage also apply to effect of auras from # skills at # of their value
-                     - increases and reductions to effect of flasks applied to you also applies to effect of arcane surge o
-                     - increases and reductions to minion cast speed also affects you
     7    11     4  while a unique enemy
                      - while a unique enemy is in your presence drops brittle ground while moving lasting # seconds
                      - while a unique enemy is in your presence drops sapped ground while moving lasting # seconds
@@ -17,10 +17,18 @@ pin keys 4160   pin keys absent here 802
                      - while a pinnacle atlas boss is in your presence drops brittle ground while moving lasting # seconds
                      - while a pinnacle atlas boss is in your presence drops sapped ground while moving lasting # seconds
                      - while a pinnacle atlas boss is in your presence drops scorched ground while moving lasting # seconds
+    6     7     1  projectiles deal increased damage
+                     - projectiles deal # increased damage with hits and ailments for each enemy pierced
+                     - projectiles deal # increased damage with hits and ailments for each remaining chain
+                     - projectiles deal # increased damage with hits and ailments for each remaining chain up to #
     5     9     4  attacks with this weapon
                      - attacks with this weapon have added fire damage equal to # of player s maximum life
                      - attacks with this weapon have added maximum lightning damage equal to # of player s maximum energy s
                      - attacks with this weapon have added maximum lightning damage equal to # of your energy shield
+    5     8     3  hits have chance to
+                     - hits have # chance to ignore enemy monster physical damage reduction
+                     - hits have # chance to ignore enemy physical damage reduction while you have sacrificial zeal
+                     - hits have # chance to treat enemy monster cold resistance values as inverted
     4    10     6  while you have at
                      - while you have at least # ghastly eye jewels socketed unholy might you grant also causes target s da
                      - while you have at least # hypnotic eye jewels socketed arcane surge also grants # of damage taken re
@@ -29,10 +37,6 @@ pin keys 4160   pin keys absent here 802
                      - action speed cannot be modified to below # base value
                      - action speed cannot be modified to below base value if you ve cast # in the past # seconds
                      - action speed cannot be modified to below base value while ignited
-    4     5     1  projectiles deal increased damage
-                     - projectiles deal # increased damage with hits and ailments for each enemy pierced
-                     - projectiles deal # increased damage with hits and ailments for each remaining chain
-                     - projectiles deal # increased damage with hits and ailments for each time they have chained
     4     5     1  prevent of suppressed spell
                      - prevent # of suppressed spell damage if you have not suppressed spell damage recently
                      - prevent # of suppressed spell damage per bark below maximum
@@ -65,15 +69,19 @@ pin keys 4160   pin keys absent here 802
                      - you have vaal pact while all socketed gems are red
                      - you have vaal pact while at maximum endurance charges
                      - you have vaal pact while focussed
+    3     4     1  skills fire an additional
+                     - skills fire an additional projectile if # # items are equipped
+                     - skills fire an additional projectile if you ve been hit recently
+                     - skills fire an additional projectile if you ve used a movement skill recently
     2     5     3  you can apply an
                      - you can apply an additional curse if # # items are equipped
                      - you can apply an additional curse while at maximum power charges
     2     5     3  take no extra damage
                      - take no extra damage from critical strikes if energy shield recharge started recently
                      - take no extra damage from critical strikes if you ve cast # in the past # seconds
-    2     5     3  hits have chance to
-                     - hits have # chance to ignore enemy monster physical damage reduction
-                     - hits have # chance to ignore enemy physical damage reduction while you have sacrificial zeal
+    2     5     3  minions deal increased damage
+                     - minions deal # increased damage if you have warcried recently
+                     - minions deal # increased damage if you ve hit recently
     2     4     2  when you kill an
                      - when you kill an enemy affected by a non aura hex become immune to curses for remaining hex duration
                      - when you kill an enemy cursed with a non aura hex become immune to curses for remaining hex duration
@@ -113,6 +121,8 @@ pin keys 4160   pin keys absent here 802
     2     3     1  all damage from hits
                      - all damage from hits can poison
                      - all damage from hits with freezing pulse and eye of winter can poison
+    1    15    14  if you have used
+                     - if you have used an attack movement skill recently
     1     7     6  while you have a
                      - while you have a linked target
     1     7     6  auras from your skills
@@ -123,9 +133,3 @@ pin keys 4160   pin keys absent here 802
                      - recover # of energy shield when you kill an enemy during flask effect
     1     6     5  consecrated ground you create
                      - consecrated ground you create grants immuneity to elemental ailments to you and allies
-    1     6     5  chaos damage taken does
-                     - chaos damage taken does not bypass energy shield while not on low mana
-    1     5     4  trigger level on melee
-                     - trigger level # # on melee critical strike
-    1     5     4  nearby enemies have fire
-                     - nearby enemies have fire exposure while at maximum rage

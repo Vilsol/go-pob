@@ -1056,6 +1056,7 @@ export declare namespace calculator {
     Unveiled: boolean;
     Disabled: boolean;
     Order?: number;
+    RangeFromValue: boolean;
     ModID: string;
     NewModID: string;
     ModGroup: string;

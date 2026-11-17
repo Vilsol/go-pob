@@ -80,7 +80,7 @@ func TestModBrowserFuzzy(t *testing.T) {
 // TestModBrowserSources: ConfigModBrowser.lua:153-250 (#10168): tree and mastery lines are listed, and a line's tooltip names its sources.
 func TestModBrowserSources(t *testing.T) {
 	for line, want := range map[string][]string{
-		"Action Speed cannot be modified to below Base Value": {"Ascendancy Normal Node", "Ascendancy Notable Node", "Item mod"},
+		"Action Speed cannot be modified to below Base Value": {"Ascendancy Notable Node", "Item mod"},
 		"All Damage with Maces and Sceptres inflicts Chill":   {"Mastery Node"},
 		"2% additional Physical Damage Reduction":             {"Crafted mod", "Item mod"},
 	} {

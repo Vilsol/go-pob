@@ -90,64 +90,64 @@ func assertLineOrder(t *testing.T, what string, got, want []string) {
 
 // TestSortCraftedModLinesMatchesThePin pins Item.lua:1433-1435 on corpus items.
 func TestSortCraftedModLinesMatchesThePin(t *testing.T) {
-	t.Run("Militant Faith: a line with no ItemExclusive row sinks last", func(t *testing.T) {
+	t.Run("Militant Faith: without a modifier header the lines keep their order", func(t *testing.T) {
 		item := ParseItem(militantFaithDominusRaw)
 		if !item.AdvancedCopy {
 			t.Fatal("REFUSING: fixture is not advanced-copy; the sort cannot run")
 		}
 		assertLineOrder(t, "Militant Faith", explicitLines(item), []string{
-			"Passives in radius are Conquered by the Templars",
-			"Regenerate 0.6 Mana per Second per 10 Devotion",
-			"1% increased effect of Non-Curse Auras per 10 Devotion",
-			"Historic",
 			"Carved to glorify (2000-10000) new faithful converted by High Templar Dominus",
+			"Passives in radius are Conquered by the Templars",
+			"Historic",
+			"1% increased effect of Non-Curse Auras per 10 Devotion",
+			"Regenerate 0.6 Mana per Second per 10 Devotion",
 		})
 		jewel, ok := itemConqueredBy(item)
 		if !ok {
 			t.Fatal("no conqueredBy JewelData on the item")
 		}
-		if jewel.ID != 6000 {
-			t.Errorf("seed = %d, want 6000 (id5's 0.5 after the sort; 9440 is the inline 0.93)", jewel.ID)
+		if jewel.ID != 9440 {
+			t.Errorf("seed = %d, want 9440 (the inline 0.93)", jewel.ID)
 		}
 	})
 
-	t.Run("Kaom's Roots: movement speed sinks, the Life roll moves with it", func(t *testing.T) {
+	t.Run("Kaom's Roots: without a modifier header movement speed stays first", func(t *testing.T) {
 		item := ParseItem(kaomsRootsRaw)
 		assertLineOrder(t, "Kaom's Roots", explicitLines(item), []string{
+			"+25% movement speed",
 			"Has no Sockets",
 			"+(120-150) to maximum Life",
 			"+(150-200) to maximum Life",
 			"Cannot be Knocked Back",
 			"Action Speed cannot be modified to below Base Value",
 			"Unwavering Stance",
-			"+25% movement speed",
 		})
-		if got := sumItemMod(item, "Life", mod.TypeBase); got != 175 {
-			t.Errorf("Life BASE = %v, want 175", got)
+		if got := sumItemMod(item, "Life", mod.TypeBase); got != 186 {
+			t.Errorf("Life BASE = %v, want 186", got)
 		}
 	})
 
-	t.Run("Cane of Unravelling: the normalised fallback orders the fixed-value lines", func(t *testing.T) {
+	t.Run("Cane of Unravelling: without a modifier header the lines keep their order", func(t *testing.T) {
 		item := ParseItem(caneOfUnravellingRaw)
 		assertLineOrder(t, "Cane of Unravelling", explicitLines(item), []string{
 			"+(40-55)% to Chaos Damage over Time Multiplier",
 			"(60-80)% increased Chaos Damage",
 			"(20-30)% increased Chaos Damage",
-			"+2 to Level of all Chaos Spell Skill Gems",
 			"2% increased Cast Speed per Power Charge",
-			"Regenerate 2 Mana per Second per Power Charge",
+			"+2 to Level of all Chaos Spell Skill Gems",
 			"Gain a Power Charge after Spending a total of 200 Mana",
+			"Regenerate 2 Mana per Second per Power Charge",
 		})
 	})
 
-	t.Run("Chimeric Spire: fractured first, crafted and custom last, rare order untouched", func(t *testing.T) {
+	t.Run("Chimeric Spire: without a modifier header the lines keep their order", func(t *testing.T) {
 		item := ParseItem(chimericSpireRaw)
 		if !item.AdvancedCopy || item.Rarity != RarityRare {
 			t.Fatalf("REFUSING: fixture is advancedCopy=%v rarity=%s, want an advanced-copy RARE", item.AdvancedCopy, item.Rarity)
 		}
 		assertLineOrder(t, "Chimeric Spire", explicitLines(item), []string{
-			"+2 to Level of all Spell Skill Gems",
 			"Intangibility: 19%",
+			"+2 to Level of all Spell Skill Gems",
 			"+4 to Level of all Chaos Spell Skill Gems",
 			"199% increased Spell Damage",
 			"+64% to Chaos Damage over Time Multiplier",
@@ -156,11 +156,13 @@ func TestSortCraftedModLinesMatchesThePin(t *testing.T) {
 		})
 	})
 
-	t.Run("Militant Faith, all variants: 21 lines with ties keep source order", func(t *testing.T) {
+	t.Run("Militant Faith, all variants: without a modifier header 21 lines keep source order", func(t *testing.T) {
 		item := ParseItem(militantFaithAllVariantsRaw)
 		assertLineOrder(t, "Militant Faith (variants)", explicitLines(item), []string{
+			"Carved to glorify (2000-10000) new faithful converted by High Templar Avarius",
+			"Carved to glorify (2000-10000) new faithful converted by High Templar Dominus",
+			"Carved to glorify (2000-10000) new faithful converted by High Templar Venarius",
 			"Carved to glorify (2000-10000) new faithful converted by High Templar Maxarius",
-			"Passives in radius are Conquered by the Templars",
 			"4% increased Area Damage per 10 Devotion",
 			"Channelling Skills deal 4% increased Damage per 10 Devotion",
 			"4% increased Elemental Damage per 10 Devotion",
@@ -176,23 +178,21 @@ func TestSortCraftedModLinesMatchesThePin(t *testing.T) {
 			"3% increased Defences from Equipped Shield per 10 Devotion",
 			"4% increased Brand Damage per 10 Devotion",
 			"4% increased Totem Damage per 10 Devotion",
+			"Passives in radius are Conquered by the Templars",
 			"Historic",
-			"Carved to glorify (2000-10000) new faithful converted by High Templar Avarius",
-			"Carved to glorify (2000-10000) new faithful converted by High Templar Dominus",
-			"Carved to glorify (2000-10000) new faithful converted by High Templar Venarius",
 		})
 	})
 
 	t.Run("the exact key wins over the normalised one", func(t *testing.T) {
-		item := ParseItem("Rarity: UNIQUE\nFixture\nTitan Greaves\nImplicits: 0\n{range:0.5}+(30-60) to Evasion Rating\n+25% movement speed\n")
+		item := ParseItem("Rarity: UNIQUE\nFixture\nTitan Greaves\nImplicits: 0\n{ Unique Modifier }\n{range:0.5}+(30-60) to Evasion Rating\n+25% movement speed\n")
 		var got *float64
 		for _, ml := range item.ExplicitModLines {
 			if ml.Line == "+(30-60) to Evasion Rating" {
 				got = ml.Order
 			}
 		}
-		if got == nil || *got != 1574 {
-			t.Errorf("Order = %v, want 1574 (the exact row; 1570 is the normalised one)", got)
+		if got == nil || *got != 1218 {
+			t.Errorf("Order = %v, want 1218 (the exact row; 1214 is the normalised one)", got)
 		}
 	})
 

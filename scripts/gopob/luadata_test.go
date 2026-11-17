@@ -373,12 +373,12 @@ func TestLuaDataScanAssignmentsMatchesCPython(t *testing.T) {
 		{"src/Data/Minions.lua", "minions", 64, "RaisedZombie", "Raised Zombie", 11, "ShamblingUndead", 1927},
 		{"src/Data/Spectres.lua", "minions", 268, "Metadata/Monsters/Axis/AxisCaster", "Blackguard Mage", 12,
 			"Metadata/Monsters/VaalMonsters/VaalOverseer", 7207},
-		{"src/Data/Skills/act_dex.lua", "skills", 198, "AlchemistsMark", "Alchemist's Mark", 8, "QuickstepHardMode", 18446},
-		{"src/Data/Skills/act_int.lua", "skills", 229, "Arc", "Arc", 8, "Zealotry", 21403},
+		{"src/Data/Skills/act_dex.lua", "skills", 198, "AlchemistsMark", "Alchemist's Mark", 8, "QuickstepHardMode", 18449},
+		{"src/Data/Skills/act_int.lua", "skills", 231, "Arc", "Arc", 8, "Zealotry", 21571},
 		{"src/Data/Skills/act_str.lua", "skills", 142, "Absolution", "Absolution", 8, "WarBanner", 13088},
 		{"src/Data/Skills/sup_dex.lua", "skills", 82, "SupportAddedColdDamage", "Added Cold Damage", 8,
 			"SupportWitheringTouch", 4991},
-		{"src/Data/Skills/other.lua", "skills", 166, "RepeatingShockwave", "Abberath's Fury", 8, "EnemyExplode", 6187},
+		{"src/Data/Skills/other.lua", "skills", 170, "RepeatingShockwave", "Abberath's Fury", 8, "EnemyExplode", 6350},
 	} {
 		t.Run(filepath.Base(tc.rel), func(t *testing.T) {
 			body, err := os.ReadFile(filepath.Join(pob, tc.rel))
@@ -413,7 +413,7 @@ func TestLuaDataReturnTableMatchesCPython(t *testing.T) {
 		first, last string
 		alsoHas     []string
 	}{
-		{"src/Data/Gems.lua", 822, "Metadata/Items/Gems/SkillGemFireball", "Metadata/Items/Gems/SkillGemPactOfLycia", nil},
+		{"src/Data/Gems.lua", 824, "Metadata/Items/Gems/SkillGemFireball", "Metadata/Items/Gems/SkillGemPactOfLycia", nil},
 		// 716 entries, two keys assigned twice: a Lua table keeps 714.
 		{"src/Data/SkillStatMap.lua", 714, "base_skill_effect_duration", "pact_empower_limitation_specifier_for_stat_description",
 			[]string{"mine_throwing_speed_+%_per_frenzy_charge", "triggered_by_kinetic_instability_support"}},

@@ -77,13 +77,13 @@ func TestMoonbendersWingTriggerConfig(t *testing.T) {
 // TestFoulbornUniqueItemThreshold: a {mutated} explicit line makes a unique foulborn.
 func TestFoulbornUniqueItemThreshold(t *testing.T) {
 	assertPlayerOutputs(t, "6151-ladder-SoloT1Witch_1235.AllFlameOfAT.xml",
-		map[string]float64{"AverageHit": 1073521.1653519, "TotalDPS": 16031249.402589})
+		map[string]float64{"AverageHit": 1059863.4139206, "TotalDPS": 15827293.647881})
 }
 
 // TestPenanceBrandOfDissipationCachedStages: the max-pulse stage count reads the brand's cached HitSpeed and Duration (CalcPerform.lua:2235-2240).
 func TestPenanceBrandOfDissipationCachedStages(t *testing.T) {
 	assertPlayerOutputs(t, "0408-inquisitor-penance-brand-of-dissipation.xml",
-		map[string]float64{"AverageHit": 26137873.501276, "AreaOfEffectRadius": 57})
+		map[string]float64{"AverageHit": 26360196.709345, "AreaOfEffectRadius": 57})
 }
 
 // TestItemExtraSupportIsFromItem: an item ExtraSupport's granted effect is flagged fromItem.
