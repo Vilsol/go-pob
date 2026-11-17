@@ -18920,7 +18920,7 @@ func crystallineMarshalCalculatorItemBase(v *calculator.ItemBase) any {
 
 	if crystallineMarshalCalculatorItemBaseShape.IsUndefined() {
 		crystallineMarshalCalculatorItemBaseShape = crystallineShape("calculator.ItemBase",
-			[]string{"Name", "Type", "SubType", "SocketLimit", "Req", "Armour", "Weapon", "Flask", "Tincture"},
+			[]string{"Name", "Type", "SubType", "SocketLimit", "Req", "Armour", "Weapon", "Flask", "Tincture", "Tags"},
 			func(v *calculator.ItemBase, entry *crystallineEntry, field int) any {
 				switch field {
 				case 0:
@@ -18950,6 +18950,41 @@ func crystallineMarshalCalculatorItemBase(v *calculator.ItemBase) any {
 				case 8:
 					return crystallineCached(entry, 8, v.Tincture, func() any {
 						return crystallineMarshalCalculatorItemBaseTincture(v.Tincture)
+					})
+				case 9:
+					return crystallineJSON(func(b []byte, ok *bool) []byte {
+						if entries0 := v.Tags; entries0 == nil {
+							b = append(b, "null"...)
+						} else {
+							b = append(b, '{')
+							first0 := true
+							for k0, v0 := range entries0 {
+								if !first0 {
+									b = append(b, ',')
+								}
+
+								first0 = false
+								b = crystallineAppendString(b, string(k0))
+								b = append(b, ':')
+								b = strconv.AppendBool(b, bool(v0))
+							}
+
+							b = append(b, '}')
+						}
+						return b
+					}, func() any {
+						return func() any {
+							if v.Tags == nil {
+								return nil
+							}
+
+							out := crystallineObjects.New()
+							for k, v := range v.Tags {
+								out.Set(string(k), bool(v))
+							}
+
+							return out
+						}()
 					})
 				}
 
@@ -19055,6 +19090,17 @@ func crystallineMarshalCalculatorItemBase(v *calculator.ItemBase) any {
 						}
 
 						v.Tincture = converted
+					})(value)
+				case 9:
+					(func(value js.Value) {
+						converted, err := crystallineToMapOfStringToBool(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.Tags = converted
 					})(value)
 				}
 			},
@@ -55726,7 +55772,7 @@ func crystallineToCalculatorGemDisplay(value js.Value) (calculator.GemDisplay, e
 	return out, nil
 }
 
-var crystallineKnownCalculatorItemBase = map[string]bool{"Name": true, "Type": true, "SubType": true, "SocketLimit": true, "Req": true, "Armour": true, "Weapon": true, "Flask": true, "Tincture": true}
+var crystallineKnownCalculatorItemBase = map[string]bool{"Name": true, "Type": true, "SubType": true, "SocketLimit": true, "Req": true, "Armour": true, "Weapon": true, "Flask": true, "Tincture": true, "Tags": true}
 
 func crystallineToCalculatorItemBase(value js.Value) (calculator.ItemBase, error) {
 	var out calculator.ItemBase
@@ -55836,6 +55882,15 @@ func crystallineToCalculatorItemBase(value js.Value) (calculator.ItemBase, error
 		}
 
 		out.Tincture = converted
+	}
+
+	if property := value.Get("Tags"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToMapOfStringToBool(property)
+		if err != nil {
+			return out, errors.New("calculator.ItemBase.Tags: " + err.Error())
+		}
+
+		out.Tags = converted
 	}
 
 	return out, nil

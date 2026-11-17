@@ -32,6 +32,7 @@ type characterData struct {
 	Equipment []importItemData `json:"equipment"`
 	Guardian  []importItemData `json:"guardian"`
 	Jewels    []importItemData `json:"jewels"`
+	Wickerman []importItemData `json:"wickerman"`
 	Passives  json.RawMessage  `json:"passives"`
 }
 
@@ -170,12 +171,13 @@ var importGemLookup = sync.OnceValue(func() importGemTables {
 	return t
 })
 
-//pob:src/Classes/ImportTab.lua:1493-1495
+//pob:src/Classes/ImportTab.lua:1497-1500
 var (
-	importRarityMap = map[int]string{0: "NORMAL", 1: "MAGIC", 2: "RARE", 3: "UNIQUE", 9: "RELIC", 10: "RELIC"}
+	importRarityMap = map[int]string{0: "NORMAL", 1: "MAGIC", 2: "RARE", 3: "UNIQUE", 9: "RELIC", 10: "RELIC", 15: "NORMAL"}
 	importSlotMap   = map[string]string{"Weapon": "Weapon 1", "Offhand": "Weapon 2", "Weapon2": "Weapon 1 Swap", "Offhand2": "Weapon 2 Swap",
 		"Helm": "Helmet", "BodyArmour": "Body Armour", "Gloves": "Gloves", "Boots": "Boots", "Amulet": "Amulet", "Ring": "Ring 1",
-		"Ring2": "Ring 2", "Ring3": "Ring 3", "Belt": "Belt", "BrequelGrafts": "Graft 1", "BrequelGrafts2": "Graft 2"}
+		"Ring2": "Ring 2", "Ring3": "Ring 3", "Belt": "Belt", "BrequelGrafts": "Graft 1", "BrequelGrafts2": "Graft 2",
+		"VisceraHead": "Head", "VisceraBody": "Body", "VisceraArm": "Arm", "VisceraLeg": "Leg"}
 )
 
 //pob:block:src/Modules/ItemTools.lua:86-95
@@ -660,8 +662,12 @@ func (t *importTab) importSocketedItems(item *importedItem, socketedItems []impo
 		}
 		socketGroup := itemSocketGroupList[groupID]
 		socketGroup.Gems = append(socketGroup.Gems, gemInstance)
+		//pob:block:src/Classes/ImportTab.lua:1867-1871
 		if socketedItem.BuiltInSupport != "" {
-			imbued := strings.Replace(socketedItem.BuiltInSupport, "Supported by Level 1 ", "", -1)
+			imbued := strings.Replace(importEscapeGGGString(socketedItem.BuiltInSupport), "Supported by Level 1 ", "", -1)
+			if gem, ok := findImbuedSupport(imbued); ok {
+				imbued = gem.name
+			}
 			socketGroup.ImbuedSupport = &imbued
 		}
 	}
@@ -688,6 +694,11 @@ func (t *importTab) importSocketedItems(item *importedItem, socketedItems []impo
 			}
 		}
 		if repGroup != nil {
+			//pob:block:src/Classes/ImportTab.lua:1897
+			repGroup.ImbuedSupport = nil
+			if repGroup.Slot != "" {
+				repGroup.ImbuedSupport = itemSocketGroup.ImbuedSupport
+			}
 			for gemIndex := range repGroup.Gems {
 				repGroup.Gems[gemIndex].Level = itemSocketGroup.Gems[gemIndex].Level
 				repGroup.Gems[gemIndex].Quality = itemSocketGroup.Gems[gemIndex].Quality
@@ -906,6 +917,10 @@ func importItemsAndSkills(build *pob.PathOfBuilding, charData *characterData, cl
 		}
 		t.assignGuardianItemSet(guardianSet)
 	}
+	//pob:block:src/Classes/ImportTab.lua:1426-1428
+	for _, itemData := range charData.Wickerman {
+		t.importItem(itemData, "", false, 0)
+	}
 	//pob:block:src/Classes/ImportTab.lua:1429-1465
 	if skillOrder != nil {
 		order := func(group pob.Skill) int {
@@ -968,4 +983,29 @@ func importItemsAndSkills(build *pob.PathOfBuilding, charData *characterData, cl
 	}
 	build.SetLevel(charData.Level)
 	return "Items and skills successfully imported."
+}
+
+var (
+	importGGGMarkupRe = regexp.MustCompile(`<[^>]+>\{([^}]+)\}`)
+	importGGGLinkRe   = regexp.MustCompile(`\[([^|\]]+)\]`)
+	importGGGAliasRe  = regexp.MustCompile(`\[[^|]+\|([^|]+)\]`)
+)
+
+//pob:src/Modules/Common.lua:1111-1117
+func importEscapeGGGString(text string) string {
+	text = importGGGMarkupRe.ReplaceAllString(text, "$1")
+	text = importGGGLinkRe.ReplaceAllString(text, "$1")
+	return importGGGAliasRe.ReplaceAllString(text, "$1")
+}
+
+// Resolve both saved gem names and import names, which may include "Support".
+//
+//pob:src/Classes/SkillsTab.lua:1103-1110
+func findImbuedSupport(name string) (importGem, bool) {
+	lowerName := strings.ToLower(name)
+	gem, ok := importGemLookup().forBaseName[lowerName+" support"]
+	if !ok {
+		gem, ok = importGemLookup().forBaseName[lowerName]
+	}
+	return gem, ok && raw.PoBSkills[gem.skillID].Support
 }

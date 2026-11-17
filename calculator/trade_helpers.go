@@ -187,7 +187,7 @@ func luaMatchFirst(re *regexp.Regexp, s string) (string, bool) {
 // findTradeIDOption is the trade site's option entry for a mod line, and its value when the entry has one: a number,
 // or an option id as the site wrote it.
 //
-//pob:src/Classes/TradeHelpers.lua:183-222
+//pob:src/Classes/TradeHelpers.lua:183-226
 func findTradeIDOption(modLine string, modType string) (string, any) {
 	// match stringify() behaviour and ignore casing
 	modLine = asciiLower(strings.ReplaceAll(modLine, "\n", " "))
@@ -196,7 +196,12 @@ func findTradeIDOption(modLine string, modType string) (string, any) {
 	for _, pat := range tradeTimelessPattern {
 		if m := pat.FindStringSubmatch(modLine); m != nil {
 			value, _ := luaToNumber(m[1])
-			return "explicit.pseudo_timeless_jewel_" + m[2], value
+			conqueror := m[2]
+			// 3.30 changed the conqueror name but didn't change the stat id
+			if conqueror == "mazcotl" {
+				conqueror = "ahuana"
+			}
+			return "explicit.pseudo_timeless_jewel_" + conqueror, value
 		}
 	}
 	if tradeStats() == nil {

@@ -139,6 +139,21 @@ func TestEditItemCatalyst(t *testing.T) {
 	}
 }
 
+// TestEditItemCatalystQualityWithoutCatalyst: ItemsTab.lua:676-685, 2106-2108: a quality saved without a catalyst is dropped, so picking one starts at 20.
+func TestEditItemCatalystQualityWithoutCatalyst(t *testing.T) {
+	initItemsTabData(t)
+	raw := corpusItemText(t, "0001-necromancer-unknown.xml", 445)
+	out, _ := mustEdit(t, raw, ItemEdit{Kind: "catalyst", Value: 8, Second: 15})
+	stray := strings.Replace(out, "Catalyst: "+catalystList[7]+"\n", "", 1)
+	if stray == out {
+		t.Fatalf("REFUSING: no catalyst line to strip:\n%s", out)
+	}
+	_, item := mustEdit(t, stray, ItemEdit{Kind: "catalyst", Value: 8})
+	if item.CatalystQuality == nil || *item.CatalystQuality != 20 {
+		t.Fatalf("catalyst quality %v, PoB 20", PlainItemText(stray))
+	}
+}
+
 // TestEditItemDisableAndRemove: ItemsTab.lua:2034-2047 and 2344-2371: a mod line toggles disabled; a rare's crafted line has Remove.
 func TestEditItemDisableAndRemove(t *testing.T) {
 	initItemsTabData(t)

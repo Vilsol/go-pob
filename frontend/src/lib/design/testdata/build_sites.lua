@@ -4,7 +4,7 @@ buildSites = {}
 assert(loadstring(list))()
 local links = {
   Maxroll = "https://maxroll.gg/poe/pob/abc123",
-  PoBCodes = "https://pob.codes/b/abc-def",
+  PoBCodes = { "https://pob.codes/b/abc-def", "https://pob.codes/b/abc-def?view=tree" },
   POBBin = "https://pobb.in/aBcD1234",
   PoeNinja = { "https://poe.ninja/pob/Zx9", "https://poe.ninja/poe1/pob/Zx9" },
   pastebin = "https://pastebin.com/Qw3rTy",

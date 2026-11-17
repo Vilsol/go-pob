@@ -97,3 +97,8 @@ func TestItemToolsAgainstPoB(t *testing.T) {
 		})
 	}
 }
+
+// TestSanitiseItemTextDropsZeroWidthSpace: Common.lua:318; the pin's sanitiseText gives "+6 to Maximum -Rage".
+func TestSanitiseItemTextDropsZeroWidthSpace(t *testing.T) {
+	testza.AssertEqual(t, "+6 to Maximum -Rage", SanitiseItemText("+6​ to Maximum –Rage"))
+}

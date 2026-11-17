@@ -88,6 +88,7 @@ func sanitiseText(text string) string {
 	text = sanitiseTags.ReplaceAllString(text, "")
 	for _, r := range [][2]string{
 		{"\u2010", "-"}, {"\u2011", "-"}, {"\u2012", "-"}, {"\u2013", "-"}, {"\u2014", "-"}, {"\u2015", "-"},
+		{"\u200b", ""},
 		{"\u2212", "-"}, {"\u00e4", "a"}, {"\u00f6", "o"},
 		{"\x96", "-"}, {"\x97", "-"}, {"\xe4", "a"}, {"\xf6", "o"},
 	} {

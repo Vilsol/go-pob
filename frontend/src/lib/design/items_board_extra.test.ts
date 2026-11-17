@@ -30,6 +30,20 @@ describe('ItemsBoard conditional slots', () => {
   });
 });
 
+describe('ItemsBoard Wickerman slots', () => {
+  // ItemsTab.lua:204-214
+  it('draws the Wickerman slots under their own header, apart from the other slots', async () => {
+    const { queryByRole, rerender, getByRole } = render(ItemsBoard, props(['Ring 3']));
+    expect(queryByRole('region', { name: 'Wickerman' })).toBeNull();
+    await rerender(props(['Ring 3', 'Head', 'Body', 'Arm', 'Leg']));
+    const wickerman = getByRole('region', { name: 'Wickerman' });
+    for (const slot of ['Head', 'Body', 'Arm', 'Leg']) expect(wickerman.querySelector(`[aria-label="${slot}: Empty"]`)).not.toBeNull();
+    const other = getByRole('region', { name: 'Other slots' });
+    expect(other.querySelector('[aria-label="Head: Empty"]')).toBeNull();
+    expect(other.querySelector('[aria-label="Ring 3: Empty"]')).not.toBeNull();
+  });
+});
+
 describe('ItemsBoard item names', () => {
   it('draws colour codes in a user-written name as colour, and leaves them out of the label', () => {
     const item = { name: '^xFF0000Red ^7Ring', base: 'Ruby Ring', rarity: 'rare' as const, sockets: '', implicits: [], explicits: [], flask: false, fits: [] };

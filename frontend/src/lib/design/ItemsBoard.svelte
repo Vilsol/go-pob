@@ -90,6 +90,9 @@
     socketed = {},
     gemtip
   }: Props = $props();
+  const WICKERMAN = ['Head', 'Body', 'Arm', 'Leg'];
+  const wickermanSlots = $derived(extra.filter((s) => WICKERMAN.includes(s)));
+  const otherSlots = $derived(extra.filter((s) => !WICKERMAN.includes(s)));
   let dropOver = $state<string | null>(null);
   const dropTarget = (slot: string): DropZone | undefined =>
     ondropitem && {
@@ -419,11 +422,20 @@
       {/if}
     </div>
   {/snippet}
-  {#if extra.length}
+  {#if otherSlots.length}
     <section aria-label="Other slots" class="flex w-217 flex-col gap-1.5 max-phone:w-full">
       <h2 class="caps">Other slots</h2>
       <div class="grid grid-cols-4 gap-2 max-phone:grid-cols-2">
-        {#each extra as slot (slot)}{@render smallSlot(slot, slot)}{/each}
+        {#each otherSlots as slot (slot)}{@render smallSlot(slot, slot)}{/each}
+      </div>
+    </section>
+  {/if}
+  {#if wickermanSlots.length}
+    <!-- ItemsTab.lua:204-214 -->
+    <section aria-label="Wickerman" class="flex w-217 flex-col gap-1.5 max-phone:w-full">
+      <h2 class="caps">Wickerman</h2>
+      <div class="grid grid-cols-4 gap-2 max-phone:grid-cols-2">
+        {#each wickermanSlots as slot (slot)}{@render smallSlot(slot, slot)}{/each}
       </div>
     </section>
   {/if}

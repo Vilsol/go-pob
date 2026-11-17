@@ -25,7 +25,7 @@ export const SITES: Site[] = [
     label: 'pob.codes',
     id: 'PoBCodes',
     match: /^https:\/\/pob\.codes\/b\/.+/,
-    regex: /pob\.codes\/b\/(.+)\s*$/,
+    regex: /pob\.codes\/b\/([^?\s]+)\S*\s*$/,
     download: 'api.pob.codes/$1/raw',
     link: 'https://pob.codes/b/',
     post: { url: 'https://api.pob.codes/pob/plain', fields: '', codeOut: 'https://pob.codes/b/' }

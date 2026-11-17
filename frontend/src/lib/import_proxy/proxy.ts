@@ -66,7 +66,7 @@ const upstreamError = (who: string, res: Response) =>
   text(res.status, `${who} answered ${res.status}${res.headers.get('cf-mitigated') ? ` (${res.headers.get('cf-mitigated')})` : ''}`);
 
 /* BuildSiteTools.lua:19-42 */
-const idPattern = (regex: RegExp) => new RegExp(`^(?:${/\((.+?)\)\\s\*\$$/.exec(regex.source)?.[1] ?? '(?!)'})$`);
+const idPattern = (regex: RegExp) => new RegExp(`^(?:${/\((.+?)\)(?:\\S\*)?\\s\*\$$/.exec(regex.source)?.[1] ?? '(?!)'})$`);
 const SAFE_ID = /^[\w-]{1,128}$/;
 /* Main.lua:69-70, BuildSiteTools.lua:93-94 */
 const NINJA_CHARACTER = 'overview/code';

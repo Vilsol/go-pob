@@ -832,6 +832,7 @@ export declare namespace calculator {
     Weapon?: calculator.ItemBaseWeapon;
     Flask?: calculator.ItemBaseFlask;
     Tincture?: calculator.ItemBaseTincture;
+    Tags?: Record<string, boolean>;
     IsWeaponType(): boolean;
     /** Releases the Go resources behind this wrapper. */
     release(): void;

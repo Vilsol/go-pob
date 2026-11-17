@@ -75,6 +75,9 @@ func itemValidForSlot(item *Item, slotName string, slotType string, weapon1 func
 		return false
 	case item.Type == slotType:
 		return true
+	//pob:block:src/Classes/ItemsTab.lua:2671-2674
+	case item.Type == "Viscera":
+		return item.Base.Tags["viscera_"+strings.ToLower(slotName[:1])+slotName[1:]]
 	case item.Type == "Tincture" && slotType == "Flask":
 		return true
 	case item.Type == "Jewel" && item.Base.SubType == "Abyss" && strings.Contains(slotName, "Abyssal Socket"):
@@ -128,6 +131,9 @@ func slotShown(build *pob.PathOfBuilding, s itemSlot, additionalRingSlot bool) b
 		return strings.Contains(string(data.LatestTreeVersion), "3_27")
 	case "Ring 3":
 		return additionalRingSlot
+	//pob:block:src/Classes/ItemsTab.lua:206-212
+	case "Head", "Body", "Arm", "Leg":
+		return strings.Contains(string(CalcTreeVersion(build)), "3_30")
 	}
 	return true
 }
@@ -539,7 +545,7 @@ func (m *MiscCalculator) ShownConditionalSlots() []string {
 	var out []string
 	for _, s := range orderedItemSlots {
 		switch s.name {
-		case "Ring 3", "Graft 1", "Graft 2":
+		case "Ring 3", "Graft 1", "Graft 2", "Head", "Body", "Arm", "Leg":
 			if slotShown(m.build, s, ring) {
 				out = append(out, s.name)
 			}

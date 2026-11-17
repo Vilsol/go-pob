@@ -37,6 +37,9 @@ func (env *Environment) socketGroupSourceLine(source string) (string, bool) {
 			return "", false
 		}
 		return "^7Source: " + colorNormal + *node.Name, true
+	//pob:block:src/Classes/SkillsTab.lua:1335-1337
+	case source == "Config":
+		return "^7Source: " + colorNormal + "Custom Modifiers", true
 	}
 	return "", false
 }

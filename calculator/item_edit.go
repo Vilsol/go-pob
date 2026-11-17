@@ -409,12 +409,18 @@ func EditItem(raw string, e ItemEdit) (string, error) {
 			kept = append(kept, l)
 		}
 		lines = kept
+		//pob:block:src/Classes/ItemsTab.lua:2106-2108
+		quality := item.CatalystQuality
+		if item.Catalyst == nil || *item.Catalyst <= 0 {
+			quality = nil
+		}
+		//pob:block:src/Classes/ItemsTab.lua:676-685
 		if e.Value > 0 && e.Value <= len(catalystList) {
 			q := e.Second
-			if q == 0 && item.CatalystQuality == nil {
+			if q == 0 && quality == nil {
 				q = 20
 			} else if q == 0 {
-				q = *item.CatalystQuality
+				q = *quality
 			}
 			at := itemHeaderEnd(lines, item)
 			lines = append(lines[:at], append([]string{"Catalyst: " + catalystList[e.Value-1], "CatalystQuality: " + strconv.Itoa(q)}, lines[at:]...)...)

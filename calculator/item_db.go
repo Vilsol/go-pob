@@ -139,8 +139,9 @@ func loadLeaguesAndTypes(items []*Item) ([]string, []string) {
 
 var leagueNameRe = regexp.MustCompile(` ?([A-Za-z0-9 ]+),?`)
 
-//pob:src/Classes/ItemDBControl.lua:42
-var ItemDBSlots = []string{"Any slot", "Weapon 1", "Weapon 2", "Helmet", "Body Armour", "Gloves", "Boots", "Amulet", "Ring", "Belt", "Jewel", "Flask", "Graft 1", "Graft 2"}
+//pob:src/Classes/ItemDBControl.lua:42-45
+var ItemDBSlots = []string{"Any slot", "Weapon 1", "Weapon 2", "Helmet", "Body Armour", "Gloves", "Boots", "Amulet", "Ring", "Belt", "Jewel", "Flask", "Graft 1", "Graft 2",
+	"Head", "Body", "Arm", "Leg"}
 
 //pob:block:src/Classes/ItemDBControl.lua:60-70,src/Classes/ItemDBControl.lua:63
 var (

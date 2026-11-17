@@ -281,6 +281,7 @@ var sanitiseReplacements = []struct{ from, to string }{
 	{"–", "-"},
 	{"—", "-"},
 	{"―", "-"},
+	{"\u200b", ""},
 	{"−", "-"},
 	{"ä", "a"},
 	{"ö", "o"},

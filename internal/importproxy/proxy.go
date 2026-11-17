@@ -139,7 +139,7 @@ func get(url string) request {
 	return request{method: http.MethodGet, url: url, headers: map[string]string{"User-Agent": USER_AGENT}}
 }
 
-var idCapture = regexp.MustCompile(`\((.+?)\)\\s\*\$$`)
+var idCapture = regexp.MustCompile(`\((.+?)\)(?:\\S\*)?\\s\*\$$`)
 
 func idPattern(source string) *regexp.Regexp {
 	inner := "[^\\x00-\\x{10FFFF}]"

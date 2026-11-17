@@ -33,7 +33,7 @@ var SITES = []Site{
 		Label:    "pob.codes",
 		ID:       "PoBCodes",
 		Match:    `^https:\/\/pob\.codes\/b\/.+`,
-		Regex:    `pob\.codes\/b\/(.+)\s*$`,
+		Regex:    `pob\.codes\/b\/([^?\s]+)\S*\s*$`,
 		Download: "api.pob.codes/$1/raw",
 		Link:     "https://pob.codes/b/",
 		Post:     &Post{URL: "https://api.pob.codes/pob/plain", Fields: "", CodeOut: "https://pob.codes/b/"},

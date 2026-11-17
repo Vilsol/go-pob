@@ -505,12 +505,20 @@ func (i *Item) parseRaw(raw string, rarity ItemRarity, highQuality bool) {
 		mode = "GAME"
 	}
 	l := 0
+	itemClass := ""
 	if l < len(i.rawLines) {
+		//pob:block:src/Classes/Item.lua:442-450
 		if strings.HasPrefix(i.rawLines[l], "Item Class:") {
+			itemClass = strings.TrimLeft(strings.TrimPrefix(i.rawLines[l], "Item Class:"), luaSpace)
 			l++
 		}
 		if l < len(i.rawLines) {
-			if m := rarityRe.FindStringSubmatch(i.rawLines[l]); m != nil {
+			m := rarityRe.FindStringSubmatch(i.rawLines[l])
+			if itemClass == "Viscera" && m == nil {
+				i.Rarity = RarityNormal
+				mode = "GAME"
+			}
+			if m != nil {
 				mode = "GAME"
 				if r := strings.ToUpper(m[1]); validRarities[r] {
 					i.Rarity = ItemRarity(r)
@@ -568,6 +576,9 @@ func (i *Item) parseRaw(raw string, rarity ItemRarity, highQuality bool) {
 		line := i.rawLines[l]
 
 		switch {
+		//pob:block:src/Classes/Item.lua:545-547
+		case itemClass == "Viscera" && (line == "Head" || line == "Torso" || line == "Upper Limb" || line == "Lower Limb" ||
+			line == "Take this to the Wickerman in a town or hideout to attach it."):
 		case line == "--------":
 			i.CheckSection = true
 		case line == "Corrupted":
@@ -1303,7 +1314,7 @@ const (
 	otherSlotNumPlaceholder = "{OtherSlotNum}"
 )
 
-//pob:src/Classes/Item.lua:2166-2182
+//pob:src/Classes/Item.lua:2195-2216
 func (i *Item) getPrimarySlot() string {
 	switch {
 	case i.Base != nil && i.Base.Weapon != nil:
@@ -1318,6 +1329,12 @@ func (i *Item) getPrimarySlot() string {
 		return "Flask 1"
 	case i.Type == "Graft":
 		return "Graft 1"
+	case i.Type == "Viscera":
+		for _, tag := range slices.Sorted(maps.Keys(i.Base.Tags)) {
+			if part, ok := strings.CutPrefix(tag, "viscera_"); ok {
+				return strings.ToUpper(part[:1]) + part[1:]
+			}
+		}
 	}
 	return i.Type
 }

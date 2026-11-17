@@ -64,6 +64,7 @@ type ItemBase struct {
 	Weapon      *ItemBaseWeapon
 	Flask       *ItemBaseFlask
 	Tincture    *ItemBaseTincture
+	Tags        map[string]bool
 }
 
 //pob:block:src/Export/Scripts/bases.lua:119-127
@@ -104,6 +105,7 @@ var itemClassTypes = map[string]string{
 	"Wands":                     "Wand",
 	"Fishing Rods":              "Fishing Rod",
 	"Tinctures":                 "Tincture",
+	"Viscera":                   "Viscera",
 }
 
 var itemClassSubTypes = map[string]string{
@@ -347,6 +349,11 @@ func buildItemBases() {
 		chargesByBaseID[c.BaseItemTypesKey] = c
 	}
 
+	tagByKey := make(map[int]string, len(poe.Tags))
+	for _, t := range poe.Tags {
+		tagByKey[t.Key] = t.ID
+	}
+
 	shieldByBaseKey := make(map[int]*poe.ShieldType, len(poe.ShieldTypes))
 	for _, s := range poe.ShieldTypes {
 		shieldByBaseKey[s.BaseItemTypesKey] = s
@@ -388,6 +395,15 @@ func buildItemBases() {
 			SubType:     itemClassSubTypes[class.Name],
 			SocketLimit: socketLimits[itemType],
 			Req:         ItemBaseReq{Level: baseReqLevel(b, weapon != nil || armour != nil, flask != nil, modByKey)},
+			Tags:        make(map[string]bool, len(b.TagsKeys)),
+		}
+		//pob:block:src/Export/Scripts/bases.lua:136-138
+		//
+		// the tags getBaseItemTags inherits from the BaseType are not read
+		for _, k := range b.TagsKeys {
+			if id, ok := tagByKey[k]; ok {
+				base.Tags[id] = true
+			}
 		}
 
 		if r := reqByBaseID[b.ID]; r != nil {

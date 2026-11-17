@@ -82,8 +82,15 @@ func buildOrderedItemSlots() []itemSlot {
 			}
 		}
 	}
+	//pob:block:src/Classes/ItemsTab.lua:210-214
+	for _, name := range wickermanSlotNames {
+		slots = append(slots, itemSlot{name: name})
+	}
 	return slots
 }
+
+//pob:block:src/Classes/ItemsTab.lua:210
+var wickermanSlotNames = []string{"Head", "Body", "Arm", "Leg"}
 
 //pob:block:src/Classes/ItemSlotControl.lua:41
 func slotNum(name string) int {
@@ -870,7 +877,9 @@ func mergeDB(dst *moddb.ModDB, src *moddb.ModDB) {
 
 //pob:block:src/Modules/CalcSetup.lua:923-957
 func updateItemCounts(env *Environment, item *Item, slotName string) {
-	if item.Type == "Jewel" || item.Type == "Flask" || item.Type == "Tincture" || item.Type == "Graft" {
+	//pob:block:src/Modules/CalcSetup.lua:1310-1311
+	if item.Type == "Jewel" || item.Type == "Flask" || item.Type == "Tincture" || item.Type == "Graft" ||
+		item.Type == "Viscera" {
 		return
 	}
 
