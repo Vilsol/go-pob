@@ -23,7 +23,7 @@
   {
     "type": "file",
     "url": "https://proxy.golang.org/github.com/!vilsol/go-pob-data/@v/v0.5.18-0.20261116221402-5ea6c648b7d5.zip",
-    "sha256": "96cc2fb90e34a178d3111f82f3cb7d760a61c580c64e9dc5d175e5a62c6c0aec",
+    "sha256": "d794f115bf2ae4a96f7e7dfc18b8e7d08da1acbf9a816bb4cd6917340848a24c",
     "dest": "goproxy/github.com/!vilsol/go-pob-data/@v",
     "dest-filename": "v0.5.18-0.20261116221402-5ea6c648b7d5.zip"
   },
