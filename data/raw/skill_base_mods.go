@@ -16,14 +16,13 @@ import "github.com/Vilsol/go-pob/mod"
 // buff inherits the skill's buffNotPlayer/buffMinions/buffAllies/allowTotemBuff config.
 //
 // Generated from PoB v2.18.1 (498 skills with baseMods, 988 mods) by
-// oracle/skill_base_mods.lua + oracle/skill_base_mods_emit.py; 981 mods are emitted,
-// 7 are not representable and are omitted:
+// oracle/skill_base_mods.lua + oracle/skill_base_mods_emit.py; 982 mods are emitted,
+// 6 are not representable and are omitted:
 //   - 3 string-valued skill() entries (triggerSource, corpseMonsterVariety) whose key has
 //     no string field on calculator.SkillData
 //   - 1 skill() entry whose key has no field on calculator.SkillData
 //     (requiresManaReservation), which utils.Set drops as an invalid key rather than storing
 //   - 1 mod.flags holds a tag table (upstream arity bug), so the mod has no tags and a nonsense flag set
-//   - 1 SkillType tag has no skillType (upstream typo resolved to nil)
 //   - 1 skill() entry whose key has no field on calculator.SkillData
 //     (chanceToTriggerCounterattackOnBlock), which utils.Set drops as an invalid key rather than storing
 //
@@ -2054,6 +2053,10 @@ var SkillBaseMods = map[string][]mod.Mod{
 		mod.NewFlag("dotIsCorruptingBlood", true).Source("Skill:SupportCorruptingCry"),
 		mod.NewFloat("Multiplier:CorruptingCryMaxStages", mod.TypeBase, 10).Source("Skill:SupportCorruptingCry"),
 		mod.NewFloat("Damage", mod.TypeMore, 100).KeywordFlag(mod.KeywordFlagPhysicalDot).Tag(mod.Multiplier("CorruptingCryStageAfterFirst")).Source("Skill:SupportCorruptingCry"),
+	},
+	// src/Data/Skills/sup_str.lua:1538
+	"SupportCruelty": {
+		mod.NewFlag("Cruelty", true).Tag(mod.SkillType("SummonsTotem", "Trapped", "RemoteMined").Neg(true)).Source("Skill:SupportCruelty"),
 	},
 	// src/Data/Skills/other.lua:4421
 	"SupportCursePillarTriggerCurses": {

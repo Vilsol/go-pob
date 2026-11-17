@@ -169,7 +169,7 @@ var timelessItemHeads = map[int]struct {
 	name, variants, line, conquered string
 	leaders                         [3]string
 }{
-	1: {"Glorious Vanity", "Doryani (Corrupted Soul)|Xibaqua (Divine Flesh)|Ahuana (Immortal Ambition)", "Bathed in the blood of %d sacrificed in the name of %s", "Vaal", [3]string{"Doryani", "Xibaqua", "Ahuana"}},
+	1: {"Glorious Vanity", "Doryani (Corrupted Soul)|Xibaqua (Divine Flesh)|Mazcotl (Immortal Ambition)", "Bathed in the blood of %d sacrificed in the name of %s", "Vaal", [3]string{"Doryani", "Xibaqua", "Mazcotl"}},
 	2: {"Lethal Pride", "Kaom (Strength of Blood)|Rakiata (Tempered by War)|Akoya (Chainbreaker)", "Commanded leadership over %d warriors under %s", "Karui", [3]string{"Kaom", "Rakiata", "Akoya"}},
 	3: {"Brutal Restraint", "Asenath (Dance with Death)|Nasima (Second Sight)|Balbala (The Traitor)", "Denoted service of %d dekhara in the akhara of %s", "Maraketh", [3]string{"Asenath", "Nasima", "Balbala"}},
 	5: {"Elegant Hubris", "Cadiro (Supreme Decadence)|Victario (Supreme Grandstanding)|Caspiro (Supreme Ostentation)", "Commissioned %d coins to commemorate %s", "Eternal Empire", [3]string{"Cadiro", "Victario", "Caspiro"}},

@@ -2179,6 +2179,19 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		skillModList.AddMod(mod.NewFloat("PhysicalMin", mod.TypeBase, math.Floor(actor.Output["ManaCost"]*multiplier)).Source("Sacrificial Zeal").Flag(mod.MFlagSpell))
 		skillModList.AddMod(mod.NewFloat("PhysicalMax", mod.TypeBase, math.Floor(actor.Output["ManaCost"]*multiplier)).Source("Sacrificial Zeal").Flag(mod.MFlagSpell))
 	}
+
+	//pob:block:src/Modules/CalcOffence.lua:1914-1924
+	if skillData.SacrificeLifePercent != nil {
+		var life float64
+		if skillFlags[SkillFlagTotem] {
+			life = actor.Output["TotemLife"]
+		} else {
+			life = actor.Output["LifeUnreserved"]
+		}
+		add := math.Floor(life * *skillData.SacrificeLifePercent / 100 * (skillData.SacrificeLifeAsChaos / 100))
+		skillModList.AddMod(mod.NewFloat("ChaosMin", mod.TypeBase, add).Source("Sacrifice Support"))
+		skillModList.AddMod(mod.NewFloat("ChaosMax", mod.TypeBase, add).Source("Sacrifice Support"))
+	}
 	runSkillFunc("preDamageFunc")
 
 	//pob:block:src/Modules/CalcOffence.lua:1928-1931

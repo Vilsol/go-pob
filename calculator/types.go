@@ -560,6 +560,8 @@ type SkillData struct {
 	AttachedBrandCount                      float64
 	TriggeredOnDeath                        bool
 	TriggeredByAutoexertion                 bool
+	SacrificeLifePercent                    *float64
+	SacrificeLifeAsChaos                    float64
 	TriggeredByDamageTaken                  float64
 	TriggeredWhileChannelling               bool
 	TriggeredByMeleeKill                    bool

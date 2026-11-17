@@ -37,7 +37,7 @@ var TimelessJewelTypes = []TimelessJewelType{
 
 //pob:block:src/Classes/TreeTab.lua:1220-1256
 var TimelessConquerorTypes = map[int][]string{
-	1: {"Any", "Doryani (Corrupted Soul)", "Xibaqua (Divine Flesh)", "Ahuana (Immortal Ambition)"},
+	1: {"Any", "Doryani (Corrupted Soul)", "Xibaqua (Divine Flesh)", "Mazcotl (Immortal Ambition)"},
 	2: {"Any", "Kaom (Strength of Blood)", "Rakiata (Tempered by War)", "Akoya (Chainbreaker)"},
 	3: {"Any", "Asenath (Dance with Death)", "Nasima (Second Sight)", "Balbala (The Traitor)"},
 	4: {"Any", "Avarius (Power of Purpose)", "Dominus (Inner Conviction)", "Maxarius (Transcendence)"},

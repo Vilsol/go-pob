@@ -2770,19 +2770,24 @@ func gemPrimaryColour(gemData *poe.SkillGem, bareGrantedEffect *poe.GrantedEffec
 	return raw2.PoBSkills[grantedEffect.ID].Color
 }
 
-//pob:src/Classes/SkillsTab.lua:1464-1475
+//pob:src/Classes/SkillsTab.lua:1478-1488
 func buildImbuedSupportBySlot(groups []pob.Skill) map[string][]*poe.GrantedEffect {
 	out := map[string][]*poe.GrantedEffect{}
 	for _, group := range groups {
 		if group.Slot == "" || group.ImbuedSupport == nil {
 			continue
 		}
-		gem, ok := gemLookup().gemForBaseName[strings.ToLower(*group.ImbuedSupport)+" support"]
+		//pob:block:src/Classes/SkillsTab.lua:1104-1110
+		lowerName := strings.ToLower(*group.ImbuedSupport)
+		gem, ok := gemLookup().gemForBaseName[lowerName+" support"]
+		if !ok {
+			gem, ok = gemLookup().gemForBaseName[lowerName]
+		}
 		if !ok {
 			continue
 		}
 		effects := raw2.GrantedEffectsForGem(gem)
-		if len(effects) == 0 {
+		if len(effects) == 0 || !raw2.PoBSkills[effects[0].ID].Support {
 			continue
 		}
 		kept := []*poe.GrantedEffect{effects[0]}

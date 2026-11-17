@@ -275,8 +275,9 @@ var (
 	skillTreeAlternateRe = regexp.MustCompile(`-([a-z]+-?[a-z]*)#`)
 )
 
-//pob:block:src/GameVersions.lua:229-261
+//pob:block:src/GameVersions.lua:239-273
 var poePlannerVersions = map[int]string{
+	55: "3_30", 54: "3_30_ruthless",
 	51: "3_29", 50: "3_29_ruthless", 47: "3_28", 46: "3_28_ruthless", 45: "3_28_alternate", 44: "3_28_ruthless_alternate",
 	43: "3_27", 42: "3_27_ruthless", 37: "3_26", 36: "3_26_ruthless", 35: "3_25_alternate", 34: "3_25_ruthless_alternate",
 	33: "3_25", 32: "3_25_ruthless", 31: "3_24", 30: "3_23_ruthless", 29: "3_23", 28: "3_22_ruthless", 27: "3_22",

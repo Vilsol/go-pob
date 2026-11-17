@@ -1257,6 +1257,8 @@ export declare namespace calculator {
     AttachedBrandCount: number;
     TriggeredOnDeath: boolean;
     TriggeredByAutoexertion: boolean;
+    SacrificeLifePercent?: number;
+    SacrificeLifeAsChaos: number;
     TriggeredByDamageTaken: number;
     TriggeredWhileChannelling: boolean;
     TriggeredByMeleeKill: boolean;

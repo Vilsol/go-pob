@@ -279,6 +279,25 @@ func sbmEmitTag(t map[string]any, skillTypes map[string]any, v *mcVocab) (string
 		return s, nil
 
 	case "SkillType":
+		if stl, ok := t["skillTypeList"].([]any); ok {
+			names := make([]string, 0, len(stl))
+			for _, st := range stl {
+				n, ok := gemsInt(st)
+				if !ok {
+					return "", mcUnrep("SkillType %s has no name in Data/Global.lua", oeStr(st))
+				}
+				name, ok := skillTypes[fmt.Sprintf("%d", n)]
+				if !ok || name == nil {
+					return "", mcUnrep("SkillType %s has no name in Data/Global.lua", oeStr(st))
+				}
+				names = append(names, mcGoStr(oeStr(name)))
+			}
+			s := "mod.SkillType(" + strings.Join(names, ", ") + ")"
+			if oeTruthy(t["neg"]) {
+				s += ".Neg(true)"
+			}
+			return s, nil
+		}
 		st, ok := t["skillType"]
 		if !ok {
 			return "", mcUnrep("SkillType tag has no skillType (upstream typo resolved to nil)")
