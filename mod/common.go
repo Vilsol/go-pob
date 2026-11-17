@@ -154,3 +154,9 @@ func MatchKeywordFlags(keywordFlags KeywordFlag, modKeywordFlags KeywordFlag) bo
 
 	return modKeywordFlags == 0 || keywordFlags&modKeywordFlags != 0
 }
+
+// ItemRequirement gates a granted skill on a count of equipped items of one influence.
+type ItemRequirement struct {
+	Multiplier string
+	Count      float64
+}

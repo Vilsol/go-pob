@@ -84,7 +84,7 @@ func calcsBuffLists(env *Environment, multipliersUsed map[string][]mod.Mod) {
 			combatList = append(combatList, luaD64(output[m.output])+" "+m.label)
 		}
 	}
-	if ms := env.Player.MainSkill; ms != nil && ms.BaseSkillModList != nil && ms.BaseSkillModList.Flag(nil, "Cruelty") {
+	if ms := env.Player.MainSkill; ms != nil && ms.BaseSkillModList != nil && ms.BaseSkillModList.Flag(ms.SkillCfg, "Cruelty") {
 		combatList = append(combatList, "Cruelty")
 	}
 	for _, f := range calcsCombatFlags {

@@ -43,7 +43,7 @@ var (
 	modNameCaseRe  = regexp.MustCompile(`([a-z0-9]:?)([A-Z])`)
 	modNameDigitRe = regexp.MustCompile(`([a-z])([0-9])`)
 	treeSourceRe   = regexp.MustCompile(`^Tree:(\d+)`)
-	tattooSourceRe = regexp.MustCompile(`^Tree:([[:alnum:]]+)`)
+	tattooSourceRe = regexp.MustCompile(`^Tree:(\w+)`)
 	itemSourceRe   = regexp.MustCompile(`^Item:(\d+):.+`)
 )
 
@@ -356,8 +356,14 @@ func (env *Environment) modSourceName(source string) (string, string, string, in
 				return sourceType, *node.Name, "", id
 			}
 		} else if m := tattooSourceRe.FindStringSubmatch(source); m != nil {
-			//pob:block:src/Classes/CalcBreakdownControl.lua:443-444
-			return sourceType, tattooIDMap()[m[1]], "", 0
+			//pob:block:src/Classes/CalcBreakdownControl.lua:443-452
+			sourceName := tattooIDMap()[m[1]]
+			if sourceName == "" {
+				if node, ok := data.LegionNodes[m[1]]; ok {
+					sourceName = node.DN
+				}
+			}
+			return sourceType, sourceName, "", 0
 		}
 	case "Skill":
 		if text, ok := raw2.SkillTextFor(strings.TrimPrefix(source, "Skill:")); ok {

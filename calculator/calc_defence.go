@@ -270,12 +270,12 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 
 	calcResistances(actor, modDB)
 
-	//pob:block:src/Modules/CalcDefence.lua:666-671
-	if environment.Minion != nil {
-		if pct := modDB.Sum(mod.TypeBase, nil, "ResistanceAddedToMinions"); pct > 0 {
+	//pob:block:src/Modules/CalcDefence.lua:668-675
+	if environment.Minion != nil && modDB.Sum(mod.TypeBase, nil, "ResistanceAddedToMinions") > 0 {
+		for _, value := range modDB.Tabulate(mod.TypeBase, nil, "ResistanceAddedToMinions") {
 			for _, elem := range resistTypeList {
 				environment.Minion.Actor.ModDB.AddMod(mod.NewFloat(elem+"Resist", mod.TypeBase,
-					math.Floor(actor.Output[elem+"Resist"]*pct/100)).Source("Player"))
+					math.Floor(actor.Output[elem+"Resist"]*value.Mod.Value().Float()/100)).Source(value.Mod.GetSource()))
 			}
 		}
 	}
@@ -403,6 +403,19 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 	if actor.Output["BlockEffect"] != 0 {
 		actor.Output["ShowBlockEffect"] = 1
 		actor.Output["DamageTakenOnBlock"] = 100 - actor.Output["BlockEffect"]
+	}
+
+	// Apply Light Radius increases to Life Regeneration, and Mana Regeneration increases to ES Recharge, at the stated percentage.
+	//pob:block:src/Modules/CalcDefence.lua:9,src/Modules/CalcDefence.lua:796-806
+	for _, conversion := range [][3]string{{"LightRadius", "LifeRegen", "LightRadiusAppliesToLifeRegen"}, {"ManaRegen", "EnergyShieldRecharge", "ManaRegenAppliesToEnergyShieldRecharge"}} {
+		multiplier := utils.OrF(modDB.Max(nil, conversion[2]), 0) / 100
+		if multiplier != 0 {
+			for _, value := range modDB.Tabulate(mod.TypeIncrease, nil, conversion[0]) {
+				m := value.Mod
+				modifiers := calclib.GetConvertedModTags(m, multiplier, false)
+				modDB.AddMod(mod.NewFloat(conversion[1], mod.TypeIncrease, math.Floor(m.Value().Float()*multiplier)).Source(m.GetSource()).Flag(m.Flags()).KeywordFlag(m.KeywordFlags()).Tag(modifiers...))
+			}
+		}
 	}
 
 	if modDB.Flag(nil, "ArmourAppliesToEnergyShieldRecharge") {
@@ -670,7 +683,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			}
 		}
 		actor.Output["EnergyShield"] = utils.Or(modDB.Override(nil, "EnergyShield"), max(utils.RoundTo(energyShield, 0), 0))
-		actor.Output["Armour"] = max(utils.RoundTo(armour, 0), 0)
+		actor.Output["Armour"] = utils.Or(modDB.Override(nil, "Armour"), max(utils.RoundTo(armour, 0), 0))
 		actor.Output["Evasion"] = max(utils.RoundTo(evasion, 0), 0)
 		actor.Output["MeleeEvasion"] = max(utils.RoundTo(evasion*calclib.Mod(modDB, nil, "MeleeEvasion"), 0), 0)
 		actor.Output["ProjectileEvasion"] = max(utils.RoundTo(evasion*calclib.Mod(modDB, nil, "ProjectileEvasion"), 0), 0)
@@ -834,6 +847,15 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			"Total: "+fmt.Sprint(actor.Output["SpellDodgeChance"]+actor.Output["SpellDodgeChanceOverCap"])+"%",
 		)
 	}
+
+	// Use the non-flask Petrified Blood recovery ceiling only as a default for this modifier.
+	//pob:block:src/Modules/CalcDefence.lua:1228-1233
+	missingLife := float64(0)
+	if petrified, _ := modDB.GetCondition("AffectedByPetrifiedBlood", nil, false); petrified && actor.Output["LifeUnreserved"] > 0 {
+		currentLife := min(actor.Output["LifeUnreserved"], actor.Output["Life"]*actor.Output["LowLifePercentage"]/100)
+		missingLife = 100 * (actor.Output["LifeUnreserved"] - currentLife) / actor.Output["LifeUnreserved"]
+	}
+	actor.Output["MissingUnreservedLifePercent"] = utils.Or(modDB.Override(nil, "MissingUnreservedLifePercent"), missingLife)
 
 	// Recovery modifiers
 	//pob:src/Modules/CalcDefence.lua:1236-1239
@@ -1125,9 +1147,11 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			}
 			actor.Breakdown.Data[key] = &Entry{Lines: lines}
 		}
-		//pob:block:src/Modules/CalcDefence.lua:1422-1447
+		//pob:block:src/Modules/CalcDefence.lua:1446-1473
 		for _, recoupType := range recoupTypeList {
-			if recoupType == "Life" && modDB.Flag(nil, "EnergyShieldRecoupInsteadOfLife") {
+			if recoupType == "Life" && modDB.Flag(nil, "CannotRecoupLife") {
+				actor.Output["LifeRecoup"] = 0
+			} else if recoupType == "Life" && modDB.Flag(nil, "EnergyShieldRecoupInsteadOfLife") {
 				actor.Output["LifeRecoup"] = 0
 				lifeRecoup := modDB.Sum(mod.TypeBase, nil, "LifeRecoup")
 				modDB.AddMod(mod.NewFloat("EnergyShieldRecoup", mod.TypeBase, lifeRecoup).Source("Life Recoup Conversion"))
@@ -1152,7 +1176,9 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			for di := range data.DamageType("").Values() {
 				names := &damageRecoupNames[ri][di]
 				recoup := modDB.Sum(mod.TypeBase, nil, names.recoup)
-				if recoupType == "Life" && modDB.Flag(nil, "EnergyShieldRecoupInsteadOfLife") {
+				if recoupType == "Life" && modDB.Flag(nil, "CannotRecoupLife") {
+					actor.Output[names.recoup] = 0
+				} else if recoupType == "Life" && modDB.Flag(nil, "EnergyShieldRecoupInsteadOfLife") {
 					actor.Output[names.recoup] = 0
 					modDB.AddMod(mod.NewFloat(names.energyShield, mod.TypeBase, recoup).Source("Life Recoup Conversion"))
 				} else {
@@ -1651,9 +1677,12 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			dotDestinationTotal := float64(0)
 			for _, destType := range data.DamageType("").Values() {
 				if destType != damageType {
-					dotShiftTable[destType] = modDB.Sum(mod.TypeBase, nil, string(damageType+"DamageTakenAs"+destType), utils.Ternary(isElemental[string(damageType)], string("ElementalDamageTakenAs"+destType), ""))
+					// Allow Physical DoT taken as Chaos without also converting damage from hits.
+					//pob:block:src/Modules/CalcDefence.lua:1886-1890
+					takenAs := modDB.Sum(mod.TypeBase, nil, string(damageType+"DamageTakenAs"+destType), utils.Ternary(isElemental[string(damageType)], string("ElementalDamageTakenAs"+destType), ""))
+					dotShiftTable[destType] = takenAs + modDB.Sum(mod.TypeBase, nil, string(damageType+"DamageTakenOverTimeAs"+destType), utils.Ternary(isElemental[string(damageType)], string("ElementalDamageTakenOverTimeAs"+destType), ""))
 					dotDestinationTotal = dotDestinationTotal + dotShiftTable[destType]
-					shiftTable[destType] = dotShiftTable[destType] +
+					shiftTable[destType] = takenAs +
 						modDB.Sum(mod.TypeBase, nil, string(damageType+"DamageFromHitsTakenAs"+destType), utils.Ternary(isElemental[string(damageType)], string("ElementalDamageFromHitsTakenAs"+destType), ""))
 					destTotal = destTotal + shiftTable[destType]
 				}
@@ -2564,12 +2593,12 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 					energyShield = min(energyShield+float64(DamageIn["EnergyShieldWhenHit"]*(gainMult-1)), gainMult*actor.Output["EnergyShieldRecoveryCap"])
 				}
 			}
-			//pob:block:src/Modules/CalcDefence.lua:2705-2710
-			if missingLifeSet && life > 0 {
+			//pob:block:src/Modules/CalcDefence.lua:2735-2740
+			if DamageIn["MissingLifeBeforeEnemyHit"] != 0 && life > 0 {
 				life = min(life+DamageIn["MissingLifeBeforeEnemyHit"]*(actor.Output["LifeUnreserved"]-life)/100,
 					actor.Output["LifeRecoverable"])
 			}
-			if missingManaSet && mana > 0 {
+			if DamageIn["MissingManaBeforeEnemyHit"] != 0 && mana > 0 {
 				mana = min(mana+DamageIn["MissingManaBeforeEnemyHit"]*(actor.Output["ManaUnreserved"]-mana)/100,
 					actor.Output["ManaUnreserved"])
 			}

@@ -9,7 +9,7 @@ import (
 // TestConquerorListCoversEveryPoBConqueror pins the parser table against PoB's.
 func TestConquerorListCoversEveryPoBConqueror(t *testing.T) {
 	want := map[string]struct{ id, typ string }{
-		"xibaqua": {"1", "vaal"}, "zerphi": {"2", "vaal"}, "doryani": {"3", "vaal"}, "ahuana": {"2_v2", "vaal"},
+		"xibaqua": {"1", "vaal"}, "zerphi": {"2", "vaal"}, "doryani": {"3", "vaal"}, "ahuana": {"2_v2", "vaal"}, "mazcotl": {"2_v2", "vaal"},
 		"deshret": {"1", "maraketh"}, "asenath": {"2", "maraketh"}, "nasima": {"3", "maraketh"}, "balbala": {"1_v2", "maraketh"},
 		"cadiro": {"1", "eternal"}, "victario": {"2", "eternal"}, "chitus": {"3", "eternal"}, "caspiro": {"3_v2", "eternal"},
 		"kaom": {"1", "karui"}, "rakiata": {"2", "karui"}, "kiloava": {"3", "karui"}, "akoya": {"3_v2", "karui"},

@@ -89,5 +89,5 @@ func TestPenanceBrandOfDissipationCachedStages(t *testing.T) {
 // TestItemExtraSupportIsFromItem: an item ExtraSupport's granted effect is flagged fromItem.
 func TestItemExtraSupportIsFromItem(t *testing.T) {
 	assertPlayerOutputs(t, "0751-deadeye-ghostly-artillery.xml",
-		map[string]float64{"IgniteDPS": 3307.889948136, "CombinedDPS": 368514.12765605})
+		map[string]float64{"IgniteDPS": 3675.9362142047, "CombinedDPS": 394462.00930757})
 }

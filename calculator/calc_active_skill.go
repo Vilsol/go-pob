@@ -333,7 +333,7 @@ func spectreList(env *Environment) []string {
 	return list
 }
 
-//pob:block:src/Modules/CalcActiveSkill.lua:586,src/Modules/CalcActiveSkill.lua:573
+//pob:block:src/Modules/CalcActiveSkill.lua:586,src/Modules/CalcActiveSkill.lua:592
 func gemPropertyMod(prefix string, key string, value float64, src mod.Mod) mod.Mod {
 	name := prefix + strings.ToUpper(key[:1]) + key[1:]
 	out := mod.NewFloat(name, mod.TypeBase, value)
@@ -814,14 +814,14 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	}
 	skillModList.AddMod(mod.NewFloat("GemLevel", mod.TypeBase, float64(gemLevel)).Source("Max Level"))
 	skillModList.AddMod(mod.NewFloat("GemQuality", mod.TypeBase, float64(gemQuality)).Source("Max Quality"))
-	//pob:block:src/Modules/CalcActiveSkill.lua:555-558
-	if activeEffect.SocketQuality != 0 {
+	//pob:block:src/Modules/CalcActiveSkill.lua:572-575
+	if activeEffect.SocketQuality > 0 {
 		skillModList.AddMod(mod.NewFloat("GemSocketQuality", mod.TypeBase,
 			float64(activeEffect.SocketQuality)).Source("Socket Quality"))
 	}
-	//pob:block:src/Modules/CalcActiveSkill.lua:571-574
+	//pob:block:src/Modules/CalcActiveSkill.lua:590-593
 	for _, gemProperty := range activeEffect.gemPropertyInfo {
-		skillModList.AddMod(gemPropertyMod("GemItem", gemProperty.Key, gemProperty.Value, gemProperty.mod))
+		skillModList.AddMod(gemPropertyMod("Gem"+gemProperty.sourceType(), gemProperty.Key, gemProperty.Value, gemProperty.mod))
 	}
 
 	// Add extra modifiers from other sources

@@ -176,8 +176,8 @@ func TestMiscCalculatorToggleUnequippedFlask(t *testing.T) {
 	}
 }
 
-// TestMiscCalculatorKeepsSocketMatches: by default a what-if grades gem colour matches against the items the build has now.
-func TestMiscCalculatorKeepsSocketMatches(t *testing.T) {
+// TestMiscCalculatorFollowsSocketMatches: a what-if grades gem colour matches against the replacement item (CalcSetup.lua:17-31).
+func TestMiscCalculatorFollowsSocketMatches(t *testing.T) {
 	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
 		t.Fatal(err)
 	}
@@ -187,7 +187,7 @@ func TestMiscCalculatorKeepsSocketMatches(t *testing.T) {
 	mutated := loadCorpusBuild(t, file)
 	equipText(mutated, "Body Armour", text)
 	recompute := (&Calculator{PoB: mutated}).BuildOutput(OutputModeMain)
-	if _, ok := outputsAgree(whatIf.Player.Output, recompute.Player.Output); ok {
-		t.Error("the what-if equals a recompute: socket matches followed the replaced item")
+	if diff, ok := outputsAgree(whatIf.Player.Output, recompute.Player.Output); !ok {
+		t.Errorf("the what-if differs from a recompute: socket matches did not follow the replaced item: %v", diff)
 	}
 }

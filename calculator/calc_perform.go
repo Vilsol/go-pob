@@ -287,7 +287,7 @@ func getFlaskInstantRecovery(env *Environment, item *Item) float64 {
 	return math.Min(100, instantPerc)
 }
 
-//pob:src/Modules/CalcPerform.lua:1652-1689
+//pob:src/Modules/CalcPerform.lua:1654-1692
 func calcFlaskRecovery(env *Environment, typ string, item *Item, effectInc, flaskDurInc, flaskTotalRateInc float64) []mod.Mod {
 	lType := strings.ToLower(typ)
 
@@ -302,8 +302,9 @@ func calcFlaskRecovery(env *Environment, typ string, item *Item, effectInc, flas
 	flaskRecInc := env.ModDB.Sum(mod.TypeIncrease, nil, "Flask"+typ+"Recovery")
 	flaskRecMore := env.ModDB.More(nil, "Flask"+typ+"Recovery")
 	flaskRateInc := env.ModDB.Sum(mod.TypeIncrease, nil, "Flask"+typ+"RecoveryRate")
+	flaskRateMore := env.ModDB.More(nil, "Flask"+typ+"RecoveryRate")
 	flaskTotal := base * (1 - instPerc/100) * (1 + flaskRecInc/100) * flaskRecMore * (1 + flaskDurInc/100)
-	flaskDur := dur * (1 + flaskDurInc/100) / (1 + flaskTotalRateInc/100) / (1 + flaskRateInc/100)
+	flaskDur := dur * (1 + flaskDurInc/100) / (1 + flaskTotalRateInc/100) / (1 + flaskRateInc/100) / flaskRateMore
 
 	lowLifeFlaskRecMore := env.ModDB.More(nil, "FlaskLifeRecoveryLowLife")
 	if lowLifeFlaskRecMore > 1 && lType == "life" {
@@ -339,6 +340,7 @@ func mergeFlaskRecovery(env *Environment, item *Item, typ, key string,
 
 //pob:src/Modules/CalcPerform.lua:1607-1611
 type flaskMinionState struct {
+	modDB                   *moddb.ModDB
 	effectIncNonPlayer      float64
 	effectIncMagicNonPlayer float64
 	flasksApply             bool
@@ -353,6 +355,7 @@ type flaskMinionState struct {
 
 func newFlaskMinionState(env *Environment) *flaskMinionState {
 	s := &flaskMinionState{
+		modDB:                   env.ModDB,
 		effectIncNonPlayer:      env.ModDB.Sum(mod.TypeIncrease, nil, "FlaskEffect"),
 		effectIncMagicNonPlayer: env.ModDB.Sum(mod.TypeIncrease, nil, "MagicUtilityFlaskEffect"),
 	}
@@ -385,8 +388,15 @@ func (s *flaskMinionState) eligible(item *Item) bool {
 		(s.nonUniqueApply && item.Rarity != RarityUnique && item.Rarity != RarityRelic)
 }
 
+//pob:block:src/Modules/CalcPerform.lua:1707
+var flaskTypeEffects = map[string]string{"Iron Flask": "IronFlaskEffect", "Granite Flask": "GraniteFlaskEffect", "Ruby Flask": "RubyFlaskEffect", "Sapphire Flask": "SapphireFlaskEffect", "Topaz Flask": "TopazFlaskEffect"}
+
 func (s *flaskMinionState) effectModNonPlayer(item *Item) float64 {
 	inc := s.effectIncNonPlayer + item.FlaskData["effectInc"]
+	//pob:block:src/Modules/CalcPerform.lua:1708-1711
+	if flaskTypeEffect, ok := flaskTypeEffects[item.BaseName]; ok {
+		inc += s.modDB.Sum(mod.TypeIncrease, nil, flaskTypeEffect)
+	}
 	isLife := item.Base != nil && item.Base.Flask != nil && item.Base.Flask.Life > 0
 	isMana := item.Base != nil && item.Base.Flask != nil && item.Base.Flask.Mana > 0
 	if item.Rarity == RarityMagic && !(isLife || isMana) {
@@ -726,12 +736,6 @@ func mirageSkillCopyEffect(newEnv *Environment, actor *Actor, built *ActiveSkill
 	newSkill.SocketGroupIndex = built.SocketGroupIndex
 	CalcBuildActiveSkillModList(newEnv, newSkill)
 
-	//pob:block:src/Modules/CalcActiveSkill.lua:555-557
-	if ae.SrcInstance != nil && ae.SocketQuality != 0 && newSkill.BaseSkillModList != nil {
-		newSkill.BaseSkillModList.AddMod(mod.NewFloat("GemSocketQuality", mod.TypeBase,
-			float64(ae.SocketQuality)).Source("Socket Quality"))
-	}
-
 	for i, skill := range newEnv.Player.ActiveSkillList {
 		if skill == built {
 			newEnv.Player.ActiveSkillList[i] = newSkill
@@ -923,7 +927,7 @@ func performSacredWisps(env *Environment) {
 		return
 	}
 
-	var wispsCastChance, wispsMaxCount float64
+	var wispsCastChance, wispsMaxCount, wispsSummoned float64
 	found := false
 	for _, candidate := range env.Player.ActiveSkillList {
 		if candidate.ActiveEffect == nil || candidate.ActiveEffect.GrantedEffect == nil {
@@ -935,6 +939,8 @@ func performSacredWisps(env *Environment) {
 		}
 		wispsCastChance = candidate.SkillModList.Sum(mod.TypeBase, skill.SkillCfg, "SacredWispsChance")
 		wispsMaxCount = candidate.SkillModList.Sum(mod.TypeBase, skill.SkillCfg, "SacredWispsMaxCount")
+		//pob:block:src/Modules/CalcMirages.lua:299
+		wispsSummoned = 2 + candidate.SkillModList.Sum(mod.TypeBase, candidate.SkillCfg, "SacredWispsSummoned")
 		found = true
 		break
 	}
@@ -969,11 +975,11 @@ func performSacredWisps(env *Environment) {
 	//pob:block:src/Modules/CalcMirages.lua:319
 	newSkill.SkillModList.AddMod(mod.NewFlag("HasNoCost", true).Source("Used by Sacred Wisps"))
 
-	//pob:block:src/Modules/CalcMirages.lua:304-307,src/Modules/CalcMirages.lua:317-323
+	//pob:block:src/Modules/CalcMirages.lua:304-308,src/Modules/CalcMirages.lua:321-323
 	skill.Mirage = &MirageResult{Name: newSkill.ActiveEffect.GrantedEffect.Name(), Count: wispsMaxCount, SkillPartName: newSkill.SkillPartName}
-	//pob:block:src/Modules/CalcMirages.lua:306-308
+	//pob:block:src/Modules/CalcMirages.lua:310-312
 	if skill.infoMessage == "" {
-		skill.infoMessage = luaNumber(wispsMaxCount) + " Sacred Wisps using " + newSkill.ActiveEffect.GrantedEffect.Name()
+		skill.infoMessage = luaNumber(wispsMaxCount) + " Sacred Wisps using " + newSkill.ActiveEffect.GrantedEffect.Name() + " (" + luaNumber(wispsSummoned) + " summoned per trigger)"
 	}
 
 	newSkill.Marked = true
@@ -1036,7 +1042,7 @@ func findTriggerSkill(env *Environment, skill *ActiveSkill, source *ActiveSkill,
 	return source, triggerRate
 }
 
-//pob:block:src/Modules/CalcTriggers.lua:83
+//pob:block:src/Modules/CalcTriggers.lua:97
 func triggerSkillEligible(skill *ActiveSkill) bool {
 	if skill.SkillFlags != nil && skill.SkillFlags[SkillFlagDisable] {
 		return false
@@ -1827,6 +1833,10 @@ func performCalc(env *Environment, skipEHP bool) {
 			}
 
 			flaskEffectInc := item.FlaskData["effectInc"]
+			//pob:block:src/Modules/CalcPerform.lua:1707-1711
+			if flaskTypeEffect, ok := flaskTypeEffects[item.BaseName]; ok {
+				flaskEffectInc += env.ModDB.Sum(mod.TypeIncrease, playerActorCfg, flaskTypeEffect)
+			}
 			if item.Rarity == RarityMagic && !(isLifeFlask || isManaFlask) {
 				flaskEffectInc += env.ModDB.Sum(mod.TypeIncrease, playerActorCfg, "MagicUtilityFlaskEffect")
 			}
@@ -4777,48 +4787,57 @@ func performCalc(env *Environment, skipEHP bool) {
 		CalculateOffence(env, env.Player, env.Player.MainSkill)
 	}
 
-	//pob:block:src/Modules/CalcPerform.lua:3935-3969
+	//pob:block:src/Modules/CalcPerform.lua:3972-3999
 	if ms := env.Player.MainSkill; ms != nil && ms.ActiveEffect != nil && ms.ActiveEffect.SrcInstance != nil {
 		sml, cfg := ms.SkillModList, ms.SkillCfg
 		baseLevel := sml.Sum(mod.TypeBase, cfg, "GemLevel")
 		totalItemLevel := sml.Sum(mod.TypeBase, cfg, "GemItemLevel")
+		totalGlobalLevel := sml.Sum(mod.TypeBase, cfg, "GemGlobalLevel")
 		totalSupportLevel := sml.Sum(mod.TypeBase, cfg, "GemSupportLevel")
 		env.Player.Output["GemHasLevel"] = 1
-		env.Player.Output["GemLevel"] = baseLevel + totalSupportLevel + totalItemLevel
-		//pob:block:src/Modules/CalcPerform.lua:3948-3958
+		env.Player.Output["GemLevel"] = float64(ms.ActiveEffect.Level)
 		if bd := env.Player.Breakdown; bd != nil {
 			bd.Data["GemLevel"] = &Entry{Lines: []string{luaSprintf("%d ^8(level from gem)", luaInt(baseLevel))}}
-			if totalSupportLevel > 0 {
-				bd.AddLine("GemLevel", luaSprintf("+ %d ^8(level from support)", luaInt(totalSupportLevel)))
+			for _, source := range []struct {
+				value float64
+				label string
+			}{{totalItemLevel, "items"}, {totalGlobalLevel, "global modifiers"}, {totalSupportLevel, "support"}} {
+				if source.value != 0 {
+					bd.AddLine("GemLevel", luaSprintf("%s %d ^8(level from %s)", gemSourceSign(source.value), luaInt(math.Abs(source.value)), source.label))
+				}
 			}
-			if totalItemLevel > 0 {
-				bd.AddLine("GemLevel", luaSprintf("+ %d ^8(level from items)", luaInt(totalItemLevel)))
+			if env.Player.Output["GemLevel"] != baseLevel+totalItemLevel+totalGlobalLevel+totalSupportLevel {
+				bd.AddLine("GemLevel", luaSprintf("^8Limited to Level %d", luaInt(env.Player.Output["GemLevel"])))
 			}
 			bd.AddLine("GemLevel", luaSprintf("= %d", luaInt(env.Player.Output["GemLevel"])))
 		}
+		//pob:block:src/Modules/CalcPerform.lua:4001-4022
 		baseQuality := sml.Sum(mod.TypeBase, cfg, "GemQuality")
 		totalItemQuality := sml.Sum(mod.TypeBase, cfg, "GemItemQuality")
+		totalGlobalQuality := sml.Sum(mod.TypeBase, cfg, "GemGlobalQuality")
 		totalSupportQuality := sml.Sum(mod.TypeBase, cfg, "GemSupportQuality")
 		socketQuality := sml.Sum(mod.TypeBase, cfg, "GemSocketQuality")
 		env.Player.Output["GemHasQuality"] = 1
-		env.Player.Output["GemQuality"] = baseQuality + totalSupportQuality + totalItemQuality + socketQuality
-		//pob:block:src/Modules/CalcPerform.lua:3971-3984
+		env.Player.Output["GemQuality"] = baseQuality + totalSupportQuality + totalItemQuality + totalGlobalQuality + socketQuality
 		if bd := env.Player.Breakdown; bd != nil {
 			bd.Data["GemQuality"] = &Entry{Lines: []string{luaSprintf("%d ^8(quality from gem)", luaInt(baseQuality))}}
-			if totalSupportQuality > 0 {
-				bd.AddLine("GemQuality", luaSprintf("+ %d ^8(quality from support)", luaInt(totalSupportQuality)))
-			}
-			if totalItemQuality > 0 {
-				bd.AddLine("GemQuality", luaSprintf("+ %d ^8(quality from items)", luaInt(totalItemQuality)))
-			}
-			if socketQuality > 0 {
-				bd.AddLine("GemQuality", luaSprintf("+ %d ^8(quality from socket)", luaInt(socketQuality)))
+			for _, source := range []struct {
+				value float64
+				label string
+			}{{totalItemQuality, "items"}, {totalGlobalQuality, "global modifiers"}, {totalSupportQuality, "support"}, {socketQuality, "socket colour"}} {
+				if source.value != 0 {
+					bd.AddLine("GemQuality", luaSprintf("%s %d ^8(quality from %s)", gemSourceSign(source.value), luaInt(math.Abs(source.value)), source.label))
+				}
 			}
 			bd.AddLine("GemQuality", luaSprintf("= %d", luaInt(env.Player.Output["GemQuality"])))
 		}
 	}
 
 	if env.Minion != nil {
+		//pob:block:src/Modules/CalcPerform.lua:3837-3839
+		if env.ModDB.Flag(nil, "MinionsGainYourSpellSuppressionChance") {
+			env.Minion.ModDB.AddMod(mod.NewFloat("SpellSuppressionChance", mod.TypeBase, env.Player.Output["SpellSuppressionChance"]).Source("Player"))
+		}
 		CalculateDefence(env, env.Minion.Actor)
 
 		//pob:src/Modules/CalcPerform.lua:3844
@@ -5182,7 +5201,7 @@ func doActorAttribsPoolsConditions(env *Environment, actor *Actor) {
 	doActorLifeMana(actor)
 }
 
-//pob:src/Modules/CalcPerform.lua:69-133
+//pob:src/Modules/CalcPerform.lua:70-135
 func doActorLifeMana(actor *Actor) {
 	//pob:block:src/Modules/CalcPerform.lua:78-81
 	lowLifePerc := actor.ModDB.Sum(mod.TypeBase, nil, "LowLifePercentage")
@@ -5246,6 +5265,8 @@ func doActorLifeMana(actor *Actor) {
 		}
 	}
 	actor.Output["LowestOfMaximumLifeAndMaximumMana"] = min(actor.Output["Life"], actor.Output["Mana"])
+	//pob:block:src/Modules/CalcPerform.lua:134
+	actor.Output["MaximumLifeManaDifference"] = math.Abs(actor.Output["Life"] - actor.Output["Mana"])
 }
 
 //pob:block:src/Modules/ModTools.lua:248-259
@@ -5450,14 +5471,15 @@ func DoActorCharges(env *Environment, actor *Actor) {
 	modDB.Multipliers["SpiritInfusion"] = actor.Output["SpiritInfusions"]
 }
 
-//pob:src/Modules/CalcPerform.lua:636-977
+//pob:src/Modules/CalcPerform.lua:638-979
 func DoActorMisc(env *Environment, actor *Actor) {
 	modDB := actor.ModDB
 	enemyDB := actor.Enemy.ModDB
 
 	// Add misc buffs/debuffs
 	if env.ModeCombat {
-		if env.Player.MainSkill.BaseSkillModList.Flag(nil, "Cruelty") {
+		//pob:block:src/Modules/CalcPerform.lua:648-650
+		if env.Player.MainSkill.BaseSkillModList.Flag(env.Player.MainSkill.SkillCfg, "Cruelty") {
 			modDB.Multipliers["Cruelty"] = utils.Or(modDB.Override(nil, "Cruelty"), 40)
 		}
 		alliedFortify := float64(0)
@@ -5481,11 +5503,7 @@ func DoActorMisc(env *Environment, actor *Actor) {
 				minStacks = maxStacks
 			}
 			minStacks = min(minStacks, maxStacks)
-			stacks := maxStacks
-			if minStacks > 0 {
-				stacks = minStacks
-			}
-			stacks = min(utils.Or(modDB.Override(nil, "FortificationStacks"), stacks), maxStacks)
+			stacks := min(utils.Or(modDB.Override(nil, "FortificationStacks"), maxStacks), maxStacks)
 			increasedDuration := skillModList.Sum(mod.TypeIncrease, nil, "FortifyDuration")
 
 			actor.Output["MaximumFortification"] = maxStacks
@@ -6454,3 +6472,10 @@ var poolReservationNames = func() map[string]*struct {
 	}
 	return out
 }()
+
+func gemSourceSign(value float64) string {
+	if value > 0 {
+		return "+"
+	}
+	return "-"
+}

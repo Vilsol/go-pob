@@ -206,7 +206,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1086-1099
+	//pob:src/Modules/CalcTriggers.lua:1101-1110
 	case "kitava's thirst":
 		requiredManaCost := env.Player.ModDB.Sum(mod.TypeBase, nil, "KitavaRequiredManaCost")
 		return &triggerConfig{
@@ -221,7 +221,7 @@ func triggerConfigFor(env *Environment, key string, mainSkill *ActiveSkill) *tri
 			},
 		}
 
-	//pob:src/Modules/CalcTriggers.lua:1100-1113
+	//pob:src/Modules/CalcTriggers.lua:1111-1120
 	case "foulborn kitava's thirst":
 		requiredLifeCost := env.Player.ModDB.Sum(mod.TypeBase, nil, "FoulbornKitavaRequiredLifeCost")
 		return &triggerConfig{

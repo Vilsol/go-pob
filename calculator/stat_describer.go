@@ -124,7 +124,7 @@ func statDescApplySpecial(val []statDescValue, spec raw.StatDescriptionSpec) {
 	case "milliseconds_to_seconds_2dp", "milliseconds_to_seconds_2dp_if_required":
 		v.v, v.fmt = luaRound(v.v/1000, 2), "g"
 	case "deciseconds_to_seconds":
-		v.v, v.fmt = v.v/10, ".2f"
+		v.v, v.fmt = v.v/10, "g"
 	case "locations_to_metres":
 		v.v, v.fmt = v.v/10, "g"
 	case "30%_of_value":

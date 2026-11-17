@@ -29,10 +29,12 @@ type CompiledList[T any] struct {
 }
 
 var conquerorList = map[string]mod.ConquerorType{
-	"xibaqua":  {ID: "1", Type: "vaal"},
-	"zerphi":   {ID: "2", Type: "vaal"},
-	"doryani":  {ID: "3", Type: "vaal"},
-	"ahuana":   {ID: "2_v2", Type: "vaal"},
+	"xibaqua": {ID: "1", Type: "vaal"},
+	"zerphi":  {ID: "2", Type: "vaal"},
+	"doryani": {ID: "3", Type: "vaal"},
+	"ahuana":  {ID: "2_v2", Type: "vaal"},
+	// Ahuana variant was renamed to Mazcotl in 3.30
+	"mazcotl":  {ID: "2_v2", Type: "vaal"},
 	"deshret":  {ID: "1", Type: "maraketh"},
 	"asenath":  {ID: "2", Type: "maraketh"},
 	"nasima":   {ID: "3", Type: "maraketh"},
@@ -449,22 +451,24 @@ var modNameList = map[string]modNameListType{
 	"fire damage taken when hit":                            {names: []string{"FireDamageTakenWhenHit"}},
 	"fire damage taken from attacks":                        {names: []string{"FireDamageTakenFromAttacks"}},
 	"fire damage taken over time":                           {names: []string{"FireDamageTakenOverTime"}},
-	"chaos damage taken":                                    {names: []string{"ChaosDamageTaken"}},
-	"chaos damage from hits taken":                          {names: []string{"ChaosDamageFromHitsTaken"}},
-	"chaos damage taken when hit":                           {names: []string{"ChaosDamageTakenWhenHit"}},
-	"chaos damage taken from attacks":                       {names: []string{"ChaosDamageTakenFromAttacks"}},
-	"chaos damage taken over time":                          {names: []string{"ChaosDamageTakenOverTime"}},
-	"chaos damage over time taken":                          {names: []string{"ChaosDamageTakenOverTime"}},
-	"elemental damage taken":                                {names: []string{"ElementalDamageTaken"}},
-	"elemental damage from hits taken":                      {names: []string{"ElementalDamageFromHitsTaken"}},
-	"elemental damage taken when hit":                       {names: []string{"ElementalDamageTakenWhenHit"}},
-	"elemental damage taken from hits":                      {names: []string{"ElementalDamageTakenWhenHit"}},
-	"elemental damage taken over time":                      {names: []string{"ElementalDamageTakenOverTime"}},
-	"cold and lightning damage taken":                       {names: []string{"ColdDamageTaken", "LightningDamageTaken"}},
-	"fire and lightning damage taken":                       {names: []string{"FireDamageTaken", "LightningDamageTaken"}},
-	"fire and cold damage taken":                            {names: []string{"FireDamageTaken", "ColdDamageTaken"}},
-	"physical and chaos damage taken":                       {names: []string{"PhysicalDamageTaken", "ChaosDamageTaken"}},
-	"reflected elemental damage taken":                      {names: []string{"ElementalReflectedDamageTaken"}},
+	// Burning damage is fire damage over time; this wording should use the existing damage-taken calculation.
+	"burning damage taken":             {names: []string{"FireDamageTakenOverTime"}},
+	"chaos damage taken":               {names: []string{"ChaosDamageTaken"}},
+	"chaos damage from hits taken":     {names: []string{"ChaosDamageFromHitsTaken"}},
+	"chaos damage taken when hit":      {names: []string{"ChaosDamageTakenWhenHit"}},
+	"chaos damage taken from attacks":  {names: []string{"ChaosDamageTakenFromAttacks"}},
+	"chaos damage taken over time":     {names: []string{"ChaosDamageTakenOverTime"}},
+	"chaos damage over time taken":     {names: []string{"ChaosDamageTakenOverTime"}},
+	"elemental damage taken":           {names: []string{"ElementalDamageTaken"}},
+	"elemental damage from hits taken": {names: []string{"ElementalDamageFromHitsTaken"}},
+	"elemental damage taken when hit":  {names: []string{"ElementalDamageTakenWhenHit"}},
+	"elemental damage taken from hits": {names: []string{"ElementalDamageTakenWhenHit"}},
+	"elemental damage taken over time": {names: []string{"ElementalDamageTakenOverTime"}},
+	"cold and lightning damage taken":  {names: []string{"ColdDamageTaken", "LightningDamageTaken"}},
+	"fire and lightning damage taken":  {names: []string{"FireDamageTaken", "LightningDamageTaken"}},
+	"fire and cold damage taken":       {names: []string{"FireDamageTaken", "ColdDamageTaken"}},
+	"physical and chaos damage taken":  {names: []string{"PhysicalDamageTaken", "ChaosDamageTaken"}},
+	"reflected elemental damage taken": {names: []string{"ElementalReflectedDamageTaken"}},
 
 	// Other defences
 	"to dodge attacks":                            {names: []string{"AttackDodgeChance"}},
@@ -515,6 +519,7 @@ var modNameList = map[string]modNameListType{
 	"to avoid being shocked":                         {names: []string{"AvoidShock"}},
 	"to avoid being frozen":                          {names: []string{"AvoidFreeze"}},
 	"to avoid being chilled":                         {names: []string{"AvoidChill"}},
+	"to avoid being chilled or frozen":               {names: []string{"AvoidChill", "AvoidFreeze"}},
 	"to avoid being ignited":                         {names: []string{"AvoidIgnite"}},
 	//pob:src/Modules/ModParser.lua:412-413
 	"to avoid elemental ailments":                     {names: []string{"AvoidElementalAilments"}},
@@ -896,6 +901,7 @@ var modNameList = map[string]modNameListType{
 	"action speed":                          {names: []string{"ActionSpeed"}},
 	"light radius":                          {names: []string{"LightRadius"}},
 	"rarity of items found":                 {names: []string{"LootRarity"}},
+	"item rarity":                           {names: []string{"LootRarity"}},
 	"quantity of items found":               {names: []string{"LootQuantity"}},
 	"item quantity":                         {names: []string{"LootQuantity"}},
 	"strength requirement":                  {names: []string{"StrRequirement"}},
@@ -915,9 +921,10 @@ var modNameList = map[string]modNameListType{
 
 	// Flask and Tincture modifiers
 	//pob:src/Modules/ModParser.lua:862
-	"effect":              {names: []string{"LocalEffect"}},
-	"effect of flasks":    {names: []string{"FlaskEffect"}},
-	"effect of tinctures": {names: []string{"TinctureEffect"}},
+	"effect":                {names: []string{"LocalEffect"}},
+	"effect of flasks":      {names: []string{"FlaskEffect"}},
+	"effect of iron flasks": {names: []string{"IronFlaskEffect"}},
+	"effect of tinctures":   {names: []string{"TinctureEffect"}},
 
 	"effect of flasks on you":        {names: []string{"FlaskEffect"}},
 	"amount recovered":               {names: []string{"FlaskRecovery"}},
@@ -1125,18 +1132,21 @@ var modFlagList = map[string]modNameListType{
 	"stone golem":                  {addToMinion: true, addToMinionTag: mod.SkillName("Summon Stone Golem").Transfigured(true)},
 	"animated guardian":            {addToMinion: true, addToMinionTag: mod.SkillName("Animate Guardian").Transfigured(true)},
 
-	"global":                          {tag: mod.Global()},
-	"from equipped shield":            {tag: mod.SlotName("Weapon 2")},
-	"from equipped armour items":      {tag: mod.SlotName("Helmet", "Body Armour", "Gloves", "Boots", "Weapon 2")},
-	"from equipped helmet":            {tag: mod.SlotName("Helmet")},
-	"from equipped boots and gloves":  {tag: mod.SlotName("Gloves", "Boots")},
-	"from your equipped body armour":  {tag: mod.SlotName("Body Armour")},
-	"from equipped body armour":       {tag: mod.SlotName("Body Armour")},
-	"from equipped gloves and boots":  {tag: mod.SlotName("Gloves", "Boots")},
-	"from equipped helmet and gloves": {tag: mod.SlotName("Helmet", "Gloves")},
-	"from equipped helmet and boots":  {tag: mod.SlotName("Helmet", "Boots")},
-	"from body armour":                {tag: mod.SlotName("Body Armour")},
-	"from your body armour":           {tag: mod.SlotName("Body Armour")},
+	"global":                     {tag: mod.Global()},
+	"from equipped shield":       {tag: mod.SlotName("Weapon 2")},
+	"from equipped armour items": {tag: mod.SlotName("Helmet", "Body Armour", "Gloves", "Boots", "Weapon 2")},
+	"from equipped helmet":       {tag: mod.SlotName("Helmet")},
+	// Restrict these defence bonuses to the four named armour slots, excluding shields and global defences.
+	"from equipped helmet, body armour gloves and boots":   {tag: mod.SlotName("Helmet", "Body Armour", "Gloves", "Boots")},
+	"from equipped helmet, body armour, gloves, and boots": {tag: mod.SlotName("Helmet", "Body Armour", "Gloves", "Boots")},
+	"from equipped boots and gloves":                       {tag: mod.SlotName("Gloves", "Boots")},
+	"from your equipped body armour":                       {tag: mod.SlotName("Body Armour")},
+	"from equipped body armour":                            {tag: mod.SlotName("Body Armour")},
+	"from equipped gloves and boots":                       {tag: mod.SlotName("Gloves", "Boots")},
+	"from equipped helmet and gloves":                      {tag: mod.SlotName("Helmet", "Gloves")},
+	"from equipped helmet and boots":                       {tag: mod.SlotName("Helmet", "Boots")},
+	"from body armour":                                     {tag: mod.SlotName("Body Armour")},
+	"from your body armour":                                {tag: mod.SlotName("Body Armour")},
 }
 
 // List of modifier flags/tags that appear at the start of a line
@@ -1330,6 +1340,7 @@ var preFlagList = map[string]modNameListType{
 	`^enemies near your totems deal `:                             {applyToEnemy: true},
 	`against you`:                                                 {applyToEnemy: true},
 
+	`^players `:                                   {},
 	`^your flasks grant `:                         {},
 	`^when hit, `:                                 {},
 	`^you and allies [hgd][ae][via][enl] `:        {},
@@ -2105,7 +2116,13 @@ var modTagList = map[string]modNameListType{
 	},
 	`against targets they pierce`: {tag: mod.StatThreshold("PierceCount", 1)},
 	`against pierced targets`:     {tag: mod.StatThreshold("PierceCount", 1)},
-	`to targets they pierce`:      {tag: mod.StatThreshold("PierceCount", 1)},
+	`against enemies within ([\d.]+) metres?`: {
+		fn: func(caps []string) modNameListType {
+			num := utils.Float(caps[0])
+			return modNameListType{tag: mod.DistanceRamp([][]float64{{num * 10, 1}, {num * 10, 0}})}
+		},
+	},
+	`to targets they pierce`: {tag: mod.StatThreshold("PierceCount", 1)},
 	//pob:src/Modules/ModParser.lua:1590
 	`that fire a single projectile`: {tag: mod.StatThreshold("ProjectileCount", 1).Upper(true)},
 	`w?h?i[lf]e? you have at least (\d+) devotion`: {
@@ -2324,24 +2341,25 @@ var modTagList = map[string]modNameListType{
 	`on chilled ground`:                           {tag: mod.Condition("OnChilledGround")},
 	`on shocked ground`:                           {tag: mod.Condition("OnShockedGround")},
 	`while in a caustic cloud`:                    {tag: mod.Condition("OnCausticCloud")},
-	`while blinded`:                               {tagList: []mod.Tag{mod.Condition("Blinded"), mod.Condition("CannotBeBlinded").Neg(true)}},
-	`while burning`:                               {tag: mod.Condition("Burning")},
-	`while ignited`:                               {tag: mod.Condition("Ignited")},
-	`while you are ignited`:                       {tag: mod.Condition("Ignited")},
-	`while chilled`:                               {tag: mod.Condition("Chilled")},
-	`while you are chilled`:                       {tag: mod.Condition("Chilled")},
-	`while frozen`:                                {tag: mod.Condition("Frozen")},
-	`while shocked`:                               {tag: mod.Condition("Shocked")},
-	`while you are shocked`:                       {tag: mod.Condition("Shocked")},
-	`while you are bleeding`:                      {tag: mod.Condition("Bleeding")},
-	`while not ignited, frozen or shocked`:        {tag: mod.Condition("Ignited", "Frozen", "Shocked").Neg(true)},
-	`while bleeding`:                              {tag: mod.Condition("Bleeding")},
-	`while poisoned`:                              {tag: mod.Condition("Poisoned")},
-	`while you are poisoned`:                      {tag: mod.Condition("Poisoned")},
-	`while cursed`:                                {tag: mod.Condition("Cursed")},
-	`while not cursed`:                            {tag: mod.Condition("Cursed").Neg(true)},
-	`against damage over time`:                    {flags: mod.MFlagDot},
-	`while there is only one nearby enemy`:        {tagList: []mod.Tag{mod.Multiplier("NearbyEnemies").Limit(1), mod.Condition("OnlyOneNearbyEnemy")}},
+	// Accept both "while Blind" and "while Blinded" using the existing player condition.
+	`while blinde?d?`:                      {tagList: []mod.Tag{mod.Condition("Blinded"), mod.Condition("CannotBeBlinded").Neg(true)}},
+	`while burning`:                        {tag: mod.Condition("Burning")},
+	`while ignited`:                        {tag: mod.Condition("Ignited")},
+	`while you are ignited`:                {tag: mod.Condition("Ignited")},
+	`while chilled`:                        {tag: mod.Condition("Chilled")},
+	`while you are chilled`:                {tag: mod.Condition("Chilled")},
+	`while frozen`:                         {tag: mod.Condition("Frozen")},
+	`while shocked`:                        {tag: mod.Condition("Shocked")},
+	`while you are shocked`:                {tag: mod.Condition("Shocked")},
+	`while you are bleeding`:               {tag: mod.Condition("Bleeding")},
+	`while not ignited, frozen or shocked`: {tag: mod.Condition("Ignited", "Frozen", "Shocked").Neg(true)},
+	`while bleeding`:                       {tag: mod.Condition("Bleeding")},
+	`while poisoned`:                       {tag: mod.Condition("Poisoned")},
+	`while you are poisoned`:               {tag: mod.Condition("Poisoned")},
+	`while cursed`:                         {tag: mod.Condition("Cursed")},
+	`while not cursed`:                     {tag: mod.Condition("Cursed").Neg(true)},
+	`against damage over time`:             {flags: mod.MFlagDot},
+	`while there is only one nearby enemy`: {tagList: []mod.Tag{mod.Multiplier("NearbyEnemies").Limit(1), mod.Condition("OnlyOneNearbyEnemy")}},
 	`while t?h?e?r?e? ?i?s? ?a rare or unique enemy i?s? ?nearby`:                      {tag: mod.ActorCondition("enemy", "NearbyRareOrUniqueEnemy", "RareOrUnique")},
 	`when you or your totems hit an enemy with a spell`:                                {tag: mod.Condition("HitSpellRecently", "TotemsHitSpellRecently")},
 	`if you[' ]h?a?ve hit recently`:                                                    {tag: mod.Condition("HitRecently")},
@@ -2467,6 +2485,7 @@ var modTagList = map[string]modNameListType{
 	`if you haven't summoned a totem in the past 2 seconds`:          {tag: mod.Condition("NoSummonedTotemsInPastTwoSeconds")},
 	`if you[' ]h?a?ve used a minion skill recently`:                  {tag: mod.Condition("UsedMinionSkillRecently")},
 	`if you[' ]h?a?ve used a movement skill recently`:                {tag: mod.Condition("UsedMovementSkillRecently")},
+	`if you[' ]h?a?ve used an attack movement skill recently`:        {tag: mod.Condition("UsedMovementSkillRecently")},
 	`if you haven't cast dash recently`:                              {tag: mod.Condition("CastDashRecently").Neg(true)},
 	`if you[' ]h?a?ve cast dash recently`:                            {tag: mod.Condition("CastDashRecently")},
 	`if you[' ]h?a?ve used a vaal skill recently`:                    {tag: mod.Condition("UsedVaalSkillRecently")},
@@ -2656,7 +2675,7 @@ var gemKeywordWordPattern = regexp.MustCompile(`\S+`)
 //pob:block:src/Modules/ModParser.lua:2033-2046
 func buildGemLookup() *gemLookups {
 	lookups := &gemLookups{
-		skillIDForName: map[string]string{"power charge on critical strike": "SupportPowerChargeOnCritical"},
+		skillIDForName: map[string]string{"power charge on critical strike": "SupportPowerChargeOnCritical", "snipe support": "ChannelledSnipeSupport"},
 		gemForBaseName: make(map[string]*poe.SkillGem),
 	}
 
@@ -2877,9 +2896,38 @@ func explodeFunc(chance float64, amount string, typ string, tags ...mod.Tag) ([]
 
 type SpecialFuncType func(num float64, captures []string) ([]mod.Mod, string)
 
+//pob:src/Modules/ModParser.lua:2143-2149
+func timelessJewel(num float64, captures []string) ([]mod.Mod, string) {
+	conqueror, ok := conquerorList[strings.ToLower(captures[1])]
+	if !ok {
+		return nil, ""
+	}
+	return []mod.Mod{
+		MOD("JewelData", "LIST", mod.JewelData{Key: "conqueredBy", Value: mod.LegionJewel{ID: int(num), Conqueror: conqueror}}),
+	}, ""
+}
+
 // List of special modifiers
 var specialModListCompiled map[string]CompiledList[interface{}]
 var specialModList = map[string]interface{}{
+	// Recognize spell-hit Hinder chance and expose the manual enemy Hindered setting; do not assume proc uptime.
+	`(\d+)% chance to hinder enemies on hit with spells`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{
+			MOD("HinderChance", "BASE", num).Flag(mod.MFlagSpell),
+			MOD("Dummy", "DUMMY", 1).Source("Select enemy Hindered in Configuration").Tag(mod.ActorCondition("enemy", "Hindered")),
+		}, ""
+	},
+	// Recognize the global Blind chance wording; whether the enemy is Blinded remains manually configured.
+	`(\d+)% global chance to blind enemies on hit`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("BlindChance", "BASE", num)}, ""
+	},
+	`(\d+)% increased life recovery rate per (\d+)% missing unreserved life`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("LifeRecoveryRate", "INC", num).Tag(mod.PerStat(utils.Float(captures[1]), "MissingUnreservedLifePercent"))}, ""
+	},
+	// Track additional Wisps summoned per trigger separately from the maximum active count used for sustained DPS.
+	`\+(\d+) to number of sacred wisps summoned`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("SacredWispsSummoned", "BASE", num)}, ""
+	},
 	//pob:block:src/Modules/ModParser.lua:2160-2224
 	`enemies you kill have a (\d+)% chance to explode, dealing a (.+) of their maximum life as (.+) damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return explodeFunc(num, captures[1], captures[2])
@@ -2966,7 +3014,7 @@ var specialModList = map[string]interface{}{
 	"immune to freeze while affected by purity of ice":                           []mod.Mod{FLAG("FreezeImmune").Tag(mod.Condition("AffectedByPurityofIce"))},
 	"immune to shock while affected by purity of lightning":                      []mod.Mod{FLAG("ShockImmune").Tag(mod.Condition("AffectedByPurityofLightning"))},
 	`immun[ei]t?y? to shock`:                                                     []mod.Mod{mod.NewFlag("ShockImmune", true)},
-	`increase to cast speed from arcane surge also applies to movement speed`:    []mod.Mod{mod.NewFlag("ArcaneSurgeCastSpeedToMovementSpeed", true)},
+	`increases? to cast speed from arcane surge also applies to movement speed`:  []mod.Mod{mod.NewFlag("ArcaneSurgeCastSpeedToMovementSpeed", true)},
 	`intelligence provides no bonus to energy shield`:                            []mod.Mod{mod.NewFlag("NoIntBonusToES", true)},
 	`intelligence provides no inherent bonus to maximum mana`:                    []mod.Mod{mod.NewFlag("NoIntBonusToMana", true)},
 	`life that would be lost by taking damage is instead reserved`:               []mod.Mod{mod.NewFlag("DamageInsteadReservesLife", true)},
@@ -2980,6 +3028,8 @@ var specialModList = map[string]interface{}{
 	`evasion rating is doubled against projectile attacks`:                       []mod.Mod{MOD("ProjectileEvasion", "MORE", 100)},
 	`inherent effects from having rage are doubled`:                              []mod.Mod{MOD("RageEffect", "MORE", 100)},
 	`maximum rage is halved`:                                                     []mod.Mod{MOD("MaximumRage", "MORE", -50)},
+	`cover enemies in ash for (\d+) seconds when you ignite them`:                []mod.Mod{MOD("CoveredInAshEffect", "BASE", 20).Tag(mod.ActorCondition("enemy", "Ignited"))},
+	`cover enemies in frost for (\d+) seconds when you freeze them`:              []mod.Mod{MOD("CoveredInFrostEffect", "BASE", 20).Tag(mod.ActorCondition("enemy", "Frozen"))},
 	`nearby enemies are covered in ash`:                                          []mod.Mod{MOD("CoveredInAshEffect", "BASE", 20)},
 	//pob:src/Modules/ModParser.lua:4435
 	`your warcries cover enemies in ash for (\d+) seconds`: []mod.Mod{MOD("CoveredInAshEffect", "BASE", 20).Tag(mod.Condition("UsedWarcryRecently"))},
@@ -3022,13 +3072,19 @@ var specialModList = map[string]interface{}{
 	`unaffected by poison`:                                 []mod.Mod{MOD("SelfPoisonEffect", "MORE", -100)},
 	`unaffected by poison while affected by malevolence`:   []mod.Mod{MOD("SelfPoisonEffect", "MORE", -100).Tag(mod.Condition("AffectedByMalevolence")).Tag(mod.GlobalEffect("Global").Unscalable(true))},
 	`unaffected by ignite`:                                 []mod.Mod{MOD("SelfIgniteEffect", "MORE", -100)},
-	`unaffected by chill`:                                  []mod.Mod{MOD("SelfChillEffect", "MORE", -100)},
-	`unaffected by chill while leeching mana`:              []mod.Mod{MOD("SelfChillEffect", "MORE", -100).Tag(mod.Condition("LeechingMana"))},
-	`unaffected by chill while channelling`:                []mod.Mod{MOD("SelfChillEffect", "MORE", -100).Tag(mod.Condition("Channelling"))},
-	`unaffected by freeze`:                                 []mod.Mod{MOD("SelfFreezeEffect", "MORE", -100)},
-	`unaffected by shock`:                                  []mod.Mod{MOD("SelfShockEffect", "MORE", -100)},
-	`unaffected by shock while leeching energy shield`:     []mod.Mod{MOD("SelfShockEffect", "MORE", -100).Tag(mod.Condition("LeechingEnergyShield"))},
-	`unaffected by shock while channelling`:                []mod.Mod{MOD("SelfShockEffect", "MORE", -100).Tag(mod.Condition("Channelling"))},
+	`unaffected by ignite or shock if maximum life and maximum mana are within (\d+)`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{
+			MOD("SelfIgniteEffect", "MORE", -100).Tag(mod.StatThreshold("MaximumLifeManaDifference", num).Upper(true)),
+			MOD("SelfShockEffect", "MORE", -100).Tag(mod.StatThreshold("MaximumLifeManaDifference", num).Upper(true)),
+		}, ""
+	},
+	`unaffected by chill`:                              []mod.Mod{MOD("SelfChillEffect", "MORE", -100)},
+	`unaffected by chill while leeching mana`:          []mod.Mod{MOD("SelfChillEffect", "MORE", -100).Tag(mod.Condition("LeechingMana"))},
+	`unaffected by chill while channelling`:            []mod.Mod{MOD("SelfChillEffect", "MORE", -100).Tag(mod.Condition("Channelling"))},
+	`unaffected by freeze`:                             []mod.Mod{MOD("SelfFreezeEffect", "MORE", -100)},
+	`unaffected by shock`:                              []mod.Mod{MOD("SelfShockEffect", "MORE", -100)},
+	`unaffected by shock while leeching energy shield`: []mod.Mod{MOD("SelfShockEffect", "MORE", -100).Tag(mod.Condition("LeechingEnergyShield"))},
+	`unaffected by shock while channelling`:            []mod.Mod{MOD("SelfShockEffect", "MORE", -100).Tag(mod.Condition("Channelling"))},
 	`unaffected by (.+) if (\d+) (\w+) items are equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("Self"+firstToUpper(captures[0])+"Effect", "MORE", -100).
@@ -3108,6 +3164,7 @@ var specialModList = map[string]interface{}{
 			MOD("LifeRegen", "BASE", num).Tag(mod.PerStat(1/utils.Float(captures[1]), "FireResistTotal")),
 		}, ""
 	},
+	"hits ignore enemy physical damage reduction": []mod.Mod{FLAG("IgnoreEnemyPhysicalDamageReduction")},
 	`hits have (\d+)% chance to ignore enemy physical damage reduction`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ChanceToIgnoreEnemyPhysicalDamageReduction", "BASE", num)}, ""
 	},
@@ -3172,6 +3229,7 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{mod.NewList("EnemyModifier", mod.EnemyModifier{Mod: mod.NewFloat("BlindEffect", mod.TypeIncrease, num)})}, ""
 	},
 	//pob:block:src/Modules/ModParser.lua:2278
+	"blind enemies on hit": []mod.Mod{MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: FLAG("Condition:Blinded")}).Tag(mod.Condition("HitRecently"))},
 	`(\d+)% increased effect of blind from melee weapons`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewList("EnemyModifier", mod.EnemyModifier{Mod: mod.NewFloat("BlindEffect", mod.TypeIncrease, num)})}, ""
 	},
@@ -3413,6 +3471,7 @@ var specialModList = map[string]interface{}{
 	`corrupted blood cannot be inflicted on you`:                     []mod.Mod{mod.NewFlag("CorruptedBloodImmune", true)},
 	//pob:block:src/Modules/ModParser.lua:2500-2502
 	`you cannot be hindered`:                           []mod.Mod{mod.NewFlag("HinderImmune", true)},
+	`immune to hinder`:                                 []mod.Mod{mod.NewFlag("HinderImmune", true)},
 	`you cannot be maimed`:                             []mod.Mod{mod.NewFlag("MaimImmune", true)},
 	`you cannot be impaled`:                            []mod.Mod{mod.NewFlag("ImpaleImmune", true)},
 	`recoup effects instead occur over 3 seconds`:      []mod.Mod{mod.NewFlag("3SecondRecoup", true)},
@@ -3420,6 +3479,11 @@ var specialModList = map[string]interface{}{
 	`recoup energy shield instead of life`:             []mod.Mod{mod.NewFlag("EnergyShieldRecoupInsteadOfLife", true)},
 	//pob:src/Modules/ModParser.lua:4883
 	"life recoup also recovers mana": []mod.Mod{FLAG("AddLifeRecoupToManaRecoup")},
+	"elemental resistances cannot be penetrated": []mod.Mod{
+		FLAG("EnemyCannotPenFireResistance"),
+		FLAG("EnemyCannotPenColdResistance"),
+		FLAG("EnemyCannotPenLightningResistance"),
+	},
 	`(\w+) resistance cannot be penetrated`: func(_ float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFlag("EnemyCannotPen"+titleCaseAfterNonWord(strings.ToLower(captures[0]))+"Resistance", true)}, ""
 	},
@@ -3976,6 +4040,16 @@ var specialModList = map[string]interface{}{
 	`projectiles deal (\d+)% more damage for each remaining chain`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("Damage", "MORE", num).Flag(mod.MFlagProjectile).Tag(mod.PerStat(0, "ChainRemaining"))}, ""
 	},
+	`projectiles deal (\d+)% increased damage with hits and ailments for each remaining chain, up to a maximum of (\d+)%`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{
+			MOD("Damage", "INC", num).KeywordFlag(mod.KeywordFlagHit | mod.KeywordFlagAilment).Tag(mod.PerStat(0, "ChainRemaining").GlobalLimit(utils.Float(captures[1])).GlobalLimitKey("FollowThrough")).Tag(mod.SkillType(string(data.SkillTypeProjectile))),
+		}, ""
+	},
+	`projectiles deal (\d+)% increased damage with hits and ailments for each remaining chain, up to (\d+)%`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{
+			MOD("Damage", "INC", num).KeywordFlag(mod.KeywordFlagHit | mod.KeywordFlagAilment).Tag(mod.PerStat(0, "ChainRemaining").GlobalLimit(utils.Float(captures[1])).GlobalLimitKey("FollowThrough")).Tag(mod.SkillType(string(data.SkillTypeProjectile))),
+		}, ""
+	},
 	`projectiles deal (\d+)% increased damage for each remaining chain`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("Damage", "INC", num).Flag(mod.MFlagProjectile).Tag(mod.PerStat(0, "ChainRemaining"))}, ""
 	},
@@ -4124,6 +4198,9 @@ var specialModList = map[string]interface{}{
 			MOD("EnemyShockEffect", "MORE", num).Tag(mod.Condition("LightningIsHighestDamageType")),
 			MOD("EnemySapEffect", "MORE", num).Tag(mod.Condition("LightningIsHighestDamageType")),
 		}, ""
+	},
+	`\+(\d+)% to maximum effect of chill`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("ChillMax", "BASE", num)}, ""
 	},
 	`your chills can reduce action speed by up to a maximum of (\d+)%`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("ChillMax", mod.TypeOverride, num)}, ""
@@ -4373,6 +4450,11 @@ var specialModList = map[string]interface{}{
 	},
 	`immune to poison if equipped helmet has higher evasion rating than armour`: []mod.Mod{
 		mod.NewFlag("PoisonImmune", true).Tag(mod.Condition("HelmetEvasionHigherThanArmour")),
+	},
+	`offerings you create also grant (\d+)% increased damage`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{
+			MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: MOD("Damage", "INC", num).Tag(mod.GlobalEffect("Buff"))}).Tag(mod.SkillName("Bone Offering", "Flesh Offering", "Spirit Offering", "Blood Offering")),
+		}, ""
 	},
 	"your offering skills also affect you": []mod.Mod{
 		MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: MOD("SkillData", "LIST", mod.SkillData{Key: "buffNotPlayer", Value: 0})}).Tag(mod.SkillName("Bone Offering", "Flesh Offering", "Spirit Offering", "Blood Offering")),
@@ -4948,13 +5030,13 @@ var specialModList = map[string]interface{}{
 	`([\+\-]\d+) to level of all elemental support gems if the stars are aligned`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{KeywordList: []string{"elemental", "support"}, Key: "level", Value: num}).Tag(mod.Condition("StarsAreAligned"))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3232-3234
+	//pob:src/Modules/ModParser.lua:3280-3282
 	`([\+\-]\d+) to level of all ([a-z]+) skill gems if (\d+) (\w+) items are equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr(strings.ToLower(captures[1])), Key: "level", Value: num}).Tag(mod.MultiplierThreshold(firstToUpper(captures[3]) + "Item").Threshold(utils.Float(captures[2])))}, ""
 	},
-	//pob:src/Modules/ModParser.lua:3233
+	//pob:src/Modules/ModParser.lua:3281
 	`([\+\-]\d+) to level of all ([a-z]+) skill gems if a?t? ?l?e?a?s?t? ?(\d+) (\w+) (\w+) items are equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr(strings.ToLower(captures[1])), Key: "level", Value: num}).Tag(mod.MultiplierThreshold(firstToUpper(captures[3]) + firstToUpper(captures[4]) + "Item").Threshold(utils.Float(captures[2])))}, ""
+		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{KeywordList: []string{strings.ToLower(captures[1]), "grants_active_skill"}, Key: "level", Value: num}).Tag(mod.MultiplierThreshold(firstToUpper(captures[3]) + firstToUpper(captures[4]) + "Item").Threshold(utils.Float(captures[2])))}, ""
 	},
 	`([\+\-]\d+) to level of all ?([a-z\- ]*) support gems if (\d+) (\w+) items are equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("GemProperty", "LIST", mod.GemProperty{Keyword: utils.Ptr(strings.ToLower(captures[1])), Key: "level", Value: num}).Tag(mod.MultiplierThreshold(firstToUpper(captures[3]) + "Item").Threshold(utils.Float(captures[2])))}, ""
@@ -4987,8 +5069,12 @@ var specialModList = map[string]interface{}{
 	`socketed gems fire (\d+) additional projectiles`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: mod.NewFloat("ProjectileCount", mod.TypeBase, num)}).Tag(mod.SocketedIn("{SlotName}"))}, ""
 	},
-	"socketed gems reserve no mana":                                  []mod.Mod{MOD("ManaReserved", "MORE", -100).Tag(mod.SocketedIn("{SlotName}"))},
-	"socketed gems have no reservation":                              []mod.Mod{MOD("Reserved", "MORE", -100).Tag(mod.SocketedIn("{SlotName}"))},
+	"socketed gems reserve no mana":     []mod.Mod{MOD("ManaReserved", "MORE", -100).Tag(mod.SocketedIn("{SlotName}"))},
+	"socketed gems have no reservation": []mod.Mod{MOD("Reserved", "MORE", -100).Tag(mod.SocketedIn("{SlotName}"))},
+	`socketed gems deal (\d+)% more damage per socketed skill gem`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: MOD("Damage", "MORE", num)}).Tag(mod.SocketedIn("{SlotName}")).Tag(mod.Multiplier("SocketedSkillGemsIn{SlotName}"))}, ""
+	},
+	"socketed support gems have no effect":                           []mod.Mod{FLAG("SocketedSupportGemsHaveNoEffect").Tag(mod.SocketedIn("{SlotName}"))},
 	"gems socketed always have the quality bonus from socket colour": []mod.Mod{mod.NewFlag("SocketAlwaysMatches", true)},
 	`socketed skill gems get a (\d+)% mana multiplier`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: MOD("SupportManaMultiplier", "MORE", num-100)}).Tag(mod.SocketedIn("{SlotName}"))}, ""
@@ -5032,6 +5118,9 @@ var specialModList = map[string]interface{}{
 	"hits from socketed vaal skills ignore enemy monster resistances": []mod.Mod{
 		MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: FLAG("IgnoreElementalResistances")}).Tag(mod.SocketedIn("{SlotName}"), mod.SkillType(string(data.SkillTypeVaal))),
 		MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: FLAG("IgnoreChaosResistance")}).Tag(mod.SocketedIn("{SlotName}"), mod.SkillType(string(data.SkillTypeVaal))),
+	},
+	"hits from socketed vaal skills ignore enemy physical damage reduction": []mod.Mod{
+		MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: FLAG("IgnoreEnemyPhysicalDamageReduction")}).Tag(mod.SocketedIn("{SlotName}"), mod.SkillType(string(data.SkillTypeVaal))),
 	},
 	"hits from socketed vaal skills ignore enemy monster physical damage reduction": []mod.Mod{
 		MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: FLAG("IgnoreEnemyPhysicalDamageReduction")}).Tag(mod.SocketedIn("{SlotName}"), mod.SkillType(string(data.SkillTypeVaal))),
@@ -5278,6 +5367,16 @@ var specialModList = map[string]interface{}{
 	`triggers? level (\d+) (.+) when you kill a bleeding enemy`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
+	// Accept multi-word curse names and carry the influence requirement into the existing granted-skill system.
+	`curse enemies with (.*?) on hit if (\d+) (\w+) items are equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
+		mods := triggerExtraSkill(captures[0], 1, true, "")
+		if len(mods) > 0 {
+			skill := mods[0].Value().List().(mod.ExtraSkill)
+			skill.ItemRequirement = &mod.ItemRequirement{Multiplier: firstToUpper(captures[2]) + "Item", Count: utils.Float(captures[1])}
+			mods[0] = MOD("ExtraSkill", "LIST", skill)
+		}
+		return mods, ""
+	},
 	`curse enemies with (\D+) on \w+`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return triggerExtraSkill(captures[0], 1, true, ""), ""
 	},
@@ -5451,6 +5550,14 @@ var specialModList = map[string]interface{}{
 	`trigger level (\d+) (.+) after spending a total of (\d+) mana`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
+	`trigger level (\d+) (.+) after spending (\d+)% of your maximum life on spells`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return triggerExtraSkill(captures[1], int(num), false, ""), ""
+	},
+	// The mirage casts spells socketed in this weapon, which the item enables with a hidden support
+	`trigger level \d+ temporal mirage on using a movement attack`: []mod.Mod{MOD("ExtraSupport", "LIST", mod.ExtraSupport{SkillID: "SupportUniqueSuspendInTimeCanUse", Level: 1}).Tag(mod.SocketedIn("{SlotName}"))},
+	`goreblossom has \+(\d+) maximum blooms?`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("Multiplier:GoreblossomBloom", "BASE", num), MOD("Multiplier:GoreblossomMaxBlooms", "BASE", num)}, ""
+	},
 	`consumes a void charge to trigger level (\d+) (.+) when you fire arrows`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return triggerExtraSkill(captures[1], int(num), false, ""), ""
 	},
@@ -5528,13 +5635,23 @@ var specialModList = map[string]interface{}{
 			MOD(element+"DamageAppliesTo"+skillElement+"AuraEffectLimit", "MAX", utils.Float(captures[3])),
 		}, ""
 	},
-	"modifiers to claw damage also apply to unarmed":                                                          []mod.Mod{mod.NewFlag("ClawDamageAppliesToUnarmed", true)},
-	"modifiers to claw damage also apply to unarmed attack damage":                                            []mod.Mod{mod.NewFlag("ClawDamageAppliesToUnarmed", true)},
-	"modifiers to claw damage also apply to unarmed attack damage with melee skills":                          []mod.Mod{mod.NewFlag("ClawDamageAppliesToUnarmed", true)},
-	"modifiers to claw attack speed also apply to unarmed":                                                    []mod.Mod{mod.NewFlag("ClawAttackSpeedAppliesToUnarmed", true)},
-	"modifiers to claw attack speed also apply to unarmed attack speed":                                       []mod.Mod{mod.NewFlag("ClawAttackSpeedAppliesToUnarmed", true)},
-	"modifiers to claw attack speed also apply to unarmed attack speed with melee skills":                     []mod.Mod{mod.NewFlag("ClawAttackSpeedAppliesToUnarmed", true)},
-	"modifiers to claw critical strike chance also apply to unarmed":                                          []mod.Mod{mod.NewFlag("ClawCritChanceAppliesToUnarmed", true)},
+	"modifiers to claw damage also apply to unarmed":                                      []mod.Mod{mod.NewFlag("ClawDamageAppliesToUnarmed", true)},
+	"modifiers to claw damage also apply to unarmed attack damage":                        []mod.Mod{mod.NewFlag("ClawDamageAppliesToUnarmed", true)},
+	"modifiers to claw damage also apply to unarmed attack damage with melee skills":      []mod.Mod{mod.NewFlag("ClawDamageAppliesToUnarmed", true)},
+	"modifiers to claw attack speed also apply to unarmed":                                []mod.Mod{mod.NewFlag("ClawAttackSpeedAppliesToUnarmed", true)},
+	"modifiers to claw attack speed also apply to unarmed attack speed":                   []mod.Mod{mod.NewFlag("ClawAttackSpeedAppliesToUnarmed", true)},
+	"modifiers to claw attack speed also apply to unarmed attack speed with melee skills": []mod.Mod{mod.NewFlag("ClawAttackSpeedAppliesToUnarmed", true)},
+	"modifiers to claw critical strike chance also apply to unarmed":                      []mod.Mod{mod.NewFlag("ClawCritChanceAppliesToUnarmed", true)},
+	"can attack as though using a claw while main hand is empty":                          []mod.Mod{FLAG("CanAttackAsClawUnarmed")},
+	`increases and reductions to light radius also apply to life regeneration rate at (\d+)% value`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("LightRadiusAppliesToLifeRegen", "MAX", num)}, ""
+	},
+	`increases and reductions to mana regeneration rate also apply to energy shield recharge rate at (\d+)% of their value`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("ManaRegenAppliesToEnergyShieldRecharge", "MAX", num)}, ""
+	},
+	`skills socketed in equipped boots have (\d+)% increased mana cost efficiency`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("ManaCostEfficiency", "INC", num).Tag(mod.SocketedIn("Boots"))}, ""
+	},
 	"modifiers to claw critical strike chance also apply to unarmed attack critical strike chance":            []mod.Mod{mod.NewFlag("ClawCritChanceAppliesToUnarmed", true)},
 	"modifiers to claw critical strike chance also apply to unarmed critical strike chance with melee skills": []mod.Mod{mod.NewFlag("ClawCritChanceAppliesToUnarmed", true)},
 	"increases and reductions to light radius also apply to accuracy":                                         []mod.Mod{mod.NewFlag("LightRadiusAppliesToAccuracy", true)},
@@ -5769,6 +5886,13 @@ var specialModList = map[string]interface{}{
 			MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: mod.NewFloat("FireDamageTakenOverTime", mod.TypeIncrease, num)}).Tag(mod.ActorCondition("enemy", "Chilled")),
 		}, ""
 	},
+	`damaging ailments inflicted by minions deal damage (\d+)% faster`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{
+			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("IgniteBurnFaster", "INC", num)}),
+			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("BleedFaster", "INC", num)}),
+			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("PoisonFaster", "INC", num)}),
+		}, ""
+	},
 	`damaging ailments deal damage (\d+)% faster`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("IgniteBurnFaster", mod.TypeIncrease, num), mod.NewFloat("BleedFaster", mod.TypeIncrease, num), mod.NewFloat("PoisonFaster", mod.TypeIncrease, num)}, ""
 	},
@@ -5927,7 +6051,7 @@ var specialModList = map[string]interface{}{
 		FLAG("FireCanSap").Tag(mod.Condition("TwoHighestAttributesEqual")),
 		FLAG("ChaosCanSap").Tag(mod.Condition("TwoHighestAttributesEqual")),
 	},
-	"critical strikes do not inherently apply non-damaging ailments": []mod.Mod{
+	`critical strikes do not inherently [ia][np][fp]l[iy]c?t? non-damaging ailments`: []mod.Mod{
 		mod.NewFlag("CritsDontAlwaysChill", true),
 		mod.NewFlag("CritsDontAlwaysFreeze", true),
 		mod.NewFlag("CritsDontAlwaysShock", true),
@@ -5939,6 +6063,7 @@ var specialModList = map[string]interface{}{
 	"melee attacks cause bleeding":                       []mod.Mod{MOD("BleedChance", "BASE", 100).Flag(mod.MFlagMelee)},
 	"attacks cause bleeding when hitting cursed enemies": []mod.Mod{MOD("BleedChance", "BASE", 100).Flag(mod.MFlagAttack).Tag(mod.ActorCondition("enemy", "Cursed"))},
 	"melee critical strikes cause bleeding":              []mod.Mod{MOD("BleedChance", "BASE", 100).Flag(mod.MFlagMelee).Tag(mod.Condition("CriticalStrike"))},
+	"melee critical strikes poison the enemy":            []mod.Mod{MOD("PoisonChance", "BASE", 100).Flag(mod.MFlagMelee).Tag(mod.Condition("CriticalStrike"))},
 	"causes bleeding on melee critical strike":           []mod.Mod{MOD("BleedChance", "BASE", 100).Flag(mod.MFlagMelee).Tag(mod.Condition("CriticalStrike"))},
 	`melee critical strikes have (\d+)% chance to cause bleeding`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
@@ -6036,8 +6161,26 @@ var specialModList = map[string]interface{}{
 	`your chaos damage has (\d+)% chance to poison enemies`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("ChaosPoisonChance", mod.TypeBase, num)}, ""
 	},
-	"melee attacks poison on hit":                 []mod.Mod{MOD("PoisonChance", "BASE", 100).Flag(mod.MFlagMelee)},
-	"triggered spells poison on hit":              []mod.Mod{MOD("PoisonChance", "BASE", 100).KeywordFlag(mod.KeywordFlagSpell).Tag(mod.SkillType(string(data.SkillTypeTriggered)))},
+	"melee attacks poison on hit":    []mod.Mod{MOD("PoisonChance", "BASE", 100).Flag(mod.MFlagMelee)},
+	"triggered spells poison on hit": []mod.Mod{MOD("PoisonChance", "BASE", 100).KeywordFlag(mod.KeywordFlagSpell).Tag(mod.SkillType(string(data.SkillTypeTriggered)))},
+	"all damage can ignite against cursed enemies": []mod.Mod{
+		FLAG("PhysicalCanIgnite").Tag(mod.ActorCondition("enemy", "Cursed")),
+		FLAG("ColdCanIgnite").Tag(mod.ActorCondition("enemy", "Cursed")),
+		FLAG("LightningCanIgnite").Tag(mod.ActorCondition("enemy", "Cursed")),
+		FLAG("ChaosCanIgnite").Tag(mod.ActorCondition("enemy", "Cursed")),
+	},
+	"all damage can shock against cursed enemies": []mod.Mod{
+		FLAG("PhysicalCanShock").Tag(mod.ActorCondition("enemy", "Cursed")),
+		FLAG("FireCanShock").Tag(mod.ActorCondition("enemy", "Cursed")),
+		FLAG("ColdCanShock").Tag(mod.ActorCondition("enemy", "Cursed")),
+		FLAG("ChaosCanShock").Tag(mod.ActorCondition("enemy", "Cursed")),
+	},
+	"all damage can freeze against cursed enemies": []mod.Mod{
+		FLAG("PhysicalCanFreeze").Tag(mod.ActorCondition("enemy", "Cursed")),
+		FLAG("LightningCanFreeze").Tag(mod.ActorCondition("enemy", "Cursed")),
+		FLAG("FireCanFreeze").Tag(mod.ActorCondition("enemy", "Cursed")),
+		FLAG("ChaosCanFreeze").Tag(mod.ActorCondition("enemy", "Cursed")),
+	},
 	"always poison on hit against cursed enemies": []mod.Mod{MOD("PoisonChance", "BASE", 100).Tag(mod.ActorCondition("enemy", "Cursed"))},
 	`melee critical strikes have (\d+)% chance to poison the enemy`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
@@ -6052,6 +6195,9 @@ var specialModList = map[string]interface{}{
 	"wh[ie][ln]e? at maximum frenzy charges, attacks poison enemies": []mod.Mod{MOD("PoisonChance", "BASE", 100).Flag(mod.MFlagAttack).Tag(mod.StatThresholdStat("FrenzyCharges", "FrenzyChargesMax"))},
 	`traps and mines have a (\d+)% chance to poison on hit`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("PoisonChance", "BASE", num).KeywordFlag(mod.KeywordFlagTrap).KeywordFlag(mod.KeywordFlagMine)}, ""
+	},
+	`poisons you inflict deal damage (\d+)% slower`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("PoisonFaster", "INC", -num)}, ""
 	},
 	`poisons you inflict deal damage (\d+)% faster`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("PoisonFaster", mod.TypeIncrease, num)}, ""
@@ -6213,6 +6359,7 @@ var specialModList = map[string]interface{}{
 	"your damage with hits is lucky":                            []mod.Mod{mod.NewFlag("LuckyHits", true)},
 	"elemental damage with hits is lucky while you are shocked": []mod.Mod{FLAG("ElementalLuckHits").Tag(mod.Condition("Shocked"))},
 	"your damage with hits is lucky while on low life":          []mod.Mod{FLAG("LuckyHits").Tag(mod.Condition("LowLife"))},
+	"damage with hits is lucky while your offhand is magic":     []mod.Mod{FLAG("LuckyHits").Tag(mod.Condition("MagicItemInWeapon 2"))},
 	"damage with hits is unlucky":                               []mod.Mod{FLAG("UnluckyHits")},
 	"chaos damage with hits is lucky":                           []mod.Mod{FLAG("ChaosLuckyHits")},
 	`lightning damage with hits is lucky if you['\s]h?a?ve blocked spell damage recently`: []mod.Mod{
@@ -6439,6 +6586,9 @@ var specialModList = map[string]interface{}{
 	`if diamond flask charges are consumed, (\d+)% increased critical strike chance`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("CritChance", "INC", num).Tag(mod.SkillType(string(data.SkillTypeTriggered)).Neg(true)).Tag(mod.SkillType(string(data.SkillTypeChannel)).Neg(true)).Tag(mod.Condition("HaveDiamondFlask"))}, ""
 	},
+	`if diamond flask charges are consumed, \+(\d+)% to critical strike multiplier`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("CritMultiplier", "BASE", num).Tag(mod.SkillType(string(data.SkillTypeTriggered)).Neg(true)).Tag(mod.SkillType(string(data.SkillTypeChannel)).Neg(true)).Tag(mod.Condition("HaveDiamondFlask"))}, ""
+	},
 	`if bismuth flask charges are consumed, penetrate (\d+)% elemental resistances`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ElementalPenetration", "BASE", num).Tag(mod.SkillType(string(data.SkillTypeTriggered)).Neg(true)).Tag(mod.SkillType(string(data.SkillTypeChannel)).Neg(true)).Tag(mod.Condition("HaveBismuthFlask"))}, ""
 	},
@@ -6555,6 +6705,12 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: FLAG("Condition:Hindered").Tag(mod.MultiplierThreshold("CurseExpired").Threshold(num)).Tag(&mod.ActorConditionTag{TagType: mod.TypeActorCondition, VariableList: []string{"Cursed"}})})}, ""
 	},
 	"your travel skills critically strike once every 3 uses": []mod.Mod{FLAG("Every3UseCrit").Tag(mod.SkillType(string(data.SkillTypeTravel)))},
+	// ordered fate. technically there is a fourth contextual line specifying
+	// the skillTypes, but these are assumed here as nothing else uses these
+	// lines
+	"every second time you cast each spell, gain mana equal to its upfront cost":                                                                      []mod.Mod{FLAG("Every2UseManaCostRefund").Tag(mod.SkillType(string(data.SkillTypeSpell))).Tag(mod.SkillType(string(data.SkillTypeHasReservation), string(data.SkillTypeDuration), string(data.SkillTypeChannel)).Neg(true))},
+	"every fourth time you cast each spell, damage of its hits is lucky":                                                                              []mod.Mod{MOD("LuckyHitsChance", "BASE", 25).Tag(mod.SkillType(string(data.SkillTypeSpell))).Tag(mod.SkillType(string(data.SkillTypeHasReservation), string(data.SkillTypeDuration), string(data.SkillTypeChannel)).Neg(true))},
+	"every sixth time you cast each spell, all hits are critically strikes these effects do not apply to reservation, duration or channelling spells": []mod.Mod{FLAG("Every6UseCrit").Tag(mod.SkillType(string(data.SkillTypeSpell))).Tag(mod.SkillType(string(data.SkillTypeHasReservation), string(data.SkillTypeDuration), string(data.SkillTypeChannel)).Neg(true))},
 	`all hits with your next non-channelling attack within (\d+) seconds of taking a critical strike will be critical strikes`: []mod.Mod{
 		MOD("CritChance", "OVERRIDE", 100).Tag(mod.Condition("BeenCritRecently")).Tag(mod.SkillType(string(data.SkillTypeChannel)).Neg(true)).Tag(mod.SkillType(string(data.SkillTypeAttack))),
 	},
@@ -6905,12 +7061,26 @@ var specialModList = map[string]interface{}{
 		return []mod.Mod{
 			MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: mod.NewFloat("MovementSpeed", mod.TypeIncrease, num)}).Tag(mod.Condition("MinionsCreatedRecently"))}, ""
 	},
+	"your minions gain your chance to suppress spell damage": []mod.Mod{FLAG("MinionsGainYourSpellSuppressionChance")},
+	"your minions have no armour or maximum energy shield": []mod.Mod{
+		MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("Armour", "OVERRIDE", 0)}),
+		MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("EnergyShield", "OVERRIDE", 0)}),
+	},
 	"minions poison enemies on hit": []mod.Mod{MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: mod.NewFloat("PoisonChance", mod.TypeBase, 100)})},
 	`minions have (\d+)% chance to poison enemies on hit`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: mod.NewFloat("PoisonChance", mod.TypeBase, num)})}, ""
 	},
 	`(\d+)% increased minion damage if you have hit recently`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: mod.NewFloat("Damage", mod.TypeIncrease, num)}).Tag(mod.Condition("HitRecently"))}, ""
+	},
+	"minions created recently have onslaught": []mod.Mod{MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: FLAG("Condition:Onslaught")}).Tag(mod.Condition("MinionsCreatedRecently"))},
+	// Check whether the player hit recently, rather than checking the minion.
+	`minions deal (\d+)% increased damage if you've hit recently`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("Damage", "INC", num)}).Tag(mod.Condition("HitRecently"))}, ""
+	},
+	// Check whether the player used a minion skill recently, rather than checking the minion.
+	`minions have (\d+)% increased movement speed if you've used a minion skill recently`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: MOD("MovementSpeed", "INC", num)}).Tag(mod.Condition("UsedMinionSkillRecently"))}, ""
 	},
 	`(\d+)% increased minion damage if you've used a minion skill recently`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("MinionModifier", "LIST", mod.MinionModifier{Mod: mod.NewFloat("Damage", mod.TypeIncrease, num)}).Tag(mod.Condition("UsedMinionSkillRecently"))}, ""
@@ -7154,6 +7324,8 @@ var specialModList = map[string]interface{}{
 	`attacks [hf][ai][vr]e (\d+) additional projectiles`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ProjectileCount", "BASE", num).Flag(mod.MFlagAttack)}, ""
 	},
+	"skills fire an additional projectile if you've been hit recently":              []mod.Mod{MOD("ProjectileCount", "BASE", 1).Tag(mod.Condition("BeenHitRecently"))},
+	"skills fire an additional projectile if you've used a movement skill recently": []mod.Mod{MOD("ProjectileCount", "BASE", 1).Tag(mod.Condition("UsedMovementSkillRecently"))},
 	`spells [hf][ai][vr]e (\d+) additional projectiles`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ProjectileCount", "BASE", num).Flag(mod.MFlagSpell)}, ""
 	},
@@ -7243,6 +7415,9 @@ var specialModList = map[string]interface{}{
 	},
 	"fire at most 1 projectile": []mod.Mod{FLAG("SingleProjectile")},
 	"attack skills fire an additional projectile while wielding a claw or dagger": []mod.Mod{MOD("ProjectileCount", "BASE", 1).Flag(mod.MFlagAttack).Tag(mod.ModFlagOr(mod.MFlagClaw | mod.MFlagDagger))},
+	`skills fire (\d+) additional projectiles for 4 seconds after you consume a total of 8 steel shards`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("ProjectileCount", "BASE", num).Tag(mod.Condition("Consumed8SteelShardsRecently"))}, ""
+	},
 	`skills fire (\d+) additional projectiles for 4 seconds after you consume a total of 12 steel shards`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
 			MOD("ProjectileCount", "BASE", num).Tag(mod.Condition("Consumed12SteelShardsRecently")),
@@ -7295,8 +7470,12 @@ var specialModList = map[string]interface{}{
 		mod.NewFloat("InstantLifeLeech", mod.TypeBase, 100).Tag(mod.Condition("UsingFlask")),
 		mod.NewFloat("InstantManaLeech", mod.TypeBase, 100).Tag(mod.Condition("UsingFlask")),
 	},
-	"life and mana leech from critical strikes are instant":                                   []mod.Mod{mod.NewFloat("InstantLifeLeech", mod.TypeBase, 100).Tag(mod.Condition("CriticalStrike")), mod.NewFloat("InstantManaLeech", mod.TypeBase, 100).Tag(mod.Condition("CriticalStrike"))},
-	"gain life and mana from leech instantly during effect":                                   []mod.Mod{mod.NewFloat("InstantLifeLeech", mod.TypeBase, 100).Tag(mod.Condition("UsingFlask")), mod.NewFloat("InstantManaLeech", mod.TypeBase, 100).Tag(mod.Condition("UsingFlask"))},
+	"life and mana leech from critical strikes are instant": []mod.Mod{mod.NewFloat("InstantLifeLeech", mod.TypeBase, 100).Tag(mod.Condition("CriticalStrike")), mod.NewFloat("InstantManaLeech", mod.TypeBase, 100).Tag(mod.Condition("CriticalStrike"))},
+	"gain life and mana from leech instantly during effect": []mod.Mod{mod.NewFloat("InstantLifeLeech", mod.TypeBase, 100).Tag(mod.Condition("UsingFlask")), mod.NewFloat("InstantManaLeech", mod.TypeBase, 100).Tag(mod.Condition("UsingFlask"))},
+	"life leech from critical strikes is instant": []mod.Mod{
+		MOD("InstantLifeLeech", "BASE", 100).Tag(mod.Condition("CriticalStrike")),
+	},
+	"you cannot regenerate or recoup life":                                                    []mod.Mod{FLAG("NoLifeRegen"), FLAG("CannotRecoupLife")},
 	"with 5 corrupted items equipped: life leech recovers based on your chaos damage instead": []mod.Mod{FLAG("LifeLeechBasedOnChaosDamage").Tag(mod.MultiplierThreshold("CorruptedItem").Threshold(5))},
 	//pob:src/Modules/ModParser.lua:2475-2477
 	`you have everlasting sacrifice if at least (\d+) corrupted items are equipped`: func(num float64, captures []string) ([]mod.Mod, string) {
@@ -8015,6 +8194,21 @@ var specialModList = map[string]interface{}{
 	`increases and reductions to effect of flasks applied to you also applies to effect of arcane surge on you at (\d+)% of their value`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("FlaskEffectToArcaneSurgeEffect", "BASE", num)}, ""
 	},
+	`iron flasks applied to you have (\d+)% increased effect`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("IronFlaskEffect", "INC", num).Tag(mod.ActorCondition("player"))}, ""
+	},
+	`granite flasks applied to you have (\d+)% increased effect`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("GraniteFlaskEffect", "INC", num).Tag(mod.ActorCondition("player"))}, ""
+	},
+	`ruby flasks applied to you have (\d+)% increased effect`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("RubyFlaskEffect", "INC", num).Tag(mod.ActorCondition("player"))}, ""
+	},
+	`sapphire flasks applied to you have (\d+)% increased effect`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("SapphireFlaskEffect", "INC", num).Tag(mod.ActorCondition("player"))}, ""
+	},
+	`topaz flasks applied to you have (\d+)% increased effect`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("TopazFlaskEffect", "INC", num).Tag(mod.ActorCondition("player"))}, ""
+	},
 	`flasks applied to you have (\d+)% increased effect`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("FlaskEffect", mod.TypeIncrease, num).Tag(mod.ActorCondition("player"))}, ""
 	},
@@ -8057,13 +8251,21 @@ var specialModList = map[string]interface{}{
 	"tinctures inflict weeping wounds instead of mana burn": []mod.Mod{mod.NewFlag("Condition:WeepingWoundsInsteadOfManaBurn", true)},
 	"tincture effects also apply to ranged weapons":         []mod.Mod{mod.NewFlag("TinctureRangedWeapons", true)},
 	"you can have an additional tincture active":            []mod.Mod{mod.NewFloat("TinctureLimit", mod.TypeBase, 1)},
+	`you can have (\d+) additional tinctures active`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("TinctureLimit", "BASE", num)}, ""
+	},
 	`(\d+)% increased tincture cooldown recovery rate`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("TinctureCooldownRecovery", mod.TypeIncrease, num)}, ""
 	},
 	`adds (\d+) passive skills`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("JewelData", "LIST", mod.JewelData{Key: "clusterJewelNodeCount", Value: num})}, ""
 	},
-	"1 added passive skill is a jewel socket": []mod.Mod{MOD("JewelData", "LIST", mod.JewelData{Key: "clusterJewelSocketCount", Value: 1})},
+	`1 added passive skill is (.+)`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("BlightcoreNotable", "LIST", captures[0])}, ""
+	},
+	"grows four random passive skills when anointed":                  []mod.Mod{},
+	"passive skills grown are influenced by oils used when anointing": []mod.Mod{},
+	"1 added passive skill is a jewel socket":                         []mod.Mod{MOD("JewelData", "LIST", mod.JewelData{Key: "clusterJewelSocketCount", Value: 1})},
 	`(\d+) added passive skills are jewel sockets`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("JewelData", "LIST", mod.JewelData{Key: "clusterJewelSocketCount", Value: num})}, ""
 	},
@@ -8203,6 +8405,7 @@ var specialModList = map[string]interface{}{
 		FLAG("").Tag(mod.Condition("alwaysFinalRepeat")),
 	},
 	//pob:block:src/Modules/ModParser.lua:4077
+	"inflict an additional poison on the same target when you inflict poison with this weapon": []mod.Mod{MOD("AdditionalPoisonStacks", "BASE", 1).Tag(mod.Condition("{Hand}Attack"))},
 	`cannot poison enemies with at least (\d+) poisons? on them`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("PoisonStackLimit", "MIN", num)}, ""
 	},
@@ -8525,6 +8728,9 @@ var specialModList = map[string]interface{}{
 	},
 	"every 16 seconds you gain elemental overload for 8 seconds": []mod.Mod{
 		mod.NewFlag("Condition:HaveAugyre", true),
+	},
+	`when hit, gain a random movement speed modifier from 40% reduced to 100% increased,? until hit again`: []mod.Mod{
+		mod.NewFlag("Condition:HaveGamblesprint", true),
 	},
 	"every 8 seconds, gain avatar of fire for 4 seconds": []mod.Mod{
 		mod.NewFlag("Condition:HaveVulconus", true),
@@ -8874,6 +9080,30 @@ var specialModList = map[string]interface{}{
 	`elusive is removed from you at (\d+)% effect`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{mod.NewFloat("ElusiveEffectMinThreshold", mod.TypeOverride, num)}, ""
 	},
+	// Use the existing nearby-enemy model; distance is not checked.
+	`enemies within ([\d.]+) metres are scorched`: []mod.Mod{MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: FLAG("Condition:Scorched")}), MOD("ScorchBase", "BASE", 10)},
+	// Treat the distance-worded aura as flat added damage for the player and allies, without a metre check.
+	`you and allies within ([\d.]+) metres deal (\d+) to (\d+) additional cold damage`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{
+			MOD("ExtraAura", "LIST", mod.ExtraAura{Mod: MOD("ColdMin", "BASE", utils.Float(captures[1]))}),
+			MOD("ExtraAura", "LIST", mod.ExtraAura{Mod: MOD("ColdMax", "BASE", utils.Float(captures[2]))}),
+		}, ""
+	},
+	`hits have (\d+)% chance to treat enemy monster cold resistance values as inverted`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("HitsInvertColdResChance", "CHANCE", num/100)}, ""
+	},
+	`hits have (\d+)% chance to treat enemy monster fire resistance values as inverted`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("HitsInvertFireResChance", "CHANCE", num/100)}, ""
+	},
+	`hits have (\d+)% chance to treat enemy monster lightning resistance values as inverted`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("HitsInvertLightningResChance", "CHANCE", num/100)}, ""
+	},
+	`skills that cost life have (\d+)% chance to deal double damage`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("DoubleDamageChance", "BASE", num).Tag(mod.StatThreshold("LifeCost", 1))}, ""
+	},
+	`enemies you blind while in sand stance take (\d+)% increased damage`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: MOD("DamageTaken", "INC", num).Tag(mod.Condition("Blinded"))}).Tag(mod.Condition("SandStance"))}, ""
+	},
 	"nearby enemies are scorched": []mod.Mod{
 		MOD("EnemyModifier", "LIST", mod.EnemyModifier{Mod: mod.NewFlag("Condition:Scorched", true)}),
 		mod.NewFloat("ScorchBase", mod.TypeBase, 10),
@@ -9136,31 +9366,15 @@ var specialModList = map[string]interface{}{
 	"manifeste?d? dancing dervishe?s? disables both weapon slots":                           []mod.Mod{},
 	"manifeste?d? dancing dervishe?s? dies? when rampage ends":                              []mod.Mod{},
 	// Legion modifiers
-	`bathed in the blood of (\d+) sacrificed in the name of (.+)`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("JewelData", "LIST", mod.JewelData{Key: "conqueredBy", Value: mod.LegionJewel{ID: int(num), Conqueror: conquerorList[strings.ToLower(captures[1])]}})}, ""
-	},
-	`carved to glorify (\d+) new faithful converted by high templar (.+)`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("JewelData", "LIST", mod.JewelData{Key: "conqueredBy", Value: mod.LegionJewel{ID: int(num), Conqueror: conquerorList[strings.ToLower(captures[1])]}})}, ""
-	},
-	`commanded leadership over (\d+) warriors under (.+)`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("JewelData", "LIST", mod.JewelData{Key: "conqueredBy", Value: mod.LegionJewel{ID: int(num), Conqueror: conquerorList[strings.ToLower(captures[1])]}})}, ""
-	},
-	`commissioned (\d+) coins to commemorate (.+)`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("JewelData", "LIST", mod.JewelData{Key: "conqueredBy", Value: mod.LegionJewel{ID: int(num), Conqueror: conquerorList[strings.ToLower(captures[1])]}})}, ""
-	},
-	`denoted service of (\d+) dekhara in the akhara of (.+)`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("JewelData", "LIST", mod.JewelData{Key: "conqueredBy", Value: mod.LegionJewel{ID: int(num), Conqueror: conquerorList[strings.ToLower(captures[1])]}})}, ""
-	},
-	`remembrancing (\d+) songworthy deeds by the line of (.+)`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("JewelData", "LIST", mod.JewelData{Key: "conqueredBy", Value: mod.LegionJewel{ID: int(num), Conqueror: conquerorList[strings.ToLower(captures[1])]}})}, ""
-	},
-	`subjugating (\d+) souls in the thrall of (.+)`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("JewelData", "LIST", mod.JewelData{Key: "conqueredBy", Value: mod.LegionJewel{ID: int(num), Conqueror: conquerorList[strings.ToLower(captures[1])]}})}, ""
-	},
-	`binding (\d+) souls to phylacteries to sustain (.+)`: func(num float64, captures []string) ([]mod.Mod, string) {
-		return []mod.Mod{MOD("JewelData", "LIST", mod.JewelData{Key: "conqueredBy", Value: mod.LegionJewel{ID: int(num), Conqueror: conquerorList[strings.ToLower(captures[1])]}})}, ""
-	},
-	`passives in radius are conquered by the (\D+)`: []mod.Mod{},
+	`bathed in the blood of (\d+) sacrificed in the name of (.+)`:         timelessJewel,
+	`carved to glorify (\d+) new faithful converted by high templar (.+)`: timelessJewel,
+	`commanded leadership over (\d+) warriors under (.+)`:                 timelessJewel,
+	`commissioned (\d+) coins to commemorate (.+)`:                        timelessJewel,
+	`denoted service of (\d+) dekhara in the akhara of (.+)`:              timelessJewel,
+	`remembrancing (\d+) songworthy deeds by the line of (.+)`:            timelessJewel,
+	`subjugating (\d+) souls in the thrall of (.+)`:                       timelessJewel,
+	`binding (\d+) souls to phylacteries to sustain (.+)`:                 timelessJewel,
+	`passives in radius are conquered by the (\D+)`:                       []mod.Mod{},
 	"historic": []mod.Mod{},
 	`\+(\d+) to maximum life per allocated journey tattoo of the body`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
@@ -11156,16 +11370,49 @@ var (
 	modCache   = make(map[string]*ModCacheEntry)
 )
 
-//pob:src/Modules/ModParser.lua:6999-7021
+//pob:src/Modules/ModParser.lua:7122-7128
+func parseModOrdered(line string) ([]mod.Mod, string) {
+	modList, extra := parseMod(line, 1)
+	if modList != nil && extra != "" {
+		modList, extra = parseMod(line, 2)
+	}
+	return modList, extra
+}
+
+//pob:src/Modules/ModParser.lua:7130-7140
+var nearbyRewrites = []struct {
+	pattern *regexp.Regexp
+	repl    string
+}{
+	{regexp.MustCompile(`^enemy monsters within [\d.]+ metres? have `), "nearby enemy monsters' "},
+	{regexp.MustCompile(`while at least (\d+) enemies within [\d.]+ metres?`), "while at least ${1} enemies are nearby"},
+	{regexp.MustCompile(`while you have an ally within [\d.]+ metres?`), "while you have at least 1 nearby ally"},
+	{regexp.MustCompile(`when you or allies within [\d.]+ metres?`), "when you or a nearby ally"},
+	{regexp.MustCompile(`(rare or unique enem[a-zA-Z]+) within [\d.]+ metres?`), "${1} nearby"},
+	{regexp.MustCompile(`(applies .*? to enemies) within [\d.]+ metres?`), "${1} near it"},
+	{regexp.MustCompile(`([a-zA-Z]+) within [\d.]+ metres?`), "nearby ${1}"},
+}
+
+var nearbyMetreRe = regexp.MustCompile(`within [\d.]+ metre`)
+
+//pob:src/Modules/ModParser.lua:7146-7171
 func ParseMod(line string, isComb bool) *ModCacheEntry {
 	modCacheMu.RLock()
 	cached, ok := modCache[line]
 	modCacheMu.RUnlock()
 
 	if !ok {
-		modList, extra := parseMod(line, 1)
-		if modList != nil && extra != "" {
-			modList, extra = parseMod(line, 2)
+		modList, extra := parseModOrdered(line)
+		// 3.30 replaced "nearby" with explicit distances. Lines that don't parse are retried with the old wording
+		if modList == nil || extra != "" {
+			if nearbyLine := strings.ToLower(line); nearbyMetreRe.MatchString(nearbyLine) {
+				for _, rewrite := range nearbyRewrites {
+					nearbyLine = rewrite.pattern.ReplaceAllString(nearbyLine, rewrite.repl)
+				}
+				if nearbyModList, nearbyExtra := parseModOrdered(nearbyLine); nearbyModList != nil && nearbyExtra == "" {
+					modList, extra = nearbyModList, ""
+				}
+			}
 		}
 		parsed := &ModCacheEntry{
 			ModList: modList,

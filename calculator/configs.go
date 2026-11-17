@@ -124,6 +124,7 @@ var configOrder = []string{
 	"conditionMoving",
 	"conditionInsane",
 	"conditionFullLife",
+	"missingUnreservedLifePercent",
 	"conditionLowLife",
 	"conditionFullMana",
 	"conditionLowMana",
@@ -190,6 +191,7 @@ var configOrder = []string{
 	"FlickerStrikeBypassCD",
 	"frostboltExposure",
 	"frostShieldStages",
+	"goreblossomBlooms",
 	"greaterHarbingerOfTimeSlipstream",
 	"harbingerOfTimeSlipstream",
 	"multiplierHexDoom",
@@ -459,6 +461,7 @@ var configOrder = []string{
 	"conditionBeenHitByAttackRecently",
 	"conditionBeenCritRecently",
 	"conditionConsumed12SteelShardsRecently",
+	"conditionConsumed8SteelShardsRecently",
 	"conditionGainedPowerChargeRecently",
 	"conditionGainedFrenzyChargeRecently",
 	"conditionBeenSavageHitRecently",
@@ -667,6 +670,7 @@ var configOrder = []string{
 	"conditionSummonedZombieInPast8Sec",
 	"weepingBlackStacks",
 	"multiplierWoCExpiredDuration",
+	"witchhuntersPyreBurningDebuffs",
 	"absolutionSkillDamageCountedOnce",
 	"dominatingBlowSkillDamageCountedOnce",
 	"holyStrikeSkillDamageCountedOnce",
@@ -745,7 +749,7 @@ var configCountAllowZero = map[string]bool{
 	"enemyArmour": true, "enemySpeed": true, "enemyCritChance": true, "enemyCritDamage": true,
 	"enemyPhysicalDamage": true, "enemyPhysicalOverwhelm": true, "enemyLightningDamage": true,
 	"enemyLightningPen": true, "enemyColdDamage": true, "enemyColdPen": true, "enemyFireDamage": true,
-	"enemyFirePen": true, "enemyChaosDamage": true, "aspectOfLunarisLunarProtection": true,
+	"enemyFirePen": true, "enemyChaosDamage": true, "aspectOfLunarisLunarProtection": true, "missingUnreservedLifePercent": true,
 	"aspectOfLunarisLunarResistance": true, "aspectOfSolarisSunscaldStacks": true,
 }
 
@@ -909,6 +913,11 @@ var configurations = map[string]ConfigApplyFunc{
 			return
 		}
 		modList.AddMod(mod.NewFlag("Condition:FullLife", true).Source("Config"))
+	},
+	//pob:block:src/Modules/ConfigOptions.lua:177-181
+	"missingUnreservedLifePercent": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		v := configFloat(val)
+		modList.AddMod(mod.NewFloat("MissingUnreservedLifePercent", mod.TypeOverride, math.Max(0, math.Min(100, v))).Source("Config"))
 	},
 	"conditionLowLife": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
@@ -1301,6 +1310,14 @@ var configurations = map[string]ConfigApplyFunc{
 	},
 	"frostShieldStages": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		modList.AddMod(mod.NewFloat("Multiplier:FrostShieldStage", mod.TypeBase, configFloat(val)).Source("Config"))
+	},
+	//pob:block:src/Modules/ConfigOptions.lua:479-481
+	"goreblossomBlooms": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		v, ok := configCount(val)
+		if !ok {
+			return
+		}
+		modList.AddMod(mod.NewFloat("Multiplier:GoreblossomBloom", mod.TypeOverride, v).Source("Config").Tag(mod.Condition("Combat")))
 	},
 	"greaterHarbingerOfTimeSlipstream": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
@@ -2775,6 +2792,13 @@ var configurations = map[string]ConfigApplyFunc{
 		}
 		modList.AddMod(mod.NewFlag("Condition:Consumed12SteelShardsRecently", true).Source("Config").Tag(mod.Condition("Combat")))
 	},
+	//pob:block:src/Modules/ConfigOptions.lua:1404-1406
+	"conditionConsumed8SteelShardsRecently": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		if !configChecked(val) {
+			return
+		}
+		modList.AddMod(mod.NewFlag("Condition:Consumed8SteelShardsRecently", true).Source("Config").Tag(mod.Condition("Combat")))
+	},
 	"conditionGainedPowerChargeRecently": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
 		if !configChecked(val) {
 			return
@@ -4000,6 +4024,14 @@ var configurations = map[string]ConfigApplyFunc{
 			return
 		}
 		modList.AddMod(mod.NewFloat("Multiplier:WoCDurationExpired", mod.TypeBase, min(v, 100)).Source("Config").Tag(mod.Condition("Effective")))
+	},
+	//pob:block:src/Modules/ConfigOptions.lua:769-771
+	"witchhuntersPyreBurningDebuffs": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {
+		v, ok := configCount(val)
+		if !ok {
+			return
+		}
+		modList.AddMod(mod.NewFloat("Multiplier:WitchhuntersPyreAdditionalBurningDebuff", mod.TypeBase, math.Max(v-1, 0)).Source("Config").Tag(mod.Condition("Effective")))
 	},
 	//pob:block:src/Modules/ConfigOptions.lua:772-774
 	"absolutionSkillDamageCountedOnce": func(val interface{}, modList *moddb.ModList, enemyModList *moddb.ModList) {

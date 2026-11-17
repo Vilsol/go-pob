@@ -1081,15 +1081,15 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 			activeWeaponSet = 2
 		}
 
-		var matchesSocket map[int]map[int]bool
+		var socketIndexByGem map[int]map[int]int
 		if selectedSkillSet < len(build.Skills.SkillSets) {
-			matchesSocket = buildMatchesSocket(env, build.Skills.SkillSets[selectedSkillSet].Skills)
+			socketIndexByGem = buildSocketIndexByGem(build.Skills.SkillSets[selectedSkillSet].Skills)
 		}
 
 		imbuedSupportBySlot := buildImbuedSupportBySlot(build.Skills.SkillSets[selectedSkillSet].Skills)
 
 		slotSupportLists := collectSlotSupportLists(env, build.Skills.SkillSets[selectedSkillSet].Skills,
-			indexOrder, env.MainSocketGroup, activeWeaponSet, matchesSocket, imbuedSupportBySlot)
+			indexOrder, env.MainSocketGroup, activeWeaponSet, socketIndexByGem, imbuedSupportBySlot)
 
 		processedSockets := make(map[*pob.Gem]bool)
 		reqOverride := make(map[*pob.Gem]*int)
@@ -1148,11 +1148,11 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 					}
 				}
 
+				//pob:block:src/Modules/CalcSetup.lua:1741
+				socketedSupportsDisabled := env.ModDB.Flag(groupCfg, "SocketedSupportGemsHaveNoEffect")
 				for gemIndex, gemInstance := range socketGroup.Gems {
-					socketQuality := 0
-					if matchesSocket[socketGroupIndex][gemIndex] {
-						socketQuality = data.MatchingSocketQualityBonus
-					}
+					gemDataForSocket, bareGrantedEffectForSocket := resolveGemInstance(gemInstance)
+					socketQuality := getMatchingSocketQuality(env, groupCfg.SlotName, gemDataForSocket, bareGrantedEffectForSocket, socketIndexByGem[socketGroupIndex][gemIndex])
 					// Add support gems from this group
 					if env.Mode == OutputModeMain {
 					}
@@ -1180,7 +1180,10 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 								applySocketMods(env, gemData, groupCfg, gemIndex+1)
 								countGroupGemColour(groupCfg, gemData, gemInstance.SkillID)
 							}
-							supportList = addBestSupport(supportEffect, supportList, env.Mode)
+							//pob:block:src/Modules/CalcSetup.lua:1792-1796
+							if !socketedSupportsDisabled {
+								supportList = addBestSupport(supportEffect, supportList, env.Mode)
+							}
 						}
 
 						_ = processGrantedEffect
@@ -1212,10 +1215,8 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 
 				// Create active skills
 				for gemIndex, gemInstance := range socketGroup.Gems {
-					socketQuality := 0
-					if matchesSocket[socketGroupIndex][gemIndex] {
-						socketQuality = data.MatchingSocketQualityBonus
-					}
+					gemDataForSocket, bareGrantedEffectForSocket := resolveGemInstance(gemInstance)
+					socketQuality := getMatchingSocketQuality(env, groupCfg.SlotName, gemDataForSocket, bareGrantedEffectForSocket, socketIndexByGem[socketGroupIndex][gemIndex])
 					gemData, bareGrantedEffect := resolveGemInstance(gemInstance)
 					if gemData == nil && bareGrantedEffect == nil {
 						continue
@@ -1725,6 +1726,8 @@ func collectItemExplodeSources(env *Environment, treeVersion pob.TreeVersion) ([
 	for _, s := range orderedItemSlots {
 		if (s.name == "Graft 1" || s.name == "Graft 2") && !strings.Contains(string(treeVersion), "3_27") {
 			continue
+		} else if strings.HasPrefix(s.name, "Wickerman ") && !strings.Contains(string(treeVersion), "3_30") {
+			continue
 		}
 		if s.name == "Ring 3" && (env.InitialNodeModDB == nil || !env.InitialNodeModDB.Flag(nil, "AdditionalRingSlot")) {
 			continue
@@ -1919,9 +1922,12 @@ func processExplodeSocketGroup(build *pob.PathOfBuilding, explodeSources []Explo
 	group.Gems = gems
 }
 
-//pob:block:src/Modules/CalcSetup.lua:1199-1206
+//pob:block:src/Modules/CalcSetup.lua:1428-1440
 func allocateGrantedPassives(env *Environment, treeVersion pob.TreeVersion) {
 	granted := env.ModDB.List(nil, "GrantedPassive")
+	if env.InitialNodeModDB != nil {
+		granted = append(granted, env.InitialNodeModDB.List(nil, "GrantedPassive")...)
+	}
 	if len(granted) == 0 {
 		return
 	}
@@ -2070,6 +2076,14 @@ type gemPropertyValue struct {
 	mod      mod.Mod
 }
 
+//pob:block:src/Modules/CalcSetup.lua:412-418
+func (v gemPropertyValue) sourceType() string {
+	if v.socketed {
+		return "Item"
+	}
+	return "Global"
+}
+
 func gemPropertyList(env *Environment, cfg *moddb.ListCfg) []gemPropertyValue {
 	values := utils.CastSlice[mod.GemProperty](env.ModDB.List(cfg, "GemProperty"))
 	mods := env.ModDB.Tabulate(mod.TypeList, cfg, "GemProperty")
@@ -2131,7 +2145,7 @@ func applySoulMod(env *Environment, godName string) {
 }
 
 //pob:block:src/Modules/CalcSetup.lua:1604-1732
-func collectSlotSupportLists(env *Environment, skills []pob.Skill, indexOrder []int, mainSocketGroup int, activeWeaponSet int, matchesSocket map[int]map[int]bool, imbuedSupportBySlot map[string][]*poe.GrantedEffect) map[string][]*GemEffect {
+func collectSlotSupportLists(env *Environment, skills []pob.Skill, indexOrder []int, mainSocketGroup int, activeWeaponSet int, socketIndexByGem map[int]map[int]int, imbuedSupportBySlot map[string][]*poe.GrantedEffect) map[string][]*GemEffect {
 	bySlot := map[string][]*GemEffect{}
 	for _, index := range indexOrder {
 		socketGroup := skills[index]
@@ -2149,6 +2163,8 @@ func collectSlotSupportLists(env *Environment, skills []pob.Skill, indexOrder []
 
 		cfg := &moddb.ListCfg{SlotName: slotName}
 		propertyModList := gemPropertyList(env, cfg)
+		//pob:block:src/Modules/CalcSetup.lua:1741
+		socketedSupportsDisabled := env.ModDB.Flag(cfg, "SocketedSupportGemsHaveNoEffect")
 
 		//pob:block:src/Modules/CalcSetup.lua:1725-1730
 		for _, value := range utils.CastSlice[mod.ExtraSupport](env.ModDB.List(cfg, "ExtraSupport")) {
@@ -2184,10 +2200,7 @@ func collectSlotSupportLists(env *Environment, skills []pob.Skill, indexOrder []
 			if gemData == nil && bareGrantedEffect == nil {
 				continue
 			}
-			socketQuality := 0
-			if matchesSocket[index][gemIndex] {
-				socketQuality = data.MatchingSocketQualityBonus
-			}
+			socketQuality := getMatchingSocketQuality(env, slotName, gemData, bareGrantedEffect, socketIndexByGem[index][gemIndex])
 			addIfSupport := func(grantedEffect *poe.GrantedEffect) {
 				if grantedEffect == nil || !grantedEffect.IsSupport {
 					return
@@ -2198,7 +2211,10 @@ func collectSlotSupportLists(env *Environment, skills []pob.Skill, indexOrder []
 				if env.Mode == OutputModeMain {
 					env.setDisplayEffect(index, gemIndex, supportEffect)
 				}
-				bySlot[slotName] = addBestSupport(supportEffect, bySlot[slotName], env.Mode)
+				//pob:block:src/Modules/CalcSetup.lua:1792-1796
+				if !socketedSupportsDisabled {
+					bySlot[slotName] = addBestSupport(supportEffect, bySlot[slotName], env.Mode)
+				}
 			}
 			if bareGrantedEffect != nil {
 				addIfSupport(bareGrantedEffect)
@@ -2645,6 +2661,44 @@ func itemSocketData(item *Item) *ItemData {
 		}
 	}
 	return id
+}
+
+//pob:block:src/Modules/CalcSetup.lua:1664-1674
+func buildSocketIndexByGem(socketGroups []pob.Skill) map[int]map[int]int {
+	socketIndexByGem := make(map[int]map[int]int, len(socketGroups))
+	slotSocketedCounts := make(map[string]int, len(socketGroups))
+	for groupIndex, group := range socketGroups {
+		if group.Slot == "" {
+			continue
+		}
+		socketOffset := slotSocketedCounts[group.Slot]
+		socketIndexByGem[groupIndex] = make(map[int]int, len(group.Gems))
+		for gemIndex := range group.Gems {
+			socketIndexByGem[groupIndex][gemIndex] = socketOffset + gemIndex + 1
+		}
+		slotSocketedCounts[group.Slot] = socketOffset + len(group.Gems)
+	}
+	return socketIndexByGem
+}
+
+// socketIndex is 1-based as in the Lua; 0 means the gem has no socket.
+//
+//pob:src/Modules/CalcSetup.lua:17-31
+func getMatchingSocketQuality(env *Environment, slotName string, gemData *poe.SkillGem, bareGrantedEffect *poe.GrantedEffect, socketIndex int) int {
+	item := env.Player.ItemList[slotName]
+	if item == nil || item.SocketColors == nil {
+		return 0
+	} else if item.SocketColourAlwaysMatches {
+		return data.MatchingSocketQualityBonus
+	}
+	gemColour := ""
+	if colour := gemPrimaryColour(gemData, bareGrantedEffect); colour >= 1 && colour <= len(socketColourIndexNames) {
+		gemColour = socketColourIndexNames[colour-1]
+	}
+	if gemColour != "" && socketIndex >= 1 && socketIndex <= len(item.SocketColors) && item.SocketColors[socketIndex-1] == gemColour {
+		return data.MatchingSocketQualityBonus
+	}
+	return 0
 }
 
 //pob:src/Classes/SkillsTab.lua:1247-1282

@@ -331,6 +331,18 @@ type ExtraSkillMod struct {
 	Mod Mod
 }
 
+func (s ExtraSkillMod) ScaleValue(mult, base float64, limitTotal *float64) Cloneable {
+	scaled := s.Mod.Clone()
+	if v := scaled.Value(); v != nil && v.Type() == ModValueMultiTypeFloat {
+		out := float64(v.Float()*mult) + base
+		if limitTotal != nil {
+			out = min(out, *limitTotal)
+		}
+		v.SetFloat(out)
+	}
+	return ExtraSkillMod{Mod: scaled}
+}
+
 func (s ExtraSkillMod) ScaleNestedMod(scale func(Mod, float64) float64) Cloneable {
 	return ExtraSkillMod{Mod: scaleNestedModValue(s.Mod, scale)}
 }
@@ -375,6 +387,8 @@ type ExtraSkill struct {
 	Triggered     bool
 	Source        interface{}
 	TriggerChance float64
+
+	ItemRequirement *ItemRequirement
 }
 
 func (s ExtraSkill) Clone(pointer bool) Cloneable {
@@ -387,6 +401,10 @@ func (s ExtraSkill) Clone(pointer bool) Cloneable {
 		Source:     s.Source,
 
 		TriggerChance: s.TriggerChance,
+	}
+	if s.ItemRequirement != nil {
+		requirement := *s.ItemRequirement
+		obj.ItemRequirement = &requirement
 	}
 
 	if pointer {

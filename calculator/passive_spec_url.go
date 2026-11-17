@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -23,7 +24,7 @@ func specClassIDs(spec pob.Spec) (int, int, int) {
 	return int(spec.ClassID), int(spec.AscendClassID), secondary
 }
 
-//pob:src/Classes/PassiveSpec.lua:525-570
+//pob:src/Classes/PassiveSpec.lua:545-594
 func EncodeTreeURL(build *pob.PathOfBuilding, prefix string) string {
 	i := build.ActiveSpecIndex()
 	if i < 0 {
@@ -40,11 +41,17 @@ func EncodeTreeURL(build *pob.PathOfBuilding, prefix string) string {
 	var nodes, cluster, mastery []byte
 	nodeCount, clusterCount, masteryCount := 0, 0, 0
 	seen := map[int64]bool{}
+	//pob:block:src/Classes/PassiveSpec.lua:555-560
+	encodeNodeIDList := make([]int64, 0, len(build.Build.PassiveNodes))
 	for _, id := range build.Build.PassiveNodes {
 		if seen[id] {
 			continue
 		}
 		seen[id] = true
+		encodeNodeIDList = append(encodeNodeIDList, id)
+	}
+	slices.Sort(encodeNodeIDList)
+	for _, id := range encodeNodeIDList {
 		if id >= 65536 {
 			c := id - 65536
 			cluster = append(cluster, u16(c)...)

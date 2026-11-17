@@ -584,7 +584,7 @@ type abyssSocket struct {
 	jewel     mod.LegionJewel
 }
 
-//pob:block:src/Classes/PassiveSpec.lua:1111-1117
+//pob:block:src/Classes/PassiveSpec.lua:1135-1141
 func abyssSockets(env *Environment) []abyssSocket {
 	specs := env.Build.Tree.Specs
 	if len(specs) == 0 {
@@ -600,7 +600,12 @@ func abyssSockets(env *Environment) []abyssSocket {
 	out := make([]abyssSocket, 0, 1)
 	for _, socket := range sockets {
 		socketID := strconv.Itoa(socket.NodeID)
-		if _, allocated := env.AllocatedNodes[socketID]; !allocated {
+		socketNode, allocated := env.AllocatedNodes[socketID]
+		if !allocated {
+			continue
+		}
+		//pob:block:src/Classes/PassiveSpec.lua:1140
+		if socketNode.ExpansionJewel != nil && socketNode.ExpansionJewel.Parent != nil {
 			continue
 		}
 		text, ok := byID[socket.ItemID]

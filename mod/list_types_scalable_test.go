@@ -25,6 +25,7 @@ func TestListPayloadsImplementScalableValue(t *testing.T) {
 		"SkillData":      "ModStore.lua's `value.value` branch",
 		"ExtraAura":      "Master of Metal: added damage per Impale (Multiplier, actor=enemy)",
 		"MinionModifier": "Triad Grip: conversion per socket colour (Multiplier)",
+		"ExtraSkillMod":  "more damage per socketed skill gem (Multiplier)",
 	}
 
 	declared := payloadTypesInListTypes(t)
