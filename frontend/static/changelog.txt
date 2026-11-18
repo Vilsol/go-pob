@@ -2,6 +2,7 @@ VERSION[0.11.1][2026/11/18]
 
 --- Fixed ---
 * calculator: auras, triggers, totems and supports follow PoB's own conditions
+* data: the passive tree download retries a connection reset or a 5xx answer
 * item corruption, crafting, tooltips and editor gaps follow PoB 2.68.1
 
 
