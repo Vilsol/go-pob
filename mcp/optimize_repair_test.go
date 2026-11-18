@@ -21,7 +21,7 @@ func overBudget(t *testing.T, s *Server) string {
 func TestOptimizeRepairsAnOverBudgetStart(t *testing.T) {
 	s := testServer(t)
 	h := overBudget(t, s)
-	res := call(t, s, "optimize", map[string]any{"handle": h, "objective": map[string]any{"stat": "MainDPS"},
+	res := call(t, s, "optimize", map[string]any{"handle": h, "objective": map[string]any{"stat": "MainDPS"}, "max_ms": 60000,
 		"slots": []any{map[string]any{"kind": "nodes", "remove": []string{"29933", "40362", "58271", "8001", "12795", "8629", "8872", "6", "9469", "12809", "13807", "15085", "16860", "24528"}}}})
 	pts := res["points"].(map[string]any)
 	if pts["used"].(float64) <= pts["available"].(float64) {
