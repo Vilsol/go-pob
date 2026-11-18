@@ -1,4 +1,17 @@
-VERSION[0.10.0][2026/11/16]
+VERSION[0.11.0][2026/11/18]
+
+--- New ---
+* calculator: PoB 2.68.1's calculation and parser changes
+* game data and the accuracy gate move to 3.30 with PoB 2.68.1's tables
+* the Viscera list, granted-effect descriptions and 3.30 crafting lists from go-pob-data
+* Wickerman equipment, Viscera items and PoB 2.68.1's item and import fixes
+
+--- Fixed ---
+* calculator: Cruelty, Sacrifice and imbued supports follow PoB 2.68.1
+* trade links, tooltips, cluster nodes and tinctures follow PoB 2.68.1
+
+
+VERSION[0.10.0][2026/11/17]
 
 --- New ---
 * mcp: build pricing, budgets, whole-build scans, legality audits and a much stronger optimize for the MCP server
