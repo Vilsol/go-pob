@@ -200,8 +200,17 @@ test('Foulborn toggle and variant groups in the item controls (0280)', async ({ 
 
   // ItemsTab.lua:1871-1885
   const zana = await open("Zana's Ingenuity");
-  await controls.getByRole('combobox', { name: 'Variant', exact: true }).selectOption({ label: 'Mana' });
-  const withMana = (await m.exposition.EditItem(zana, { Kind: 'variantGroup', Index: 1, Value: 3, Second: 0, Float: 0, Text: '' })).unwrap();
+  const [zi] = await m.exposition.DisplayItem(zana);
+  const groups = zi.VariantGroups?.Groups ?? [];
+  const at = groups.findIndex((g) => (g.Options ?? []).some((o) => o.Label === 'Mana'));
+  expect(at, 'vacuity: no variant group offers Mana').toBeGreaterThanOrEqual(0);
+  const mana = groups[at].Options!.find((o) => o.Label === 'Mana')!;
+  await controls
+    .getByRole('combobox', { name: ['Variant', 'Alt variant', 'Alt variant 2', 'Alt variant 3', 'Alt variant 4', 'Alt variant 5'][at], exact: true })
+    .selectOption({ label: 'Mana' });
+  const withMana = (
+    await m.exposition.EditItem(zana, { Kind: 'variantGroup', Index: groups[at].Group, Value: mana.Variant, Second: 0, Float: 0, Text: '' })
+  ).unwrap();
   await expect(box).toHaveValue(withMana);
   app.assertNoErrors();
 });

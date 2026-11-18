@@ -4,6 +4,7 @@ import { test, expect, type Page } from '@playwright/test';
 
 import { App } from './support/app';
 import { buildXml } from './support/builds';
+import { tradeUrlQuery } from './support/trade_url';
 import * as go from './support/go_model';
 import { expectedLines } from './support/stats';
 import * as tree from './support/tree_model';
@@ -71,13 +72,13 @@ test("the timeless search lists the Go model's rows, opens the trade search and 
 
   const popup = context.waitForEvent('page');
   await dlg.getByRole('button', { name: 'Open Trade URL' }).click();
-  const url = new URL((await popup).url());
-  expect(url.pathname).toBe('/trade/search/Standard/');
-  const q = JSON.parse(url.searchParams.get('q') ?? '{}') as { query: { stats: { filters: { id: string; value: { min: number } }[] }[] } };
-  const seeds = q.query.stats[0].filters.map((f) => f.value.min);
+  const link = tradeUrlQuery((await popup).url());
+  expect(new URL(link.base).pathname).toBe('/trade/search/Standard');
+  const q = link.query as { stats: { filters: { id: string; value: { min: number } }[] }[] };
+  const seeds = q.stats[0].filters.map((f) => f.value.min);
   expect(seeds).toHaveLength(11);
   expect(seeds.slice(0, 5)).toEqual(want.rows.map((r) => r.Seed));
-  expect(new Set(q.query.stats[0].filters.map((f) => f.id))).toEqual(new Set(['explicit.pseudo_timeless_jewel_rakiata']));
+  expect(new Set(q.stats[0].filters.map((f) => f.id))).toEqual(new Set(['explicit.pseudo_timeless_jewel_rakiata']));
   await expect(dlg.getByRole('button', { name: 'Open Next Trade URL' })).toBeVisible();
 
   // TimelessJewelListControl.lua:98-311
