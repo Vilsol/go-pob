@@ -35,11 +35,19 @@ jobs:
         with:
           go-version-file: desktop/go.mod
 
+      - name: Cache apt packages
+        uses: actions/cache@v4
+        with:
+          path: ~/apt-archives
+          key: apt-${{ runner.os }}-${{ runner.arch }}-gtk3-webkit41-v1
+
       - name: Install dependencies
-        timeout-minutes: 10
+        timeout-minutes: 25
         run: |
+          mkdir -p ~/apt-archives/partial
           sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update
-          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 install -y --no-install-recommends libgtk-3-dev libwebkit2gtk-4.1-dev glib-networking libglib2.0-bin
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Dir::Cache::Archives="$HOME/apt-archives" install -y --no-install-recommends libgtk-3-dev libwebkit2gtk-4.1-dev glib-networking libglib2.0-bin
+          sudo chown -R "$USER" ~/apt-archives
 
       - name: Test
         working-directory: desktop
@@ -140,10 +148,19 @@ jobs:
         with:
           go-version-file: go.mod
 
+      - name: Cache apt packages
+        uses: actions/cache@v4
+        with:
+          path: ~/apt-archives
+          key: apt-${{ runner.os }}-${{ runner.arch }}-gtk3-webkit41-v1
+
       - name: Install dependencies
+        timeout-minutes: 25
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends libgtk-3-dev libwebkit2gtk-4.1-dev glib-networking libglib2.0-bin
+          mkdir -p ~/apt-archives/partial
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Dir::Cache::Archives="$HOME/apt-archives" install -y --no-install-recommends libgtk-3-dev libwebkit2gtk-4.1-dev glib-networking libglib2.0-bin
+          sudo chown -R "$USER" ~/apt-archives
 
       - uses: actions/download-artifact@v4
         with:
