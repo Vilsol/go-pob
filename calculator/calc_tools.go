@@ -490,6 +490,20 @@ func CalcCanGrantedEffectSupportActiveSkill(grantedEffect *GrantedEffect, active
 		return false
 	}
 
+	//pob:block:src/Modules/CalcTools.lua:99-107
+	effectiveSkillTypes := activeSkill.SkillTypes
+	var effectiveMinionTypes map[data.SkillType]bool
+	if activeSkill.SummonSkill != nil {
+		effectiveSkillTypes = activeSkill.SummonSkill.SkillTypes
+	}
+	if !grantedEffect.Raw.IgnoreMinionTypes {
+		if activeSkill.SummonSkill != nil {
+			effectiveMinionTypes = activeSkill.SummonSkill.MinionSkillTypes
+		} else {
+			effectiveMinionTypes = activeSkill.MinionSkillTypes
+		}
+	}
+
 	if grantedEffectIsTrigger(grantedEffect) && actorPlayer(activeSkill.Actor) != activeSkill.Actor {
 		return false
 	}
@@ -505,7 +519,7 @@ func CalcCanGrantedEffectSupportActiveSkill(grantedEffect *GrantedEffect, active
 			for _, activeType := range activeTypes {
 				activeTypeLookup[activeType] = true
 			}
-		} else if activeSkill.SkillTypes[data.SkillType("SkillGrantedBySupport")] {
+		} else if effectiveSkillTypes[data.SkillType("SkillGrantedBySupport")] {
 			//pob:block:src/Modules/CalcTools.lua:127-135
 			// Skills granted by supports do not have their own weaponTypes, so check the equipped weapons instead.
 			if actor := activeSkill.Actor; actor != nil {
@@ -543,26 +557,17 @@ func CalcCanGrantedEffectSupportActiveSkill(grantedEffect *GrantedEffect, active
 		}
 	}
 
-	if activeSkill.SummonSkill != nil {
-		return CalcCanGrantedEffectSupportActiveSkill(grantedEffect, activeSkill.SummonSkill, appliesToGrantedSkills)
-	}
-
 	exclude := supportTypeExpression(raw2.SkillExcludeSkillTypes, grantedEffect.Raw, grantedEffect.Raw.GetExcludeTypes())
-	if len(exclude) > 0 && CalcDoesTypeExpressionMatch(exclude, activeSkill.SkillTypes, nil) {
+	if len(exclude) > 0 && CalcDoesTypeExpressionMatch(exclude, effectiveSkillTypes, nil) {
 		return false
 	}
 
+	//pob:block:src/Modules/CalcTools.lua:160
 	require := supportTypeExpression(raw2.SkillRequireSkillTypes, grantedEffect.Raw, grantedEffect.Raw.GetSupportTypes())
 	if len(require) == 0 {
 		return true
 	}
-
-	var minionTypes map[data.SkillType]bool
-	if !grantedEffect.Raw.IgnoreMinionTypes {
-		minionTypes = activeSkill.MinionSkillTypes
-	}
-
-	return CalcDoesTypeExpressionMatch(require, activeSkill.SkillTypes, minionTypes)
+	return CalcDoesTypeExpressionMatch(require, effectiveSkillTypes, effectiveMinionTypes)
 }
 
 func actorPlayer(actor *Actor) *Actor {

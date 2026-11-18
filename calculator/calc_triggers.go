@@ -738,6 +738,7 @@ func helmetFocusHandler(env *Environment) {
 	mainSkill.infoMessage = "Assuming perfect focus Re-Use"
 	mainSkill.infoTrigger = "Focus"
 	mainSkill.SkillData.TriggerRate = utils.Ptr(output["SkillTriggerRate"])
+	mainSkill.SkillFlags[SkillFlagGlobalTrigger] = true
 }
 
 //pob:src/Modules/CalcTriggers.lua:236-405
@@ -792,7 +793,7 @@ func cwcHandler(env *Environment) {
 	effCDTriggeredSkill := math.Ceil(triggeredCDAdjusted*triggerRateOfTrigger) / triggerRateOfTrigger
 
 	output["TriggerRateCap"] = math.Min(1/effCDTriggeredSkill, triggerRateOfTrigger)
-	output["SkillTriggerRate"], _ = calcMultiSpellRotationImpact329(env, triggeredSkills, triggerRateOfTrigger, 0, 0, nil)
+	output["SkillTriggerRate"], _ = calcMultiSpellRotationImpact329(env, triggeredSkills, triggerRateOfTrigger, 0, 100, nil)
 	if env.Player.ModDB.Flag(nil, "HaveTriggerBots") && mainSkill.SkillTypes[data.SkillTypeSpell] {
 		output["SkillTriggerRate"] = 2 * output["SkillTriggerRate"]
 	}
@@ -801,6 +802,7 @@ func cwcHandler(env *Environment) {
 	addTriggerIncMoreMods(mainSkill, mainSkill)
 	output["ChannelTimeToTrigger"] = triggerInterval
 	mainSkill.SkillData.Triggered = true
+	mainSkill.SkillFlags[SkillFlagGlobalTrigger] = true
 	mainSkill.SkillData.TriggerRate = utils.Ptr(output["SkillTriggerRate"])
 	mainSkill.infoMessage = triggerName + "'s Trigger: " + source.ActiveEffect.GrantedEffect.Name()
 }
@@ -1326,11 +1328,16 @@ func calcsTriggers(env *Environment, actor *Actor) {
 	}
 
 	globalTrigger := source == nil || config.ignoreSourceRate
+	vixenSource := env.Player.MainSkill != nil && env.Player.MainSkill.ActiveEffect.GrantedEffect.Name() == "Doom Blast" &&
+		triggerConfigInputString(env, "doomBlastSource") == "vixen"
 	if globalTrigger && math.IsInf(triggerRateCap, 1) {
+		if !vixenSource {
+			//pob:block:src/Modules/CalcTriggers.lua:738
+			mainSkill.SkillFlags[SkillFlagGlobalTrigger] = true
+		}
 		return
 	}
-	if env.Player.MainSkill != nil && env.Player.MainSkill.ActiveEffect.GrantedEffect.Name() == "Doom Blast" &&
-		triggerConfigInputString(env, "doomBlastSource") == "vixen" {
+	if vixenSource {
 		//pob:src/Modules/CalcTriggers.lua:720-733
 		if gloves := env.Player.ItemList["Gloves"]; gloves == nil || !strings.Contains(gloves.Name, "Vixen's Entrapment") {
 			output["VixenModeNoVixenGlovesWarn"] = 1
@@ -1359,7 +1366,9 @@ func calcsTriggers(env *Environment, actor *Actor) {
 			)
 		}
 	} else if globalTrigger {
+		//pob:block:src/Modules/CalcTriggers.lua:736-738
 		output["EffectiveSourceRate"] = triggerRateCap
+		mainSkill.SkillFlags[SkillFlagGlobalTrigger] = true
 	} else {
 		//pob:src/Modules/CalcTriggers.lua:735
 		output["EffectiveSourceRate"] = trigRate

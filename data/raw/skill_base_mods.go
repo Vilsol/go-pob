@@ -16,12 +16,10 @@ import "github.com/Vilsol/go-pob/mod"
 // buff inherits the skill's buffNotPlayer/buffMinions/buffAllies/allowTotemBuff config.
 //
 // Generated from PoB v2.18.1 (498 skills with baseMods, 988 mods) by
-// oracle/skill_base_mods.lua + oracle/skill_base_mods_emit.py; 982 mods are emitted,
-// 6 are not representable and are omitted:
+// oracle/skill_base_mods.lua + oracle/skill_base_mods_emit.py; 983 mods are emitted,
+// 5 are not representable and are omitted:
 //   - 3 string-valued skill() entries (triggerSource, corpseMonsterVariety) whose key has
 //     no string field on calculator.SkillData
-//   - 1 skill() entry whose key has no field on calculator.SkillData
-//     (requiresManaReservation), which utils.Set drops as an invalid key rather than storing
 //   - 1 mod.flags holds a tag table (upstream arity bug), so the mod has no tags and a nonsense flag set
 //   - 1 skill() entry whose key has no field on calculator.SkillData
 //     (chanceToTriggerCounterattackOnBlock), which utils.Set drops as an invalid key rather than storing
@@ -1339,6 +1337,10 @@ var SkillBaseMods = map[string][]mod.Mod{
 	// src/Data/Skills/act_int.lua:13448
 	"Malevolence": {
 		mod.NewList("SkillData", mod.SkillData{Key: "Radius", Value: 40}).Source("Skill:Malevolence"),
+	},
+	// src/Data/Skills/act_int.lua:13539
+	"ManaInfusedStaff": {
+		mod.NewList("SkillData", mod.SkillData{Key: "RequiresManaReservation", Value: 1}).Source("Skill:ManaInfusedStaff"),
 	},
 	// src/Data/Skills/act_int.lua:13629
 	"Manabond": {

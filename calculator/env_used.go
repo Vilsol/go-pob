@@ -52,6 +52,22 @@ func addUsedTag(out map[string][]mod.Mod, varList []string, m mod.Mod) {
 	}
 }
 
+// PerStatTag folds Lua's `stat` and `statList` into StatList; every statList in the pin has two or more entries.
+//
+//pob:src/Modules/Calcs.lua:507-515
+func addStatTag(out map[string][]mod.Mod, stat string, m mod.Mod) {
+	if stat != "" {
+		addUsedVar(out, stat, m)
+	}
+}
+
+func perStatTagStat(t *mod.PerStatTag) string {
+	if len(t.StatList) == 1 {
+		return t.StatList[0]
+	}
+	return ""
+}
+
 //pob:src/Modules/Calcs.lua:491-513
 func (env *Environment) addModTagsUsed(isPlayer bool, m mod.Mod) {
 	addUsedVar(env.ModsUsed, m.Name(), m)
@@ -104,14 +120,14 @@ func (env *Environment) addModTagsUsed(isPlayer bool, m mod.Mod) {
 		case *mod.PerStatTag:
 			if t.TagActor == "" {
 				if isPlayer {
-					addUsedTag(env.PerStatsUsed, t.StatList, m)
+					addStatTag(env.PerStatsUsed, perStatTagStat(t), m)
 				}
 			} else if t.TagActor == "enemy" {
-				addUsedTag(env.EnemyPerStatsUsed, t.StatList, m)
+				addStatTag(env.EnemyPerStatsUsed, perStatTagStat(t), m)
 			}
 		case *mod.StatThresholdTag:
 			if isPlayer {
-				addUsedTag(env.PerStatsUsed, []string{t.Stat}, m)
+				addStatTag(env.PerStatsUsed, t.Stat, m)
 			}
 		}
 	}

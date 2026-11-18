@@ -1265,6 +1265,8 @@ export declare namespace calculator {
     SupportBonechill: boolean;
     Cooldown: number;
     StoredUses?: number;
+    MirageUses?: number;
+    RequiresManaReservation: boolean;
     Triggered: boolean;
     TriggeredByBrand: boolean;
     TriggeredByBattleMageCry: boolean;
@@ -1488,7 +1490,7 @@ export declare namespace calculator {
     release(): void;
     [Symbol.dispose](): void;
   }
-  type SkillFlag = "brand" | "arrow" | "hex" | "curse" | "attack" | "weapon1Attack" | "weapon2Attack" | "selfCast" | "notAverage" | "showAverage" | "hit" | "projectile" | "trap" | "mine" | "totem" | "bothWeaponAttack" | "buffs" | "combat" | "effective" | "spell" | "melee" | "chaining" | "area" | "monsterExplode" | "cast" | "shieldAttack" | "forceMainHand" | "disable" | "bleed" | "duration" | "igniteCanStack" | "igniteToChaos" | "DotCanStack" | "dot" | "dotFromAttack" | "ignite" | "poison" | "decay" | "impale" | "ballista" | "minion" | "permanentMinion" | "randomPhys" | "forking" | "piercing" | "warcry" | "haveMinion" | "minionSkill" | "spectre" | "stages" | "multiPart" | "multiStage" | "triggered" | "focused" | "guaranteedChill";
+  type SkillFlag = "brand" | "arrow" | "hex" | "curse" | "attack" | "weapon1Attack" | "weapon2Attack" | "selfCast" | "notAverage" | "showAverage" | "hit" | "projectile" | "trap" | "mine" | "totem" | "bothWeaponAttack" | "buffs" | "combat" | "effective" | "spell" | "melee" | "chaining" | "area" | "monsterExplode" | "cast" | "shieldAttack" | "forceMainHand" | "disable" | "bleed" | "duration" | "igniteCanStack" | "igniteToChaos" | "DotCanStack" | "dot" | "dotFromAttack" | "ignite" | "poison" | "decay" | "impale" | "ballista" | "minion" | "permanentMinion" | "randomPhys" | "forking" | "piercing" | "warcry" | "haveMinion" | "minionSkill" | "spectre" | "stages" | "multiPart" | "multiStage" | "triggered" | "focused" | "globalTrigger" | "isPvP" | "notAttackPvP" | "attackPvP" | "weapon1AttackPvP" | "weapon2AttackPvP" | "notAveragePvP" | "guaranteedChill";
   const SkillFlag: {
     readonly SkillFlagBrand: "brand";
     readonly SkillFlagArrow: "arrow";
@@ -1544,6 +1546,13 @@ export declare namespace calculator {
     readonly SkillFlagMultiStage: "multiStage";
     readonly SkillFlagTriggered: "triggered";
     readonly SkillFlagFocused: "focused";
+    readonly SkillFlagGlobalTrigger: "globalTrigger";
+    readonly SkillFlagIsPvP: "isPvP";
+    readonly SkillFlagNotAttackPvP: "notAttackPvP";
+    readonly SkillFlagAttackPvP: "attackPvP";
+    readonly SkillFlagWeapon1AttackPvP: "weapon1AttackPvP";
+    readonly SkillFlagWeapon2AttackPvP: "weapon2AttackPvP";
+    readonly SkillFlagNotAveragePvP: "notAveragePvP";
     readonly SkillFlagGuaranteedChill: "guaranteedChill";
   };
   interface SpecNodeRewrite {

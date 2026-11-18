@@ -487,7 +487,7 @@ func kalandraMirroredMods(itemList map[string]*Item, slotName string, item *Item
 	case "Ring 2":
 		otherSlot = "Ring 1"
 	default:
-		return nil, false
+		return nil, true
 	}
 	other := itemList[otherSlot]
 	if other == nil || strings.Contains(other.Name, "Kalandra's Touch") {
@@ -991,8 +991,13 @@ func updateSocketCounts(env *Environment, item *Item, slotName string) {
 	}
 
 	var colourR, colourG, colourB int
+	socketedSkillGems := 0
+	//pob:block:src/Modules/CalcSetup.lua:1368-1385
 	for i := 0; i < min(gemSockets, len(socketedGems)); i++ {
 		tags := socketedGemTags(socketedGems[i])
+		if tags != nil && !tags["support"] {
+			socketedSkillGems++
+		}
 		if tags["strength"] {
 			colourR++
 		}
@@ -1009,6 +1014,7 @@ func updateSocketCounts(env *Environment, item *Item, slotName string) {
 	m["SocketedRedGemsIn"+slotName] = float64(colourR)
 	m["SocketedGreenGemsIn"+slotName] = float64(colourG)
 	m["SocketedBlueGemsIn"+slotName] = float64(colourB)
+	m["SocketedSkillGemsIn"+slotName] = float64(socketedSkillGems)
 	m["EmptySocketIn"+slotName] = float64(min(gemSockets, emptyR+emptyG+emptyB+emptyW))
 
 	m["EmptyRedSocketsInAnySlot"] += float64(emptyR)

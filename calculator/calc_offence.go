@@ -3269,7 +3269,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			ruthlessEffect := utils.OrS(env.Build.GetStringOption("ruthlessSupportMode"), "AVERAGE")
 			// Calculate Ruthless Blow chance/multipliers + Fist of War multipliers
 			pass.Output["RuthlessBlowMaxCount"] = skillModList.Sum(mod.TypeBase, pass.Config, "RuthlessBlowMaxCount")
-			if pass.Output["RuthlessBlowMaxCount"] > 0 {
+			if pass.Output["RuthlessBlowMaxCount"] > 0 && (!skillCfg.SkillCond["usedByMirage"] || utils.OrNil(skillData.MirageUses, 0) > pass.Output["RuthlessBlowMaxCount"]) {
 				switch ruthlessEffect {
 				case "AVERAGE":
 					pass.Output["RuthlessBlowChance"] = utils.RoundTo(100/pass.Output["RuthlessBlowMaxCount"], 0)
@@ -4328,8 +4328,25 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		}
 
 		// Calculate PvP values
+
+		//setup flags
+		//pob:block:src/Modules/CalcOffence.lua:3904-3909
+		skillFlags[SkillFlagIsPvP] = false
+		skillFlags[SkillFlagNotAttackPvP] = false
+		skillFlags[SkillFlagAttackPvP] = false
+		skillFlags[SkillFlagWeapon1AttackPvP] = false
+		skillFlags[SkillFlagWeapon2AttackPvP] = false
+		skillFlags[SkillFlagNotAveragePvP] = false
+
 		//pob:block:src/Modules/CalcOffence.lua:3911-3998
 		if env.Build.GetBooleanOption("PvpScaling") {
+			//pob:block:src/Modules/CalcOffence.lua:3912-3917
+			skillFlags[SkillFlagIsPvP] = true
+			skillFlags[SkillFlagAttackPvP] = skillFlags[SkillFlagAttack]
+			skillFlags[SkillFlagNotAttackPvP] = !skillFlags[SkillFlagAttack]
+			skillFlags[SkillFlagWeapon1AttackPvP] = skillFlags[SkillFlagWeapon1Attack]
+			skillFlags[SkillFlagWeapon2AttackPvP] = skillFlags[SkillFlagWeapon2Attack]
+			skillFlags[SkillFlagNotAveragePvP] = skillFlags[SkillFlagNotAverage]
 			var PvpTvalue float64
 			if override, ok := env.Build.GetNumberOptionOK("multiplierPvpTvalueOverride"); ok {
 				PvpTvalue = override / 1000

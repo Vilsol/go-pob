@@ -23,6 +23,43 @@ import (
 //pob:block:src/Modules/CalcPerform.lua:2532
 var totemAuraResistRe = regexp.MustCompile(`Resist?M?a?x?$`)
 
+// The totem copy of an aura scales every mod in place, unscalable ones included (Go keeps those in a separate list).
+//
+//pob:block:src/Modules/CalcPerform.lua:2564-2579
+func totemAuraModList(lists []*moddb.ModList, scale float64) *moddb.ModList {
+	srcList := moddb.NewModList()
+	scaleValue := func(_ mod.Mod, v float64) float64 {
+		if math.Floor(v) == v {
+			return math.Trunc(luaRound(v*scale, 2))
+		}
+		return v * scale
+	}
+	for _, list := range lists {
+		if list == nil {
+			continue
+		}
+		for _, m := range list.Mods() {
+			name := m.Name()
+			if name != "EnergyShield" && name != "Armour" && name != "Evasion" && !totemAuraResistRe.MatchString(name) {
+				continue
+			}
+			totemMod := m.Clone().SetName("Totem" + name)
+			if value := totemMod.Value(); scale != 1 && value != nil {
+				switch value.Type() {
+				case mod.ModValueMultiTypeFloat:
+					value.SetFloat(scaleValue(totemMod, value.Float()))
+				case mod.ModValueMultiTypeList:
+					if inner, ok := value.ValueList.(mod.ScalableNestedMod); ok {
+						value.ValueList = inner.ScaleNestedMod(scaleValue)
+					}
+				}
+			}
+			srcList.AddMod(totemMod)
+		}
+	}
+	return srcList
+}
+
 //pob:block:src/Modules/Data.lua:328-355
 var cursePriority = map[string]float64{
 	"Temporal Chains":    1,
@@ -755,6 +792,10 @@ func mirageSkillCopy(env *Environment, newEnv *Environment, built *ActiveSkill) 
 	newSkill.mirageCopy = true
 	//pob:block:src/Modules/CalcMirages.lua:41
 	newSkill.SkillCfg.SkillCond["usedByMirage"] = true
+	//pob:block:src/Modules/CalcMirages.lua:46
+	if env.Player.MainSkill != nil && env.Player.MainSkill.SkillData != nil {
+		newSkill.SkillData.MirageUses = env.Player.MainSkill.SkillData.StoredUses
+	}
 	return newSkill
 }
 
@@ -891,6 +932,8 @@ func performSaviourMirage(env *Environment) bool {
 	env.Player.MainSkill = newSkill
 	newSkill.infoMessage = luaNumber(maxMirageWarriors) + " Mirage Warriors using " + newSkill.ActiveEffect.GrantedEffect.Name()
 	env.Player.Output = newEnv.Player.Output
+	//pob:block:src/Modules/CalcMirages.lua:157
+	env.Player.OutputTable = newEnv.Player.OutputTable
 	if newEnv.Player.Breakdown != nil {
 		env.Player.Breakdown = newEnv.Player.Breakdown
 	}
@@ -1108,9 +1151,6 @@ type triggerSimRate struct {
 func calcMultiSpellRotationImpact329(env *Environment, skillRotation []*triggerRotationSkill, sourceRate float64, triggerCD float64, chance float64, actor *Actor) (float64, *triggerSimBreakdown) {
 	if sourceRate <= 0 || len(skillRotation) == 0 {
 		return 0, nil
-	}
-	if chance == 0 {
-		chance = 100
 	}
 	if actor == nil {
 		actor = env.Player
@@ -1939,6 +1979,11 @@ func performCalc(env *Environment, skipEHP bool) {
 	env.Player.Output["uncancellable_LifeReservation"] = env.ModDB.Sum(mod.TypeBase, nil, "ExtraLifeReserved")
 	env.Player.Output["uncancellable_ManaReservation"] = env.ModDB.Sum(mod.TypeBase, nil, "ExtraManaReserved")
 	for _, activeSkill := range env.Player.ActiveSkillList {
+		//pob:block:src/Modules/CalcPerform.lua:2013-2016
+		if activeSkill.SkillData.RequiresManaReservation && env.Player.Output["Mana"] == 0 {
+			activeSkill.SkillFlags[SkillFlagDisable] = true
+			activeSkill.DisableReason = "This skill requires reserving Mana"
+		}
 		//pob:block:src/Modules/CalcPerform.lua:2017
 		if (activeSkill.SkillTypes[data.SkillTypeHasReservation] || activeSkill.SkillData.TriggeredByAutoexertion) &&
 			!activeSkill.SkillTypes[data.SkillTypeReservationBecomesCost] && !activeSkill.SkillFlags[SkillFlagDisable] {
@@ -1959,8 +2004,8 @@ func performCalc(env *Environment, skipEHP bool) {
 				pool["Life"]["baseFlat"] = skillModList.Sum(mod.TypeBase, skillCfg, "LifeCostBase") + float64(activeSkill.ActiveEffect.GrantedEffectLevel.Cost["Life"])
 			}
 			pool["Life"]["basePercent"] = utils.OrNil(activeSkill.SkillData.LifeReservationPercent, utils.OrNil(activeSkill.ActiveEffect.GrantedEffectLevel.LifeReservationPercent, 0))
-			//pob:block:src/Modules/CalcPerform.lua:1994
-			if skillModList.Flag(skillCfg, "BloodMagicReserved") && activeSkill.SkillData.ManaReservationPercentForced == nil {
+			//pob:block:src/Modules/CalcPerform.lua:2032
+			if skillModList.Flag(skillCfg, "BloodMagicReserved") && !activeSkill.SkillData.RequiresManaReservation {
 				pool["Life"]["baseFlat"] = pool["Life"]["baseFlat"] + pool["Mana"]["baseFlat"]
 				pool["Mana"]["baseFlat"] = 0
 				activeSkill.SkillData.LifeReservationFlatForced = activeSkill.SkillData.ManaReservationFlatForced
@@ -1970,7 +2015,6 @@ func performCalc(env *Environment, skipEHP bool) {
 				activeSkill.SkillData.LifeReservationPercentForced = activeSkill.SkillData.ManaReservationPercentForced
 				activeSkill.SkillData.ManaReservationPercentForced = nil
 			}
-			manaReservedBaseSet := false
 			for name, values := range pool {
 				rn := reservationNames[name]
 				//pob:block:src/Modules/CalcPerform.lua:2043-2045
@@ -2019,7 +2063,6 @@ func performCalc(env *Environment, skipEHP bool) {
 					values["reservedPercent"] = values["reservedPercent"] * (activeSkill.ActiveStageCount + 1)
 				}
 				if values["reservedFlat"] != 0 {
-					manaReservedBaseSet = manaReservedBaseSet || name == "Mana"
 					utils.Set(activeSkill.SkillData, rn.reservedBase, values["reservedFlat"])
 					env.Player.Output[rn.reservedBaseOut] = env.Player.Output[rn.reservedBaseOut] + values["reservedFlat"]
 					if breakdown != nil {
@@ -2036,7 +2079,6 @@ func performCalc(env *Environment, skipEHP bool) {
 					}
 				}
 				if values["reservedPercent"] != 0 {
-					manaReservedBaseSet = manaReservedBaseSet || name == "Mana"
 					utils.Set(activeSkill.SkillData, rn.reservedPercent, values["reservedPercent"])
 					utils.Set(activeSkill.SkillData, rn.reservedBase, (utils.GetOr(activeSkill.SkillData, rn.reservedBase, float64(0)))+math.Ceil(env.Player.Output[name]*values["reservedPercent"]/100))
 					env.Player.Output[rn.reservedPercentOut] = env.Player.Output[rn.reservedPercentOut] + values["reservedPercent"]
@@ -2056,11 +2098,6 @@ func performCalc(env *Environment, skipEHP bool) {
 				if skillModList.Flag(skillCfg, "HasUncancellableReservation") {
 					env.Player.Output[rn.uncancellable] = env.Player.Output[rn.uncancellable] + values["reservedPercent"]
 				}
-			}
-			//pob:block:src/Modules/CalcPerform.lua:2084-2087
-			if activeSkill.SkillData.ManaReservationPercentForced != nil && manaReservedBaseSet && activeSkill.SkillData.ManaReservedBase == 0 {
-				activeSkill.SkillFlags[SkillFlagDisable] = true
-				activeSkill.DisableReason = "This skill requires reserving Mana"
 			}
 		}
 	}
@@ -2448,9 +2485,10 @@ func performCalc(env *Environment, skipEHP bool) {
 						}
 					}
 					//pob:src/Modules/CalcPerform.lua:2512-2516
-					if env.Minion != nil && !(env.ModDB.Flag(nil, "SelfAurasCannotAffectAllies") ||
-						env.ModDB.Flag(nil, "SelfAurasOnlyAffectYou") ||
-						env.ModDB.Flag(nil, "SelfAuraSkillsCannotAffectAllies")) {
+					if env.Minion != nil && (env.Minion.MinionData == nil || !env.Minion.MinionData.Hostile || env.ModDB.Flag(nil, "AurasAffectEnemies")) &&
+						!(env.ModDB.Flag(nil, "SelfAurasCannotAffectAllies") ||
+							env.ModDB.Flag(nil, "SelfAurasOnlyAffectYou") ||
+							env.ModDB.Flag(nil, "SelfAuraSkillsCannotAffectAllies")) {
 						inc := skillModList.Sum(mod.TypeIncrease, skillCfg, "AuraEffect", "BuffEffect") +
 							env.Minion.ModDB.Sum(mod.TypeIncrease, skillCfg, "BuffEffectOnSelf", "AuraEffectOnSelf")
 						more := skillModList.More(skillCfg, "AuraEffect", "BuffEffect") *
@@ -2506,22 +2544,7 @@ func performCalc(env *Environment, skipEHP bool) {
 						more := skillModList.More(skillCfg, "AuraEffect", "BuffEffect", "AuraBuffEffect")
 						scale := math.Max((1+inc/100)*more, 0)
 
-						renamed := moddb.NewModList()
-						for _, list := range []*moddb.ModList{extraAuraModList, buff.ModList, buff.UnscalableModList} {
-							if list == nil {
-								continue
-							}
-							for _, m := range list.Mods() {
-								name := m.Name()
-								if name != "EnergyShield" && name != "Armour" && name != "Evasion" &&
-									!totemAuraResistRe.MatchString(name) {
-									continue
-								}
-								renamed.AddMod(m.Clone().SetName("Totem" + name))
-							}
-						}
-						srcList := moddb.NewModList()
-						srcList.ScaleAddList(renamed, scale)
+						srcList := totemAuraModList([]*moddb.ModList{extraAuraModList, buff.ModList, buff.UnscalableModList}, scale)
 						mergeBuff(srcList, buffs, "Totem "+buff.Name)
 					}
 				}
@@ -2979,22 +3002,8 @@ func performCalc(env *Environment, skipEHP bool) {
 									inc := minionSkillModList.Sum(mod.TypeIncrease, minionSkillCfg, "AuraEffect", "BuffEffect", "AuraBuffEffect")
 									more := minionSkillModList.More(minionSkillCfg, "AuraEffect", "BuffEffect", "AuraBuffEffect")
 									scale := math.Max((1+inc/100)*more, 0)
-									renamed := moddb.NewModList()
-									for _, list := range []*moddb.ModList{extraAuraModList, buff.ModList, buff.UnscalableModList} {
-										if list == nil {
-											continue
-										}
-										for _, m := range list.Mods() {
-											name := m.Name()
-											if name != "EnergyShield" && name != "Armour" && name != "Evasion" &&
-												!totemAuraResistRe.MatchString(name) {
-												continue
-											}
-											renamed.AddMod(m.Clone().SetName("Totem" + name))
-										}
-									}
-									srcList := moddb.NewModList()
-									srcList.ScaleAddList(renamed, scale)
+									//pob:block:src/Modules/CalcPerform.lua:2946-2961
+									srcList := totemAuraModList([]*moddb.ModList{extraAuraModList, buff.ModList, buff.UnscalableModList}, scale)
 									setSpectreSource(srcList, "")
 									mergeBuff(srcList, buffs, "Totem "+buff.Name)
 								}

@@ -542,6 +542,13 @@ const (
 	SkillFlagMultiStage       = SkillFlag("multiStage")
 	SkillFlagTriggered        = SkillFlag("triggered")
 	SkillFlagFocused          = SkillFlag("focused")
+	SkillFlagGlobalTrigger    = SkillFlag("globalTrigger")
+	SkillFlagIsPvP            = SkillFlag("isPvP")
+	SkillFlagNotAttackPvP     = SkillFlag("notAttackPvP")
+	SkillFlagAttackPvP        = SkillFlag("attackPvP")
+	SkillFlagWeapon1AttackPvP = SkillFlag("weapon1AttackPvP")
+	SkillFlagWeapon2AttackPvP = SkillFlag("weapon2AttackPvP")
+	SkillFlagNotAveragePvP    = SkillFlag("notAveragePvP")
 	SkillFlagGuaranteedChill  = SkillFlag("guaranteedChill")
 )
 
@@ -552,6 +559,8 @@ type SkillData struct {
 	SupportBonechill                        bool
 	Cooldown                                float64
 	StoredUses                              *float64
+	MirageUses                              *float64
+	RequiresManaReservation                 bool
 	Triggered                               bool
 	TriggeredByBrand                        bool
 	TriggeredByBattleMageCry                bool
