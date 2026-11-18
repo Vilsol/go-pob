@@ -29,7 +29,7 @@ const types = await import('$lib/types');
 
 const A = '0027-saboteur-spark-of-the-nova.xml';
 const B = '0045-hierophant-spark-of-the-nova.xml';
-const CORPUS = `${import.meta.dirname}/../../../../testdata/corpus-3.29`;
+const CORPUS = `${import.meta.dirname}/../../../../testdata/corpus-3.30`;
 
 type Build = NonNullable<typeof workerInstance.currentBuild>;
 const parts = (b: Build) => {

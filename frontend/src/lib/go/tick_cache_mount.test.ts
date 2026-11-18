@@ -61,7 +61,7 @@ beforeAll(async () => {
 
 describe('a restore to a state calculated before reuses that calculation', () => {
   it('undo and redo show what a fresh calculation of each restored state shows, without calculating it', async () => {
-    const xml = await readFile(resolve(process.cwd(), '../testdata/corpus-3.29', BUILD), 'utf8');
+    const xml = await readFile(resolve(process.cwd(), '../testdata/corpus-3.30', BUILD), 'utf8');
     await workerInstance.ImportCode(types.pob.CompressEncode(xml).unwrap());
     await settle();
     const level0 = workerInstance.GetBuildInfo()!.level;

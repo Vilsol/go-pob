@@ -81,7 +81,7 @@ beforeAll(async () => {
   await loadCorpusBuild(BUILD);
   tick = vi.spyOn(workerInstance, 'Tick').mockResolvedValue(undefined);
   outputs.set(undefined);
-  const parsed = types.builds.ParseBuildStr(await readFile(resolve(process.cwd(), '../testdata/corpus-3.29', OTHER), 'utf8')).unwrap();
+  const parsed = types.builds.ParseBuildStr(await readFile(resolve(process.cwd(), '../testdata/corpus-3.30', OTHER), 'utf8')).unwrap();
   const xml = serialize(parsed);
   other = { xml, code: types.pob.CompressEncode(xml).unwrap() };
   expect(typeof Blob.prototype.stream, 'jsdom grew Blob.stream; drop this swap').toBe('undefined');

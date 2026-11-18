@@ -7,7 +7,7 @@ import { execFileSync } from 'node:child_process';
 const HERE = new URL('.', import.meta.url).pathname;
 const WASM = `${HERE}../static/go-pob.wasm`;
 const TYPES = `${HERE}../src/lib/types/index.js`;
-const CORPUS = `${HERE}../../testdata/corpus-3.29`;
+const CORPUS = `${HERE}../../testdata/corpus-3.30`;
 
 const refuse = (msg) => {
   console.error(`REFUSING: ${msg}`);

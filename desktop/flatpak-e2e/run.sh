@@ -3,7 +3,7 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 manifest=(desktop/build/flatpak/*.yml)
 app=${APP_ID:-$(basename "${manifest[0]}" .yml)}
-corpus=${CORPUS_DIR:-testdata/corpus-3.29}
+corpus=${CORPUS_DIR:-testdata/corpus-3.30}
 all=("$corpus"/*.xml)
 picks=()
 for f in "${all[@]:0:${N:-3}}"; do picks+=("$(realpath "$f")"); done

@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { deflateSync } from 'node:zlib';
 
-const CORPUS = resolve(import.meta.dirname, '../../../testdata/corpus-3.29');
+const CORPUS = resolve(import.meta.dirname, '../../../testdata/corpus-3.30');
 const BUILD = process.env.UNLIGHTHOUSE_BUILD || '0280-elementalist-fireball';
 const PORT = Number(process.env.UNLIGHTHOUSE_PORT || 4392);
 const ROUTES = ['tree', 'skills', 'items', 'calcs', 'configuration', 'notes', 'party', 'compare', 'import'];

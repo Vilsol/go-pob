@@ -21,7 +21,7 @@ if (!existsSync(resolve(ROOT, 'svelte.config.js'))) {
 }
 
 const WASM = resolve(ROOT, 'static/go-pob.wasm');
-const CORPUS = resolve(ROOT, '../testdata/corpus-3.29');
+const CORPUS = resolve(ROOT, '../testdata/corpus-3.30');
 
 const refuse = (what: string, path: string): never => {
   throw new Error(

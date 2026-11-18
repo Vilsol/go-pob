@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const CORPUS = resolve(import.meta.dirname, '../../../testdata/corpus-3.29');
+const CORPUS = resolve(import.meta.dirname, '../../../testdata/corpus-3.30');
 
 export const BUILD_SET: { file: string; why: string }[] = [
   { file: '0008-necromancer-vaal-summon-skeletons', why: 'minion main skill (env.Minion present)' },

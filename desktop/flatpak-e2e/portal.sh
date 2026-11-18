@@ -7,7 +7,7 @@ home=$(mktemp -d "${TMPDIR:-/tmp}/go-pob-flatpak-portal.XXXXXX")
 trap 'rm -rf "$home"' EXIT
 outside=$home/outside
 mkdir -p "$outside/pob" "$home/io"
-corpus=(testdata/corpus-3.29/*.xml)
+corpus=(testdata/corpus-3.30/*.xml)
 cp "${corpus[0]}" "$outside/build.xml"
 
 doc=

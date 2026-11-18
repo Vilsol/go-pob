@@ -2,7 +2,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 bin=${BIN:-desktop/bin/go-pob}
-corpus=${CORPUS_DIR:-testdata/corpus-3.29}
+corpus=${CORPUS_DIR:-testdata/corpus-3.30}
 mapfile -t picks < <(ls "$corpus"/*.xml | head -n "${N:-3}")
 home=$(mktemp -d "${TMPDIR:-/tmp}/go-pob-desktop-e2e.XXXXXX")
 trap 'rm -rf "$home"' EXIT

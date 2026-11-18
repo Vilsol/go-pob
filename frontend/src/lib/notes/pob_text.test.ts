@@ -63,7 +63,7 @@ describe('plain -> rich -> plain is the identity', () => {
     );
   });
 
-  const dir = resolve(import.meta.dirname, '../../../../testdata/corpus-3.29');
+  const dir = resolve(import.meta.dirname, '../../../../testdata/corpus-3.30');
   const corpusFiles = existsSync(dir) ? readdirSync(dir) : [];
   it('for every corpus build with notes', { timeout: 20_000 + corpusFiles.length * 20 }, () => {
     if (!existsSync(dir)) return;

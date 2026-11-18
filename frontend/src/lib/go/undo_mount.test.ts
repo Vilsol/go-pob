@@ -49,7 +49,7 @@ const enemyLevel = () => workerInstance.GetAllConfigOptions().enemyLevel;
 const actions = () => workerInstance.GetUndoHistory().steps.map((s) => s.action);
 
 const importBuild = async (file: string) => {
-  const xml = await readFile(resolve(process.cwd(), '../testdata/corpus-3.29', file), 'utf8');
+  const xml = await readFile(resolve(process.cwd(), '../testdata/corpus-3.30', file), 'utf8');
   await workerInstance.ImportCode(types.pob.CompressEncode(xml).unwrap());
   await settle();
 };
@@ -200,7 +200,7 @@ describe('the worker records a step per write and restores it', () => {
   }, 60_000);
 
   it('a write made while the opened build is still calculating does not leave the build without a history', async () => {
-    const xml = await readFile(resolve(process.cwd(), '../testdata/corpus-3.29', BUILD), 'utf8');
+    const xml = await readFile(resolve(process.cwd(), '../testdata/corpus-3.30', BUILD), 'utf8');
     calc.mockImplementationOnce(() => new Promise((r) => setTimeout(() => r(undefined), 100)));
     await workerInstance.ImportCode(types.pob.CompressEncode(xml).unwrap());
     expect((workerInstance as unknown as { ticksInFlight: number }).ticksInFlight, 'the open Tick already ended').toBe(1);
@@ -457,7 +457,7 @@ describe('the Calcs inputs and the party buffers are steps', () => {
     later();
     workerInstance.SetCalcsBuffMode(mode0 === 'BUFFED' ? 'COMBAT' : 'BUFFED');
     await settle();
-    const exporter = await readFile(resolve(process.cwd(), '../testdata/corpus-3.29', '0160-elementalist-winter-orb-10.xml'), 'utf8');
+    const exporter = await readFile(resolve(process.cwd(), '../testdata/corpus-3.30', '0160-elementalist-winter-orb-10.xml'), 'utf8');
     later();
     workerInstance.ImportParty(types.pob.CompressEncode(exporter).unwrap(), 'All', false);
     await settle();

@@ -7,7 +7,7 @@ import { treeFixture } from './design_fixtures/tree.js';
 
 const ROOT = resolve(new URL('..', import.meta.url).pathname);
 const WASM = resolve(ROOT, 'static/go-pob.wasm');
-const CORPUS = resolve(ROOT, '../testdata/corpus-3.29');
+const CORPUS = resolve(ROOT, '../testdata/corpus-3.30');
 const OUT = resolve(ROOT, 'src/lib/design/fixtures');
 
 const BUILDS = ['0243-necromancer-raise-spectre.xml', '0041-pathfinder-vaal-fireball.xml', '0029-inquisitor-spark-of-the-nova.xml'];

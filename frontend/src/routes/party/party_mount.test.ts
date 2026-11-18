@@ -62,7 +62,7 @@ describe('the Party page', () => {
   it('imports a build code into every buffer as PoB does', async () => {
     const view = await mount();
     const imp = within(view.getByRole('region', { name: 'Party import' }));
-    const code = types.pob.CompressEncode(readFileSync(resolve(ROOT, 'testdata/corpus-3.29', EXPORTER), 'utf8')).unwrap();
+    const code = types.pob.CompressEncode(readFileSync(resolve(ROOT, 'testdata/corpus-3.30', EXPORTER), 'utf8')).unwrap();
     const field = imp.getByRole('textbox', { name: /Enter a build code/ });
     await fireEvent.input(field, { target: { value: code } });
     const go_ = imp.getByRole('button', { name: 'Import' });
@@ -109,7 +109,7 @@ describe('the Party page', () => {
     if (append.checked) await fireEvent.click(append);
     await waitFor(() => expect(go().PartyOptions().slice(0, 2)).toEqual(['All', false]));
     const before = go().PartyMembers()?.length ?? 0;
-    const code = types.pob.CompressEncode(readFileSync(resolve(ROOT, 'testdata/corpus-3.29', EXPORTER), 'utf8')).unwrap();
+    const code = types.pob.CompressEncode(readFileSync(resolve(ROOT, 'testdata/corpus-3.30', EXPORTER), 'utf8')).unwrap();
     await fireEvent.input(imp.getByRole('textbox', { name: /Enter a build code/ }), { target: { value: code } });
     const button = imp.getByRole('button', { name: 'Import' });
     await waitFor(() => expect((button as HTMLButtonElement).disabled).toBe(false));
