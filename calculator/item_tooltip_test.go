@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 	"testing"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/Vilsol/go-pob/data/assetcache"
 	"github.com/Vilsol/go-pob/data/raw"
+	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/storage"
 )
 
@@ -218,4 +220,22 @@ func lineDiff(want, got []string) string {
 		b.WriteString(mark + strconv.Quote(w) + "  |  " + strconv.Quote(g) + "\n")
 	}
 	return b.String()
+}
+
+// TestEffectiveFlaskStatsIronAndLifeRate: ItemsTab.lua:4779-4782, 4796, 4809. Lines from PoB's AddItemTooltip on the
+// same build with the same two mods added to the main env's modDB.
+func TestEffectiveFlaskStatsIronAndLifeRate(t *testing.T) {
+	initItemsTabData(t)
+	misc := GetMiscCalculator(loadCorpusBuild(t, itemList0339))
+	misc.base.ModDB.AddMod(mod.NewFloat("IronFlaskEffect", mod.TypeIncrease, 40).Source("Test"))
+	misc.base.ModDB.AddMod(mod.NewFloat("FlaskLifeRecoveryRate", mod.TypeMore, 50).Source("Test"))
+	for _, c := range []struct{ raw, want string }{
+		{"Rarity: Normal\nIron Flask\n", "^8Flask effect modifier: ^7+40%"},
+		{"Rarity: Normal\nDivine Life Flask\n", "^8Life recovered: ^72880 ^8over ^72.33s"},
+	} {
+		got := misc.EffectiveFlaskStats(ParseItem(c.raw))
+		if !slices.Contains(got, c.want) {
+			t.Errorf("%q: %q, PoB has %q", c.raw, got, c.want)
+		}
+	}
 }

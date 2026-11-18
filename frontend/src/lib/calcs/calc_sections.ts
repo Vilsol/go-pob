@@ -1171,54 +1171,79 @@ export const calcSections: CalcSection[] = [
         label: 'Skill type-specific Stats',
         data: {
           0: {
+            label: 'Gem Level',
+            haveOutput: 'GemHasLevel',
+            0: {
+              format: '{0:output:GemLevel}',
+              0: { breakdown: 'GemLevel' },
+              1: { modName: ['GemLevel'], cfg: 'skill' },
+              2: { modName: ['GemItemLevel'], cfg: 'skill' },
+              3: { modName: ['GemGlobalLevel'], cfg: 'skill' },
+              4: { modName: ['GemSupportLevel'], cfg: 'skill' }
+            }
+          },
+          1: {
+            label: 'Gem Quality',
+            haveOutput: 'GemHasQuality',
+            0: {
+              format: '{0:output:GemQuality}%',
+              0: { breakdown: 'GemQuality' },
+              1: { modName: ['GemQuality'], cfg: 'skill' },
+              2: { modName: ['GemItemQuality'], cfg: 'skill' },
+              3: { modName: ['GemGlobalQuality'], cfg: 'skill' },
+              4: { modName: ['GemSupportQuality'], cfg: 'skill' },
+              5: { modName: ['GemSocketQuality'], cfg: 'skill' }
+            }
+          },
+          2: {
             label: 'Mana Cost',
             color: colorCodesX.MANA,
             haveOutput: 'ManaCost',
             0: { format: '{0:output:ManaCost}', 0: { breakdown: 'ManaCost' }, 1: { modName: ['ManaCost', 'Cost'], cfg: 'skill' } }
           },
-          1: {
+          3: {
             label: 'Life Cost',
             color: colorCodesX.LIFE,
             haveOutput: 'LifeCost',
             0: { format: '{0:output:LifeCost}', 0: { breakdown: 'LifeCost' }, 1: { modName: ['LifeCost', 'Cost'], cfg: 'skill' } }
           },
-          2: {
+          4: {
             label: 'ES Cost',
             color: colorCodesX.ES,
             haveOutput: 'ESCost',
             0: { format: '{0:output:ESCost}', 0: { breakdown: 'ESCost' }, 1: { modName: ['ESCost', 'Cost'], cfg: 'skill' } }
           },
-          3: {
+          5: {
             label: 'Rage Cost',
             color: colorCodesX.RAGE,
             haveOutput: 'RageCost',
             0: { format: '{0:output:RageCost}', 0: { breakdown: 'RageCost' }, 1: { modName: ['RageCost', 'Cost'], cfg: 'skill' } }
           },
-          4: {
+          6: {
             label: 'Mana % Cost',
             color: colorCodesX.MANA,
             haveOutput: 'ManaPercentCost',
             0: { format: '{0:output:ManaPercentCost}', 0: { breakdown: 'ManaPercentCost' }, 1: { modName: ['ManaCost', 'Cost'], cfg: 'skill' } }
           },
-          5: {
+          7: {
             label: 'Life % Cost',
             color: colorCodesX.LIFE,
             haveOutput: 'LifePercentCost',
             0: { format: '{0:output:LifePercentCost}', 0: { breakdown: 'LifePercentCost' }, 1: { modName: ['LifeCost', 'Cost'], cfg: 'skill' } }
           },
-          6: {
+          8: {
             label: 'Mana Cost',
             color: colorCodesX.MANA,
             haveOutput: 'ManaPerSecondCost',
             0: { format: '{2:output:ManaPerSecondCost}/s', 0: { breakdown: 'ManaPerSecondCost' }, 1: { modName: ['ManaCost', 'Cost'], cfg: 'skill' } }
           },
-          7: {
+          9: {
             label: 'Life Cost',
             color: colorCodesX.LIFE,
             haveOutput: 'LifePerSecondCost',
             0: { format: '{2:output:LifePerSecondCost}/s', 0: { breakdown: 'LifePerSecondCost' }, 1: { modName: ['LifeCost', 'Cost'], cfg: 'skill' } }
           },
-          8: {
+          10: {
             label: 'Mana % Cost',
             color: colorCodesX.MANA,
             haveOutput: 'ManaPercentPerSecondCost',
@@ -1228,7 +1253,7 @@ export const calcSections: CalcSection[] = [
               1: { modName: ['ManaCost', 'Cost'], cfg: 'skill' }
             }
           },
-          9: {
+          11: {
             label: 'Life % Cost',
             color: colorCodesX.LIFE,
             haveOutput: 'LifePercentPerSecondCost',
@@ -1238,20 +1263,20 @@ export const calcSections: CalcSection[] = [
               1: { modName: ['LifeCost', 'Cost'], cfg: 'skill' }
             }
           },
-          10: {
+          12: {
             label: 'ES Cost',
             color: colorCodesX.ES,
             haveOutput: 'ESPerSecondCost',
             0: { format: '{2:output:ESPerSecondCost}/s', 0: { breakdown: 'ESPerSecondCost' }, 1: { modName: ['ESCost', 'Cost'], cfg: 'skill' } }
           },
-          11: {
+          13: {
             label: 'ES % Cost',
             color: colorCodesX.ES,
             haveOutput: 'ESPercentPerSecondCost',
             0: { format: '{2:output:ESPercentPerSecondCost}/s', 0: { breakdown: 'ESPercentPerSecondCost' }, 1: { modName: ['ESCost', 'Cost'], cfg: 'skill' } }
           },
-          12: { label: 'Active Minion Limit', haveOutput: 'ActiveMinionLimit', 0: { format: '{0:output:ActiveMinionLimit}' } },
-          13: {
+          14: { label: 'Active Minion Limit', haveOutput: 'ActiveMinionLimit', 0: { format: '{0:output:ActiveMinionLimit}' } },
+          15: {
             label: 'Quantity Multiplier',
             haveOutput: 'QuantityMultiplier',
             0: {
@@ -1260,7 +1285,7 @@ export const calcSections: CalcSection[] = [
               1: { modName: ['QuantityMultiplier'], cfg: 'skill' }
             }
           },
-          14: {
+          16: {
             label: 'Skill Cooldown',
             haveOutput: 'Cooldown',
             0: {
@@ -1269,7 +1294,7 @@ export const calcSections: CalcSection[] = [
               1: { modName: 'CooldownRecovery', cfg: 'skill' }
             }
           },
-          15: {
+          17: {
             label: 'Duration Mod',
             flag: 'duration',
             0: {
@@ -1279,36 +1304,36 @@ export const calcSections: CalcSection[] = [
               2: { modName: ['Duration', 'PrimaryDuration', 'SecondaryDuration', 'SkillAndDamagingAilmentDuration'], cfg: 'skill' }
             }
           },
-          16: { label: 'Skill Duration', flag: 'duration', haveOutput: 'Duration', 0: { format: '{3:output:Duration}s', 0: { breakdown: 'Duration' } } },
-          17: {
+          18: { label: 'Skill Duration', flag: 'duration', haveOutput: 'Duration', 0: { format: '{3:output:Duration}s', 0: { breakdown: 'Duration' } } },
+          19: {
             label: 'Secondary Duration',
             flag: 'duration',
             haveOutput: 'DurationSecondary',
             0: { format: '{3:output:DurationSecondary}s', 0: { breakdown: 'DurationSecondary' } }
           },
-          18: { label: 'Aura Duration', haveOutput: 'AuraDuration', 0: { format: '{3:output:AuraDuration}s', 0: { breakdown: 'AuraDuration' } } },
-          19: { label: 'Reserve Duration', haveOutput: 'ReserveDuration', 0: { format: '{3:output:ReserveDuration}s', 0: { breakdown: 'ReserveDuration' } } },
-          20: {
+          20: { label: 'Aura Duration', haveOutput: 'AuraDuration', 0: { format: '{3:output:AuraDuration}s', 0: { breakdown: 'AuraDuration' } } },
+          21: { label: 'Reserve Duration', haveOutput: 'ReserveDuration', 0: { format: '{3:output:ReserveDuration}s', 0: { breakdown: 'ReserveDuration' } } },
+          22: {
             label: 'Projectile Count',
             flag: 'projectile',
             0: { format: '{output:ProjectileCount}', 0: { modName: ['NoAdditionalProjectiles', 'ProjectileCount'], cfg: 'skill' } }
           },
-          21: {
+          23: {
             label: 'Pierce Count',
             flag: 'projectile',
             0: { format: '{output:PierceCountString}', 0: { modName: ['CannotPierce', 'PierceCount', 'PierceAllTargets'], cfg: 'skill' } }
           },
-          22: {
+          24: {
             label: 'Fork Count',
             flag: 'projectile',
             0: { format: '{output:ForkCountString}', 0: { modName: ['CannotFork', 'ForkCountMax'], cfg: 'skill' } }
           },
-          23: {
+          25: {
             label: 'Max Chain Count',
             flag: 'chaining',
             0: { format: '{output:ChainMaxString}', 0: { modName: ['CannotChain', 'ChainCountMax'], cfg: 'skill' } }
           },
-          24: {
+          26: {
             label: 'Proj. Speed Mod',
             flag: 'projectile',
             0: {
@@ -1317,7 +1342,7 @@ export const calcSections: CalcSection[] = [
               1: { modName: 'ProjectileSpeed', cfg: 'skill' }
             }
           },
-          25: {
+          27: {
             label: 'Skill Self Damage',
             haveOutput: 'FRDamageTaken',
             0: {
@@ -1326,12 +1351,12 @@ export const calcSections: CalcSection[] = [
               1: { modName: ['DamageTaken', 'DamageTakenWhenHit', 'ChaosDamageTaken', 'ChaosDamageTakenWhenHit'] }
             }
           },
-          26: {
+          28: {
             label: 'Bounces Count',
             flag: 'bounce',
             0: { format: '{output:BounceCount}', 0: { modName: ['BounceCount', 'ProjectileCount'], cfg: 'skill' } }
           },
-          27: {
+          29: {
             label: 'Aura Effect Mod',
             haveOutput: 'AuraEffectMod',
             0: {
@@ -1340,7 +1365,7 @@ export const calcSections: CalcSection[] = [
               1: { modName: 'AuraEffect', cfg: 'skill' }
             }
           },
-          28: {
+          30: {
             label: 'Mana Reserve Mod',
             haveOutput: 'ManaReservedMod',
             0: {
@@ -1349,7 +1374,7 @@ export const calcSections: CalcSection[] = [
               1: { modName: ['ManaReserved', 'Reserved', 'SupportManaMultiplier', 'ManaReservationEfficiency', 'ReservationEfficiency'], cfg: 'skill' }
             }
           },
-          29: {
+          31: {
             label: 'Life Reserve Mod',
             haveOutput: 'LifeReservedMod',
             0: {
@@ -1358,7 +1383,7 @@ export const calcSections: CalcSection[] = [
               1: { modName: ['LifeReserved', 'Reserved', 'SupportManaMultiplier', 'LifeReservationEfficiency', 'ReservationEfficiency'], cfg: 'skill' }
             }
           },
-          30: {
+          32: {
             label: 'Curse Effect Mod',
             haveOutput: 'CurseEffectMod',
             0: {
@@ -1367,7 +1392,7 @@ export const calcSections: CalcSection[] = [
               1: { modName: 'CurseEffect', cfg: 'skill' }
             }
           },
-          31: {
+          33: {
             label: 'Area of Effect Mod',
             haveOutput: 'AreaOfEffectMod',
             0: {
@@ -1376,8 +1401,8 @@ export const calcSections: CalcSection[] = [
               1: { modName: 'AreaOfEffect', cfg: 'skill' }
             }
           },
-          32: { label: 'Radius', haveOutput: 'AreaOfEffectRadius', 0: { format: '{0:output:AreaOfEffectRadius}', 0: { breakdown: 'AreaOfEffectRadius' } } },
-          33: {
+          34: { label: 'Radius', haveOutput: 'AreaOfEffectRadius', 0: { format: '{0:output:AreaOfEffectRadius}', 0: { breakdown: 'AreaOfEffectRadius' } } },
+          35: {
             label: 'Secondary Radius',
             haveOutput: 'AreaOfEffectRadiusSecondary',
             0: {
@@ -1386,7 +1411,7 @@ export const calcSections: CalcSection[] = [
               1: { label: 'Area of Effect modifiers', modName: 'AreaOfEffectSecondary', cfg: 'skill' }
             }
           },
-          34: {
+          36: {
             label: 'Tertiary Radius',
             haveOutput: 'AreaOfEffectRadiusTertiary',
             0: {
@@ -1395,24 +1420,24 @@ export const calcSections: CalcSection[] = [
               1: { label: 'Area of Effect modifiers', modName: 'AreaOfEffectTertiary', cfg: 'skill' }
             }
           },
-          35: { label: 'Weapon Range', haveOutput: 'WeaponRange', 0: { format: '{0:output:WeaponRange}', 0: { breakdown: 'WeaponRange' } } },
-          36: { label: 'Super Chance', haveOutput: 'SuperchargePct', 0: { format: '{0:output:SuperchargePct}%', 0: { breakdown: 'SuperchargePct' } } },
-          37: {
+          37: { label: 'Weapon Range', haveOutput: 'WeaponRange', 0: { format: '{0:output:WeaponRange}', 0: { breakdown: 'WeaponRange' } } },
+          38: { label: 'Super Chance', haveOutput: 'SuperchargePct', 0: { format: '{0:output:SuperchargePct}%', 0: { breakdown: 'SuperchargePct' } } },
+          39: {
             label: 'Normal Hits/Cast',
             haveOutput: 'NormalHitsPerCast',
             0: { format: '{3:output:NormalHitsPerCast}', 0: { breakdown: 'NormalHitsPerCast' } }
           },
-          38: {
+          40: {
             label: 'Super Hits/Cast',
             haveOutput: 'SuperchargedHitsPerCast',
             0: { format: '{3:output:SuperchargedHitsPerCast}', 0: { breakdown: 'SuperchargedHitsPerCast' } }
           },
-          39: {
+          41: {
             label: 'DPS Multiplier',
             haveOutput: 'SkillDPSMultiplier',
             0: { format: '{3:output:SkillDPSMultiplier}', 0: { breakdown: 'SkillDPSMultiplier' } }
           },
-          40: {
+          42: {
             label: 'Attachment Range',
             flag: 'brand',
             0: {
@@ -1421,7 +1446,7 @@ export const calcSections: CalcSection[] = [
               1: { modName: 'BrandAttachmentRange', cfg: 'skill' }
             }
           },
-          41: {
+          43: {
             label: 'Trap Throw Rate',
             flag: 'trap',
             0: {
@@ -1430,9 +1455,9 @@ export const calcSections: CalcSection[] = [
               1: { modName: 'TrapThrowingSpeed', cfg: 'skill' }
             }
           },
-          42: { label: 'Trap Throw Time', flag: 'trap', 0: { format: '{2:output:TrapThrowingTime}s', 0: { breakdown: 'TrapThrowingTime' } } },
-          43: { label: 'Active Trap Limit', flag: 'trap', 0: { format: '{0:output:ActiveTrapLimit}', 0: { modName: 'ActiveTrapLimit', cfg: 'skill' } } },
-          44: {
+          44: { label: 'Trap Throw Time', flag: 'trap', 0: { format: '{2:output:TrapThrowingTime}s', 0: { breakdown: 'TrapThrowingTime' } } },
+          45: { label: 'Active Trap Limit', flag: 'trap', 0: { format: '{0:output:ActiveTrapLimit}', 0: { modName: 'ActiveTrapLimit', cfg: 'skill' } } },
+          46: {
             label: 'Trap Cooldown',
             haveOutput: 'TrapCooldown',
             0: {
@@ -1441,7 +1466,7 @@ export const calcSections: CalcSection[] = [
               1: { modName: 'CooldownRecovery', cfg: 'skill' }
             }
           },
-          45: {
+          47: {
             label: 'Trap Trigg. Radius',
             flag: 'trap',
             0: {
@@ -1450,7 +1475,7 @@ export const calcSections: CalcSection[] = [
               1: { label: 'Area of Effect modifiers', modName: 'TrapTriggerAreaOfEffect', cfg: 'skill' }
             }
           },
-          46: {
+          48: {
             label: 'Seal Gain Rate',
             haveOutput: 'SealMax',
             0: {
@@ -1459,7 +1484,7 @@ export const calcSections: CalcSection[] = [
               1: { modName: 'SealGainFrequency', cfg: 'skill' }
             }
           },
-          47: {
+          49: {
             label: 'Mine Throw Rate',
             flag: 'mine',
             0: {
@@ -1468,9 +1493,9 @@ export const calcSections: CalcSection[] = [
               1: { modName: 'MineLayingSpeed', cfg: 'skill' }
             }
           },
-          48: { label: 'Mine Throw Time', flag: 'mine', 0: { format: '{2:output:MineLayingTime}s', 0: { breakdown: 'MineThrowingTime' } } },
-          49: { label: 'Active Mine Limit', flag: 'mine', 0: { format: '{0:output:ActiveMineLimit}', 0: { modName: 'ActiveMineLimit', cfg: 'skill' } } },
-          50: {
+          50: { label: 'Mine Throw Time', flag: 'mine', 0: { format: '{2:output:MineLayingTime}s', 0: { breakdown: 'MineThrowingTime' } } },
+          51: { label: 'Active Mine Limit', flag: 'mine', 0: { format: '{0:output:ActiveMineLimit}', 0: { modName: 'ActiveMineLimit', cfg: 'skill' } } },
+          52: {
             label: 'Mine Deton. Radius',
             flag: 'mine',
             0: {
@@ -1479,8 +1504,8 @@ export const calcSections: CalcSection[] = [
               1: { label: 'Area of Effect modifiers', modName: 'MineDetonationAreaOfEffect', cfg: 'skill' }
             }
           },
-          51: { label: 'Mine Aura Radius', haveOutput: 'MineAuraRadius', 0: { format: '{0:output:MineAuraRadius}', 0: { breakdown: 'MineAuraRadius' } } },
-          52: {
+          53: { label: 'Mine Aura Radius', haveOutput: 'MineAuraRadius', 0: { format: '{0:output:MineAuraRadius}', 0: { breakdown: 'MineAuraRadius' } } },
+          54: {
             label: 'Totem Place Time',
             flag: 'totem',
             0: {
@@ -1489,7 +1514,7 @@ export const calcSections: CalcSection[] = [
               1: { modName: 'TotemPlacementSpeed', cfg: 'skill' }
             }
           },
-          53: {
+          55: {
             label: 'Active Totem Limit',
             flag: 'totem',
             0: {
@@ -1498,7 +1523,7 @@ export const calcSections: CalcSection[] = [
               1: { modName: ['ActiveTotemLimit', 'ActiveBallistaLimit'], cfg: 'skill' }
             }
           },
-          54: {
+          56: {
             label: 'Totem Life Mod',
             flag: 'totem',
             0: {
@@ -1507,9 +1532,9 @@ export const calcSections: CalcSection[] = [
               1: { modName: 'TotemLife', cfg: 'skill' }
             }
           },
-          55: { label: 'Totem Life', flag: 'totem', 0: { format: '{0:output:TotemLife}', 0: { breakdown: 'TotemLife' } } },
-          56: { label: 'Active Brand Limit', flag: 'brand', 0: { format: '{0:output:ActiveBrandLimit}', 0: { modName: 'ActiveBrandLimit', cfg: 'skill' } } },
-          57: {
+          57: { label: 'Totem Life', flag: 'totem', 0: { format: '{0:output:TotemLife}', 0: { breakdown: 'TotemLife' } } },
+          58: { label: 'Active Brand Limit', flag: 'brand', 0: { format: '{0:output:ActiveBrandLimit}', 0: { modName: 'ActiveBrandLimit', cfg: 'skill' } } },
+          59: {
             label: 'Totem Fire Res',
             flag: 'totem',
             0: {
@@ -1518,7 +1543,7 @@ export const calcSections: CalcSection[] = [
               1: { modName: ['TotemFireResistMax', 'TotemElementalResistMax', 'TotemFireResist', 'TotemElementalResist'] }
             }
           },
-          58: {
+          60: {
             label: 'Totem Cold Res',
             flag: 'totem',
             0: {
@@ -1527,7 +1552,7 @@ export const calcSections: CalcSection[] = [
               1: { modName: ['TotemColdResistMax', 'TotemElementalResistMax', 'TotemColdResist', 'TotemElementalResist'] }
             }
           },
-          59: {
+          61: {
             label: 'Totem Lightning Res',
             flag: 'totem',
             0: {
@@ -1536,7 +1561,7 @@ export const calcSections: CalcSection[] = [
               1: { modName: ['TotemLightningResistMax', 'TotemElementalResistMax', 'TotemLightningResist', 'TotemElementalResist'] }
             }
           },
-          60: {
+          62: {
             label: 'Totem Chaos Res',
             flag: 'totem',
             0: {
@@ -1545,7 +1570,7 @@ export const calcSections: CalcSection[] = [
               1: { modName: ['TotemChaosResistMax', 'TotemChaosResist'] }
             }
           },
-          61: {
+          63: {
             label: 'Corpse Level',
             haveOutput: 'CorpseLevel',
             0: {
@@ -1554,7 +1579,7 @@ export const calcSections: CalcSection[] = [
               1: { modName: 'CorpseLevel', cfg: 'skill' }
             }
           },
-          62: {
+          64: {
             label: 'Corpse Life',
             haveOutput: 'CorpseLife',
             0: {

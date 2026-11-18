@@ -50,6 +50,8 @@ type DisplayItemInfo struct {
 	AddCustom       bool
 	AddCrucible     bool
 	Cluster         *ClusterInfo
+	// ItemsTab.lua:1028-1053
+	NotablePositions []ClusterNotablePosition
 }
 
 var (
@@ -259,6 +261,13 @@ func displayVariantGroups(item *Item) *DisplayVariantGroups {
 	return out
 }
 
+//pob:block:src/Classes/ItemsTab.lua:2106-2108
+func (i *Item) stripStrayCatalystQuality() {
+	if i.Catalyst == nil || *i.Catalyst <= 0 {
+		i.CatalystQuality = nil
+	}
+}
+
 //pob:block:src/Classes/ItemsTab.lua:400-525,src/Classes/ItemsTab.lua:581-697
 func DisplayItem(raw string) (DisplayItemInfo, bool) {
 	item := ParseItem(raw)
@@ -306,6 +315,7 @@ func DisplayItem(raw string) (DisplayItemInfo, bool) {
 	if item.Catalyst != nil {
 		info.Catalyst = *item.Catalyst
 	}
+	item.stripStrayCatalystQuality()
 	if item.CatalystQuality != nil {
 		info.CatalystQuality = *item.CatalystQuality
 	}
@@ -319,6 +329,10 @@ func DisplayItem(raw string) (DisplayItemInfo, bool) {
 	info.AddCrucible = addCrucibleShown(item)
 	if c, ok := itemClusterInfo(raw, item); ok {
 		info.Cluster = &c
+	}
+	//pob:block:src/Classes/ItemsTab.lua:1036-1040,src/Classes/ItemsTab.lua:2191
+	if cj, ok := data.ClusterJewels.Jewels[item.BaseName]; ok && (cj.Size == "Large" && item.Crafted || item.Title == "Megalomaniac") {
+		info.NotablePositions = clusterJewelNotablePositions(item, data.ClusterJewels.NotableSortOrder)
 	}
 	return info, true
 }
@@ -496,8 +510,9 @@ func EditItem(raw string, e ItemEdit) (string, error) {
 }
 
 type CraftBaseGroup struct {
-	Type  string
-	Bases []string
+	Type          string
+	Bases         []string
+	SearchFilters []string
 }
 
 //pob:block:src/Modules/Data.lua:1251-1281
@@ -525,6 +540,18 @@ func CraftBaseGroups() []CraftBaseGroup {
 		g := CraftBaseGroup{Type: t}
 		for _, b := range list {
 			g.Bases = append(g.Bases, b.Name)
+			pb := data.CraftBaseInfo(b.Name)
+			searchTerms := []string{b.Name}
+			if pb.Implicit != "" {
+				searchTerms = append(searchTerms, pb.Implicit)
+			}
+			if pb.Enchant != "" {
+				searchTerms = append(searchTerms, pb.Enchant)
+			}
+			if b.Flask != nil {
+				searchTerms = append(searchTerms, b.Flask.Buff...)
+			}
+			g.SearchFilters = append(g.SearchFilters, strings.Join(searchTerms, " "))
 		}
 		out = append(out, g)
 	}

@@ -13,7 +13,7 @@
   // ItemsTab.lua:2519-2603
   type Props = {
     open?: boolean;
-    groups: { type: string; bases: string[] }[];
+    groups: { type: string; bases: string[]; searchFilters?: string[] }[];
     start?: string;
     /* the slot it is crafted for: only the types that fit it are offered */
     slot?: string;
@@ -129,7 +129,7 @@
           class="block h-7.5 w-full"
           searchable
           aria-label="Base"
-          options={bases.map((b, i) => ({ value: String(i), label: b }))}
+          options={bases.map((b, i) => ({ value: String(i), label: b, searchFilter: groups[type]?.searchFilters?.[i] }))}
           value={String(base)}
           onhover={(i: number | null, el: HTMLElement | null) => {
             hovered = i;

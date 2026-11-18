@@ -139,5 +139,6 @@ func NormaliseDisplayItem(build *pob.PathOfBuilding, text string, copyEldritchIm
 	}
 	CopyAnointsAndEldritchImplicits(build, newItem, copyEldritchImplicits, false, "")
 	newItem.NormaliseQuality()
+	newItem.stripStrayCatalystQuality()
 	return buildRawText(newItem)
 }

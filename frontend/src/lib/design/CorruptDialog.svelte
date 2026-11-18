@@ -41,14 +41,14 @@
     picks = none();
     void craft.corruptChoices?.().then((c) => {
       choices = c;
-      if (c?.glimpse.length) source = GLIMPSE;
+      source = c?.sources[0] ?? 'Corrupted';
       rolls = (c?.rolls ?? []).map((r) => r.value);
       labels = (c?.rolls ?? []).map((r) => r.line);
     });
     void craft.sortStats().then((s) => (stats = s));
   });
 
-  const sources = $derived([...(choices?.glimpse.length ? [GLIMPSE] : []), 'Corrupted', 'Scourge']);
+  const sources = $derived(choices?.sources ?? ['Corrupted', 'Scourge']);
   const count = $derived(
     source === 'Scourge' ? (choices?.unique ? 4 : 3) : source === 'Corrupted' && choices?.implicitsCannotBeChanged ? 0 : (choices?.maxImplicits ?? 2)
   );

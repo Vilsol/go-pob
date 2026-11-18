@@ -178,6 +178,8 @@ test('corrupt the display item (0280)', async ({ page }) => {
   await buttons.getByRole('button', { name: 'Corrupt...' }).click();
   const dialog = page.getByRole('dialog', { name: 'Corrupted Item' });
   const [choices] = await m.exposition.ItemCorruptChoices(helmet);
+  // ItemsTab.lua:3241-3245
+  await expect(dialog.getByRole('combobox', { name: 'Source' }).locator('option')).toHaveText(['Corrupted', 'Scourge', 'Glimpse of Chaos']);
   const mods = choices.Corrupted!;
   const first = dialog.getByRole('combobox', { name: 'Implicit #1' });
   await expectEntries(first, ['None', ...mods.map((x) => x.Label)]);

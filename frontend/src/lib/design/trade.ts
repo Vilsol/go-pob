@@ -134,7 +134,15 @@ const urlEncode = (s: string) =>
     return /[A-Za-z0-9_\-.~]/.test(c) ? c : `%${b.toString(16).toUpperCase().padStart(2, '0')}`;
   }).join('');
 
-export function tradeSearchUrl(item: TradeItem, slotName: string | undefined, o: TradeOptions): string {
+// TradeHelpers.lua:649-654
+export async function b64GzipEncode(str: string): Promise<string> {
+  const gz = new Uint8Array(await new Response(new Response(str).body!.pipeThrough(new CompressionStream('gzip'))).arrayBuffer());
+  let bin = '';
+  for (const b of gz) bin += String.fromCharCode(b);
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_');
+}
+
+export async function tradeSearchUrl(item: TradeItem, slotName: string | undefined, o: TradeOptions): Promise<string> {
   const query: Record<string, unknown> = { status: { option: o.listed }, stats: [{ type: 'and', filters: [] }] };
   const filters: Record<string, unknown> = {};
   if (isTradeUnique(item)) {
@@ -164,5 +172,5 @@ export function tradeSearchUrl(item: TradeItem, slotName: string | undefined, o:
   let url = 'https://www.pathofexile.com/trade/search';
   if (o.realm && o.realm !== 'pc') url += `/${o.realm}`;
   const league = (o.league.trim() || 'Standard').replace(/[^\w\-.~]/g, (c) => urlEncode(c));
-  return `${url}/${league}?q=${urlEncode(JSON.stringify({ query, sort: { price: 'asc' } }))}`;
+  return `${url}/${league}/${await b64GzipEncode(JSON.stringify(query))}`;
 }

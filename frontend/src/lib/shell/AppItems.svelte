@@ -655,7 +655,7 @@
   };
 
   // ItemsTab.lua:2519-2603
-  let craftBases = $state<{ type: string; bases: string[] }[]>([]);
+  let craftBases = $state<{ type: string; bases: string[]; searchFilters?: string[] }[]>([]);
   let craftFrom = $state<string>();
   let craftPreview = $state<TipProps>();
   let craftBasesAsked = false;

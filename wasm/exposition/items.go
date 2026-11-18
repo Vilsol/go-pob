@@ -178,7 +178,7 @@ func parsedItem(build *pob.PathOfBuilding, item *calculator.Item, itemID int, st
 		p.ItemLevel = *item.ItemLevel
 	}
 	if build != nil {
-		p.ComparisonSlot = calculator.GetComparisonSlotNameForItem(build, item, itemID)
+		p.ComparisonSlot = calculator.GetComparisonSlotNameForItem(build, item, itemID, false)
 		for _, s := range fitSlots {
 			if calculator.IsItemValidForSlot(build, item, s) {
 				p.FitSlots = append(p.FitSlots, s)

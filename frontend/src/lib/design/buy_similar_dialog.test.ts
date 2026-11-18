@@ -32,9 +32,14 @@ describe('Buy Similar defences', () => {
     });
     expect((getByRole('textbox', { name: 'Evasion min' }) as HTMLInputElement).value).toBe('312');
     await fireEvent.click(getByRole('checkbox', { name: 'Energy Shield' }));
+    await waitFor(() => expect((getByRole('button', { name: 'Search' }) as HTMLButtonElement).disabled).toBe(false));
     await fireEvent.click(getByRole('button', { name: 'Search' }));
-    const q = JSON.parse(decodeURIComponent(urls[0].split('?q=')[1])) as { query: { filters: Record<string, unknown> } };
-    expect(q.query.filters.armour_filters).toEqual({ filters: { es: { min: 450 } } });
+    // TradeHelpers.lua:656-663
+    const gz = Uint8Array.from(atob(urls[0].split('/').at(-1)!.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0));
+    const q = JSON.parse(await new Response(new Response(gz).body!.pipeThrough(new DecompressionStream('gzip'))).text()) as {
+      filters: Record<string, unknown>;
+    };
+    expect(q.filters.armour_filters).toEqual({ filters: { es: { min: 450 } } });
   });
 });
 

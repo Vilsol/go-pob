@@ -56,4 +56,21 @@ describe('DisplayItemControls cluster jewel', () => {
     await fireEvent.change(skill);
     expect(edits.at(-1)).toEqual({ kind: 'cluster', text: 'a', value: 11 });
   });
+
+  // ItemsTab.lua:1035-1053
+  it('lists the notable positions Go places, Front in the positive colour', () => {
+    const positions = [
+      { name: 'Prismatic Heart', index: 2, position: 'Front' },
+      { name: 'Smoking Remains', index: 6, position: 'Back' }
+    ];
+    const { getByRole, queryByRole, rerender } = render(DisplayItemControls, { info: { ...info('a', 8), notablePositions: positions }, onedit: () => {} });
+    const group = getByRole('group', { name: 'Notable positions' });
+    expect(Array.from(group.children, (c) => c.textContent?.trim())).toEqual([
+      'Notable positions (relative to entrance):',
+      'Front: Prismatic Heart',
+      'Back: Smoking Remains'
+    ]);
+    void rerender({ info: info('a', 8) });
+    expect(queryByRole('group', { name: 'Notable positions' })).toBeNull();
+  });
 });

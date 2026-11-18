@@ -197,6 +197,8 @@ export type DisplayInfo = {
   };
   /* ItemsTab.lua:696-715 */
   cluster?: { skills: { id: string; label: string }[]; skill: string; nodeCount: number; min: number; max: number };
+  /* ItemsTab.lua:1028-1053 */
+  notablePositions?: { name: string; index: number; position: string }[];
 };
 /* Main.lua:1032-1035, ItemsTab.lua:1025-1089 */
 export const allAffixSliders = writable(true);

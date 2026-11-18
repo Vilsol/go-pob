@@ -54,4 +54,23 @@ describe('CraftItemDialog', () => {
     await fireEvent.click(screen.getByRole('button', { name: 'Create' }));
     expect(oncreate).toHaveBeenCalledWith({ rarity: 2, title: '', base: 'Hubris Circlet' });
   });
+
+  // Data.lua:1256-1281, DropDownControl.lua:24-33
+  it('finds a base by its implicit, enchant or flask buff, not only its name', async () => {
+    const searchable = [
+      {
+        type: 'Amulet: Talisman',
+        bases: ['Chieftain Talisman', 'Ape Talisman'],
+        searchFilters: ['Chieftain Talisman 16% increased Area of Effect', 'Ape Talisman +1 to Minimum Endurance, Frenzy and Power Charges']
+      }
+    ];
+    render(CraftItemDialog, { open: true, groups: searchable, onpreview: vi.fn(), oncreate: vi.fn() });
+    const base = screen.getByRole('combobox', { name: 'Base' });
+    for (const k of 'area') await fireEvent.keyDown(base, { key: k });
+    expect(
+      within(screen.getByRole('listbox', { name: 'Base' }))
+        .getAllByRole('option')
+        .map((o) => o.textContent?.trim())
+    ).toEqual(['Chieftain Talisman']);
+  });
 });

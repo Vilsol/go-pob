@@ -66,6 +66,7 @@ type ModLine struct {
 	Order *float64
 
 	RangeFromValue bool
+	AddedFromBase  bool
 
 	ModID            string
 	NewModID         string
@@ -189,6 +190,7 @@ type Item struct {
 	ModMagnitudeMods []ModMagnitudeMod
 
 	VariantList []string
+	BaseLines   []ModLine
 	Variant     *int
 
 	VersionList            []string
@@ -443,12 +445,21 @@ func parseModRangeElements(raw string) []modRange {
 	return out
 }
 
-// enchants added from the base data (countSavedModLines) are not ported, so every list counts in full
+// Enchants from the base data are only added to an item text without enchants and were not in the saved text,
+// so saved ModRange ids skip the whole list
 //
+//pob:src/Classes/ItemsTab.lua:1269-1271
+func countSavedModLines(modLines []ModLine) int {
+	if len(modLines) > 0 && modLines[0].AddedFromBase {
+		return 0
+	}
+	return len(modLines)
+}
+
 //pob:block:src/Classes/ItemsTab.lua:1297-1330
 func (i *Item) applyModRanges(ranges []modRange) {
 	if len(ranges) == 0 ||
-		len(ranges) > len(i.EnchantModLines)+len(i.ScourgeModLines)+len(i.ImplicitModLines)+len(i.ExplicitModLines)+len(i.CrucibleModLines) {
+		len(ranges) > countSavedModLines(i.EnchantModLines)+len(i.ScourgeModLines)+len(i.ImplicitModLines)+len(i.ExplicitModLines)+len(i.CrucibleModLines) {
 		return
 	}
 	lists := [...][]ModLine{
@@ -462,14 +473,15 @@ func (i *Item) applyModRanges(ranges []modRange) {
 	for _, mr := range ranges {
 		id := mr.ID
 		for _, list := range lists {
-			if id <= len(list) {
+			savedLineCount := countSavedModLines(list)
+			if id <= savedLineCount {
 				if id >= 1 && !list[id-1].RangeFromValue {
 					v := mr.Range
 					list[id-1].Range = &v
 				}
 				break
 			}
-			id -= len(list)
+			id -= savedLineCount
 		}
 	}
 }
@@ -757,6 +769,32 @@ func (i *Item) parseRaw(raw string, rarity ItemRarity, highQuality bool) {
 		i.NormaliseQuality()
 		if highQuality {
 			i.NormaliseQuality()
+		}
+	}
+	//pob:block:src/Classes/Item.lua:1632-1657
+	if pb := data.CraftBaseInfo(i.BaseName); i.Base != nil && pb.Enchant != "" && len(i.EnchantModLines) == 0 {
+		// Items saved before their base gained this enchant carry it as an implicit (Black Maw Talisman)
+		activeImplicitLines := map[string]bool{}
+		for _, ml := range i.ImplicitModLines {
+			if i.checkModLineVariant(ml) {
+				activeImplicitLines[ml.Line] = true
+			}
+		}
+		enchantIndex := 1
+		for _, line := range strings.Split(pb.Enchant, "\n") {
+			if line == "" {
+				continue
+			}
+			if !activeImplicitLines[line] {
+				entry := ParseMod(line, false)
+				var modTags []string
+				if enchantIndex <= len(pb.EnchantModTypes) {
+					modTags = pb.EnchantModTypes[enchantIndex-1]
+				}
+				i.EnchantModLines = append(i.EnchantModLines, ModLine{Line: line, Crafted: true, Implicit: true, AddedFromBase: true,
+					Extra: entry.Extra, ModList: entry.ModList, ModTags: modTags})
+			}
+			enchantIndex++
 		}
 	}
 
@@ -2331,6 +2369,15 @@ func (i *Item) resolveBase(line string, variantList map[int]bool) bool {
 	base := ItemBaseByName(baseName)
 	if baseName == "" || base == nil {
 		return false
+	}
+
+	//pob:block:src/Classes/Item.lua:1015-1021
+	// Items with variants can have multiple bases
+	baseLine := ModLine{Line: baseName, VariantList: variantList}
+	if k := slices.IndexFunc(i.BaseLines, func(ml ModLine) bool { return ml.Line == baseName }); k >= 0 {
+		i.BaseLines[k] = baseLine
+	} else {
+		i.BaseLines = append(i.BaseLines, baseLine)
 	}
 
 	if i.Variant == nil || variantList == nil || variantList[*i.Variant] {

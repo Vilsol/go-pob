@@ -227,7 +227,22 @@
     "(25-30)% increased Effect of Shock"
    ],
    "max": 2,
-   "source": "Corrupted"
+   "source": "Corrupted",
+   "Glimpse of Chaos": [
+    "UniqueSpecialCorruptionAreaOfEffect_",
+    "UniqueSpecialCorruptionCooldownRecoverySpeed__",
+    "UniqueSpecialCorruptionAuraEffect",
+    "UniqueSpecialCorruptionCurseEffect___",
+    "UniqueSpecialCorruptionItemQuantity_",
+    "UniqueSpecialCorruptionSkillEffectDuration",
+    "UniqueSpecialCorruptionSocketedGemLevel",
+    "UniqueSpecialCorruptionAllMinCharges",
+    "UniqueSpecialCorruptionNearbyEnemiesCrushed",
+    "UniqueSpecialCorruptionNearbyEnemiesMalediction",
+    "UniqueSpecialCorruptionNearbyEnemiesBlinded",
+    "UniqueSpecialCorruptionAdditionalProjectile",
+    "UniqueSpecialCorruptionSocketedGemsManaMultiplier_"
+   ]
   },
   {
    "Corrupted": [

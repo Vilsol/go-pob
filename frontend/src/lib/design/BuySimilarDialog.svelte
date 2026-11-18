@@ -64,9 +64,9 @@
   $effect(() => {
     const o = options;
     const key = JSON.stringify(o);
-    if (!url || !open) return;
+    if (!item || !open) return;
     let current = true;
-    url(o)
+    (url ? url(o) : tradeSearchUrl(item, slot, o))
       .then((u) => {
         if (current && u) built = { key, url: u };
       })
@@ -77,7 +77,6 @@
   });
   const searchUrl = $derived.by(() => {
     if (!item) return undefined;
-    if (!url) return tradeSearchUrl(item, slot, options);
     return built?.key === JSON.stringify(options) ? built.url : undefined;
   });
 </script>

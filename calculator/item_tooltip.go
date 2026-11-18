@@ -786,7 +786,7 @@ func grandSpectrumFlavourID(lines []TooltipLine) string {
 	return ""
 }
 
-//pob:block:src/Classes/ItemsTab.lua:4666-4864
+//pob:block:src/Classes/ItemsTab.lua:4773-4975
 //nolint:gocyclo // Mirrors the Lua branch chain.
 func (m *MiscCalculator) EffectiveFlaskStats(item *Item) []string {
 	if item == nil || item.Base == nil || item.Base.Flask == nil || m.base == nil || m.base.ModDB == nil {
@@ -800,6 +800,9 @@ func (m *MiscCalculator) EffectiveFlaskStats(item *Item) []string {
 	output := m.base.Player.Output
 	durInc := modDB.Sum(mod.TypeIncrease, nil, "FlaskDuration")
 	effectInc := modDB.Sum(mod.TypeIncrease, playerActorCfg, "FlaskEffect")
+	if item.BaseName == "Iron Flask" {
+		effectInc += modDB.Sum(mod.TypeIncrease, playerActorCfg, "IronFlaskEffect")
+	}
 	lifeDur, manaDur := 0.0, 0.0
 
 	if item.Rarity == "MAGIC" && fb.Life == 0 && fb.Mana == 0 {
@@ -812,6 +815,7 @@ func (m *MiscCalculator) EffectiveFlaskStats(item *Item) []string {
 			lifeInc := modDB.Sum(mod.TypeIncrease, nil, "FlaskLifeRecovery")
 			lifeMore := modDB.More(nil, "FlaskLifeRecovery")
 			lifeRateInc := modDB.Sum(mod.TypeIncrease, nil, "FlaskLifeRecoveryRate")
+			lifeRateMore := modDB.More(nil, "FlaskLifeRecoveryRate")
 			instantPerc := fd["instantPerc"] + modDB.Sum(mod.TypeBase, nil, "LifeFlaskInstantRecovery")
 			lifeMoreOnLowLife := modDB.More(nil, "FlaskLifeRecoveryLowLife")
 			lowLifeMulti := 1.0
@@ -822,7 +826,7 @@ func (m *MiscCalculator) EffectiveFlaskStats(item *Item) []string {
 			base := fd["lifeBase"] * (1 - instantPerc/100) * (1 + lifeInc/100) * lifeMore * (1 + effectInc/100) * (1 + durInc/100) * lowLifeMulti
 			grad := float64(base * output["LifeRecoveryRateMod"])
 			esGrad := float64(base * output["EnergyShieldRecoveryRateMod"])
-			lifeDur = fd["duration"] * (1 + durInc/100) / (1 + rateInc/100) / (1 + lifeRateInc/100)
+			lifeDur = fd["duration"] * (1 + durInc/100) / (1 + rateInc/100) / (1 + lifeRateInc/100) / lifeRateMore
 
 			if fd["lifeAdditional"] > 0 && !configInputBool(m.build, "conditionFullLife") {
 				totalAdditionalAmount := float64((fd["lifeAdditional"] / 100) * fd["lifeTotal"] * output["LifeRecoveryRateMod"])
@@ -1060,13 +1064,13 @@ func checkLineForAllocates(line string, nodes map[string]data.Node) string {
 
 var allocatesIDRe = regexp.MustCompile(`\d+`)
 
-//pob:src/Classes/ItemsTab.lua:2503-2525
+//pob:src/Classes/ItemsTab.lua:2577-2599
 func (m *MiscCalculator) CompareAddedMod(text string, lines []string, modType string) (*Environment, *Environment) {
 	item := ParseItem(text)
 	if item.Base == nil {
 		return nil, nil
 	}
-	slotName := item.getPrimarySlot()
+	slotName := GetComparisonSlotNameForItem(m.build, item, 0, true)
 	nodes := data.TreeVersions[data.LatestTreeVersion].Tree().Nodes
 	added := strings.TrimRight(text, "\r\n")
 	for _, line := range lines {
@@ -1079,13 +1083,13 @@ func (m *MiscCalculator) CompareAddedMod(text string, lines []string, modType st
 	return m.Calc(&CalcOverride{RepSlotName: slotName, RepItem: item}), m.Calc(&CalcOverride{RepSlotName: slotName, RepItem: ParseItem(added)})
 }
 
-//pob:src/Classes/ItemsTab.lua:2503-2525
+//pob:src/Classes/ItemsTab.lua:2577-2599
 func (m *MiscCalculator) CompareReplacedImplicits(text string, lines []string) (*Environment, *Environment) {
 	item := ParseItem(text)
 	if item.Base == nil {
 		return nil, nil
 	}
-	slotName := item.getPrimarySlot()
+	slotName := GetComparisonSlotNameForItem(m.build, item, 0, true)
 	nodes := data.TreeVersions[data.LatestTreeVersion].Tree().Nodes
 	b := craftBlock(text, item)
 	b.implicits = nil

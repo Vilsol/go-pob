@@ -24,6 +24,8 @@ type CraftBase struct {
 	Tags             []string          `json:"tags"`
 	InfluenceTags    map[string]string `json:"influenceTags"`
 	ImplicitModTypes [][]string        `json:"implicitModTypes"`
+	Enchant          string            `json:"enchant"`
+	EnchantModTypes  [][]string        `json:"enchantModTypes"`
 	Type             string            `json:"type"`
 	SubType          string            `json:"subType"`
 }

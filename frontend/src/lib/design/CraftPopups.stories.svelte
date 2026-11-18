@@ -80,6 +80,7 @@
         unique: true,
         implicitsCannotBeChanged: false,
         maxImplicits: 2,
+        sources: ['Corrupted', 'Scourge'],
         glimpse: [],
         corrupted: [
           cmod('A', '(4-6)% increased maximum Life', 'Life'),

@@ -88,6 +88,27 @@ describe('the mod-sum props Go evaluates', () => {
     expect(calcSections.find((s) => s[1] === 'Charges')![4].map((b) => b.label)).toEqual(['Charges', 'Endurance', 'Frenzy', 'Power']);
   });
 
+  // CalcSections.lua:713-714
+  it("carry the pin's Gem Level and Gem Quality rows", async () => {
+    const { calcsView } = await import('./calcs');
+    const { calcSections } = await import('$lib/calcs/calc_sections');
+    const data = calcSections.find((s) => s[1] === 'SkillTypeStats')![4][0].data as Record<
+      number,
+      { label: string; 0: Record<number, { modName?: string[] }> }
+    >;
+    const mods = (k: number) => Object.values(data[k][0]).flatMap((e) => e.modName ?? []);
+    expect([data[0].label, data[1].label, data[2].label]).toEqual(['Gem Level', 'Gem Quality', 'Mana Cost']);
+    expect(mods(0)).toEqual(['GemLevel', 'GemItemLevel', 'GemGlobalLevel', 'GemSupportLevel']);
+    expect(mods(1)).toEqual(['GemQuality', 'GemItemQuality', 'GemGlobalQuality', 'GemSupportQuality', 'GemSocketQuality']);
+    const out = { GemHasLevel: true, GemLevel: 21, GemHasQuality: true, GemQuality: 23 };
+    const view = calcsView(calcSections, { Output: out, OutputTable: {}, SkillFlags: {}, Breakdown: {} } as never);
+    const rows = view.sections.find((s) => s.id === 'SkillTypeStats')!.blocks![0].rows;
+    expect(rows.slice(0, 2).map((r) => [r.label, r.cells[0].text])).toEqual([
+      ['Gem Level', '21'],
+      ['Gem Quality', '23%']
+    ]);
+  });
+
   // CalcSections.lua:431-464
   it("carry the pin's Pacts section", async () => {
     const { calcsView } = await import('./calcs');

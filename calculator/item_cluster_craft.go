@@ -74,6 +74,91 @@ func itemClusterInfo(raw string, item *Item) (ClusterInfo, bool) {
 	return out, true
 }
 
+type ClusterNotablePosition struct {
+	Name     string
+	Index    int
+	Position string
+}
+
+// Cluster-template positions, shared by the passive tree and the item editor.
+// Index 0 is the entrance; half of totalIndicies is the back of the cluster.
+//
+//pob:src/Modules/ItemTools.lua:16-56
+func clusterJewelNotableIndices(clusterJewel data.ClusterJewel, jewelData *clusterJewelData, notableCount int) []int {
+	socketCount := jewelData.socket
+	if jewelData.overrideOK {
+		socketCount = jewelData.override
+	}
+	nodeCount := socketCount + notableCount + jewelData.nothing
+	if jewelData.sizeIsSet {
+		nodeCount = jewelData.nodeCount
+	}
+	sockets := map[int]bool{}
+	if clusterJewel.Size == "Large" && socketCount == 1 {
+		sockets[6] = true
+	} else {
+		for i := 1; i <= socketCount && i <= len(clusterJewel.SocketIndicies); i++ {
+			sockets[clusterJewel.SocketIndicies[i-1]] = true
+		}
+	}
+	indices := []int{}
+	for _, nodeIndex := range clusterJewel.NotableIndicies {
+		if len(indices) == notableCount {
+			break
+		}
+		if clusterJewel.Size == "Medium" {
+			if socketCount == 0 && notableCount == 2 {
+				switch nodeIndex {
+				case 6:
+					nodeIndex = 4
+				case 10:
+					nodeIndex = 8
+				}
+			} else if nodeCount == 4 {
+				switch nodeIndex {
+				case 10:
+					nodeIndex = 9
+				case 2:
+					nodeIndex = 3
+				}
+			}
+		}
+		if !sockets[nodeIndex] {
+			indices = append(indices, nodeIndex)
+		}
+	}
+	slices.Sort(indices)
+	return indices
+}
+
+//pob:src/Modules/ItemTools.lua:58-82
+func clusterJewelNotablePositions(item *Item, sortOrder map[string]int) []ClusterNotablePosition {
+	positions := []ClusterNotablePosition{}
+	jewelData := readClusterJewelData(item)
+	if jewelData == nil || jewelData.keystone != "" {
+		return positions
+	}
+	names := make([]string, 0, len(jewelData.notables))
+	for _, name := range jewelData.notables {
+		if _, ok := sortOrder[name]; !ok {
+			return positions
+		}
+		names = append(names, name)
+	}
+	slices.SortStableFunc(names, func(a, b string) int { return sortOrder[a] - sortOrder[b] })
+	clusterJewel := jewelData.clusterJewel
+	for i, nodeIndex := range clusterJewelNotableIndices(clusterJewel, jewelData, len(names)) {
+		position := "Front"
+		if clusterJewel.Size == "Small" {
+			position = "End"
+		} else if float64(nodeIndex) > float64(clusterJewel.TotalIndicies)/4 && float64(nodeIndex) < float64(clusterJewel.TotalIndicies)*3/4 {
+			position = "Back"
+		}
+		positions = append(positions, ClusterNotablePosition{Name: names[i], Index: nodeIndex, Position: position})
+	}
+	return positions
+}
+
 func clusterNodeCount(val float64, cj data.ClusterJewel) int {
 	return int(math.Floor(float64(val*float64(cj.MaxNodes-cj.MinNodes)) + float64(cj.MinNodes) + 0.5))
 }

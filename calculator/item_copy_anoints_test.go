@@ -79,6 +79,24 @@ func TestNormaliseDisplayItem(t *testing.T) {
 	}
 }
 
+// TestDisplayItemStrayCatalystQuality: ItemsTab.lua:2106-2108, spec TestItemMods_spec.lua:391-395: with no catalyst the
+// display item drops its catalyst quality and the quality box reads 0.
+func TestDisplayItemStrayCatalystQuality(t *testing.T) {
+	initItemsTabData(t)
+	build := loadCorpusBuild(t, "0065-chieftain-tectonic-slam.xml")
+	raw := "Rarity: RARE\nCatalyst Ring\nGold Ring\nCrafted: true\nCatalystQuality: 20\nImplicits: 0\n{tags:life}+40 to maximum Life"
+	if q := ParseItem(raw).CatalystQuality; q == nil || *q != 20 {
+		t.Fatalf("REFUSING: fixture carries no stray catalyst quality: %v", q)
+	}
+	out := NormaliseDisplayItem(build, raw, false)
+	if strings.Contains(out, "CatalystQuality") || ParseItem(out).CatalystQuality != nil {
+		t.Errorf("catalyst quality kept with no catalyst, PoB nil:\n%s", out)
+	}
+	if info, ok := DisplayItem(raw); !ok || info.CatalystQuality != 0 {
+		t.Errorf("quality box %d, PoB 0", info.CatalystQuality)
+	}
+}
+
 // TestRareLikeUniqueCustomLines: ItemsTab.lua:2344, Item.lua:1011-1016.
 func TestRareLikeUniqueCustomLines(t *testing.T) {
 	initItemsTabData(t)

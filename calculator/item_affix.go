@@ -746,7 +746,7 @@ func (m *MiscCalculator) AffixPowers(raw string, slot int, stat string) []float6
 		appendExplicit(&b, lines)
 		texts[k], found[k] = b.join(), true
 	}
-	return m.sortValues(item.getPrimarySlot(), texts, found, ps)
+	return m.sortValues(GetComparisonSlotNameForItem(m.build, item, 0, true), texts, found, ps)
 }
 
 func RebaseChoices(raw string) []string {

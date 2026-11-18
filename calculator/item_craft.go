@@ -209,6 +209,12 @@ func buildRawText(item *Item) string {
 		case item.Variant != nil:
 			add("Selected Variant: " + itoa(item.Variant))
 		}
+		// Lua walks the baseLines hash with pairs(); Go keeps text order
+		for _, baseLine := range item.BaseLines {
+			if len(baseLine.VariantList) > 0 {
+				add(writeRawModLine(baseLine))
+			}
+		}
 		for _, alt := range []struct {
 			on       bool
 			v        *int
@@ -327,7 +333,7 @@ func anointButtons(item *Item) int {
 	return n
 }
 
-//pob:src/Classes/ItemsTab.lua:2832-2856
+//pob:src/Classes/ItemsTab.lua:2918-2947
 func enchantText(raw string, slot int, line string, remove bool) (string, bool) {
 	item := ParseItem(raw)
 	if item.Base == nil || slot < 1 {
@@ -335,8 +341,13 @@ func enchantText(raw string, slot int, line string, remove bool) (string, bool) 
 	}
 	b := craftBlock(raw, item)
 	if remove {
-		if slot <= len(b.enchant) {
-			b.enchant = slices.Delete(b.enchant, slot-1, slot)
+		if item.CanHaveTwoEnchants {
+			if slot <= len(b.enchant) {
+				b.enchant = slices.Delete(b.enchant, slot-1, slot)
+			}
+		} else {
+			// A single enchantment can span multiple modifier lines.
+			b.enchant = nil
 		}
 		return b.join(), true
 	}
@@ -468,7 +479,7 @@ func (m *MiscCalculator) EnchantSortValues(raw string, slot int, lines []string,
 	for k, line := range lines {
 		texts[k], found[k] = enchantText(raw, slot, line, false)
 	}
-	return m.sortValues(item.getPrimarySlot(), texts, found, ps)
+	return m.sortValues(GetComparisonSlotNameForItem(m.build, item, 0, true), texts, found, ps)
 }
 
 type AnointNotable struct {

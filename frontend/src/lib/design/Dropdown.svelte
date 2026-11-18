@@ -5,7 +5,7 @@
   import PobText from './PobText.svelte';
   import { pobPlain } from './pob_text';
 
-  type Option = { value: string; label: string; title?: string };
+  type Option = { value: string; label: string; title?: string; searchFilter?: string };
   type Props = {
     options: Option[];
     value?: string;
@@ -50,7 +50,15 @@
   const shown = $derived.by(() => {
     const words = q.toLowerCase().split(/\s+/).filter(Boolean);
     // DropDownControl.lua:24-33, 325, 397
-    return options.flatMap((o, i) => (words.every((w) => pobPlain(o.label).toLowerCase().includes(w)) ? [i] : []));
+    return options.flatMap((o, i) =>
+      words.every((w) =>
+        pobPlain(o.searchFilter ?? o.label)
+          .toLowerCase()
+          .includes(w)
+      )
+        ? [i]
+        : []
+    );
   });
 
   const optionEl = (i: number) => list?.querySelector<HTMLElement>(`#${uid}-o${i}`) ?? null;

@@ -4,6 +4,7 @@
   import Select from './Select.svelte';
   import NumberInput from './NumberInput.svelte';
   import Button from './Button.svelte';
+  import PobText from './PobText.svelte';
   import { tone as toneClass } from './tone';
   import EnchantDialog from './EnchantDialog.svelte';
   import AnointDialog from './AnointDialog.svelte';
@@ -339,6 +340,15 @@
     <div class="flex flex-col gap-2 border-t border-line-faint pt-2.5">
       {@render sub('Cluster jewel')}
       {@render clusterControls()}
+    </div>
+  {/if}
+  {#if info.notablePositions?.length}
+    <!-- ItemsTab.lua:1035-1053 -->
+    <div role="group" aria-label="Notable positions" class="flex flex-col gap-1 border-t border-line-faint pt-2.5 text-12">
+      <PobText text="^7Notable positions (relative to entrance):" />
+      {#each info.notablePositions as p (p.index)}
+        <span><PobText text={(p.position === 'Front' ? '^x33FF77' : '^xC8C8C8') + p.position + ': ^7' + p.name} /></span>
+      {/each}
     </div>
   {/if}
 {/snippet}

@@ -352,6 +352,11 @@ export declare namespace calculator {
     readonly Min: number;
     readonly Max: number;
   }
+  interface ClusterNotablePosition {
+    readonly Name: string;
+    readonly Index: number;
+    readonly Position: string;
+  }
   interface ClusterSkillChoice {
     readonly ID: string;
     readonly Label: string;
@@ -442,6 +447,7 @@ export declare namespace calculator {
     readonly Unique: boolean;
     readonly ImplicitsCannotBeChanged: boolean;
     readonly MaxImplicits: number;
+    readonly Sources?: Array<string>;
     readonly Glimpse?: Array<calculator.CorruptMod>;
     readonly Corrupted?: Array<calculator.CorruptMod>;
     readonly ScourgeUpside?: Array<calculator.CorruptMod>;
@@ -463,6 +469,7 @@ export declare namespace calculator {
   interface CraftBaseGroup {
     readonly Type: string;
     readonly Bases?: Array<string>;
+    readonly SearchFilters?: Array<string>;
   }
   interface CrucibleChoice {
     readonly ID: string;
@@ -509,6 +516,7 @@ export declare namespace calculator {
     readonly AddCustom: boolean;
     readonly AddCrucible: boolean;
     readonly Cluster?: calculator.ClusterInfo;
+    readonly NotablePositions?: Array<calculator.ClusterNotablePosition>;
   }
   interface DisplayModLine {
     readonly Line: string;
@@ -774,6 +782,7 @@ export declare namespace calculator {
     AdvancedCopy: boolean;
     ModMagnitudeMods?: Array<calculator.ModMagnitudeMod>;
     VariantList?: Array<string>;
+    readonly BaseLines?: Array<calculator.ModLine>;
     Variant?: number;
     VersionList?: Array<string>;
     SelectedVersion?: number;
@@ -1063,6 +1072,7 @@ export declare namespace calculator {
     Disabled: boolean;
     Order?: number;
     RangeFromValue: boolean;
+    AddedFromBase: boolean;
     ModID: string;
     NewModID: string;
     ModGroup: string;

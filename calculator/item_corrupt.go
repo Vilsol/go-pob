@@ -308,6 +308,7 @@ type CorruptChoices struct {
 	Unique                   bool
 	ImplicitsCannotBeChanged bool
 	MaxImplicits             int
+	Sources                  []string
 	Glimpse                  []CorruptMod
 	Corrupted                []CorruptMod
 	ScourgeUpside            []CorruptMod
@@ -393,7 +394,15 @@ func ItemCorruptChoices(raw string) (CorruptChoices, bool) {
 		ScourgeUpside:            buildImplicitList(item, "ScourgeUpside"),
 		ScourgeDownside:          buildImplicitList(item, "ScourgeDownside"),
 	}
-	if strings.Contains(luaLower(item.Title), "glimpse of chaos") && item.IsUnique {
+	//pob:block:src/Classes/ItemsTab.lua:3230,src/Classes/ItemsTab.lua:3241-3245
+	out.Sources = []string{"Corrupted", "Scourge"}
+	isGlimpse := strings.Contains(luaLower(item.Title), "glimpse of chaos") && item.IsUnique
+	if item.Base.Type == "Helmet" {
+		if isGlimpse {
+			out.Sources = slices.Insert(out.Sources, 0, corruptGlimpse)
+		} else {
+			out.Sources = append(out.Sources, corruptGlimpse)
+		}
 		out.Glimpse = buildImplicitList(item, corruptGlimpse)
 	}
 	if out.Unique {
@@ -563,7 +572,7 @@ func (m *MiscCalculator) CorruptSortValues(raw string, source string, modType st
 		}
 		texts[k], found[k] = b.join(), true
 	}
-	return m.sortValues(item.getPrimarySlot(), texts, found, ps)
+	return m.sortValues(GetComparisonSlotNameForItem(m.build, item, 0, true), texts, found, ps)
 }
 
 func (i *Item) rareLike() (rareLikeUnique, bool) {

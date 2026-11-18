@@ -133,7 +133,7 @@
     display?: DisplayInfo;
     ondisplayedit?: (edit: DisplayEdit) => void;
     displayCraft?: CraftApi;
-    craftBases?: { type: string; bases: string[] }[];
+    craftBases?: { type: string; bases: string[]; searchFilters?: string[] }[];
     craftPreview?: TipProps;
     oncraftpreview?: (c: CraftChoice) => void;
     /* slot: Craft Item was opened from that empty slot, so the item is equipped there */

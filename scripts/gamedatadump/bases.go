@@ -20,6 +20,8 @@ type craftBase struct {
 	Tags             []string          `json:"tags"`
 	InfluenceTags    map[string]string `json:"influenceTags,omitempty"`
 	ImplicitModTypes [][]string        `json:"implicitModTypes"`
+	Enchant          string            `json:"enchant,omitempty"`
+	EnchantModTypes  [][]string        `json:"enchantModTypes,omitempty"`
 	Type             string            `json:"type"`
 	SubType          string            `json:"subType"`
 	FlavourText      []string          `json:"-"`
@@ -153,6 +155,19 @@ func (b *basesExport) base(st *baseState, args string) error {
 		}
 	}
 	out.Implicit = strings.Join(implicitLines, "\n")
+	//pob:block:src/Export/Scripts/bases.lua:177-201
+	var enchantLines []string
+	for _, mod := range baseItemType.GetEnchantMods() {
+		lines, _, err := b.x.describeMod(mod, nil)
+		if err != nil {
+			return fmt.Errorf("%s: %w", mod.ID, err)
+		}
+		for _, line := range lines {
+			enchantLines = append(enchantLines, line)
+			out.EnchantModTypes = append(out.EnchantModTypes, modTags(mod.ImplicitTagsKeys))
+		}
+	}
+	out.Enchant = strings.Join(enchantLines, "\n")
 	out.CannotBeAnointed = len(baseItemType.EnchantMods) > 0
 	//pob:block:src/Export/Scripts/bases.lua:308-317
 	if k := baseItemType.FlavourTextKey; k != nil {

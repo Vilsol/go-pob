@@ -301,5 +301,5 @@ func (m *MiscCalculator) CustomModSortValues(raw string, sourceID string, ids []
 			break
 		}
 	}
-	return m.sortValues(item.getPrimarySlot(), texts, found, ps)
+	return m.sortValues(GetComparisonSlotNameForItem(m.build, item, 0, true), texts, found, ps)
 }

@@ -70,6 +70,11 @@ func TestEditItemEnchantTwoPart(t *testing.T) {
 	if len(item.EnchantModLines) != 2 || item.EnchantModLines[0].Line != parts[0] || item.EnchantModLines[1].Line != parts[1] {
 		t.Fatalf("enchants %v for %q", item.EnchantModLines, two)
 	}
+	// ItemsTab.lua:2923-2929
+	out, _ := mustEdit(t, raw, ItemEdit{Kind: "enchant", Index: 1, Text: two})
+	if _, item = mustEdit(t, out, ItemEdit{Kind: "enchant", Index: 1, Value: 1}); item.CanHaveTwoEnchants || len(item.EnchantModLines) != 0 {
+		t.Fatalf("remove left %v (two enchants %v), PoB wipes a single enchantment's lines", item.EnchantModLines, item.CanHaveTwoEnchants)
+	}
 }
 
 const pobAmulet = `Rarity: RARE
@@ -887,5 +892,25 @@ func TestRareLikeUniqueCustomModSources(t *testing.T) {
 	}
 	if addCustomShown(ParseItem(subsume)) {
 		t.Error("Add modifier... shown on a rare-like unique without supportsCustomModifiers")
+	}
+}
+
+// TestCorruptSourcesHelmet: ItemsTab.lua:3230-3246, values from PoB's corrupt popup.
+func TestCorruptSourcesHelmet(t *testing.T) {
+	initItemsTabData(t)
+	glimpse := "Rarity: UNIQUE\nGlimpse of Chaos\nVaal Mask\nImplicits: 0\n"
+	for _, tc := range []struct {
+		raw     string
+		sources []string
+		glimpse int
+	}{
+		{"Rarity: RARE\nDoom Visor\nHubris Circlet\nImplicits: 0\n+80 to maximum Life", []string{"Corrupted", "Scourge", "Glimpse of Chaos"}, 13},
+		{"Rarity: RARE\nTest Mitts\nSorcerer Gloves\nImplicits: 0\n+40 to maximum Life", []string{"Corrupted", "Scourge"}, 0},
+		{glimpse, []string{"Glimpse of Chaos", "Corrupted", "Scourge"}, 13},
+	} {
+		c, ok := ItemCorruptChoices(tc.raw)
+		if !ok || !slices.Equal(c.Sources, tc.sources) || len(c.Glimpse) != tc.glimpse {
+			t.Errorf("%q: ok %v sources %v glimpse %d, PoB %v %d", strings.SplitN(tc.raw, "\n", 3)[1], ok, c.Sources, len(c.Glimpse), tc.sources, tc.glimpse)
+		}
 	}
 }

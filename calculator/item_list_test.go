@@ -188,7 +188,7 @@ func TestSortItems(t *testing.T) {
 		if firstJewel < 0 {
 			firstJewel = k
 		}
-		if slot, _ := equippedSlotForItem(build, slots, it.ID); slot == nil {
+		if slot, _ := equippedSlotForItem(build, slots, it.ID, false); slot == nil {
 			loose = append(loose, p.Name)
 		} else if len(loose) > 0 {
 			t.Fatalf("socketed %s sorts after a loose jewel: %v", p.Name, ids)
@@ -443,10 +443,10 @@ func TestGetComparisonSlotNameForItem(t *testing.T) {
 		if !ok {
 			t.Fatalf("REFUSING: no item %d", id)
 		}
-		return GetComparisonSlotNameForItem(build, ParseItem(text), id)
+		return GetComparisonSlotNameForItem(build, ParseItem(text), id, false)
 	}
 	loose := func(text string) string {
-		return GetComparisonSlotNameForItem(build, ParseItem(text), 0)
+		return GetComparisonSlotNameForItem(build, ParseItem(text), 0, false)
 	}
 	for _, c := range []struct {
 		got, want string
@@ -473,4 +473,34 @@ func TestGetComparisonSlotNameForItem(t *testing.T) {
 	if got := loose("Rarity: Normal\nCobalt Jewel\n"); got != "Jewel 26196" {
 		t.Errorf("loose jewel %q, want the first empty socket, Jewel 26196", got)
 	}
+}
+
+// TestComparisonSlotActiveOnly: ItemsTab.lua:2602-2636, values from PoB on the same build: the active set's
+// shown slots only, and a weapon slot gains " Swap" while the second weapon set is in use.
+func TestComparisonSlotActiveOnly(t *testing.T) {
+	initItemsTabData(t)
+	build := loadCorpusBuild(t, itemList0339)
+	slot := func(id int, text string) string {
+		if id != 0 {
+			var ok bool
+			if text, ok = buildItemText(build, id); !ok {
+				t.Fatalf("REFUSING: no item %d", id)
+			}
+		}
+		return GetComparisonSlotNameForItem(build, ParseItem(text), id, true)
+	}
+	wand := "Rarity: Normal\nImbued Wand\n"
+	check := func(cases [][2]string) {
+		for _, c := range cases {
+			if c[0] != c[1] {
+				t.Errorf("slot %q, PoB %q", c[0], c[1])
+			}
+		}
+	}
+	check([][2]string{{slot(59, ""), "Ring 2"}, {slot(5, ""), "Ring 1"}, {slot(73, ""), "Weapon 1"}, {slot(6, ""), "Weapon 1"},
+		{slot(41, ""), "Jewel 2491"}, {slot(0, "Rarity: Normal\nIron Ring\n"), "Ring 1"}, {slot(0, wand), "Weapon 1"}})
+	if !build.SetUseSecondWeaponSet(true) {
+		t.Fatal("REFUSING: the second weapon set was already in use")
+	}
+	check([][2]string{{slot(73, ""), "Weapon 1 Swap"}, {slot(6, ""), "Weapon 1 Swap"}, {slot(0, wand), "Weapon 1 Swap"}})
 }

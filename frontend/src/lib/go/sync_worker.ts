@@ -2560,8 +2560,12 @@ class PoBWorker {
   }
 
   /* Data.lua:1224-1254 */
-  async GetCraftBases(): Promise<{ type: string; bases: string[] }[]> {
-    return ((await exposition.CraftBaseGroups()) ?? []).map((g) => ({ type: g.Type, bases: [...(g.Bases ?? [])] }));
+  async GetCraftBases(): Promise<{ type: string; bases: string[]; searchFilters: string[] }[]> {
+    return ((await exposition.CraftBaseGroups()) ?? []).map((g) => ({
+      type: g.Type,
+      bases: [...(g.Bases ?? [])],
+      searchFilters: [...(g.SearchFilters ?? [])]
+    }));
   }
 
   /* ItemsTab.lua:2521-2565 */
@@ -2875,7 +2879,10 @@ class PoBWorker {
   /* ItemsTab.lua:509-553, 2875-2890 */
   async GetDisplayItemCraft(
     text: string
-  ): Promise<Pick<DisplayInfo, 'enchants' | 'anoints' | 'anointed' | 'corruptible' | 'addImplicit' | 'addCustom' | 'addCrucible' | 'cluster'> | undefined> {
+  ): Promise<
+    | Pick<DisplayInfo, 'enchants' | 'anoints' | 'anointed' | 'corruptible' | 'addImplicit' | 'addCustom' | 'addCrucible' | 'cluster' | 'notablePositions'>
+    | undefined
+  > {
     const [d, ok] = await exposition.DisplayItem(text);
     const c = d.Cluster;
     return ok
@@ -2893,7 +2900,8 @@ class PoBWorker {
             nodeCount: c.NodeCount,
             min: c.Min,
             max: c.Max
-          }
+          },
+          notablePositions: (d.NotablePositions ?? []).map((p) => ({ name: p.Name, index: p.Index, position: p.Position }))
         }
       : undefined;
   }
@@ -2961,6 +2969,7 @@ class PoBWorker {
       unique: c.Unique,
       implicitsCannotBeChanged: c.ImplicitsCannotBeChanged,
       maxImplicits: c.MaxImplicits,
+      sources: [...(c.Sources ?? [])],
       glimpse: mods(c.Glimpse),
       corrupted: mods(c.Corrupted),
       scourgeUpside: mods(c.ScourgeUpside),

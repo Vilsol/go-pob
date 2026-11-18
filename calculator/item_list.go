@@ -76,18 +76,18 @@ func itemSetTitle(set pob.ItemSet) string {
 	return *set.Title
 }
 
-//pob:src/Classes/ItemsTab.lua:2528-2542
-func equippedSlotForItem(build *pob.PathOfBuilding, slots []listSlot, itemID int) (*listSlot, *pob.ItemSet) {
+//pob:src/Classes/ItemsTab.lua:2602-2616
+func equippedSlotForItem(build *pob.PathOfBuilding, slots []listSlot, itemID int, activeOnly bool) (*listSlot, *pob.ItemSet) {
 	active := strconv.Itoa(build.Items.ActiveItemSet)
 	for k := range slots {
 		slot := &slots[k]
-		if slot.inactive {
+		if slot.inactive || (activeOnly && slot.nodeID == 0 && !slotShown(build, orderedItemSlots[k], false)) {
 			continue
 		}
 		if slot.selected == itemID {
 			return slot, nil
 		}
-		if slot.nodeID != 0 {
+		if slot.nodeID != 0 || activeOnly {
 			continue
 		}
 		for i := range build.Items.ItemSets {
@@ -100,11 +100,11 @@ func equippedSlotForItem(build *pob.PathOfBuilding, slots []listSlot, itemID int
 	return nil, nil
 }
 
-//pob:src/Classes/ItemsTab.lua:2544-2557
-func GetComparisonSlotNameForItem(build *pob.PathOfBuilding, item *Item, itemID int) string {
+//pob:src/Classes/ItemsTab.lua:2619-2636
+func GetComparisonSlotNameForItem(build *pob.PathOfBuilding, item *Item, itemID int, activeOnly bool) string {
 	slots := orderedListSlots(build)
 	if itemID != 0 {
-		if slot, _ := equippedSlotForItem(build, slots, itemID); slot != nil {
+		if slot, _ := equippedSlotForItem(build, slots, itemID, activeOnly); slot != nil {
 			return slot.name
 		}
 	}
@@ -122,7 +122,11 @@ func GetComparisonSlotNameForItem(build *pob.PathOfBuilding, item *Item, itemID 
 			}
 		}
 	}
-	return item.getPrimarySlot()
+	slotName := item.getPrimarySlot()
+	if set, _ := setItems(build); activeOnly && useSecondWeaponSet(set) && (slotName == "Weapon 1" || slotName == "Weapon 2") {
+		slotName += " Swap"
+	}
+	return slotName
 }
 
 //pob:src/Classes/ItemListControl.lua:206-227
@@ -197,7 +201,7 @@ func DeleteItemPrompt(build *pob.PathOfBuilding, itemID int) string {
 		}
 		return " in set '" + itemSetTitle(*set) + "'"
 	}
-	if slot, set := equippedSlotForItem(build, orderedListSlots(build), itemID); slot != nil {
+	if slot, set := equippedSlotForItem(build, orderedListSlots(build), itemID, false); slot != nil {
 		return item.Name + " is currently equipped in " + slot.label + inSet(set) + ".\nAre you sure you want to delete it?"
 	}
 	if title, ok := findEquippedAbyssJewel(build, item, itemID, true); ok {
@@ -215,7 +219,7 @@ func UnusedItemIDs(build *pob.PathOfBuilding) []int {
 	var out []int
 	for _, it := range build.Items.Items {
 		item := parseItemGlobal(it.Text)
-		if slot, _ := equippedSlotForItem(build, slots, it.ID); slot != nil {
+		if slot, _ := equippedSlotForItem(build, slots, it.ID, false); slot != nil {
 			continue
 		}
 		if _, ok := findEquippedAbyssJewel(build, item, it.ID, false); ok {
@@ -396,7 +400,7 @@ func SortItems(build *pob.PathOfBuilding) {
 		if parsed.Base != nil {
 			e.prim = parsed.getPrimarySlot()
 		}
-		e.slot, e.inSet = equippedSlotForItem(build, slots, it.ID)
+		e.slot, e.inSet = equippedSlotForItem(build, slots, it.ID, false)
 		entries[k] = e
 	}
 	less := func(a, b entry) bool {

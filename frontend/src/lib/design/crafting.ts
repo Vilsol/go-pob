@@ -12,6 +12,8 @@ export type CorruptChoices = {
   implicitsCannotBeChanged: boolean;
   /* ItemsTab.lua:3129-3137 */
   maxImplicits: number;
+  /* ItemsTab.lua:3230-3246 */
+  sources: string[];
   /* ItemsTab.lua:3138-3155 */
   glimpse: CorruptMod[];
   corrupted: CorruptMod[];

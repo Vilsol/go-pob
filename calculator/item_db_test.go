@@ -321,8 +321,12 @@ func TestItemDBTextAgainstPoB(t *testing.T) {
 			if back.Quality != nil {
 				quality = *back.Quality
 			}
-			if back.Name != pob.Name || quality != pob.Quality {
-				t.Errorf("%s: ours %q at quality %d; PoB %q at %d", item.Name, back.Name, quality, pob.Name, pob.Quality)
+			wantName := pob.Name
+			if reparsed, ok := itemDBTextReparsedNames[item.Name]; ok {
+				wantName = reparsed
+			}
+			if back.Name != wantName || quality != pob.Quality {
+				t.Errorf("%s: ours %q at quality %d; PoB %q at %d", item.Name, back.Name, quality, wantName, pob.Quality)
 			}
 			if len(back.ExplicitModLines) != pob.Explicits {
 				lines++
@@ -348,8 +352,13 @@ func TestItemDBTextAgainstPoB(t *testing.T) {
 
 const (
 	itemDBTextLineCeiling = 23
-	itemDBTextSameFloor   = 738
+	itemDBTextSameFloor   = 769
 )
+
+// PoB's BuildRaw writes Selected Variant before the variant base lines (Item.lua:1977-1984), so its own text
+// re-parses to the selected variant's base; PoB keeps the object parsed from the DB raw until the build is saved.
+// The value is PoB's new("Item"):Item(item:BuildRaw()).name.
+var itemDBTextReparsedNames = map[string]string{"Precursor's Emblem, Prismatic Ring": "Precursor's Emblem, Topaz Ring"}
 
 // TestAddDBItem: ItemDBControl.lua:335-360: Ctrl+click adds and equips in the primary slot.
 func TestAddDBItem(t *testing.T) {
