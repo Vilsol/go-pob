@@ -11,7 +11,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 	"testing"
 
 	"github.com/Vilsol/go-pob/pob2"
@@ -85,24 +84,30 @@ func renderBreakdowns(env *Environment) map[string][]string {
 // calculation. Report only. BREAKDOWN_WORKLIST=<file> writes the disagreeing (build, stat) pairs; LIMIT=<n> takes the
 // first n builds. BREAKDOWN_DUMPS=<dir> reads the dumps from there instead.
 func TestCorpusPoE2BreakdownsVsDumps(t *testing.T) {
+	runPoE2Job(t, "TestCorpusPoE2BreakdownsVsDumps")
+}
+
+func prepPoE2Breakdowns() (*poe2Job, error) {
 	if os.Getenv("CORPUS") != "true" {
-		t.Skip("CORPUS=true reads the local PoE2 corpus")
+		return nil, poe2SkipError("CORPUS=true reads the local PoE2 corpus")
 	}
 	oracleDir := filepath.Join("..", "testdata", "oracle-poe2-0.5")
 	realOracle, err := filepath.EvalSymlinks(oracleDir)
 	if err != nil {
-		t.Skipf("no PoE2 oracle at %s", oracleDir)
+		return nil, poe2SkipError(fmt.Sprintf("no PoE2 oracle at %s", oracleDir))
 	}
 	dumpDir := filepath.Join(filepath.Dir(realOracle), "dumps")
 	if d := os.Getenv("BREAKDOWN_DUMPS"); d != "" {
 		dumpDir = d
 	}
-	corpusDir := filepath.Join("..", "testdata", "corpus-poe2-0.5")
+	corpus := "corpus-poe2-0.5"
 	entries, err := os.ReadDir(dumpDir)
 	if err != nil {
-		t.Skipf("no PoE2 dumps at %s", dumpDir)
+		return nil, poe2SkipError(fmt.Sprintf("no PoE2 dumps at %s", dumpDir))
 	}
-	tree := loadTestTree(t)
+	if _, err := poe2TestTree(); err != nil {
+		return nil, poe2SkipError(poe2TreeSkip(err))
+	}
 	var builds []string
 	for _, e := range entries {
 		if strings.HasSuffix(e.Name(), ".json") {
@@ -121,177 +126,164 @@ func TestCorpusPoE2BreakdownsVsDumps(t *testing.T) {
 		main map[string][]string
 	}
 	results := make([]result, len(builds))
-	work := make(chan int)
-	var wg sync.WaitGroup
-	for range poe2Workers() {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for i := range work {
-				results[i] = func() result {
-					var res result
-					raw, err := os.ReadFile(filepath.Join(dumpDir, builds[i]+".json"))
-					if err != nil {
-						return result{err: err}
-					}
-					var d struct {
-						Breakdown map[string][]string `json:"breakdown"`
-					}
-					if err := json.Unmarshal(raw, &d); err != nil {
-						return result{err: err}
-					}
-					res.pob = d.Breakdown
-					for k := range breakdownGenerators {
-						delete(res.pob, k)
-					}
-					xml, err := os.ReadFile(filepath.Join(corpusDir, builds[i]+".xml"))
-					if err != nil {
-						return result{err: err}
-					}
-					build, err := pob2.ParseBuild(xml)
-					if err != nil {
-						return result{err: err}
-					}
-					var env, calcsEnv *Environment
-					func() {
-						defer func() {
-							if r := recover(); r != nil {
-								err = fmt.Errorf("panic: %v", r)
-							}
-						}()
-						env, err = BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
-						if err == nil {
-							calcsEnv = BuildCalcsOutput(env, BuildOutputUsed(env))
-						}
-					}()
-					if err != nil {
-						res.err = err
-						return res
-					}
-					res.main = renderBreakdowns(env)
-					res.ours = renderBreakdowns(calcsEnv)
-					return res
-				}()
+	visit := func(_, i int, c *poe2Calc) {
+		results[i] = func() result {
+			var res result
+			raw, err := os.ReadFile(filepath.Join(dumpDir, builds[i]+".json"))
+			if err != nil {
+				return result{err: err}
 			}
+			var d struct {
+				Breakdown map[string][]string `json:"breakdown"`
+			}
+			if err := json.Unmarshal(raw, &d); err != nil {
+				return result{err: err}
+			}
+			res.pob = d.Breakdown
+			for k := range breakdownGenerators {
+				delete(res.pob, k)
+			}
+			if c.err != nil {
+				res.err = c.err
+				return res
+			}
+			env := c.env
+			var calcsEnv *Environment
+			func() {
+				defer func() {
+					if r := recover(); r != nil {
+						err = fmt.Errorf("panic: %v", r)
+					}
+				}()
+				calcsEnv = BuildCalcsOutput(env, BuildOutputUsed(env))
+			}()
+			if err != nil {
+				res.err = err
+				return res
+			}
+			res.main = renderBreakdowns(env)
+			res.ours = renderBreakdowns(calcsEnv)
+			return res
 		}()
 	}
-	for i := range builds {
-		work <- i
-	}
-	close(work)
-	wg.Wait()
-
-	type stat struct{ pob, ours, ok, extra int }
-	stats := map[string]*stat{}
-	get := func(k string) *stat {
-		if stats[k] == nil {
-			stats[k] = &stat{}
-		}
-		return stats[k]
-	}
-	var w *bufio.Writer
-	if p := os.Getenv("BREAKDOWN_WORKLIST"); p != "" {
-		f, err := os.Create(p)
-		if err != nil {
-			t.Fatal(err)
-		}
-		defer f.Close()
-		w = bufio.NewWriter(f)
-		defer w.Flush()
-	}
-	failed, matched, total, extra, reordered := 0, 0, 0, 0, 0
-	mainMatched, mainExtra := 0, 0
-	for i, r := range results {
-		if r.err != nil {
-			failed++
-			continue
-		}
-		for k, want := range r.pob {
-			if got, ok := r.main[k]; ok && strings.Join(got, "\n") == strings.Join(want, "\n") {
-				mainMatched++
+	report := func(t *testing.T) {
+		type stat struct{ pob, ours, ok, extra int }
+		stats := map[string]*stat{}
+		get := func(k string) *stat {
+			if stats[k] == nil {
+				stats[k] = &stat{}
 			}
+			return stats[k]
 		}
-		for k := range r.main {
-			if _, ok := r.pob[k]; !ok {
-				mainExtra++
+		var w *bufio.Writer
+		if p := os.Getenv("BREAKDOWN_WORKLIST"); p != "" {
+			f, err := os.Create(p)
+			if err != nil {
+				t.Fatal(err)
 			}
+			defer f.Close()
+			w = bufio.NewWriter(f)
+			defer w.Flush()
 		}
-		for k, want := range r.pob {
-			s := get(k)
-			s.pob++
-			total++
-			got, ok := r.ours[k]
-			if ok {
-				s.ours++
+		failed, matched, total, extra, reordered := 0, 0, 0, 0, 0
+		mainMatched, mainExtra := 0, 0
+		for i, r := range results {
+			if r.err != nil {
+				failed++
+				continue
 			}
-			if ok && strings.Join(got, "\n") == strings.Join(want, "\n") {
-				s.ok++
-				matched++
-			} else if ok && sameLines(got, want) {
-				reordered++
-			} else if w != nil && ok {
-				fmt.Fprintf(w, "%s\t%s\n\tpob:  %q\n\tours: %q\n", builds[i], k, want, got)
+			for k, want := range r.pob {
+				if got, ok := r.main[k]; ok && strings.Join(got, "\n") == strings.Join(want, "\n") {
+					mainMatched++
+				}
 			}
-		}
-		for k, got := range r.ours {
-			if _, ok := r.pob[k]; !ok {
-				get(k).extra++
-				extra++
-				if w != nil {
-					fmt.Fprintf(w, "%s\t%s\tEXTRA\n\tours: %q\n", builds[i], k, got)
+			for k := range r.main {
+				if _, ok := r.pob[k]; !ok {
+					mainExtra++
+				}
+			}
+			for k, want := range r.pob {
+				s := get(k)
+				s.pob++
+				total++
+				got, ok := r.ours[k]
+				if ok {
+					s.ours++
+				}
+				if ok && strings.Join(got, "\n") == strings.Join(want, "\n") {
+					s.ok++
+					matched++
+				} else if ok && sameLines(got, want) {
+					reordered++
+				} else if w != nil && ok {
+					fmt.Fprintf(w, "%s\t%s\n\tpob:  %q\n\tours: %q\n", builds[i], k, want, got)
+				}
+			}
+			for k, got := range r.ours {
+				if _, ok := r.pob[k]; !ok {
+					get(k).extra++
+					extra++
+					if w != nil {
+						fmt.Fprintf(w, "%s\t%s\tEXTRA\n\tours: %q\n", builds[i], k, got)
+					}
 				}
 			}
 		}
-	}
-	t.Logf("=== CORPUS PoE2 0.5 player breakdowns vs DUMPS (skills on) ===")
-	t.Logf("%d builds, %d failed", len(builds), failed)
-	t.Logf("matched %d / %d (build, stat) pairs PoB writes; %d we write that PoB does not; %d more hold PoB's lines in another order", matched, total, extra, reordered)
-	t.Logf("main calculation: matched %d / %d; %d we write that PoB does not", mainMatched, total, mainExtra)
-	if limit, _ := strconv.Atoi(os.Getenv("LIMIT")); limit == 0 && os.Getenv("BREAKDOWN_DUMPS") == "" {
-		if matched < poe2BreakdownMatchedFloor {
-			t.Errorf("matched %d breakdowns, below floor %d", matched, poe2BreakdownMatchedFloor)
-		} else if matched > poe2BreakdownMatchedFloor {
-			fmt.Printf("matched %d is above the floor %d — raise poe2BreakdownMatchedFloor\n", matched, poe2BreakdownMatchedFloor)
+		t.Logf("=== CORPUS PoE2 0.5 player breakdowns vs DUMPS (skills on) ===")
+		t.Logf("%d builds, %d failed", len(builds), failed)
+		t.Logf("matched %d / %d (build, stat) pairs PoB writes; %d we write that PoB does not; %d more hold PoB's lines in another order", matched, total, extra, reordered)
+		t.Logf("main calculation: matched %d / %d; %d we write that PoB does not", mainMatched, total, mainExtra)
+		if limit, _ := strconv.Atoi(os.Getenv("LIMIT")); limit == 0 && os.Getenv("BREAKDOWN_DUMPS") == "" {
+			if matched < poe2BreakdownMatchedFloor {
+				t.Errorf("matched %d breakdowns, below floor %d", matched, poe2BreakdownMatchedFloor)
+			} else if matched > poe2BreakdownMatchedFloor {
+				fmt.Printf("matched %d is above the floor %d — raise poe2BreakdownMatchedFloor\n", matched, poe2BreakdownMatchedFloor)
+			}
+			if extra > poe2BreakdownExtraCeiling {
+				t.Errorf("%d breakdowns PoB does not write, above ceiling %d", extra, poe2BreakdownExtraCeiling)
+			}
 		}
-		if extra > poe2BreakdownExtraCeiling {
-			t.Errorf("%d breakdowns PoB does not write, above ceiling %d", extra, poe2BreakdownExtraCeiling)
+		keys := make([]string, 0, len(stats))
+		for k, s := range stats {
+			if s.ours > 0 || s.extra > 0 {
+				keys = append(keys, k)
+			}
+		}
+		sort.Strings(keys)
+		for _, k := range keys {
+			s := stats[k]
+			t.Logf("  %-40s matched %d / %d   ours %d   extra %d", k, s.ok, s.pob, s.ours, s.extra)
+		}
+		if os.Getenv("BREAKDOWN_CENSUS") == "" {
+			return
+		}
+		// BREAKDOWN_CENSUS=1: the keys PoB writes and we never do, by the builds carrying them
+		var left []string
+		for k, s := range stats {
+			if s.ours == 0 && s.extra == 0 {
+				left = append(left, k)
+			}
+		}
+		sort.Slice(left, func(i, j int) bool {
+			if stats[left[i]].pob != stats[left[j]].pob {
+				return stats[left[i]].pob > stats[left[j]].pob
+			}
+			return left[i] < left[j]
+		})
+		carriers := 0
+		for _, k := range left {
+			carriers += stats[k].pob
+		}
+		t.Logf("=== %d keys we never write, %d of %d carriers ===", len(left), carriers, total)
+		for _, k := range left {
+			t.Logf("  left %-40s %d", k, stats[k].pob)
 		}
 	}
-	keys := make([]string, 0, len(stats))
-	for k, s := range stats {
-		if s.ours > 0 || s.extra > 0 {
-			keys = append(keys, k)
-		}
+	names := make([]string, len(builds))
+	for i, b := range builds {
+		names[i] = b + ".xml"
 	}
-	sort.Strings(keys)
-	for _, k := range keys {
-		s := stats[k]
-		t.Logf("  %-40s matched %d / %d   ours %d   extra %d", k, s.ok, s.pob, s.ours, s.extra)
-	}
-	if os.Getenv("BREAKDOWN_CENSUS") == "" {
-		return
-	}
-	// BREAKDOWN_CENSUS=1: the keys PoB writes and we never do, by the builds carrying them
-	var left []string
-	for k, s := range stats {
-		if s.ours == 0 && s.extra == 0 {
-			left = append(left, k)
-		}
-	}
-	sort.Slice(left, func(i, j int) bool {
-		if stats[left[i]].pob != stats[left[j]].pob {
-			return stats[left[i]].pob > stats[left[j]].pob
-		}
-		return left[i] < left[j]
-	})
-	carriers := 0
-	for _, k := range left {
-		carriers += stats[k].pob
-	}
-	t.Logf("=== %d keys we never write, %d of %d carriers ===", len(left), carriers, total)
-	for _, k := range left {
-		t.Logf("  left %-40s %d", k, stats[k].pob)
-	}
+	return &poe2Job{parts: []*poe2Part{{corpus: corpus, names: names, visit: visit}}, report: report}, nil
 }
 
 // TestCorpusPoE2ModSectionsVsLua grades every CalcSections.lua mod table against PoB-PoE2's AddModSection over its

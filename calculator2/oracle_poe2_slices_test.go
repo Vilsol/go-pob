@@ -7,10 +7,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
-	"sync"
 	"testing"
-
-	"github.com/Vilsol/go-pob/pob2"
 )
 
 // offenceSliceStats are main-skill outputs of CalcActiveSkill and CalcOffence. The skills-off oracle
@@ -76,26 +73,29 @@ type poe2SliceBuild struct {
 	stats          []poe2StatResult
 }
 
-// gradePoE2Slice runs every corpus build and grades slice, plus every numeric oracle output (a stat
-// we never produce counting as 0), against the oracle blob. It skips when either input is absent.
-func gradePoE2Slice(t *testing.T, corpusDir, oraclePath string, slice []string) *poe2SliceGrade {
-	t.Helper()
+// prepPoE2Slice grades slice of every corpus build, plus every numeric oracle output (a stat we never
+// produce counting as 0), against the oracle blob; grade returns the result once the part has run. It
+// skips when either input is absent.
+func prepPoE2Slice(corpus, oraclePath string, slice []string) (*poe2Part, func() *poe2SliceGrade, error) {
+	corpusDir := filepath.Join("..", "testdata", corpus)
 	if os.Getenv("CORPUS") != "true" {
-		t.Skip("CORPUS=true reads the local PoE2 corpus")
+		return nil, nil, poe2SkipError("CORPUS=true reads the local PoE2 corpus")
 	}
 	if _, err := os.Stat(oraclePath); err != nil {
-		t.Skipf("no PoE2 oracle at %s", oraclePath)
+		return nil, nil, poe2SkipError(fmt.Sprintf("no PoE2 oracle at %s", oraclePath))
 	}
 	if _, err := os.Stat(corpusDir); err != nil {
-		t.Skipf("no PoE2 corpus at %s", corpusDir)
+		return nil, nil, poe2SkipError(fmt.Sprintf("no PoE2 corpus at %s", corpusDir))
 	}
-	tree := loadTestTree(t)
-	recs, err := loadPoE2Oracle(oraclePath)
+	if _, err := poe2TestTree(); err != nil {
+		return nil, nil, poe2SkipError(poe2TreeSkip(err))
+	}
+	recs, err := sharedPoE2Oracle(oraclePath)
 	if err != nil {
-		t.Fatal(err)
+		return nil, nil, err
 	}
 	if len(recs) < 9000 {
-		t.Fatalf("REFUSING: %d oracle records, expected >=9000; a truncated oracle gives a meaningless number", len(recs))
+		return nil, nil, fmt.Errorf("REFUSING: %d oracle records, expected >=9000; a truncated oracle gives a meaningless number", len(recs))
 	}
 
 	type result struct {
@@ -110,191 +110,174 @@ func gradePoE2Slice(t *testing.T, corpusDir, oraclePath string, slice []string) 
 		sideMisses                                     []string
 	}
 	results := make([]result, len(recs))
-	tasks := make(chan int, len(recs))
-	for i := range recs {
-		tasks <- i
-	}
-	close(tasks)
-	var wg sync.WaitGroup
-	workers := min(poe2Workers(), len(recs))
-	allPerStat := make([]map[string]*poe2Tally, workers)
-	for w := range workers {
+	allPerStat := make([]map[string]*poe2Tally, poe2Workers())
+	for w := range allPerStat {
 		allPerStat[w] = map[string]*poe2Tally{}
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			mine := allPerStat[w]
-			for i := range tasks {
-				res := &results[i]
-				raw, err := os.ReadFile(filepath.Join(corpusDir, recs[i].Build))
-				if err != nil {
-					res.err = err
-					continue
-				}
-				build, err := pob2.ParseBuild(raw)
-				if err != nil {
-					res.err = err
-					continue
-				}
-				var env *Environment
-				func() {
-					defer func() {
-						if r := recover(); r != nil {
-							err = fmt.Errorf("panic: %v", r)
-						}
-					}()
-					env, err = BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
-				}()
-				if err != nil {
-					res.err = err
-					continue
-				}
-				res.built = true
-				for _, stat := range slice {
-					want, ok := recs[i].Output[stat].(float64)
-					if !ok {
-						continue
-					}
-					got := env.Player.Output[stat]
-					st := poe2StatResult{stat: stat, exp: want, got: got}
-					res.total++
-					switch {
-					case math.IsNaN(got) || math.IsInf(got, 0):
-						st.nan = true
-						res.nan++
-					case poe2OracleClose(got, want, poe2OracleTolerance):
-						st.ok = true
-						res.matched++
-					}
-					res.stats = append(res.stats, st)
-				}
-				for key, v := range recs[i].Output {
-					want, ok := v.(float64)
-					if !ok {
-						continue
-					}
-					got := env.Player.Output[key]
-					tl := mine[key]
-					if tl == nil {
-						tl = &poe2Tally{}
-						mine[key] = tl
-					}
-					tl.seen++
-					res.allTotal++
-					hit := !math.IsNaN(got) && !math.IsInf(got, 0) && poe2OracleClose(got, want, poe2OracleTolerance)
-					if hit {
-						tl.ok++
-						res.allMatched++
-					}
-					if want != 0 {
-						tl.nonzero++
-						res.allNonzero++
-						if hit {
-							tl.nonzeroOK++
-							res.allNonzeroOK++
-						} else {
-							res.sideMisses = append(res.sideMisses, fmt.Sprintf("output\t%s\t%v\t%v", key, want, got))
-						}
-					}
-				}
-				if recs[i].MinionOutput != nil {
-					var ours map[string]float64
-					if env.Minion != nil {
-						ours = env.Minion.Output
-					} else {
-						res.minionNoActor = true
-					}
-					res.minion = map[string]*poe2Tally{}
-					res.sideMisses = append(res.sideMisses, tallyPoE2Table(res.minion, "minion", "", recs[i].MinionOutput, ours)...)
-					var oursMainHand map[string]float64
-					if env.Minion != nil {
-						oursMainHand = env.Minion.OutputMainHand
-					}
-					res.sideMisses = append(res.sideMisses, tallyPoE2Table(res.minion, "minion", "MainHand.", recs[i].MinionOutputMainHand, oursMainHand)...)
-				}
-				if recs[i].OutputMainHand != nil || recs[i].OutputOffHand != nil {
-					res.hand = map[string]*poe2Tally{}
-					res.handNoTable = env.Player.OutputMainHand == nil
-					res.sideMisses = append(res.sideMisses, tallyPoE2Table(res.hand, "hand", "MainHand.", recs[i].OutputMainHand, env.Player.OutputMainHand)...)
-					res.sideMisses = append(res.sideMisses, tallyPoE2Table(res.hand, "hand", "OffHand.", recs[i].OutputOffHand, env.Player.OutputOffHand)...)
-				}
-			}
-		}()
 	}
-	wg.Wait()
-
-	g := &poe2SliceGrade{records: len(recs), perStat: map[string]*poe2Tally{}, all: map[string]*poe2Tally{}, minion: map[string]*poe2Tally{}, hand: map[string]*poe2Tally{}, recs: recs}
-	for i, r := range results {
-		if r.minion != nil {
-			g.minionBuilds++
-			if r.minionNoActor {
-				g.minionNoActor++
+	visit := func(w, i int, c *poe2Calc) {
+		mine := allPerStat[w]
+		res := &results[i]
+		if c.err != nil {
+			res.err = c.err
+			return
+		}
+		env := c.env
+		res.built = true
+		for _, stat := range slice {
+			want, ok := recs[i].Output[stat].(float64)
+			if !ok {
+				continue
 			}
-			mergePoE2Tallies(g.minion, r.minion)
-		}
-		for _, m := range r.sideMisses {
-			g.sideMisses = append(g.sideMisses, recs[i].Build+"\t"+m)
-		}
-		if r.hand != nil {
-			g.handBuilds++
-			if r.handNoTable {
-				g.handNoTable++
+			got := env.Player.Output[stat]
+			st := poe2StatResult{stat: stat, exp: want, got: got}
+			res.total++
+			switch {
+			case math.IsNaN(got) || math.IsInf(got, 0):
+				st.nan = true
+				res.nan++
+			case poe2OracleClose(got, want, poe2OracleTolerance):
+				st.ok = true
+				res.matched++
 			}
-			mergePoE2Tallies(g.hand, r.hand)
+			res.stats = append(res.stats, st)
 		}
-		g.builds = append(g.builds, r.poe2SliceBuild)
-		if !r.built {
-			g.failed++
-			if g.firstErr == "" {
-				g.firstErr = fmt.Sprintf("%s: %v", recs[i].Build, r.err)
+		for key, v := range recs[i].Output {
+			want, ok := v.(float64)
+			if !ok {
+				continue
 			}
-			continue
-		}
-		g.built++
-		g.matched += r.matched
-		g.total += r.total
-		g.nan += r.nan
-		g.allMatched += r.allMatched
-		g.allTotal += r.allTotal
-		g.allNonzero += r.allNonzero
-		g.allNonzeroOK += r.allNonzeroOK
-		for _, st := range r.stats {
-			tl := g.perStat[st.stat]
+			got := env.Player.Output[key]
+			tl := mine[key]
 			if tl == nil {
 				tl = &poe2Tally{}
-				g.perStat[st.stat] = tl
+				mine[key] = tl
 			}
 			tl.seen++
-			if st.ok {
+			res.allTotal++
+			hit := !math.IsNaN(got) && !math.IsInf(got, 0) && poe2OracleClose(got, want, poe2OracleTolerance)
+			if hit {
 				tl.ok++
+				res.allMatched++
 			}
-			if st.nan {
-				tl.nan++
-			}
-			if st.exp != 0 {
+			if want != 0 {
 				tl.nonzero++
-				g.nonzero++
-				if st.ok {
+				res.allNonzero++
+				if hit {
 					tl.nonzeroOK++
-					g.nonzeroOK++
+					res.allNonzeroOK++
+				} else {
+					res.sideMisses = append(res.sideMisses, fmt.Sprintf("output\t%s\t%v\t%v", key, want, got))
 				}
 			}
 		}
-	}
-	for _, m := range allPerStat {
-		for k, tl := range m {
-			a := g.all[k]
-			if a == nil {
-				a = &poe2Tally{}
-				g.all[k] = a
+		if recs[i].MinionOutput != nil {
+			var ours map[string]float64
+			if env.Minion != nil {
+				ours = env.Minion.Output
+			} else {
+				res.minionNoActor = true
 			}
-			a.seen += tl.seen
-			a.ok += tl.ok
-			a.nonzero += tl.nonzero
-			a.nonzeroOK += tl.nonzeroOK
+			res.minion = map[string]*poe2Tally{}
+			res.sideMisses = append(res.sideMisses, tallyPoE2Table(res.minion, "minion", "", recs[i].MinionOutput, ours)...)
+			var oursMainHand map[string]float64
+			if env.Minion != nil {
+				oursMainHand = env.Minion.OutputMainHand
+			}
+			res.sideMisses = append(res.sideMisses, tallyPoE2Table(res.minion, "minion", "MainHand.", recs[i].MinionOutputMainHand, oursMainHand)...)
+		}
+		if recs[i].OutputMainHand != nil || recs[i].OutputOffHand != nil {
+			res.hand = map[string]*poe2Tally{}
+			res.handNoTable = env.Player.OutputMainHand == nil
+			res.sideMisses = append(res.sideMisses, tallyPoE2Table(res.hand, "hand", "MainHand.", recs[i].OutputMainHand, env.Player.OutputMainHand)...)
+			res.sideMisses = append(res.sideMisses, tallyPoE2Table(res.hand, "hand", "OffHand.", recs[i].OutputOffHand, env.Player.OutputOffHand)...)
 		}
 	}
-	return g
+	grade := func() *poe2SliceGrade {
+		g := &poe2SliceGrade{records: len(recs), perStat: map[string]*poe2Tally{}, all: map[string]*poe2Tally{}, minion: map[string]*poe2Tally{}, hand: map[string]*poe2Tally{}, recs: recs}
+		for i, r := range results {
+			if r.minion != nil {
+				g.minionBuilds++
+				if r.minionNoActor {
+					g.minionNoActor++
+				}
+				mergePoE2Tallies(g.minion, r.minion)
+			}
+			for _, m := range r.sideMisses {
+				g.sideMisses = append(g.sideMisses, recs[i].Build+"\t"+m)
+			}
+			if r.hand != nil {
+				g.handBuilds++
+				if r.handNoTable {
+					g.handNoTable++
+				}
+				mergePoE2Tallies(g.hand, r.hand)
+			}
+			g.builds = append(g.builds, r.poe2SliceBuild)
+			if !r.built {
+				g.failed++
+				if g.firstErr == "" {
+					g.firstErr = fmt.Sprintf("%s: %v", recs[i].Build, r.err)
+				}
+				continue
+			}
+			g.built++
+			g.matched += r.matched
+			g.total += r.total
+			g.nan += r.nan
+			g.allMatched += r.allMatched
+			g.allTotal += r.allTotal
+			g.allNonzero += r.allNonzero
+			g.allNonzeroOK += r.allNonzeroOK
+			for _, st := range r.stats {
+				tl := g.perStat[st.stat]
+				if tl == nil {
+					tl = &poe2Tally{}
+					g.perStat[st.stat] = tl
+				}
+				tl.seen++
+				if st.ok {
+					tl.ok++
+				}
+				if st.nan {
+					tl.nan++
+				}
+				if st.exp != 0 {
+					tl.nonzero++
+					g.nonzero++
+					if st.ok {
+						tl.nonzeroOK++
+						g.nonzeroOK++
+					}
+				}
+			}
+		}
+		for _, m := range allPerStat {
+			for k, tl := range m {
+				a := g.all[k]
+				if a == nil {
+					a = &poe2Tally{}
+					g.all[k] = a
+				}
+				a.seen += tl.seen
+				a.ok += tl.ok
+				a.nonzero += tl.nonzero
+				a.nonzeroOK += tl.nonzeroOK
+			}
+		}
+		return g
+	}
+	return &poe2Part{corpus: corpus, names: poe2RecNames(recs), visit: visit}, grade, nil
+}
+
+// poe2SliceJob is the job of a test that reports on prepPoE2Slice's grade.
+func poe2SliceJob(corpus, oraclePath string, slice []string, report func(t *testing.T, g *poe2SliceGrade)) poe2Prep {
+	return func() (*poe2Job, error) {
+		part, grade, err := prepPoE2Slice(corpus, oraclePath, slice)
+		if err != nil {
+			return nil, err
+		}
+		return &poe2Job{parts: []*poe2Part{part}, report: func(t *testing.T) { report(t, grade()) }}, nil
+	}
 }
 
 // tallyPoE2Table grades one oracle side table against ours into dst, each key prefixed, and returns
@@ -486,9 +469,12 @@ func (g *poe2SliceGrade) check(t *testing.T, floor int) {
 
 // TestCorpusPoE2OffenceVsOracle grades the offence slice of every skills-off corpus build against
 // PoB-PoE2's skills-off oracle, whose main skill is the build's own.
-func TestCorpusPoE2OffenceVsOracle(t *testing.T) {
-	g := gradePoE2Slice(t, filepath.Join("..", "testdata", "corpus-poe2-0.5-skillsoff"),
-		filepath.Join("..", "testdata", "oracle-poe2-0.5", "output-poe2-0.5-skillsoff.jsonl.gz"), offenceSliceStats)
+func TestCorpusPoE2OffenceVsOracle(t *testing.T) { runPoE2Job(t, "TestCorpusPoE2OffenceVsOracle") }
+
+var prepPoE2Offence = poe2SliceJob("corpus-poe2-0.5-skillsoff",
+	filepath.Join("..", "testdata", "oracle-poe2-0.5", "output-poe2-0.5-skillsoff.jsonl.gz"), offenceSliceStats, reportPoE2Offence)
+
+func reportPoE2Offence(t *testing.T, g *poe2SliceGrade) {
 	g.printSlice("CORPUS PoE2 0.5 vs ORACLE PoE2 0.5 (skills off, offence slice)", offenceSliceStats)
 	minionOK := g.printMinion("skills off: every numeric minion oracle output")
 	g.check(t, poe2OffenceMatchedFloor)
@@ -497,9 +483,12 @@ func TestCorpusPoE2OffenceVsOracle(t *testing.T) {
 
 // TestCorpusPoE2SkillsOnVsOracle grades the defence slice and every numeric output of every skills-on
 // corpus build against PoB-PoE2's skills-on oracle, where buffs, auras, curses and reservations apply.
-func TestCorpusPoE2SkillsOnVsOracle(t *testing.T) {
-	g := gradePoE2Slice(t, filepath.Join("..", "testdata", "corpus-poe2-0.5"),
-		filepath.Join("..", "testdata", "oracle-poe2-0.5", "output-poe2-0.5.jsonl.gz"), defenceSliceStats)
+func TestCorpusPoE2SkillsOnVsOracle(t *testing.T) { runPoE2Job(t, "TestCorpusPoE2SkillsOnVsOracle") }
+
+var prepPoE2SkillsOn = poe2SliceJob("corpus-poe2-0.5",
+	filepath.Join("..", "testdata", "oracle-poe2-0.5", "output-poe2-0.5.jsonl.gz"), defenceSliceStats, reportPoE2SkillsOn)
+
+func reportPoE2SkillsOn(t *testing.T, g *poe2SliceGrade) {
 	g.printSlice("CORPUS PoE2 0.5 vs ORACLE PoE2 0.5 (skills on, defence slice)", defenceSliceStats)
 	g.printAll("skills on: every numeric oracle output (report only; a stat we do not produce counts as 0)")
 	minionOK := g.printMinion("skills on: every numeric minion oracle output")

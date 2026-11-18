@@ -28,13 +28,22 @@ var (
 
 func loadTestTree(t *testing.T) *tree2.PassiveTree {
 	t.Helper()
+	tree, err := poe2TestTree()
+	if err != nil {
+		t.Skip(poe2TreeSkip(err))
+	}
+	return tree
+}
+
+func poe2TestTree() (*tree2.PassiveTree, error) {
 	testTreeOnce.Do(func() {
 		testTree, errTestTree = tree2.LoadData(context.Background(), "0_5", assetcache.AssetLoaderWrapper{Storage: storage.Get()})
 	})
-	if errTestTree != nil {
-		t.Skipf("go-pob-data's PoE2 tree not loadable: %v", errTestTree)
-	}
-	return testTree
+	return testTree, errTestTree
+}
+
+func poe2TreeSkip(err error) string {
+	return fmt.Sprintf("go-pob-data's PoE2 tree not loadable: %v", err)
 }
 
 // sliceStats are the stats this package computes so far, graded against the skills-off oracle.

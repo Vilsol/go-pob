@@ -10,11 +10,9 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 	"testing"
 
 	"github.com/Vilsol/go-pob/mod"
-	"github.com/Vilsol/go-pob/pob2"
 )
 
 // poe2SkillModListFloors are the skills-off builds whose main skill's baseSkillModList agrees with
@@ -148,26 +146,33 @@ func dumpModKey(name string, d poe2SkillModListDumpMod) string {
 // TestCorpusPoE2SkillModListVsDumps compares, per build, the main skill's baseSkillModList (its own mods,
 // not its parent's) with the one PoB-PoE2's dump records, as multisets of mod keys.
 func TestCorpusPoE2SkillModListVsDumps(t *testing.T) {
+	runPoE2Job(t, "TestCorpusPoE2SkillModListVsDumps")
+}
+
+func prepPoE2SkillModList() (*poe2Job, error) {
 	if os.Getenv("CORPUS") != "true" {
-		t.Skip("CORPUS=true reads the local PoE2 corpus")
+		return nil, poe2SkipError("CORPUS=true reads the local PoE2 corpus")
 	}
 	oracleDir := filepath.Join("..", "testdata", "oracle-poe2-0.5")
 	realOracle, err := filepath.EvalSymlinks(oracleDir)
 	if err != nil {
-		t.Skipf("no PoE2 oracle at %s", oracleDir)
+		return nil, poe2SkipError(fmt.Sprintf("no PoE2 oracle at %s", oracleDir))
 	}
 	root := filepath.Dir(realOracle)
-	tree := loadTestTree(t)
+	if _, err := poe2TestTree(); err != nil {
+		return nil, poe2SkipError(poe2TreeSkip(err))
+	}
 	limit, _ := strconv.Atoi(os.Getenv("LIMIT"))
+	job := &poe2Job{}
+	var reports []func(t *testing.T)
 	for _, c := range []struct{ name, corpus, dumps string }{
 		{"skills-off", "corpus-poe2-0.5-skillsoff", "dumps-skillsoff"},
 		{"skills-on", "corpus-poe2-0.5", "dumps"},
 	} {
-		corpusDir := filepath.Join("..", "testdata", c.corpus)
 		dumpDir := filepath.Join(root, c.dumps)
 		entries, err := os.ReadDir(dumpDir)
 		if err != nil {
-			t.Skipf("no PoE2 dumps at %s", dumpDir)
+			return nil, poe2SkipError(fmt.Sprintf("no PoE2 dumps at %s", dumpDir))
 		}
 		var builds []string
 		for _, e := range entries {
@@ -186,151 +191,134 @@ func TestCorpusPoE2SkillModListVsDumps(t *testing.T) {
 			wantN, gotN     int
 		}
 		results := make([]result, len(builds))
-		work := make(chan int)
-		var wg sync.WaitGroup
-		for range poe2Workers() {
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
-				for i := range work {
-					results[i] = func() result {
-						var res result
-						raw, err := os.ReadFile(filepath.Join(dumpDir, builds[i]+".json"))
-						if err != nil {
-							return result{err: err}
-						}
-						var d poe2SkillModListDump
-						if err := json.Unmarshal(raw, &d); err != nil {
-							return result{err: err}
-						}
-						xml, err := os.ReadFile(filepath.Join(corpusDir, builds[i]+".xml"))
-						if err != nil {
-							return result{err: err}
-						}
-						build, err := pob2.ParseBuild(xml)
-						if err != nil {
-							return result{err: err}
-						}
-						var env *Environment
-						func() {
-							defer func() {
-								if r := recover(); r != nil {
-									err = fmt.Errorf("panic: %v", r)
-								}
-							}()
-							env, err = BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
-						}()
-						if err != nil {
-							return result{err: err}
-						}
-						var dumped map[string][]poe2SkillModListDumpMod
-						if len(d.BaseSkillModList) > 0 && d.BaseSkillModList[0] == '{' {
-							if err := json.Unmarshal(d.BaseSkillModList, &dumped); err != nil {
-								return result{err: err}
-							}
-						}
-						want := map[string]int{}
-						for name, mods := range dumped {
-							for _, m := range mods {
-								want[dumpModKey(name, m)]++
-								res.wantN++
-							}
-						}
-						got := map[string]int{}
-						if m := env.Player.MainSkill; m != nil {
-							res.mainOK = d.Meta.MainSkill != nil && m.ActiveEffect.GrantedEffect.Name == *d.Meta.MainSkill
-							if m.BaseSkillModList != nil {
-								for _, x := range m.BaseSkillModList.Mods() {
-									got[ourModKey(x)]++
-									res.gotN++
-								}
-							}
-						}
-						for k, n := range want {
-							for range n - got[k] {
-								res.missing = append(res.missing, k)
-							}
-						}
-						for k, n := range got {
-							for range n - want[k] {
-								res.extra = append(res.extra, k)
-							}
-						}
-						res.matched = len(res.missing) == 0 && len(res.extra) == 0
-						return res
-					}()
+		visit := func(_, i int, calc *poe2Calc) {
+			results[i] = func() result {
+				var res result
+				raw, err := os.ReadFile(filepath.Join(dumpDir, builds[i]+".json"))
+				if err != nil {
+					return result{err: err}
 				}
+				var d poe2SkillModListDump
+				if err := json.Unmarshal(raw, &d); err != nil {
+					return result{err: err}
+				}
+				if calc.err != nil {
+					return result{err: calc.err}
+				}
+				env := calc.env
+				var dumped map[string][]poe2SkillModListDumpMod
+				if len(d.BaseSkillModList) > 0 && d.BaseSkillModList[0] == '{' {
+					if err := json.Unmarshal(d.BaseSkillModList, &dumped); err != nil {
+						return result{err: err}
+					}
+				}
+				want := map[string]int{}
+				for name, mods := range dumped {
+					for _, m := range mods {
+						want[dumpModKey(name, m)]++
+						res.wantN++
+					}
+				}
+				got := map[string]int{}
+				if m := env.Player.MainSkill; m != nil {
+					res.mainOK = d.Meta.MainSkill != nil && m.ActiveEffect.GrantedEffect.Name == *d.Meta.MainSkill
+					if m.BaseSkillModList != nil {
+						for _, x := range m.BaseSkillModList.Mods() {
+							got[ourModKey(x)]++
+							res.gotN++
+						}
+					}
+				}
+				for k, n := range want {
+					for range n - got[k] {
+						res.missing = append(res.missing, k)
+					}
+				}
+				for k, n := range got {
+					for range n - want[k] {
+						res.extra = append(res.extra, k)
+					}
+				}
+				res.matched = len(res.missing) == 0 && len(res.extra) == 0
+				return res
 			}()
 		}
-		for i := range builds {
-			work <- i
+		names := make([]string, len(builds))
+		for i, b := range builds {
+			names[i] = b + ".xml"
 		}
-		close(work)
-		wg.Wait()
-
-		var seen, failed, matched, mainOK, matchedMainOK, wantN, okN int
-		missByName, extraByName := map[string]int{}, map[string]int{}
-		var lines []string
-		for i, r := range results {
-			if r.err != nil {
-				failed++
-				if failed <= 5 {
-					t.Logf("%s %s: %v", c.name, builds[i], r.err)
+		job.parts = append(job.parts, &poe2Part{corpus: c.corpus, names: names, visit: visit})
+		reports = append(reports, func(t *testing.T) {
+			var seen, failed, matched, mainOK, matchedMainOK, wantN, okN int
+			missByName, extraByName := map[string]int{}, map[string]int{}
+			var lines []string
+			for i, r := range results {
+				if r.err != nil {
+					failed++
+					if failed <= 5 {
+						t.Logf("%s %s: %v", c.name, builds[i], r.err)
+					}
+					continue
 				}
-				continue
-			}
-			seen++
-			wantN += r.wantN
-			okN += r.wantN - len(r.missing)
-			if r.mainOK {
-				mainOK++
-			}
-			if r.matched {
-				matched++
+				seen++
+				wantN += r.wantN
+				okN += r.wantN - len(r.missing)
 				if r.mainOK {
-					matchedMainOK++
+					mainOK++
 				}
-				continue
-			}
-			for _, k := range r.missing {
-				missByName[strings.SplitN(k, "|", 2)[0]]++
-				lines = append(lines, builds[i]+"\tmissing\t"+k)
-			}
-			for _, k := range r.extra {
-				extraByName[strings.SplitN(k, "|", 2)[0]]++
-				lines = append(lines, builds[i]+"\textra\t"+k)
-			}
-		}
-		t.Logf("=== %s: %d builds, %d failed; baseSkillModList agrees on %d / %d builds (%d / %d with the right main skill); %d / %d dumped mods found",
-			c.name, len(builds), failed, matched, seen, matchedMainOK, mainOK, okN, wantN)
-		for _, tally := range []struct {
-			what string
-			m    map[string]int
-		}{{"missing", missByName}, {"extra", extraByName}} {
-			type kv struct {
-				k string
-				n int
-			}
-			var rows []kv
-			for k, n := range tally.m {
-				rows = append(rows, kv{k, n})
-			}
-			sort.Slice(rows, func(a, b int) bool {
-				if rows[a].n != rows[b].n {
-					return rows[a].n > rows[b].n
+				if r.matched {
+					matched++
+					if r.mainOK {
+						matchedMainOK++
+					}
+					continue
 				}
-				return rows[a].k < rows[b].k
-			})
-			for _, r := range rows[:min(len(rows), 15)] {
-				t.Logf("  %-7s %6d  %s", tally.what, r.n, r.k)
+				for _, k := range r.missing {
+					missByName[strings.SplitN(k, "|", 2)[0]]++
+					lines = append(lines, builds[i]+"\tmissing\t"+k)
+				}
+				for _, k := range r.extra {
+					extraByName[strings.SplitN(k, "|", 2)[0]]++
+					lines = append(lines, builds[i]+"\textra\t"+k)
+				}
 			}
-		}
-		if out := os.Getenv("WORKLIST"); out != "" {
-			_ = os.MkdirAll(out, 0o750)
-			_ = os.WriteFile(filepath.Join(out, "skillmodlist-"+c.name+".tsv"), []byte(strings.Join(lines, "\n")+"\n"), 0o600)
-		}
-		if limit == 0 && matched < poe2SkillModListFloors[c.name] {
-			t.Errorf("%s: baseSkillModList agrees on %d builds, floor %d", c.name, matched, poe2SkillModListFloors[c.name])
+			t.Logf("=== %s: %d builds, %d failed; baseSkillModList agrees on %d / %d builds (%d / %d with the right main skill); %d / %d dumped mods found",
+				c.name, len(builds), failed, matched, seen, matchedMainOK, mainOK, okN, wantN)
+			for _, tally := range []struct {
+				what string
+				m    map[string]int
+			}{{"missing", missByName}, {"extra", extraByName}} {
+				type kv struct {
+					k string
+					n int
+				}
+				var rows []kv
+				for k, n := range tally.m {
+					rows = append(rows, kv{k, n})
+				}
+				sort.Slice(rows, func(a, b int) bool {
+					if rows[a].n != rows[b].n {
+						return rows[a].n > rows[b].n
+					}
+					return rows[a].k < rows[b].k
+				})
+				for _, r := range rows[:min(len(rows), 15)] {
+					t.Logf("  %-7s %6d  %s", tally.what, r.n, r.k)
+				}
+			}
+			if out := os.Getenv("WORKLIST"); out != "" {
+				_ = os.MkdirAll(out, 0o750)
+				_ = os.WriteFile(filepath.Join(out, "skillmodlist-"+c.name+".tsv"), []byte(strings.Join(lines, "\n")+"\n"), 0o600)
+			}
+			if limit == 0 && matched < poe2SkillModListFloors[c.name] {
+				t.Errorf("%s: baseSkillModList agrees on %d builds, floor %d", c.name, matched, poe2SkillModListFloors[c.name])
+			}
+		})
+	}
+	job.report = func(t *testing.T) {
+		for _, r := range reports {
+			r(t)
 		}
 	}
+	return job, nil
 }
