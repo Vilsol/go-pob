@@ -2,6 +2,8 @@ package calculator
 
 import (
 	"bytes"
+	"compress/gzip"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"regexp"
@@ -199,13 +201,37 @@ func tradeURLEncode(s string) string {
 	return b.String()
 }
 
+// B64GzipEncode is the string gzipped, then Base64URL encoded.
+//
+//pob:src/Classes/TradeHelpers.lua:649-654
+func B64GzipEncode(str string) string {
+	var buf bytes.Buffer
+	w := gzip.NewWriter(&buf)
+	_, _ = w.Write([]byte(str))
+	_ = w.Close()
+	return strings.NewReplacer("+", "-", "/", "_").Replace(base64.StdEncoding.EncodeToString(buf.Bytes()))
+}
+
+//pob:src/Classes/TradeQueryRequests.lua:504-517
+func tradeBuildURL(root, realm, league, queryID string) string {
+	result := root
+	if realm != "" && realm != "pc" {
+		result += "/" + realm
+	}
+	result += "/" + tradeURLEncode(league)
+	if queryID != "" {
+		result += "/" + queryID
+	}
+	return result
+}
+
 var tradeFoulbornPrefixRe = regexp.MustCompile(`^Foulborn\s+`)
 var tradeTrailingSpaceRe = regexp.MustCompile(`\s+$`)
 var tradeTrailingIDRe = regexp.MustCompile(`^(.*?)\s+\d+$`)
 
 // BuySimilarURL is the trade search URL for the popup's selections over its mod entries.
 //
-//pob:src/Classes/CompareBuySimilar.lua:47-206
+//pob:src/Classes/CompareBuySimilar.lua:47-203
 func BuySimilarURL(item *Item, slotName string, modEntries []*BuySimilarModEntry, o BuySimilarOptions) string {
 	isUnique := item.Rarity == RarityUnique || item.Rarity == RarityRelic
 	realm := o.Realm
@@ -229,7 +255,6 @@ func BuySimilarURL(item *Item, slotName string, modEntries []*BuySimilarModEntry
 		"status": map[string]any{"option": listedAPIValue},
 		"stats":  []any{map[string]any{"type": "and", "filters": []any{}}},
 	}
-	queryTable := map[string]any{"query": query, "sort": map[string]any{"price": "asc"}}
 	queryFilters := map[string]any{}
 
 	if isUnique {
@@ -363,13 +388,13 @@ func BuySimilarURL(item *Item, slotName string, modEntries []*BuySimilarModEntry
 	var queryJSON bytes.Buffer
 	enc := json.NewEncoder(&queryJSON)
 	enc.SetEscapeHTML(false)
-	_ = enc.Encode(queryTable)
+	_ = enc.Encode(query)
 	url := hostName + "trade/search"
 	if realm != "pc" {
 		url += "/" + realm
 	}
 	url += "/" + tradeURLEncode(league)
-	url += "?q=" + tradeURLEncode(strings.TrimSuffix(queryJSON.String(), "\n"))
+	url += "/" + B64GzipEncode(strings.TrimSuffix(queryJSON.String(), "\n"))
 	return url
 }
 
@@ -476,12 +501,12 @@ func BuySimilarAddModEntries(item *Item) []*BuySimilarModEntry {
 			if tradeID != "" {
 				entry.TradeIDs = []string{tradeID}
 			} else {
-				resultHashes, value, invert := findTradeHash(resolvedLine)
+				resultHashes, value, invert, prefix := findTradeHash(resolvedLine)
 				// convert hashes to string ids
 				var resultIDs []string
 				existing := existingStats()
 				for _, hash := range resultHashes {
-					id := fmt.Sprintf("%s.stat_%d", source.typ, hash)
+					id := fmt.Sprintf("%s.%s%d", source.typ, prefix, hash)
 					if existing[id] {
 						resultIDs = append(resultIDs, id)
 					}

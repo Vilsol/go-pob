@@ -7,6 +7,7 @@ import { render, fireEvent, cleanup, within, waitFor } from '@testing-library/sv
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { cachedAsset } from '../../../e2e/support/data_cache';
+import { tradeUrlQuery } from '../../../e2e/support/trade_url';
 
 afterEach(cleanup);
 
@@ -152,8 +153,7 @@ describe('Buy Similar on the Compare page', () => {
     }
     await clickSearch(dialog);
     await waitFor(() => expect(opened).toHaveLength(1));
-    const [base, q] = opened[0].split('?q=');
-    expect({ base, query: JSON.parse(decodeURIComponent(q)) as unknown }).toEqual(want.modSearch);
+    expect(tradeUrlQuery(opened[0])).toEqual(want.modSearch);
     spy.mockRestore();
   }, 180_000);
 });

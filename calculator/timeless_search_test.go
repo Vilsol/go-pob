@@ -1,11 +1,13 @@
 package calculator
 
 import (
+	"bytes"
 	"compress/gzip"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"math"
-	"net/url"
 	"os"
 	"reflect"
 	"slices"
@@ -241,8 +243,8 @@ func TestTimelessTradeAndItemAgainstPoB(t *testing.T) {
 			}
 			for i, want := range c.URLs {
 				got := TimelessTradeURL(q)
-				gp, gq, _ := strings.Cut(got.URL, "?q=")
-				wp, wq, _ := strings.Cut(want, "?q=")
+				gp, gq := splitTradeQuery(got.URL)
+				wp, wq := splitTradeQuery(want)
 				if gp != wp {
 					t.Errorf("click %d path: ours %q, the pin's %q", i+1, gp, wp)
 				}
@@ -269,14 +271,28 @@ func TestTimelessTradeAndItemAgainstPoB(t *testing.T) {
 	}
 }
 
+// splitTradeQuery is the trade URL's path and its last segment, the Base64URL gzipped query.
+func splitTradeQuery(u string) (string, string) {
+	i := strings.LastIndexByte(u, '/')
+	return u[:i], u[i+1:]
+}
+
 func decodeTradeQuery(t *testing.T, enc string) any {
 	t.Helper()
-	s, err := url.QueryUnescape(enc)
+	raw, err := base64.StdEncoding.DecodeString(strings.NewReplacer("-", "+", "_", "/").Replace(enc))
+	if err != nil {
+		t.Fatalf("query is not Base64URL: %v", err)
+	}
+	zr, err := gzip.NewReader(bytes.NewReader(raw))
+	if err != nil {
+		t.Fatalf("query is not gzip: %v", err)
+	}
+	s, err := io.ReadAll(zr)
 	if err != nil {
 		t.Fatal(err)
 	}
 	var v any
-	if err := json.Unmarshal([]byte(s), &v); err != nil {
+	if err := json.Unmarshal(s, &v); err != nil {
 		t.Fatalf("query does not decode: %v", err)
 	}
 	return v

@@ -744,6 +744,8 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 			switch castValue.Key {
 			case "level":
 				activeEffect.Level = activeEffect.Level + castValue.Value
+				//pob:block:src/Modules/CalcActiveSkill.lua:582-583
+				activeEffect.SupportLevel += castValue.Value
 			case "quality":
 				activeEffect.Quality = activeEffect.Quality + castValue.Value
 				//pob:block:src/Modules/CalcActiveSkill.lua:562-565

@@ -6,6 +6,7 @@ import { buildXml } from './support/builds';
 import * as go from './support/go_model';
 import { record } from './support/perf';
 import { expectedLines } from './support/stats';
+import { tradeUrlQuery } from './support/trade_url';
 import { displayStats } from '../src/lib/display/stats';
 import { formatNumSep, luaFormat } from '../src/lib/display/format_stat';
 import { signed } from '../src/lib/design/compare';
@@ -414,7 +415,9 @@ test('Items: Expanded mode cards and the Jewels section are the model’s', { ta
       Mods: rows.map((r, i) => ({ Checked: i === first, Min: r.Min === '' ? undefined : Number(r.Min) }))
     })
   ).unwrap();
-  expect(search).toMatch(/^https:\/\/www\.pathofexile\.com\/trade\/search\/Standard\?q=.*%22id%22/);
+  const q = tradeUrlQuery(search);
+  expect(q.base).toBe('https://www.pathofexile.com/trade/search/Standard');
+  expect(JSON.stringify(q.query)).toContain('"id"');
   await expect.poll(() => page.evaluate(() => (window as unknown as { opened?: string }).opened ?? '')).toBe(search);
   expect(app.errors).toEqual([]);
 });

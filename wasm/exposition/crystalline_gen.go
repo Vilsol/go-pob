@@ -16259,6 +16259,9 @@ func crystallineMarshalCalculatorGemDisplay(v *calculator.GemDisplay) any {
 	out.Set("ItemQuality", float64(v.ItemQuality))
 	out.Set("SupportQuality", float64(v.SupportQuality))
 	out.Set("GlobalQuality", float64(v.GlobalQuality))
+	out.Set("ItemLevel", float64(v.ItemLevel))
+	out.Set("GlobalLevel", float64(v.GlobalLevel))
+	out.Set("SupportLevel", float64(v.SupportLevel))
 
 	return out
 }
@@ -16291,7 +16294,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 	if crystallineMarshalCalculatorGemEffectShape.IsUndefined() {
 		crystallineMarshalCalculatorGemEffectShape = crystallineShape("calculator.GemEffect",
-			[]string{"GrantedEffect", "Level", "AppliesToGrantedSkills", "Quality", "QualityID", "SrcInstance", "GemData", "SocketQuality", "ItemQuality", "GlobalQuality", "SupportQuality", "ActorLevel", "GrantedEffectLevel", "CostEmptied", "ExplodeSource", "Superseded", "Values", "MainSkill", "ActivationFreqInc", "ActivationFreqMore", "AttachedBrandCount", "IgnoresTickRate"},
+			[]string{"GrantedEffect", "Level", "AppliesToGrantedSkills", "Quality", "QualityID", "SrcInstance", "GemData", "SocketQuality", "ItemQuality", "GlobalQuality", "SupportQuality", "ItemLevel", "GlobalLevel", "SupportLevel", "ActorLevel", "GrantedEffectLevel", "CostEmptied", "ExplodeSource", "Superseded", "Values", "MainSkill", "ActivationFreqInc", "ActivationFreqMore", "AttachedBrandCount", "IgnoresTickRate"},
 			func(v *calculator.GemEffect, entry *crystallineEntry, field int) any {
 				switch field {
 				case 0:
@@ -16328,6 +16331,12 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 				case 10:
 					return float64(v.SupportQuality)
 				case 11:
+					return float64(v.ItemLevel)
+				case 12:
+					return float64(v.GlobalLevel)
+				case 13:
+					return float64(v.SupportLevel)
+				case 14:
 					return func() any {
 						if v.ActorLevel == nil {
 							return nil
@@ -16335,19 +16344,19 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						return float64((*v.ActorLevel))
 					}()
-				case 12:
-					return crystallineCached(entry, 12, v.GrantedEffectLevel, func() any {
+				case 15:
+					return crystallineCached(entry, 15, v.GrantedEffectLevel, func() any {
 						return crystallineMarshalRawCalculatedLevel(v.GrantedEffectLevel)
 					})
-				case 13:
+				case 16:
 					return bool(v.CostEmptied)
-				case 14:
-					return crystallineCached(entry, 14, v.ExplodeSource, func() any {
+				case 17:
+					return crystallineCached(entry, 17, v.ExplodeSource, func() any {
 						return crystallineMarshalCalculatorExplodeSource(v.ExplodeSource)
 					})
-				case 15:
+				case 18:
 					return bool(v.Superseded)
-				case 16:
+				case 19:
 					return crystallineJSON(func(b []byte, ok *bool) []byte {
 						if entries0 := v.Values; entries0 == nil {
 							b = append(b, "null"...)
@@ -16382,17 +16391,17 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 							return out
 						}()
 					})
-				case 17:
-					return crystallineCached(entry, 17, v.MainSkill, func() any {
+				case 20:
+					return crystallineCached(entry, 20, v.MainSkill, func() any {
 						return crystallineMarshalCalculatorActiveSkill(v.MainSkill)
 					})
-				case 18:
-					return float64(v.ActivationFreqInc)
-				case 19:
-					return float64(v.ActivationFreqMore)
-				case 20:
-					return float64(v.AttachedBrandCount)
 				case 21:
+					return float64(v.ActivationFreqInc)
+				case 22:
+					return float64(v.ActivationFreqMore)
+				case 23:
+					return float64(v.AttachedBrandCount)
+				case 24:
 					return bool(v.IgnoresTickRate)
 				}
 
@@ -16516,6 +16525,39 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 					})(value)
 				case 11:
 					(func(value js.Value) {
+						converted, err := crystallineToInt(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.ItemLevel = converted
+					})(value)
+				case 12:
+					(func(value js.Value) {
+						converted, err := crystallineToInt(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.GlobalLevel = converted
+					})(value)
+				case 13:
+					(func(value js.Value) {
+						converted, err := crystallineToInt(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.SupportLevel = converted
+					})(value)
+				case 14:
+					(func(value js.Value) {
 						converted, err := crystallineToPtrInt(value)
 						if err != nil {
 							crystallineFail(err.Error())
@@ -16525,7 +16567,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.ActorLevel = converted
 					})(value)
-				case 12:
+				case 15:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrRawCalculatedLevel(value)
 						if err != nil {
@@ -16536,7 +16578,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.GrantedEffectLevel = converted
 					})(value)
-				case 13:
+				case 16:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -16547,7 +16589,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.CostEmptied = converted
 					})(value)
-				case 14:
+				case 17:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrCalculatorExplodeSource(value)
 						if err != nil {
@@ -16558,7 +16600,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.ExplodeSource = converted
 					})(value)
-				case 15:
+				case 18:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -16569,7 +16611,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.Superseded = converted
 					})(value)
-				case 16:
+				case 19:
 					(func(value js.Value) {
 						converted, err := crystallineToMapOfStringToFloat64(value)
 						if err != nil {
@@ -16580,11 +16622,11 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.Values = converted
 					})(value)
-				case 17:
+				case 20:
 					(func(js.Value) {
 						crystallineFail("calculator.GemEffect.MainSkill cannot be written from JavaScript: CalculatorActiveSkill.SkillModList: ModdbModList.ModStore: ModdbModStore.Parent: ModStoreFuncs.Combine is variadic, which an object supplied from JavaScript cannot be")
 					})(value)
-				case 18:
+				case 21:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -16595,7 +16637,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.ActivationFreqInc = converted
 					})(value)
-				case 19:
+				case 22:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -16606,7 +16648,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.ActivationFreqMore = converted
 					})(value)
-				case 20:
+				case 23:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -16617,7 +16659,7 @@ func crystallineMarshalCalculatorGemEffect(v *calculator.GemEffect) any {
 
 						v.AttachedBrandCount = converted
 					})(value)
-				case 21:
+				case 24:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -50635,6 +50677,12 @@ func crystallineAppendCalculatorGemDisplay(b []byte, v *calculator.GemDisplay, o
 	b = crystallineAppendNumber(b, float64(v.SupportQuality), ok)
 	b = append(b, ",\"GlobalQuality\":"...)
 	b = crystallineAppendNumber(b, float64(v.GlobalQuality), ok)
+	b = append(b, ",\"ItemLevel\":"...)
+	b = crystallineAppendNumber(b, float64(v.ItemLevel), ok)
+	b = append(b, ",\"GlobalLevel\":"...)
+	b = crystallineAppendNumber(b, float64(v.GlobalLevel), ok)
+	b = append(b, ",\"SupportLevel\":"...)
+	b = crystallineAppendNumber(b, float64(v.SupportLevel), ok)
 
 	return append(b, '}')
 }
@@ -55729,7 +55777,7 @@ func crystallineToCalculatorExplodeSource(value js.Value) (calculator.ExplodeSou
 	return out, nil
 }
 
-var crystallineKnownCalculatorGemDisplay = map[string]bool{"Level": true, "Quality": true, "SocketQuality": true, "ItemQuality": true, "SupportQuality": true, "GlobalQuality": true}
+var crystallineKnownCalculatorGemDisplay = map[string]bool{"Level": true, "Quality": true, "SocketQuality": true, "ItemQuality": true, "SupportQuality": true, "GlobalQuality": true, "ItemLevel": true, "GlobalLevel": true, "SupportLevel": true}
 
 func crystallineToCalculatorGemDisplay(value js.Value) (calculator.GemDisplay, error) {
 	var out calculator.GemDisplay
@@ -55812,6 +55860,33 @@ func crystallineToCalculatorGemDisplay(value js.Value) (calculator.GemDisplay, e
 		}
 
 		out.GlobalQuality = converted
+	}
+
+	if property := value.Get("ItemLevel"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToInt(property)
+		if err != nil {
+			return out, errors.New("calculator.GemDisplay.ItemLevel: " + err.Error())
+		}
+
+		out.ItemLevel = converted
+	}
+
+	if property := value.Get("GlobalLevel"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToInt(property)
+		if err != nil {
+			return out, errors.New("calculator.GemDisplay.GlobalLevel: " + err.Error())
+		}
+
+		out.GlobalLevel = converted
+	}
+
+	if property := value.Get("SupportLevel"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToInt(property)
+		if err != nil {
+			return out, errors.New("calculator.GemDisplay.SupportLevel: " + err.Error())
+		}
+
+		out.SupportLevel = converted
 	}
 
 	return out, nil

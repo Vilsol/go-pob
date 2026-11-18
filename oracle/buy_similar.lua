@@ -40,8 +40,8 @@ local function search()
 	popup.listedDrop.selFunc(popup.listedDrop.selIndex, popup.listedDrop.list[popup.listedDrop.selIndex])
 	copied = nil
 	popup.search.onClick()
-	local base, encoded = copied:match("^(.-)%?q=(.*)$")
-	return { base = base, query = json.decode((urlDecode(encoded))) }
+	local base, encoded = copied:match("^(.*)/([^/]+)$")
+	return { base = base, query = json.decode(tradeHelpers.B64GzipDecode(encoded)) }
 end
 
 local out = {}

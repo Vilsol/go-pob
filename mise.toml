@@ -106,7 +106,7 @@ flag "--game <game>" env="GAME" default="poe1" {
 }
 flag "--sample <sample>" env="SAMPLE" default="0"
 flag "--jobs <jobs>" env="JOBS" default="2"
-arg "<inputs>..." var=#true help="build XMLs, or folders of them (testdata/corpus-3.29, testdata/corpus-poe2-0.5)"
+arg "<inputs>..." var=#true help="build XMLs, or folders of them (testdata/corpus-3.30, testdata/corpus-poe2-0.5)"
 '''
 run = 'eval "set -- $usage_inputs"; {{vars.NICE}} node frontend/harness/engine_diff.mjs {{usage.game}} --sample {{usage.sample}} --jobs {{usage.jobs}} "$@"'
 
@@ -856,7 +856,7 @@ run = [
 [tasks.jewel-limits]
 description = "Which socketed jewels does PoB's 'Limited to: N' rule disable, and do they still transform the tree (--builds <dir>)"
 usage = '''
-flag "--builds <builds>" env="BUILDS" default="testdata/corpus-3.29"
+flag "--builds <builds>" env="BUILDS" default="testdata/corpus-3.30"
 flag "--pob-dir <dir>" env="POB_DIR" default="{{vars.POB_DEFAULT}}"
 '''
 run = '{{vars.NICE}} mise x --cd {{usage.pob_dir}}/src -- luajit {{config_root}}/oracle/jewel_limits.lua "$(realpath "{{usage.builds}}")"'
@@ -884,7 +884,7 @@ run = [
 LUA_CPATH="{{usage.pob_dir}}/.luarocks/lib/lua/5.1/?.so;;" \
 LUA_PATH="{{usage.pob_dir}}/runtime/lua/?.lua;{{usage.pob_dir}}/runtime/lua/?/init.lua;{{usage.pob_dir}}/.luarocks/share/lua/5.1/?.lua;{{usage.pob_dir}}/.luarocks/share/lua/5.1/?/init.lua;;" \
 setarch "$(uname -m)" -R sh -c \
-"cd '{{usage.pob_dir}}/src' && exec '{{vars.MAIN}}/.luajit-det/bin/luajit' '{{config_root}}/oracle/dump_calcs_damage.lua' '{{config_root}}/testdata/corpus-3.29' '{{usage.out}}' '{{usage.list}}'"
+"cd '{{usage.pob_dir}}/src' && exec '{{vars.MAIN}}/.luajit-det/bin/luajit' '{{config_root}}/oracle/dump_calcs_damage.lua' '{{config_root}}/testdata/corpus-3.30' '{{usage.out}}' '{{usage.list}}'"
 ''',
   '{{vars.NICE}} env CORPUS=true OPERATOR=true CALCS_DUMP={{usage.out}} go test ./calculator/ -run TestCalcsHandRungCensus -v -count=1 -timeout 60m',
 ]
@@ -944,7 +944,7 @@ run = [
 LUA_CPATH="{{usage.pob_dir}}/.luarocks/lib/lua/5.1/?.so;;" \
 LUA_PATH="{{usage.pob_dir}}/runtime/lua/?.lua;{{usage.pob_dir}}/runtime/lua/?/init.lua;{{usage.pob_dir}}/.luarocks/share/lua/5.1/?.lua;{{usage.pob_dir}}/.luarocks/share/lua/5.1/?/init.lua;;" \
 setarch "$(uname -m)" -R sh -c \
-"cd '{{usage.pob_dir}}/src' && exec '{{vars.MAIN}}/.luajit-det/bin/luajit' '{{config_root}}/oracle/dump_pool_walk.lua' '{{config_root}}/testdata/corpus-3.29' '{{usage.out}}' '{{usage.list}}'"
+"cd '{{usage.pob_dir}}/src' && exec '{{vars.MAIN}}/.luajit-det/bin/luajit' '{{config_root}}/oracle/dump_pool_walk.lua' '{{config_root}}/testdata/corpus-3.30' '{{usage.out}}' '{{usage.list}}'"
 ''',
   '{{vars.NICE}} env CORPUS=true POOL_WALK_DUMP={{usage.out}} go test ./calculator/ -run TestPoolWalkMatchesOracle -v -count=1 -timeout 60m',
 ]
@@ -1124,7 +1124,7 @@ flag "--builds <builds>" env="BUILDS"
 flag "--out <out>" env="OUT" default="/tmp/reduce-pools"
 flag "--pob-dir <dir>" env="POB_DIR" default="{{vars.POB_DEFAULT}}"
 '''
-run = 'cd {{usage.pob_dir}}/src && {{vars.NICE}} mise x -- luajit {{config_root}}/oracle/dump_reduce_pools.lua {{config_root}}/testdata/corpus-3.29 {{usage.out}} {{usage.builds}}'
+run = 'cd {{usage.pob_dir}}/src && {{vars.NICE}} mise x -- luajit {{config_root}}/oracle/dump_reduce_pools.lua {{config_root}}/testdata/corpus-3.30 {{usage.out}} {{usage.builds}}'
 
 [tasks.diag]
 description = "Per-build diagnosis loop — --build <name> [--step oracle|sources|mods|tags] [--name --actor --list --cfg]"
@@ -1667,7 +1667,7 @@ flag "--pob-dir <dir>" env="POB_DIR" default="{{vars.POB_DEFAULT}}"
 '''
 run = [
   'mkdir -p {{usage.out}}',
-  'ls {{config_root}}/testdata/corpus-3.29/*.xml | awk "NR % {{usage.every}} == 0" > {{usage.out}}/list.txt',
+  'ls {{config_root}}/testdata/corpus-3.30/*.xml | awk "NR % {{usage.every}} == 0" > {{usage.out}}/list.txt',
   '{{vars.NICE}} mise x --cd {{usage.pob_dir}}/src -- luajit {{config_root}}/oracle/config_placeholders.lua {{usage.out}}/list.txt {{usage.out}}/placeholders.json',
   '{{vars.NICE}} env CORPUS=true OPERATOR=true CONFIG_PLACEHOLDERS={{usage.out}}/placeholders.json go test ./calculator/ -run "^TestConfigPlaceholdersAgainstPoB$" -count=1 -v',
 ]
@@ -1688,7 +1688,7 @@ run = [
 LUA_CPATH="{{usage.pob_dir}}/.luarocks/lib/lua/5.1/?.so;;" \
 LUA_PATH="{{usage.pob_dir}}/runtime/lua/?.lua;{{usage.pob_dir}}/runtime/lua/?/init.lua;{{usage.pob_dir}}/.luarocks/share/lua/5.1/?.lua;{{usage.pob_dir}}/.luarocks/share/lua/5.1/?/init.lua;;" \
 setarch "$(uname -m)" -R sh -c \
-"cd '{{usage.pob_dir}}/src' && exec '{{vars.MAIN}}/.luajit-det/bin/luajit' '{{config_root}}/oracle/power_report.lua' '{{usage.out}}' '{{config_root}}/testdata/corpus-3.29/{{usage.build}}.xml' {{usage.stats}}"
+"cd '{{usage.pob_dir}}/src' && exec '{{vars.MAIN}}/.luajit-det/bin/luajit' '{{config_root}}/oracle/power_report.lua' '{{usage.out}}' '{{config_root}}/testdata/corpus-3.30/{{usage.build}}.xml' {{usage.stats}}"
 ''',
   'gzip -9 -n -f {{usage.out}}/{{usage.build}}_*.tsv',
 ]
@@ -1735,9 +1735,9 @@ run = [
 ]
 
 [tasks.corpus-dump-each]
-description = "Dump each build in LIST through the pinned PoB, one deterministic-LuaJIT process per build — --list <file> --out <new dir> [--jobs 4] [--builds testdata/corpus-3.29]"
+description = "Dump each build in LIST through the pinned PoB, one deterministic-LuaJIT process per build — --list <file> --out <new dir> [--jobs 4] [--builds testdata/corpus-3.30]"
 usage = '''
-flag "--builds <builds>" env="BUILDS" default="testdata/corpus-3.29"
+flag "--builds <builds>" env="BUILDS" default="testdata/corpus-3.30"
 flag "--jobs <jobs>" env="JOBS" default="4"
 flag "--list <list>" env="LIST"
 flag "--out <out>" env="OUT"

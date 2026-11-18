@@ -3,6 +3,7 @@ import { App } from './support/app';
 import { buildXml } from './support/builds';
 import * as go from './support/go_model';
 import { expectedLines } from './support/stats';
+import { tradeUrlQuery } from './support/trade_url';
 
 // SkillsTab.lua:357-383
 const BUILD = '0005-occultist-vaal-double-strike';
@@ -115,8 +116,8 @@ test('Buy similar opens the trade search for the pasted item (0280)', async ({ p
   await dialog.getByRole('button', { name: 'Search' }).click();
   await expect.poll(() => page.evaluate(() => (window as unknown as { opened: string[] }).opened.length)).toBe(1);
   const opened = await page.evaluate(() => (window as unknown as { opened: string[] }).opened);
-  expect(opened[0].startsWith('https://www.pathofexile.com/trade/search/sony/Standard?q=')).toBe(true);
-  const q = JSON.parse(decodeURIComponent(opened[0].split('?q=')[1])) as { query: Record<string, unknown> };
+  const q = tradeUrlQuery(opened[0]);
+  expect(q.base).toBe('https://www.pathofexile.com/trade/search/sony/Standard');
   expect(q.query).toMatchObject({ name: "Kaom's Heart", type: 'Glorious Plate', status: { option: 'securable' } });
   app.assertNoErrors();
 });

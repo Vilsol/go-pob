@@ -6,26 +6,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"accessory.amulet"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"accessory.amulet"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -33,75 +28,70 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"accessory.amulet"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"accessory.amulet"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"implicit.stat_2300185227",
-                    "value":{
-                      "min":24
-                    }
-                  },{
-                    "id":"explicit.stat_1002362373",
-                    "value":{
-                      "min":19,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_3556824919",
-                    "value":{
-                      "min":41
-                    }
-                  },{
-                    "id":"explicit.stat_3299347043",
-                    "value":{
-                      "min":105,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_4220027924",
-                    "value":{
-                      "min":48
-                    }
-                  },{
-                    "id":"explicit.stat_310246444",
-                    "value":{
-                      "min":43,
-                      "max":999
-                    }
-                  }],
-                "type":"and"
-              },{
-                "filters":[{
-                    "id":"explicit.stat_3484910620",
-                    "value":{
-                      "min":60
-                    }
-                  },{
-                    "id":"explicit.stat_3993865658",
-                    "value":{
-                      "min":60
-                    }
-                  }],
-                "type":"count",
-                "value":{
-                  "min":1
-                }
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":24
+                  },
+                  "id":"implicit.stat_2300185227"
+                },{
+                  "value":{
+                    "min":19,
+                    "max":999
+                  },
+                  "id":"explicit.stat_1002362373"
+                },{
+                  "value":{
+                    "min":41
+                  },
+                  "id":"explicit.stat_3556824919"
+                },{
+                  "value":{
+                    "min":105,
+                    "max":999
+                  },
+                  "id":"explicit.stat_3299347043"
+                },{
+                  "value":{
+                    "min":48
+                  },
+                  "id":"explicit.stat_4220027924"
+                },{
+                  "value":{
+                    "min":43,
+                    "max":999
+                  },
+                  "id":"explicit.stat_310246444"
+                }],
+              "type":"and"
+            },{
+              "filters":[{
+                  "value":{
+                    "min":60
+                  },
+                  "id":"explicit.stat_3484910620"
+                },{
+                  "value":{
+                    "min":60
+                  },
+                  "id":"explicit.stat_3993865658"
+                }],
+              "type":"count",
+              "value":{
+                "min":1
+              }
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -185,36 +175,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"accessory.amulet"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"accessory.amulet"
                 }
               }
             },
-            "type":"Turquoise Amulet",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Turquoise Amulet"
         }
       },
       "unique":false
@@ -225,79 +210,69 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Ryslatha's Coil",
-            "type":"Studded Belt",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Ryslatha's Coil",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Studded Belt"
         }
       },
       "defences":[],
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Ryslatha's Coil",
-            "type":"Studded Belt",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"implicit.stat_2517001139",
-                    "value":{
-                      "min":28,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_4080418644",
-                    "value":{
-                      "min":39
-                    }
-                  },{
-                    "id":"explicit.stat_3029185248",
-                    "value":{
-                      "min":42,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_1715495976",
-                    "value":{
-                      "min":36
-                    }
-                  },{
-                    "id":"explicit.stat_3032590688",
-                    "value":{
-                      "min":11.5,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_3299347043",
-                    "value":{
-                      "min":99
-                    }
-                  },{
-                    "id":"explicit.stat_2968301430",
-                    "value":{
-                      "min":50,
-                      "max":999
-                    }
-                  }],
-                "type":"and"
-              }]
+          "name":"Ryslatha's Coil",
+          "stats":[{
+              "type":"and",
+              "filters":[{
+                  "value":{
+                    "min":28,
+                    "max":999
+                  },
+                  "id":"implicit.stat_2517001139"
+                },{
+                  "value":{
+                    "min":39
+                  },
+                  "id":"explicit.stat_4080418644"
+                },{
+                  "value":{
+                    "min":42,
+                    "max":999
+                  },
+                  "id":"explicit.stat_3029185248"
+                },{
+                  "value":{
+                    "min":36
+                  },
+                  "id":"explicit.stat_1715495976"
+                },{
+                  "value":{
+                    "min":11.5,
+                    "max":999
+                  },
+                  "id":"explicit.stat_3032590688"
+                },{
+                  "value":{
+                    "min":99
+                  },
+                  "id":"explicit.stat_3299347043"
+                },{
+                  "value":{
+                    "min":50,
+                    "max":999
+                  },
+                  "id":"explicit.stat_2968301430"
+                }]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Studded Belt"
         }
       },
       "mods":[{
@@ -368,20 +343,15 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "name":"Ryslatha's Coil",
-            "type":"Studded Belt",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Ryslatha's Coil",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"online"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Studded Belt"
         }
       },
       "unique":true
@@ -392,26 +362,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"armour.chest"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"armour.chest"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -422,82 +387,77 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"armour.chest"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"armour.chest"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"enchant.stat_2677401098",
-                    "value":{
-                      "min":1,
-                      "max":999
-                    }
-                  },{
-                    "id":"enchant.stat_2711867632",
-                    "value":{
-                      "min":1
-                    }
-                  },{
-                    "id":"implicit.stat_2901986750",
-                    "value":{
-                      "min":12,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_2264586521",
-                    "value":{
-                      "min":-20,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_983749596",
-                    "value":{
-                      "min":10
-                    }
-                  },{
-                    "id":"explicit.stat_2748665614",
-                    "value":{
-                      "min":10,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_1671376347",
-                    "value":{
-                      "min":47
-                    }
-                  },{
-                    "id":"explicit.stat_30642521",
-                    "value":{
-                      "min":1,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_2572042788",
-                    "value":{
-                      "min":1.97
-                    }
-                  },{
-                    "id":"explicit.stat_3299347043",
-                    "value":{
-                      "min":75,
-                      "max":999
-                    }
-                  }],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":1,
+                    "max":999
+                  },
+                  "id":"enchant.stat_2677401098"
+                },{
+                  "value":{
+                    "min":1
+                  },
+                  "id":"enchant.stat_2711867632"
+                },{
+                  "value":{
+                    "min":12,
+                    "max":999
+                  },
+                  "id":"implicit.stat_2901986750"
+                },{
+                  "value":{
+                    "min":-20,
+                    "max":999
+                  },
+                  "id":"explicit.stat_2264586521"
+                },{
+                  "value":{
+                    "min":10
+                  },
+                  "id":"explicit.stat_983749596"
+                },{
+                  "value":{
+                    "min":10,
+                    "max":999
+                  },
+                  "id":"explicit.stat_2748665614"
+                },{
+                  "value":{
+                    "min":47
+                  },
+                  "id":"explicit.stat_1671376347"
+                },{
+                  "value":{
+                    "min":1,
+                    "max":999
+                  },
+                  "id":"explicit.stat_30642521"
+                },{
+                  "value":{
+                    "min":1.97
+                  },
+                  "id":"explicit.stat_2572042788"
+                },{
+                  "value":{
+                    "min":75,
+                    "max":999
+                  },
+                  "id":"explicit.stat_3299347043"
+                }],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -602,44 +562,39 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "armour_filters":{
-                "filters":{
-                  "ar":{
-                    "min":736,
-                    "max":5000
-                  }
-                }
-              },
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"armour.chest"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
                 }
               }
             },
-            "type":"Astral Plate",
-            "status":{
-              "option":"online"
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"armour.chest"
+                }
+              }
             },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "armour_filters":{
+              "filters":{
+                "ar":{
+                  "min":736,
+                  "max":5000
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Astral Plate"
         }
       },
       "unique":false
@@ -650,26 +605,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"armour.boots"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"armour.boots"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -683,106 +633,101 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"armour.boots"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"armour.boots"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"enchant.stat_4135304575",
-                    "value":{
-                      "min":16,
-                      "max":999
-                    }
-                  },{
-                    "id":"implicit.stat_2915988346",
-                    "value":{
-                      "min":11
-                    }
-                  },{
-                    "id":"explicit.stat_3299347043",
-                    "value":{
-                      "min":86,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_1671376347",
-                    "value":{
-                      "min":44
-                    }
-                  },{
-                    "id":"explicit.stat_979246511",
-                    "value":{
-                      "min":8,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_879520319",
-                    "value":{
-                      "min":9,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_2172944497",
-                    "value":{
-                      "min":22
-                    }
-                  },{
-                    "id":"explicit.stat_1085545682"
-                  },{
-                    "id":"explicit.stat_2250533757",
-                    "value":{
-                      "min":20
-                    }
-                  }],
-                "type":"and"
-              },{
-                "filters":[{
-                    "id":"explicit.stat_3023957681",
-                    "value":{
-                      "min":10
-                    }
-                  },{
-                    "id":"explicit.stat_665823128",
-                    "value":{
-                      "min":10
-                    }
-                  }],
-                "type":"count",
-                "value":{
-                  "min":1
-                }
-              },{
-                "filters":[{
-                    "id":"explicit.stat_1177358866",
-                    "value":{
-                      "min":9,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_308396001",
-                    "value":{
-                      "min":9,
-                      "max":999
-                    }
-                  }],
-                "type":"count",
-                "value":{
-                  "min":1
-                }
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":16,
+                    "max":999
+                  },
+                  "id":"enchant.stat_4135304575"
+                },{
+                  "value":{
+                    "min":11
+                  },
+                  "id":"implicit.stat_2915988346"
+                },{
+                  "value":{
+                    "min":86,
+                    "max":999
+                  },
+                  "id":"explicit.stat_3299347043"
+                },{
+                  "value":{
+                    "min":44
+                  },
+                  "id":"explicit.stat_1671376347"
+                },{
+                  "value":{
+                    "min":8,
+                    "max":999
+                  },
+                  "id":"explicit.stat_979246511"
+                },{
+                  "value":{
+                    "min":9,
+                    "max":999
+                  },
+                  "id":"explicit.stat_879520319"
+                },{
+                  "value":{
+                    "min":22
+                  },
+                  "id":"explicit.stat_2172944497"
+                },{
+                  "id":"explicit.stat_1085545682"
+                },{
+                  "value":{
+                    "min":20
+                  },
+                  "id":"explicit.stat_2250533757"
+                }],
+              "type":"and"
+            },{
+              "filters":[{
+                  "value":{
+                    "min":10
+                  },
+                  "id":"explicit.stat_3023957681"
+                },{
+                  "value":{
+                    "min":10
+                  },
+                  "id":"explicit.stat_665823128"
+                }],
+              "type":"count",
+              "value":{
+                "min":1
+              }
+            },{
+              "filters":[{
+                  "value":{
+                    "min":9,
+                    "max":999
+                  },
+                  "id":"explicit.stat_1177358866"
+                },{
+                  "value":{
+                    "min":9,
+                    "max":999
+                  },
+                  "id":"explicit.stat_308396001"
+                }],
+              "type":"count",
+              "value":{
+                "min":1
+              }
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -888,47 +833,42 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "armour_filters":{
-                "filters":{
-                  "ev":{
-                    "min":161
-                  },
-                  "ar":{
-                    "min":161,
-                    "max":5000
-                  }
-                }
-              },
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"armour.boots"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
                 }
               }
             },
-            "type":"Two-Toned Boots (Armour/Evasion)",
-            "status":{
-              "option":"online"
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"armour.boots"
+                }
+              }
             },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "armour_filters":{
+              "filters":{
+                "ar":{
+                  "min":161,
+                  "max":5000
+                },
+                "ev":{
+                  "min":161
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Two-Toned Boots (Armour/Evasion)"
         }
       },
       "unique":false
@@ -939,68 +879,58 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Bottled Faith",
-            "type":"Sulphur Flask",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Bottled Faith",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Sulphur Flask"
         }
       },
       "defences":[],
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Bottled Faith",
-            "type":"Sulphur Flask",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"enchant.stat_2448920197",
-                    "value":{
-                      "min":69,
-                      "max":999
-                    }
-                  },{
-                    "id":"implicit.stat_2146730404",
-                    "value":{
-                      "min":1,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_1256719186",
-                    "value":{
-                      "max":-15
-                    }
-                  },{
-                    "id":"explicit.stat_806698863",
-                    "value":{
-                      "min":200,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_1866211373",
-                    "value":{
-                      "min":9
-                    }
-                  }],
-                "type":"and"
-              }]
+          "name":"Bottled Faith",
+          "stats":[{
+              "type":"and",
+              "filters":[{
+                  "value":{
+                    "min":69,
+                    "max":999
+                  },
+                  "id":"enchant.stat_2448920197"
+                },{
+                  "value":{
+                    "min":1,
+                    "max":999
+                  },
+                  "id":"implicit.stat_2146730404"
+                },{
+                  "value":{
+                    "max":-15
+                  },
+                  "id":"explicit.stat_1256719186"
+                },{
+                  "value":{
+                    "min":200,
+                    "max":999
+                  },
+                  "id":"explicit.stat_806698863"
+                },{
+                  "value":{
+                    "min":9
+                  },
+                  "id":"explicit.stat_1866211373"
+                }]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Sulphur Flask"
         }
       },
       "mods":[{
@@ -1065,20 +995,15 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "name":"Bottled Faith",
-            "type":"Sulphur Flask",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Bottled Faith",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"online"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Sulphur Flask"
         }
       },
       "unique":true
@@ -1089,57 +1014,47 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Cinderswallow Urn",
-            "type":"Silver Flask",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Cinderswallow Urn",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Silver Flask"
         }
       },
       "defences":[],
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Cinderswallow Urn",
-            "type":"Silver Flask",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"explicit.stat_1437957544",
-                    "value":{
-                      "min":90,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_2557247391",
-                    "value":{
-                      "min":5
-                    }
-                  },{
-                    "id":"explicit.stat_388617051",
-                    "value":{
-                      "min":200,
-                      "max":999
-                    }
-                  }],
-                "type":"and"
-              }]
+          "name":"Cinderswallow Urn",
+          "stats":[{
+              "type":"and",
+              "filters":[{
+                  "value":{
+                    "min":90,
+                    "max":999
+                  },
+                  "id":"explicit.stat_1437957544"
+                },{
+                  "value":{
+                    "min":5
+                  },
+                  "id":"explicit.stat_2557247391"
+                },{
+                  "value":{
+                    "min":200,
+                    "max":999
+                  },
+                  "id":"explicit.stat_388617051"
+                }]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Silver Flask"
         }
       },
       "mods":[{
@@ -1192,20 +1107,15 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "name":"Cinderswallow Urn",
-            "type":"Silver Flask",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Cinderswallow Urn",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"online"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Silver Flask"
         }
       },
       "unique":true
@@ -1216,56 +1126,46 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Lion's Roar",
-            "type":"Granite Flask",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Lion's Roar",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Granite Flask"
         }
       },
       "defences":[],
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Lion's Roar",
-            "type":"Granite Flask",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"explicit.stat_3591397930",
-                    "value":{
-                      "min":1,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_1457911472",
-                    "value":{
-                      "min":75
-                    }
-                  },{
-                    "id":"explicit.stat_3636096208",
-                    "value":{
-                      "min":10
-                    }
-                  }],
-                "type":"and"
-              }]
+          "name":"Lion's Roar",
+          "stats":[{
+              "type":"and",
+              "filters":[{
+                  "value":{
+                    "min":1,
+                    "max":999
+                  },
+                  "id":"explicit.stat_3591397930"
+                },{
+                  "value":{
+                    "min":75
+                  },
+                  "id":"explicit.stat_1457911472"
+                },{
+                  "value":{
+                    "min":10
+                  },
+                  "id":"explicit.stat_3636096208"
+                }]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Granite Flask"
         }
       },
       "mods":[{
@@ -1306,20 +1206,15 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "name":"Lion's Roar",
-            "type":"Granite Flask",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Lion's Roar",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"online"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Granite Flask"
         }
       },
       "unique":true
@@ -1330,26 +1225,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"flask"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"flask"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -1357,39 +1247,34 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"flask"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"flask"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"enchant.stat_3287581721"
-                  },{
-                    "id":"explicit.stat_1256719186",
-                    "value":{
-                      "min":40
-                    }
-                  },{
-                    "id":"explicit.stat_1506355899",
-                    "value":{
-                      "min":-999,
-                      "max":-37
-                    }
-                  }],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "id":"enchant.stat_3287581721"
+                },{
+                  "value":{
+                    "min":40
+                  },
+                  "id":"explicit.stat_1256719186"
+                },{
+                  "value":{
+                    "min":-999,
+                    "max":-37
+                  },
+                  "id":"explicit.stat_1506355899"
+                }],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -1429,36 +1314,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"flask"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"flask"
                 }
               }
             },
-            "type":"Diamond Flask",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Diamond Flask"
         }
       },
       "unique":false
@@ -1469,26 +1349,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"flask"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"flask"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -1496,34 +1371,29 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"flask"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"flask"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"explicit.stat_173226756",
-                    "value":{
-                      "min":55,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_3895393544"
-                  }],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":55,
+                    "max":999
+                  },
+                  "id":"explicit.stat_173226756"
+                },{
+                  "id":"explicit.stat_3895393544"
+                }],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -1548,36 +1418,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"flask"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"flask"
                 }
               }
             },
-            "type":"Hallowed Life Flask",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Hallowed Life Flask"
         }
       },
       "unique":false
@@ -1588,26 +1453,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"armour.gloves"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"armour.gloves"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -1618,81 +1478,76 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"armour.gloves"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"armour.gloves"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"implicit.stat_803185500",
-                    "value":{
-                      "min":7,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_3261801346",
-                    "value":{
-                      "min":28,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_3032590688",
-                    "value":{
-                      "min":8.5
-                    }
-                  },{
-                    "id":"explicit.stat_3299347043",
-                    "value":{
-                      "min":66,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_3372524247",
-                    "value":{
-                      "min":41
-                    }
-                  },{
-                    "id":"explicit.stat_4220027924",
-                    "value":{
-                      "min":44,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_310246444",
-                    "value":{
-                      "min":36
-                    }
-                  }],
-                "type":"and"
-              },{
-                "filters":[{
-                    "id":"implicit.stat_681332047",
-                    "value":{
-                      "min":9
-                    }
-                  },{
-                    "id":"implicit.stat_210067635",
-                    "value":{
-                      "min":9
-                    }
-                  }],
-                "type":"count",
-                "value":{
-                  "min":1
-                }
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":7,
+                    "max":999
+                  },
+                  "id":"implicit.stat_803185500"
+                },{
+                  "value":{
+                    "min":28,
+                    "max":999
+                  },
+                  "id":"explicit.stat_3261801346"
+                },{
+                  "value":{
+                    "min":8.5
+                  },
+                  "id":"explicit.stat_3032590688"
+                },{
+                  "value":{
+                    "min":66,
+                    "max":999
+                  },
+                  "id":"explicit.stat_3299347043"
+                },{
+                  "value":{
+                    "min":41
+                  },
+                  "id":"explicit.stat_3372524247"
+                },{
+                  "value":{
+                    "min":44,
+                    "max":999
+                  },
+                  "id":"explicit.stat_4220027924"
+                },{
+                  "value":{
+                    "min":36
+                  },
+                  "id":"explicit.stat_310246444"
+                }],
+              "type":"and"
+            },{
+              "filters":[{
+                  "value":{
+                    "min":9
+                  },
+                  "id":"implicit.stat_681332047"
+                },{
+                  "value":{
+                    "min":9
+                  },
+                  "id":"implicit.stat_210067635"
+                }],
+              "type":"count",
+              "value":{
+                "min":1
+              }
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -1773,44 +1628,39 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "armour_filters":{
-                "filters":{
-                  "ev":{
-                    "min":218,
-                    "max":5000
-                  }
-                }
-              },
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"armour.gloves"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
                 }
               }
             },
-            "type":"Shagreen Gloves",
-            "status":{
-              "option":"online"
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"armour.gloves"
+                }
+              }
             },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "armour_filters":{
+              "filters":{
+                "ev":{
+                  "min":218,
+                  "max":5000
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Shagreen Gloves"
         }
       },
       "unique":false
@@ -1821,85 +1671,75 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Abyssus",
-            "type":"Ezomyte Burgonet",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Abyssus",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Ezomyte Burgonet"
         }
       },
       "defences":[],
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Abyssus",
-            "type":"Ezomyte Burgonet",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"enchant.stat_2471636515",
-                    "value":{
-                      "min":40,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_1379411836",
-                    "value":{
-                      "min":23
-                    }
-                  },{
-                    "id":"explicit.stat_3032590688",
-                    "value":{
-                      "min":50,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_4237442815",
-                    "value":{
-                      "min":125
-                    }
-                  },{
-                    "id":"explicit.stat_3853018505",
-                    "value":{
-                      "min":42
-                    }
-                  }],
-                "type":"and"
-              },{
-                "filters":[{
-                    "id":"explicit.stat_2866361420",
-                    "value":{
-                      "min":120,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_1062208444",
-                    "value":{
-                      "min":120,
-                      "max":999
-                    }
-                  }],
-                "type":"count",
-                "value":{
-                  "min":1
-                }
-              }]
+          "name":"Abyssus",
+          "stats":[{
+              "type":"and",
+              "filters":[{
+                  "value":{
+                    "min":40,
+                    "max":999
+                  },
+                  "id":"enchant.stat_2471636515"
+                },{
+                  "value":{
+                    "min":23
+                  },
+                  "id":"explicit.stat_1379411836"
+                },{
+                  "value":{
+                    "min":50,
+                    "max":999
+                  },
+                  "id":"explicit.stat_3032590688"
+                },{
+                  "value":{
+                    "min":125
+                  },
+                  "id":"explicit.stat_4237442815"
+                },{
+                  "value":{
+                    "min":42
+                  },
+                  "id":"explicit.stat_3853018505"
+                }]
+            },{
+              "type":"count",
+              "filters":[{
+                  "value":{
+                    "min":120,
+                    "max":999
+                  },
+                  "id":"explicit.stat_2866361420"
+                },{
+                  "value":{
+                    "min":120,
+                    "max":999
+                  },
+                  "id":"explicit.stat_1062208444"
+                }],
+              "value":{
+                "min":1
+              }
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Ezomyte Burgonet"
         }
       },
       "mods":[{
@@ -1961,20 +1801,15 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "name":"Abyssus",
-            "type":"Ezomyte Burgonet",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Abyssus",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"online"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Ezomyte Burgonet"
         }
       },
       "unique":true
@@ -1985,45 +1820,35 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Forbidden Flesh",
-            "type":"Cobalt Jewel",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Forbidden Flesh",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Cobalt Jewel"
         }
       },
       "defences":[],
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Forbidden Flesh",
-            "type":"Cobalt Jewel",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"explicit.stat_2460506030",
-                    "value":{
-                      "option":11412
-                    }
-                  }],
-                "type":"and"
-              }]
+          "name":"Forbidden Flesh",
+          "stats":[{
+              "type":"and",
+              "filters":[{
+                  "value":{
+                    "option":11412
+                  },
+                  "id":"explicit.stat_2460506030"
+                }]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Cobalt Jewel"
         }
       },
       "mods":[{
@@ -2039,20 +1864,15 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "name":"Forbidden Flesh",
-            "type":"Cobalt Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Forbidden Flesh",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"online"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Cobalt Jewel"
         }
       },
       "unique":true
@@ -2063,26 +1883,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -2090,48 +1905,43 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"explicit.stat_252507949",
-                    "value":{
-                      "min":18,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_3556824919",
-                    "value":{
-                      "min":12
-                    }
-                  },{
-                    "id":"explicit.stat_4237442815",
-                    "value":{
-                      "min":15,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_983749596",
-                    "value":{
-                      "min":7
-                    }
-                  }],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":18,
+                    "max":999
+                  },
+                  "id":"explicit.stat_252507949"
+                },{
+                  "value":{
+                    "min":12
+                  },
+                  "id":"explicit.stat_3556824919"
+                },{
+                  "value":{
+                    "min":15,
+                    "max":999
+                  },
+                  "id":"explicit.stat_4237442815"
+                },{
+                  "value":{
+                    "min":7
+                  },
+                  "id":"explicit.stat_983749596"
+                }],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -2176,36 +1986,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
             },
-            "type":"Viridian Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Viridian Jewel"
         }
       },
       "unique":false
@@ -2216,26 +2021,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -2243,48 +2043,43 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"enchant.stat_3086156145",
-                    "value":{
-                      "min":8,
-                      "max":999
-                    }
-                  },{
-                    "id":"enchant.stat_4079888060",
-                    "value":{
-                      "min":2
-                    }
-                  },{
-                    "id":"implicit.stat_836936635",
-                    "value":{
-                      "min":0.1
-                    }
-                  },{
-                    "id":"explicit.stat_3944525413"
-                  },{
-                    "id":"explicit.stat_1152182658"
-                  },{
-                    "id":"explicit.stat_2250169390"
-                  }],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":8,
+                    "max":999
+                  },
+                  "id":"enchant.stat_3086156145"
+                },{
+                  "value":{
+                    "min":2
+                  },
+                  "id":"enchant.stat_4079888060"
+                },{
+                  "value":{
+                    "min":0.1
+                  },
+                  "id":"implicit.stat_836936635"
+                },{
+                  "id":"explicit.stat_3944525413"
+                },{
+                  "id":"explicit.stat_1152182658"
+                },{
+                  "id":"explicit.stat_2250169390"
+                }],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -2356,36 +2151,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
             },
-            "type":"Large Cluster Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Large Cluster Jewel"
         }
       },
       "unique":false
@@ -2396,26 +2186,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -2423,48 +2208,43 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"explicit.stat_252507949",
-                    "value":{
-                      "min":18,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_3556824919",
-                    "value":{
-                      "min":12
-                    }
-                  },{
-                    "id":"explicit.stat_4237442815",
-                    "value":{
-                      "min":15,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_983749596",
-                    "value":{
-                      "min":7
-                    }
-                  }],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":18,
+                    "max":999
+                  },
+                  "id":"explicit.stat_252507949"
+                },{
+                  "value":{
+                    "min":12
+                  },
+                  "id":"explicit.stat_3556824919"
+                },{
+                  "value":{
+                    "min":15,
+                    "max":999
+                  },
+                  "id":"explicit.stat_4237442815"
+                },{
+                  "value":{
+                    "min":7
+                  },
+                  "id":"explicit.stat_983749596"
+                }],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -2509,36 +2289,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
             },
-            "type":"Viridian Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Viridian Jewel"
         }
       },
       "unique":false
@@ -2549,26 +2324,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -2576,48 +2346,43 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"explicit.stat_252507949",
-                    "value":{
-                      "min":18,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_3556824919",
-                    "value":{
-                      "min":12
-                    }
-                  },{
-                    "id":"explicit.stat_4237442815",
-                    "value":{
-                      "min":15,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_983749596",
-                    "value":{
-                      "min":7
-                    }
-                  }],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":18,
+                    "max":999
+                  },
+                  "id":"explicit.stat_252507949"
+                },{
+                  "value":{
+                    "min":12
+                  },
+                  "id":"explicit.stat_3556824919"
+                },{
+                  "value":{
+                    "min":15,
+                    "max":999
+                  },
+                  "id":"explicit.stat_4237442815"
+                },{
+                  "value":{
+                    "min":7
+                  },
+                  "id":"explicit.stat_983749596"
+                }],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -2662,36 +2427,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
             },
-            "type":"Viridian Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Viridian Jewel"
         }
       },
       "unique":false
@@ -2702,26 +2462,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -2729,48 +2484,43 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"explicit.stat_252507949",
-                    "value":{
-                      "min":18,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_3556824919",
-                    "value":{
-                      "min":12
-                    }
-                  },{
-                    "id":"explicit.stat_4237442815",
-                    "value":{
-                      "min":15,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_983749596",
-                    "value":{
-                      "min":7
-                    }
-                  }],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":18,
+                    "max":999
+                  },
+                  "id":"explicit.stat_252507949"
+                },{
+                  "value":{
+                    "min":12
+                  },
+                  "id":"explicit.stat_3556824919"
+                },{
+                  "value":{
+                    "min":15,
+                    "max":999
+                  },
+                  "id":"explicit.stat_4237442815"
+                },{
+                  "value":{
+                    "min":7
+                  },
+                  "id":"explicit.stat_983749596"
+                }],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -2815,36 +2565,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
             },
-            "type":"Viridian Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Viridian Jewel"
         }
       },
       "unique":false
@@ -2855,73 +2600,63 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Watcher's Eye",
-            "type":"Prismatic Jewel",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Watcher's Eye",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Prismatic Jewel"
         }
       },
       "defences":[],
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Watcher's Eye",
-            "type":"Prismatic Jewel",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"explicit.stat_2482852589",
-                    "value":{
-                      "min":4,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_983749596",
-                    "value":{
-                      "min":5
-                    }
-                  },{
-                    "id":"explicit.stat_2748665614",
-                    "value":{
-                      "min":6,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_2048747572",
-                    "value":{
-                      "min":59
-                    }
-                  },{
-                    "id":"explicit.stat_2312747856",
-                    "value":{
-                      "min":1.17,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_3371719014",
-                    "value":{
-                      "min":10
-                    }
-                  }],
-                "type":"and"
-              }]
+          "name":"Watcher's Eye",
+          "stats":[{
+              "type":"and",
+              "filters":[{
+                  "value":{
+                    "min":4,
+                    "max":999
+                  },
+                  "id":"explicit.stat_2482852589"
+                },{
+                  "value":{
+                    "min":5
+                  },
+                  "id":"explicit.stat_983749596"
+                },{
+                  "value":{
+                    "min":6,
+                    "max":999
+                  },
+                  "id":"explicit.stat_2748665614"
+                },{
+                  "value":{
+                    "min":59
+                  },
+                  "id":"explicit.stat_2048747572"
+                },{
+                  "value":{
+                    "min":1.17,
+                    "max":999
+                  },
+                  "id":"explicit.stat_2312747856"
+                },{
+                  "value":{
+                    "min":10
+                  },
+                  "id":"explicit.stat_3371719014"
+                }]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Prismatic Jewel"
         }
       },
       "mods":[{
@@ -2983,20 +2718,15 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "name":"Watcher's Eye",
-            "type":"Prismatic Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Watcher's Eye",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"online"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Prismatic Jewel"
         }
       },
       "unique":true
@@ -3007,26 +2737,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -3034,48 +2759,43 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"explicit.stat_252507949",
-                    "value":{
-                      "min":18,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_3556824919",
-                    "value":{
-                      "min":12
-                    }
-                  },{
-                    "id":"explicit.stat_4237442815",
-                    "value":{
-                      "min":15,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_983749596",
-                    "value":{
-                      "min":7
-                    }
-                  }],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":18,
+                    "max":999
+                  },
+                  "id":"explicit.stat_252507949"
+                },{
+                  "value":{
+                    "min":12
+                  },
+                  "id":"explicit.stat_3556824919"
+                },{
+                  "value":{
+                    "min":15,
+                    "max":999
+                  },
+                  "id":"explicit.stat_4237442815"
+                },{
+                  "value":{
+                    "min":7
+                  },
+                  "id":"explicit.stat_983749596"
+                }],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -3120,36 +2840,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
             },
-            "type":"Viridian Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Viridian Jewel"
         }
       },
       "unique":false
@@ -3160,26 +2875,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -3187,51 +2897,46 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"enchant.stat_3086156145",
-                    "value":{
-                      "min":5,
-                      "max":999
-                    }
-                  },{
-                    "id":"enchant.stat_4079888060",
-                    "value":{
-                      "min":1
-                    }
-                  },{
-                    "id":"enchant.stat_3948993189",
-                    "value":{
-                      "option":29
-                    }
-                  },{
-                    "id":"explicit.stat_2090413987",
-                    "value":{
-                      "min":8
-                    }
-                  },{
-                    "id":"explicit.stat_3084359503"
-                  },{
-                    "id":"explicit.stat_3391925584"
-                  }],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":5,
+                    "max":999
+                  },
+                  "id":"enchant.stat_3086156145"
+                },{
+                  "value":{
+                    "min":1
+                  },
+                  "id":"enchant.stat_4079888060"
+                },{
+                  "value":{
+                    "option":29
+                  },
+                  "id":"enchant.stat_3948993189"
+                },{
+                  "value":{
+                    "min":8
+                  },
+                  "id":"explicit.stat_2090413987"
+                },{
+                  "id":"explicit.stat_3084359503"
+                },{
+                  "id":"explicit.stat_3391925584"
+                }],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -3289,36 +2994,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
             },
-            "type":"Medium Cluster Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Medium Cluster Jewel"
         }
       },
       "unique":false
@@ -3329,45 +3029,35 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Forbidden Flame",
-            "type":"Crimson Jewel",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Forbidden Flame",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Crimson Jewel"
         }
       },
       "defences":[],
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Forbidden Flame",
-            "type":"Crimson Jewel",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"explicit.stat_1190333629",
-                    "value":{
-                      "option":11412
-                    }
-                  }],
-                "type":"and"
-              }]
+          "name":"Forbidden Flame",
+          "stats":[{
+              "type":"and",
+              "filters":[{
+                  "value":{
+                    "option":11412
+                  },
+                  "id":"explicit.stat_1190333629"
+                }]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Crimson Jewel"
         }
       },
       "mods":[{
@@ -3383,20 +3073,15 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "name":"Forbidden Flame",
-            "type":"Crimson Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Forbidden Flame",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"online"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Crimson Jewel"
         }
       },
       "unique":true
@@ -3407,26 +3092,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -3434,57 +3114,52 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"enchant.stat_3086156145",
-                    "value":{
-                      "min":5,
-                      "max":999
-                    }
-                  },{
-                    "id":"enchant.stat_4079888060",
-                    "value":{
-                      "min":1
-                    }
-                  },{
-                    "id":"enchant.stat_3948993189",
-                    "value":{
-                      "option":29
-                    }
-                  },{
-                    "id":"explicit.stat_4036575250",
-                    "value":{
-                      "min":4
-                    }
-                  },{
-                    "id":"explicit.stat_2090413987",
-                    "value":{
-                      "min":2,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_3084359503"
-                  },{
-                    "id":"explicit.stat_3391925584"
-                  }],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":5,
+                    "max":999
+                  },
+                  "id":"enchant.stat_3086156145"
+                },{
+                  "value":{
+                    "min":1
+                  },
+                  "id":"enchant.stat_4079888060"
+                },{
+                  "value":{
+                    "option":29
+                  },
+                  "id":"enchant.stat_3948993189"
+                },{
+                  "value":{
+                    "min":4
+                  },
+                  "id":"explicit.stat_4036575250"
+                },{
+                  "value":{
+                    "min":2,
+                    "max":999
+                  },
+                  "id":"explicit.stat_2090413987"
+                },{
+                  "id":"explicit.stat_3084359503"
+                },{
+                  "id":"explicit.stat_3391925584"
+                }],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -3551,36 +3226,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
             },
-            "type":"Medium Cluster Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Medium Cluster Jewel"
         }
       },
       "unique":false
@@ -3591,26 +3261,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -3618,43 +3283,38 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"enchant.stat_3086156145",
-                    "value":{
-                      "min":8,
-                      "max":999
-                    }
-                  },{
-                    "id":"enchant.stat_4079888060",
-                    "value":{
-                      "min":2
-                    }
-                  },{
-                    "id":"explicit.stat_3944525413"
-                  },{
-                    "id":"explicit.stat_1152182658"
-                  },{
-                    "id":"explicit.stat_2244243943"
-                  }],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":8,
+                    "max":999
+                  },
+                  "id":"enchant.stat_3086156145"
+                },{
+                  "value":{
+                    "min":2
+                  },
+                  "id":"enchant.stat_4079888060"
+                },{
+                  "id":"explicit.stat_3944525413"
+                },{
+                  "id":"explicit.stat_1152182658"
+                },{
+                  "id":"explicit.stat_2244243943"
+                }],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -3717,36 +3377,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
             },
-            "type":"Large Cluster Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Large Cluster Jewel"
         }
       },
       "unique":false
@@ -3757,26 +3412,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -3784,43 +3434,38 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"enchant.stat_3086156145",
-                    "value":{
-                      "min":8,
-                      "max":999
-                    }
-                  },{
-                    "id":"enchant.stat_4079888060",
-                    "value":{
-                      "min":2
-                    }
-                  },{
-                    "id":"explicit.stat_3944525413"
-                  },{
-                    "id":"explicit.stat_1152182658"
-                  },{
-                    "id":"explicit.stat_2244243943"
-                  }],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":8,
+                    "max":999
+                  },
+                  "id":"enchant.stat_3086156145"
+                },{
+                  "value":{
+                    "min":2
+                  },
+                  "id":"enchant.stat_4079888060"
+                },{
+                  "id":"explicit.stat_3944525413"
+                },{
+                  "id":"explicit.stat_1152182658"
+                },{
+                  "id":"explicit.stat_2244243943"
+                }],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -3883,36 +3528,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
             },
-            "type":"Large Cluster Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Large Cluster Jewel"
         }
       },
       "unique":false
@@ -3923,26 +3563,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -3950,48 +3585,43 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"explicit.stat_252507949",
-                    "value":{
-                      "min":18,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_3556824919",
-                    "value":{
-                      "min":12
-                    }
-                  },{
-                    "id":"explicit.stat_4237442815",
-                    "value":{
-                      "min":15,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_983749596",
-                    "value":{
-                      "min":7
-                    }
-                  }],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":18,
+                    "max":999
+                  },
+                  "id":"explicit.stat_252507949"
+                },{
+                  "value":{
+                    "min":12
+                  },
+                  "id":"explicit.stat_3556824919"
+                },{
+                  "value":{
+                    "min":15,
+                    "max":999
+                  },
+                  "id":"explicit.stat_4237442815"
+                },{
+                  "value":{
+                    "min":7
+                  },
+                  "id":"explicit.stat_983749596"
+                }],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -4036,36 +3666,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
             },
-            "type":"Viridian Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Viridian Jewel"
         }
       },
       "unique":false
@@ -4076,107 +3701,97 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Circle of Guilt",
-            "type":"Iron Ring",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Circle of Guilt",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Iron Ring"
         }
       },
       "defences":[],
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Circle of Guilt",
-            "type":"Iron Ring",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"implicit.stat_1994684426",
-                    "value":{
-                      "min":23,
-                      "max":999
-                    }
-                  },{
-                    "id":"implicit.stat_1310194496",
-                    "value":{
-                      "min":12
-                    }
-                  },{
-                    "id":"implicit.stat_3556824919",
-                    "value":{
-                      "min":15,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_1379411836",
-                    "value":{
-                      "min":16
-                    }
-                  },{
-                    "id":"explicit.stat_2126027382",
-                    "value":{
-                      "min":53,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_3294232483",
-                    "value":{
-                      "min":43
-                    }
-                  }],
-                "type":"and"
-              },{
-                "filters":[{
-                    "id":"explicit.stat_960081730",
-                    "value":{
-                      "min":12,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_1940865751",
-                    "value":{
-                      "min":12,
-                      "max":999
-                    }
-                  }],
-                "type":"count",
-                "value":{
-                  "min":1
-                }
-              },{
-                "filters":[{
-                    "id":"explicit.stat_809229260",
-                    "value":{
-                      "min":353
-                    }
-                  },{
-                    "id":"explicit.stat_3484657501",
-                    "value":{
-                      "min":353
-                    }
-                  }],
-                "type":"count",
-                "value":{
-                  "min":1
-                }
-              }]
+          "name":"Circle of Guilt",
+          "stats":[{
+              "type":"and",
+              "filters":[{
+                  "value":{
+                    "min":23,
+                    "max":999
+                  },
+                  "id":"implicit.stat_1994684426"
+                },{
+                  "value":{
+                    "min":12
+                  },
+                  "id":"implicit.stat_1310194496"
+                },{
+                  "value":{
+                    "min":15,
+                    "max":999
+                  },
+                  "id":"implicit.stat_3556824919"
+                },{
+                  "value":{
+                    "min":16
+                  },
+                  "id":"explicit.stat_1379411836"
+                },{
+                  "value":{
+                    "min":53,
+                    "max":999
+                  },
+                  "id":"explicit.stat_2126027382"
+                },{
+                  "value":{
+                    "min":43
+                  },
+                  "id":"explicit.stat_3294232483"
+                }]
+            },{
+              "type":"count",
+              "filters":[{
+                  "value":{
+                    "min":12,
+                    "max":999
+                  },
+                  "id":"explicit.stat_960081730"
+                },{
+                  "value":{
+                    "min":12,
+                    "max":999
+                  },
+                  "id":"explicit.stat_1940865751"
+                }],
+              "value":{
+                "min":1
+              }
+            },{
+              "type":"count",
+              "filters":[{
+                  "value":{
+                    "min":353
+                  },
+                  "id":"explicit.stat_809229260"
+                },{
+                  "value":{
+                    "min":353
+                  },
+                  "id":"explicit.stat_3484657501"
+                }],
+              "value":{
+                "min":1
+              }
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Iron Ring"
         }
       },
       "mods":[{
@@ -4256,20 +3871,15 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "name":"Circle of Guilt",
-            "type":"Iron Ring",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Circle of Guilt",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"online"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Iron Ring"
         }
       },
       "unique":true
@@ -4280,26 +3890,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"accessory.ring"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"accessory.ring"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -4307,76 +3912,71 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"accessory.ring"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"accessory.ring"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"enchant.stat_1084180630",
-                    "value":{
-                      "min":25,
-                      "max":999
-                    }
-                  },{
-                    "id":"implicit.stat_4277795662",
-                    "value":{
-                      "min":19
-                    }
-                  },{
-                    "id":"explicit.stat_1002362373",
-                    "value":{
-                      "min":25,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_3032590688",
-                    "value":{
-                      "min":9
-                    }
-                  },{
-                    "id":"explicit.stat_3372524247",
-                    "value":{
-                      "min":48
-                    }
-                  },{
-                    "id":"explicit.stat_3299347043",
-                    "value":{
-                      "min":55
-                    }
-                  }],
-                "type":"and"
-              },{
-                "filters":[{
-                    "id":"explicit.stat_2901986750",
-                    "value":{
-                      "min":19,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_1725885727",
-                    "value":{
-                      "min":19,
-                      "max":999
-                    }
-                  }],
-                "type":"count",
-                "value":{
-                  "min":1
-                }
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":25,
+                    "max":999
+                  },
+                  "id":"enchant.stat_1084180630"
+                },{
+                  "value":{
+                    "min":19
+                  },
+                  "id":"implicit.stat_4277795662"
+                },{
+                  "value":{
+                    "min":25,
+                    "max":999
+                  },
+                  "id":"explicit.stat_1002362373"
+                },{
+                  "value":{
+                    "min":9
+                  },
+                  "id":"explicit.stat_3032590688"
+                },{
+                  "value":{
+                    "min":48
+                  },
+                  "id":"explicit.stat_3372524247"
+                },{
+                  "value":{
+                    "min":55
+                  },
+                  "id":"explicit.stat_3299347043"
+                }],
+              "type":"and"
+            },{
+              "filters":[{
+                  "value":{
+                    "min":19,
+                    "max":999
+                  },
+                  "id":"explicit.stat_2901986750"
+                },{
+                  "value":{
+                    "min":19,
+                    "max":999
+                  },
+                  "id":"explicit.stat_1725885727"
+                }],
+              "type":"count",
+              "value":{
+                "min":1
+              }
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -4436,10 +4036,13 @@
           "value":48
         },{
           "canSearch":false,
+          "invert":false,
           "isOption":false,
           "label":"^8Curse Enemies with Vulnerability on Hit, with 32% increased Effect",
+          "min":"1",
           "tradeIds":[],
-          "type":"explicit"
+          "type":"explicit",
+          "value":1
         },{
           "canSearch":true,
           "invert":false,
@@ -4454,36 +4057,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"accessory.ring"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"accessory.ring"
                 }
               }
             },
-            "type":"Two-Stone Ring",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Two-Stone Ring"
         }
       },
       "unique":false
@@ -4494,26 +4092,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"weapon.staff"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"weapon.staff"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -4521,119 +4114,108 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"weapon.staff"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"weapon.staff"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"enchant.stat_1615727675"
-                  },{
-                    "id":"implicit.stat_3513534186"
-                  },{
-                    "id":"implicit.stat_4138979329",
-                    "value":{
-                      "min":1
-                    }
-                  },{
-                    "id":"explicit.stat_1509134228",
-                    "value":{
-                      "min":278,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_3992439283",
-                    "value":{
-                      "min":60,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_2375316951",
-                    "value":{
-                      "min":25,
-                      "max":999
-                    }
-                  }],
-                "type":"and"
-              },{
-                "filters":[{
-                    "id":"explicit.stat_803737631",
-                    "value":{
-                      "min":207
-                    }
-                  },{
-                    "id":"explicit.stat_691932474",
-                    "value":{
-                      "min":207
-                    }
-                  }],
-                "type":"count",
-                "value":{
-                  "min":1
-                }
-              },{
-                "filters":[{
-                    "id":"explicit.stat_960081730",
-                    "value":{
-                      "min":70,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_1940865751",
-                    "value":{
-                      "min":70,
-                      "max":999
-                    }
-                  }],
-                "type":"count",
-                "value":{
-                  "min":1
-                }
-              },{
-                "filters":[{
-                    "id":"explicit.stat_681332047",
-                    "value":{
-                      "min":30
-                    }
-                  },{
-                    "id":"explicit.stat_210067635",
-                    "value":{
-                      "min":30
-                    }
-                  }],
-                "type":"count",
-                "value":{
-                  "min":1
-                }
-              },{
-                "filters":[{
-                    "id":"explicit.stat_2543977012",
-                    "value":{
-                      "min":23
-                    }
-                  },{
-                    "id":"explicit.stat_1535626285",
-                    "value":{
-                      "min":23
-                    }
-                  }],
-                "type":"count",
-                "value":{
-                  "min":1
-                }
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "id":"enchant.stat_1615727675"
+                },{
+                  "id":"implicit.stat_3513534186"
+                },{
+                  "value":{
+                    "min":1
+                  },
+                  "id":"implicit.stat_4138979329"
+                },{
+                  "value":{
+                    "min":278,
+                    "max":999
+                  },
+                  "id":"explicit.stat_1509134228"
+                },{
+                  "value":{
+                    "min":25,
+                    "max":999
+                  },
+                  "id":"explicit.stat_2375316951"
+                }],
+              "type":"and"
+            },{
+              "filters":[{
+                  "value":{
+                    "min":207
+                  },
+                  "id":"explicit.stat_803737631"
+                },{
+                  "value":{
+                    "min":207
+                  },
+                  "id":"explicit.stat_691932474"
+                }],
+              "type":"count",
+              "value":{
+                "min":1
+              }
+            },{
+              "filters":[{
+                  "value":{
+                    "min":70,
+                    "max":999
+                  },
+                  "id":"explicit.stat_960081730"
+                },{
+                  "value":{
+                    "min":70,
+                    "max":999
+                  },
+                  "id":"explicit.stat_1940865751"
+                }],
+              "type":"count",
+              "value":{
+                "min":1
+              }
+            },{
+              "filters":[{
+                  "value":{
+                    "min":30
+                  },
+                  "id":"explicit.stat_681332047"
+                },{
+                  "value":{
+                    "min":30
+                  },
+                  "id":"explicit.stat_210067635"
+                }],
+              "type":"count",
+              "value":{
+                "min":1
+              }
+            },{
+              "filters":[{
+                  "value":{
+                    "min":23
+                  },
+                  "id":"explicit.stat_2543977012"
+                },{
+                  "value":{
+                    "min":23
+                  },
+                  "id":"explicit.stat_1535626285"
+                }],
+              "type":"count",
+              "value":{
+                "min":1
+              }
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -4703,14 +4285,11 @@
           "type":"explicit",
           "value":30
         },{
-          "canSearch":true,
-          "invert":false,
+          "canSearch":false,
           "isOption":false,
-          "label":"^x8888FF+60% Critical Strike Multiplier while a Rare or Unique...",
-          "min":"60",
-          "tradeIds":["explicit.stat_3992439283"],
-          "type":"explicit",
-          "value":60
+          "label":"^8+60% Critical Strike Multiplier while a Rare or Unique Enemy...",
+          "tradeIds":[],
+          "type":"explicit"
         },{
           "canSearch":true,
           "invert":false,
@@ -4734,36 +4313,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"weapon.staff"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"weapon.staff"
                 }
               }
             },
-            "type":"Eventuality Rod",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Eventuality Rod"
         }
       },
       "unique":false
@@ -4776,26 +4350,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -4803,56 +4372,51 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"enchant.stat_3086156145",
-                    "value":{
-                      "min":3,
-                      "max":999
-                    }
-                  },{
-                    "id":"enchant.stat_3948993189",
-                    "value":{
-                      "option":47
-                    }
-                  },{
-                    "id":"explicit.stat_2709692542",
-                    "value":{
-                      "min":5,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_4100161067",
-                    "value":{
-                      "min":21
-                    }
-                  },{
-                    "id":"explicit.stat_724930776",
-                    "value":{
-                      "min":3,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_2342448236"
-                  }],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":3,
+                    "max":999
+                  },
+                  "id":"enchant.stat_3086156145"
+                },{
+                  "value":{
+                    "option":47
+                  },
+                  "id":"enchant.stat_3948993189"
+                },{
+                  "value":{
+                    "min":5,
+                    "max":999
+                  },
+                  "id":"explicit.stat_2709692542"
+                },{
+                  "value":{
+                    "min":21
+                  },
+                  "id":"explicit.stat_4100161067"
+                },{
+                  "value":{
+                    "min":3,
+                    "max":999
+                  },
+                  "id":"explicit.stat_724930776"
+                },{
+                  "id":"explicit.stat_2342448236"
+                }],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -4912,36 +4476,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
             },
-            "type":"Small Cluster Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Small Cluster Jewel"
         }
       },
       "unique":false
@@ -4952,40 +4511,30 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Intuitive Leap",
-            "type":"Viridian Jewel",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Intuitive Leap",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Viridian Jewel"
         }
       },
       "defences":[],
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Intuitive Leap",
-            "type":"Viridian Jewel",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Intuitive Leap",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Viridian Jewel"
         }
       },
       "mods":[{
@@ -4999,20 +4548,15 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "name":"Intuitive Leap",
-            "type":"Viridian Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Intuitive Leap",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"online"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Viridian Jewel"
         }
       },
       "unique":true
@@ -5023,26 +4567,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -5050,49 +4589,44 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"enchant.stat_3086156145",
-                    "value":{
-                      "min":9,
-                      "max":999
-                    }
-                  },{
-                    "id":"enchant.stat_4079888060",
-                    "value":{
-                      "min":2
-                    }
-                  },{
-                    "id":"enchant.stat_3948993189",
-                    "value":{
-                      "option":14
-                    }
-                  },{
-                    "id":"explicit.stat_4100161067",
-                    "value":{
-                      "min":12
-                    }
-                  },{
-                    "id":"explicit.stat_3206911230"
-                  }],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":9,
+                    "max":999
+                  },
+                  "id":"enchant.stat_3086156145"
+                },{
+                  "value":{
+                    "min":2
+                  },
+                  "id":"enchant.stat_4079888060"
+                },{
+                  "value":{
+                    "option":14
+                  },
+                  "id":"enchant.stat_3948993189"
+                },{
+                  "value":{
+                    "min":12
+                  },
+                  "id":"explicit.stat_4100161067"
+                },{
+                  "id":"explicit.stat_3206911230"
+                }],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -5143,36 +4677,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
             },
-            "type":"Large Cluster Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Large Cluster Jewel"
         }
       },
       "unique":false
@@ -5183,26 +4712,21 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -5210,60 +4734,55 @@
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
-            },
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"enchant.stat_3086156145",
-                    "value":{
-                      "min":6,
-                      "max":999
-                    }
-                  },{
-                    "id":"enchant.stat_4079888060",
-                    "value":{
-                      "min":1
-                    }
-                  },{
-                    "id":"enchant.stat_3948993189",
-                    "value":{
-                      "option":29
-                    }
-                  },{
-                    "id":"explicit.stat_1790411851",
-                    "value":{
-                      "min":4
-                    }
-                  },{
-                    "id":"explicit.stat_724930776",
-                    "value":{
-                      "min":5,
-                      "max":999
-                    }
-                  },{
-                    "id":"explicit.stat_2643685329",
-                    "value":{
-                      "min":9
-                    }
-                  },{
-                    "id":"explicit.stat_3818661553"
-                  }],
-                "type":"and"
-              }]
+            }
           },
-          "sort":{
-            "price":"asc"
+          "stats":[{
+              "filters":[{
+                  "value":{
+                    "min":6,
+                    "max":999
+                  },
+                  "id":"enchant.stat_3086156145"
+                },{
+                  "value":{
+                    "min":1
+                  },
+                  "id":"enchant.stat_4079888060"
+                },{
+                  "value":{
+                    "option":29
+                  },
+                  "id":"enchant.stat_3948993189"
+                },{
+                  "value":{
+                    "min":4
+                  },
+                  "id":"explicit.stat_1790411851"
+                },{
+                  "value":{
+                    "min":5,
+                    "max":999
+                  },
+                  "id":"explicit.stat_724930776"
+                },{
+                  "value":{
+                    "min":9
+                  },
+                  "id":"explicit.stat_2643685329"
+                },{
+                  "id":"explicit.stat_3818661553"
+                }],
+              "type":"and"
+            }],
+          "status":{
+            "option":"securable"
           }
         }
       },
@@ -5332,36 +4851,31 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "filters":{
-              "type_filters":{
-                "filters":{
-                  "category":{
-                    "option":"jewel"
-                  }
-                }
-              },
-              "misc_filters":{
-                "filters":{
-                  "ilvl":{
-                    "min":70,
-                    "max":85
-                  }
+          "filters":{
+            "type_filters":{
+              "filters":{
+                "category":{
+                  "option":"jewel"
                 }
               }
             },
-            "type":"Medium Cluster Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+            "misc_filters":{
+              "filters":{
+                "ilvl":{
+                  "min":70,
+                  "max":85
+                }
+              }
+            }
           },
-          "sort":{
-            "price":"asc"
-          }
+          "stats":[{
+              "filters":[],
+              "type":"and"
+            }],
+          "status":{
+            "option":"online"
+          },
+          "type":"Medium Cluster Jewel"
         }
       },
       "unique":false
@@ -5372,48 +4886,38 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Glorious Vanity",
-            "type":"Timeless Jewel",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Glorious Vanity",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Timeless Jewel"
         }
       },
       "defences":[],
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Glorious Vanity",
-            "type":"Timeless Jewel",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[{
-                    "id":"explicit.pseudo_timeless_jewel_xibaqua",
-                    "value":{
-                      "min":114,
-                      "max":114
-                    }
-                  },{
-                    "id":"explicit.stat_3787436548"
-                  }],
-                "type":"and"
-              }]
+          "name":"Glorious Vanity",
+          "stats":[{
+              "type":"and",
+              "filters":[{
+                  "value":{
+                    "min":114,
+                    "max":114
+                  },
+                  "id":"explicit.pseudo_timeless_jewel_xibaqua"
+                },{
+                  "id":"explicit.stat_3787436548"
+                }]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Timeless Jewel"
         }
       },
       "mods":[{
@@ -5442,20 +4946,15 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "name":"Glorious Vanity",
-            "type":"Timeless Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Glorious Vanity",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"online"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Timeless Jewel"
         }
       },
       "unique":true
@@ -5466,40 +4965,30 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Intuitive Leap",
-            "type":"Viridian Jewel",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Intuitive Leap",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Viridian Jewel"
         }
       },
       "defences":[],
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Intuitive Leap",
-            "type":"Viridian Jewel",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Intuitive Leap",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Viridian Jewel"
         }
       },
       "mods":[{
@@ -5513,20 +5002,15 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "name":"Intuitive Leap",
-            "type":"Viridian Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Intuitive Leap",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"online"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Viridian Jewel"
         }
       },
       "unique":true
@@ -5537,40 +5021,30 @@
       "default":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Intuitive Leap",
-            "type":"Viridian Jewel",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Intuitive Leap",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Viridian Jewel"
         }
       },
       "defences":[],
       "modSearch":{
         "base":"https://www.pathofexile.com/trade/search/Standard",
         "query":{
-          "query":{
-            "name":"Intuitive Leap",
-            "type":"Viridian Jewel",
-            "status":{
-              "option":"securable"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Intuitive Leap",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"securable"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Viridian Jewel"
         }
       },
       "mods":[{
@@ -5584,20 +5058,15 @@
       "set":{
         "base":"https://www.pathofexile.com/trade/search/xbox/Mirage%20Ruthless",
         "query":{
-          "query":{
-            "name":"Intuitive Leap",
-            "type":"Viridian Jewel",
-            "status":{
-              "option":"online"
-            },
-            "stats":[{
-                "filters":[],
-                "type":"and"
-              }]
+          "name":"Intuitive Leap",
+          "stats":[{
+              "type":"and",
+              "filters":[]
+            }],
+          "status":{
+            "option":"online"
           },
-          "sort":{
-            "price":"asc"
-          }
+          "type":"Viridian Jewel"
         }
       },
       "unique":true

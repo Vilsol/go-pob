@@ -111,7 +111,7 @@ func TestTradeMatchesPoB(t *testing.T) {
 				}
 			}
 		}
-		hashes, value, negate := findTradeHash(want.Line)
+		hashes, value, negate, _ := findTradeHash(want.Line)
 		if len(want.Hashes) > 0 {
 			hashed++
 		}

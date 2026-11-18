@@ -886,6 +886,9 @@ type GemEffect struct {
 	ItemQuality     int
 	GlobalQuality   int
 	SupportQuality  int
+	ItemLevel       int
+	GlobalLevel     int
+	SupportLevel    int
 	req             *int
 	triggerChance   *float64
 	gemCfg          *moddb.ListCfg

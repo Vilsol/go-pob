@@ -6,7 +6,10 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/Vilsol/go-pob-data/poe"
+
 	"github.com/Vilsol/go-pob/data/raw"
+	"github.com/Vilsol/go-pob/mod"
 )
 
 // tradeStatForm is a stat description form with what getStatDescData adds to it.
@@ -271,10 +274,29 @@ func flagIsOne(v any) bool {
 }
 
 // findTradeHash is the trade hashes of the stat descriptions a mod line matches, more than one when the line is
-// ambiguous, its value, and whether the trade site wants it negated: nil when no form set it.
+// ambiguous, its value, whether the trade site wants it negated: nil when no form set it, and the trade stat id prefix.
 //
-//pob:src/Classes/TradeHelpers.lua:244-344
-func findTradeHash(modLine string) ([]uint32, *float64, *bool) {
+//pob:src/Classes/TradeHelpers.lua:249-366
+func findTradeHash(modLine string) ([]uint32, *float64, *bool, string) {
+	if parsed := ParseMod(modLine, false); parsed.Extra == "" {
+		var effectHashes []uint32
+		var level *float64
+		for _, m := range parsed.ModList {
+			if m.Name() == "ExtraSkill" {
+				skill, ok := m.Value().List().(mod.ExtraSkill)
+				if !ok {
+					continue
+				}
+				if grantedEffect := poe.GrantedEffectByID(skill.SkillID); grantedEffect != nil {
+					effectHashes = insertUniqueHash(effectHashes, murmurHash2([]byte(grantedEffect.ID), 0xC58F1A7B))
+					level = new(float64(skill.Level))
+				}
+			}
+		}
+		if len(effectHashes) > 0 {
+			return effectHashes, level, new(false), "effect_"
+		}
+	}
 	modLine = asciiLower(modLine)
 	var resultIDs []uint32
 	var value *float64
@@ -373,7 +395,7 @@ entries:
 			}
 		}
 	}
-	return resultIDs, value, shouldNegate
+	return resultIDs, value, shouldNegate, "stat_"
 }
 
 // hashStats is the trade site's hash of a stat description's stats.

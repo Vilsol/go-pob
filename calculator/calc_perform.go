@@ -1281,6 +1281,7 @@ var itemGrantedSupportNames = map[string]string{
 	"SupportUniqueCastCurseOnCurse":                                 "Vixen's Entrapment",
 	"SupportUniqueCosprisMaliceColdSpellsCastOnMeleeCriticalStrike": "Cospri's Malice",
 	"SupportUniqueMjolnerLightningSpellsCastOnHit":                  "Mjolner",
+	"SupportUniqueSuspendInTimeCanUse":                              "Temporal Mirage",
 	"SupportUniqueVirulenceSpellsCastOnBlock":                       "Festering Resentment Cast on Block",
 }
 

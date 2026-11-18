@@ -122,7 +122,7 @@ func TestAddItemTooltipAgainstPoB(t *testing.T) {
 			texts[it.ID] = it.Text
 		}
 		var misc *MiscCalculator
-		ctx := ItemTooltipContext{CharacterLevel: b.Level, ClassName: b.ClassName, ShowFlavourText: true, Stats: b.Stats}
+		ctx := ItemTooltipContext{CharacterLevel: b.Level, ClassName: b.ClassName, ShowFlavourText: true, Stats: b.Stats, TreeVersion: CalcTreeVersion(build)}
 		for _, it := range b.Items {
 			items++
 			text, ok := texts[it.ID]

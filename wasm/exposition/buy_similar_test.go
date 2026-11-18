@@ -1,10 +1,13 @@
 package exposition
 
 import (
+	"bytes"
+	"compress/gzip"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"math"
-	"net/url"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -48,19 +51,27 @@ type buySimilarOracle struct {
 	Unique bool `json:"unique"`
 }
 
-// decodeBuySimilar splits a trade URL into its path and its URL encoded query.
+// decodeBuySimilar splits a trade URL into its path and its Base64URL gzipped query.
 func decodeBuySimilar(t *testing.T, u string) buySimilarSearch {
 	t.Helper()
-	base, q, ok := strings.Cut(u, "?q=")
-	if !ok {
+	i := strings.LastIndexByte(u, '/')
+	if i < 0 {
 		t.Fatalf("no query in %s", u)
 	}
-	text, err := url.PathUnescape(q)
+	raw, err := base64.StdEncoding.DecodeString(strings.NewReplacer("-", "+", "_", "/").Replace(u[i+1:]))
 	if err != nil {
 		t.Fatal(err)
 	}
-	out := buySimilarSearch{Base: base}
-	if err := json.Unmarshal([]byte(text), &out.Query); err != nil {
+	zr, err := gzip.NewReader(bytes.NewReader(raw))
+	if err != nil {
+		t.Fatal(err)
+	}
+	text, err := io.ReadAll(zr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	out := buySimilarSearch{Base: u[:i]}
+	if err := json.Unmarshal(text, &out.Query); err != nil {
 		t.Fatal(err)
 	}
 	return out

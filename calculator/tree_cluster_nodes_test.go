@@ -8,6 +8,8 @@ import (
 	"slices"
 	"strings"
 	"testing"
+
+	"github.com/Vilsol/go-pob/data"
 )
 
 type clusterOracleNode struct {
@@ -33,7 +35,6 @@ func TestTreeClusterNodesMatchPoB(t *testing.T) {
 	scanner := bufio.NewScanner(f)
 	scanner.Buffer(make([]byte, 1<<20), 1<<22)
 	builds := 0
-	tree := latestSpecTree()
 	for scanner.Scan() {
 		var want struct {
 			File  string              `json:"file"`
@@ -43,7 +44,10 @@ func TestTreeClusterNodesMatchPoB(t *testing.T) {
 			t.Fatal(err)
 		}
 		builds++
-		got := TreeClusterNodes(parseCorpusBuild(t, want.File))
+		build := parseCorpusBuild(t, want.File)
+		// the proxy is a node of the spec's own tree
+		tree := specTree(build)
+		got := TreeClusterNodes(build)
 		byID := make(map[int64]TreeClusterNode, len(got))
 		for _, n := range got {
 			byID[n.ID] = n
@@ -113,7 +117,6 @@ func TestTreeSpecClusterNodesMatchPoB(t *testing.T) {
 	scanner := bufio.NewScanner(f)
 	scanner.Buffer(make([]byte, 1<<20), 1<<22)
 	rows := 0
-	tree := latestSpecTree()
 	for scanner.Scan() {
 		var want struct {
 			File  string `json:"file"`
@@ -127,7 +130,10 @@ func TestTreeSpecClusterNodesMatchPoB(t *testing.T) {
 			t.Fatal(err)
 		}
 		rows++
-		got := TreeSpecClusterNodes(parseCorpusBuild(t, want.File), want.Spec)
+		build := parseCorpusBuild(t, want.File)
+		got := TreeSpecClusterNodes(build, want.Spec)
+		// the proxy is a node of that spec's own tree
+		tree := data.TreeVersions[hostedTreeVersion(build.Tree.Specs[want.Spec-1].TreeVersion)].Tree()
 		byID := make(map[int64]TreeClusterNode, len(got))
 		for _, n := range got {
 			byID[n.ID] = n

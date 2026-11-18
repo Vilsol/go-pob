@@ -98,7 +98,7 @@ func ItemsTabSlots(build *pob.PathOfBuilding) ItemsTabSlotList {
 
 func (m *MiscCalculator) SocketJewelTooltip(nodeID int, stats calculator.ItemTooltipStats) (calculator.ItemTooltip, bool) {
 	build := m.calc.Build()
-	ctx := calculator.ItemTooltipContext{ShowFlavourText: showFlavourText, Stats: stats, CharacterLevel: build.Build.Level, ClassName: string(build.Build.ClassName)}
+	ctx := calculator.ItemTooltipContext{ShowFlavourText: showFlavourText, Stats: stats, CharacterLevel: build.Build.Level, ClassName: string(build.Build.ClassName), TreeVersion: calculator.CalcTreeVersion(build)}
 	return m.calc.SocketJewelTooltip(nodeID, ctx)
 }
 

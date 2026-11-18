@@ -1,7 +1,9 @@
--- usage: luajit cluster_spec_nodes.lua <build.xml>:<spec index> ...
+-- usage: luajit cluster_spec_nodes.lua <build.xml>:<spec index>
+-- One build per process: a build loaded after another can keep cluster nodes from the earlier one.
 -- Prints the cluster nodes in spec.nodes (what PoB allocates and draws), not spec.subGraphs:
 -- subGraphs is keyed by node id, so a nested subgraph whose id collides with its parent's replaces it there.
 local args = { unpack(arg) }
+assert(#args == 1, "REFUSING: one <build.xml>:<spec index> per process")
 dofile("HeadlessWrapper.lua")
 local json = require("dkjson")
 

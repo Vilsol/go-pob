@@ -23,7 +23,7 @@ func CompareSpecJewelTooltip(build *pob.PathOfBuilding, specID int, nodeID int, 
 		}
 		for _, it := range build.Items.Items {
 			if it.ID == s.ItemID {
-				ctx := calculator.ItemTooltipContext{ShowFlavourText: showFlavourText, Stats: stats, CharacterLevel: build.Build.Level, ClassName: string(build.Build.ClassName)}
+				ctx := calculator.ItemTooltipContext{ShowFlavourText: showFlavourText, Stats: stats, CharacterLevel: build.Build.Level, ClassName: string(build.Build.ClassName), TreeVersion: calculator.CalcTreeVersion(build)}
 				return calculator.AddItemTooltip(calculator.ParseItem(it.Text), ctx), true
 			}
 		}

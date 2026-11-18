@@ -2103,6 +2103,11 @@ func applyGemProperty(effect *GemEffect, value gemPropertyValue) {
 	switch value.Key {
 	case "level":
 		effect.Level += int(value.Value)
+		if value.socketed {
+			effect.ItemLevel += int(value.Value)
+		} else {
+			effect.GlobalLevel += int(value.Value)
+		}
 	case "req":
 		req := int(value.Value)
 		if effect.req != nil {

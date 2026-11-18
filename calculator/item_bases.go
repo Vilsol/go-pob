@@ -137,7 +137,7 @@ var flaskBuffs = map[string][]string{
 	"Sulphur Flask":     {"40% increased Damage"},
 	"Silver Flask":      {"Onslaught"},
 	"Bismuth Flask":     {"+35% to all Elemental Resistances"},
-	"Gold Flask":        {"30% increased Rarity of Items found"},
+	"Gold Flask":        {"+30% to Item Rarity"},
 	"Corundum Flask": {"30% increased Stun Threshold",
 		"Cannot be Stunned if you've been Stunned during Effect"},
 	"Iron Flask": {"+200 to Ward"},
@@ -288,15 +288,15 @@ func findItemBaseInName(name string) (string, int) {
 }
 
 //pob:src/Export/Scripts/bases.lua:35-209
-//pob:src/Export/Scripts/bases.lua:276-293
-func baseReqLevel(b *poe.BaseItemType, hasWeaponOrArmour bool, hasFlask bool, modByKey map[int]*poe.Mod) int {
+//pob:src/Export/Scripts/bases.lua:277-294
+func baseReqLevel(b *poe.BaseItemType, hasWeaponOrArmour bool, hasFlaskOrTincture bool, modByKey map[int]*poe.Mod) int {
 	level := 1
 
 	if hasWeaponOrArmour && b.DropLevel > 4 {
 		level = b.DropLevel
 	}
 
-	if hasFlask && b.DropLevel > 2 {
+	if hasFlaskOrTincture && b.DropLevel > 2 {
 		level = b.DropLevel
 	}
 
@@ -337,6 +337,11 @@ func buildItemBases() {
 	flaskByBaseKey := make(map[int]*poe.Flask, len(poe.Flasks))
 	for _, f := range poe.Flasks {
 		flaskByBaseKey[f.BaseItemTypesKey] = f
+	}
+
+	tinctureByBaseKey := make(map[int]*poe.Tincture)
+	for _, t := range raw.Tinctures() {
+		tinctureByBaseKey[t.BaseItem] = t
 	}
 
 	weaponByBaseKey := make(map[int]*poe.WeaponType, len(poe.WeaponTypes))
@@ -388,13 +393,14 @@ func buildItemBases() {
 		armour := armourByBaseKey[b.Key]
 		weapon := weaponByBaseKey[b.Key]
 		flask := flaskByBaseKey[b.Key]
+		tincture := tinctureByBaseKey[b.Key]
 
 		base := &ItemBase{
 			Name:        exportDisplayName(b.Name, itemType),
 			Type:        itemType,
 			SubType:     itemClassSubTypes[class.Name],
 			SocketLimit: socketLimits[itemType],
-			Req:         ItemBaseReq{Level: baseReqLevel(b, weapon != nil || armour != nil, flask != nil, modByKey)},
+			Req:         ItemBaseReq{Level: baseReqLevel(b, weapon != nil || armour != nil, flask != nil || tincture != nil, modByKey)},
 			Tags:        make(map[string]bool, len(b.TagsKeys)),
 		}
 		//pob:block:src/Export/Scripts/bases.lua:136-138

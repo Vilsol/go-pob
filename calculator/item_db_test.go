@@ -81,7 +81,7 @@ func TestItemDBAgainstPoB(t *testing.T) {
 	if n < 1000 {
 		t.Fatalf("graded only %d DB items; the generated table did not load", n)
 	}
-	knownExplicits := []string{"fishing/Reefbane", "fishing/Song of the Sirens", "jewel/Transcendent Mind"}
+	knownExplicits := []string{"jewel/Transcendent Mind"}
 	var left []string
 	for _, l := range byField["explicits"] {
 		known := false

@@ -7,22 +7,23 @@ import (
 	"github.com/Vilsol/go-pob-data/poe"
 )
 
-// TestTinctureBasesResolve pins the ten tincture bases PoB exports, and pins the eight legacy rows OUT.
+// TestTinctureBasesResolve pins the ten tincture bases PoB exports with their level requirements, and pins the eight legacy rows OUT.
 func TestTinctureBasesResolve(t *testing.T) {
-	want := map[string]bool{
-		"Prismatic Tincture":   true,
-		"Rosethorn Tincture":   true,
-		"Ironwood Tincture":    true,
-		"Ashbark Tincture":     true,
-		"Borealwood Tincture":  true,
-		"Fulgurite Tincture":   true,
-		"Poisonberry Tincture": true,
-		"Blood Sap Tincture":   true,
-		"Oakbranch Tincture":   true,
-		"Sporebloom Tincture":  true,
+	// req.level is PoB 2.68.1's Data/Bases/tincture.lua
+	want := map[string]int{
+		"Prismatic Tincture":   18,
+		"Rosethorn Tincture":   18,
+		"Ironwood Tincture":    18,
+		"Ashbark Tincture":     32,
+		"Borealwood Tincture":  32,
+		"Fulgurite Tincture":   32,
+		"Poisonberry Tincture": 45,
+		"Blood Sap Tincture":   45,
+		"Oakbranch Tincture":   60,
+		"Sporebloom Tincture":  52,
 	}
 
-	for name := range want {
+	for name, level := range want {
 		base := ItemBaseByName(name)
 		testza.AssertNotNil(t, base, "no item base assembled for %q", name)
 		if base == nil {
@@ -30,8 +31,7 @@ func TestTinctureBasesResolve(t *testing.T) {
 		}
 		testza.AssertEqual(t, "Tincture", base.Type, "type of %q", name)
 		testza.AssertNotNil(t, base.Tincture, "base.tincture presence on %q", name)
-		testza.AssertEqual(t, 0, base.Req.Level,
-			"%q carries a req.level PoB does not export", name)
+		testza.AssertEqual(t, level, base.Req.Level, "req.level of %q", name)
 	}
 
 	got := 0
@@ -60,7 +60,11 @@ func TestTinctureBasesResolve(t *testing.T) {
 		}
 	}
 
-	testza.AssertEqual(t, want, kept, "ids kept by tinctureBaseIDRe, by display name")
+	wantNames := make(map[string]bool, len(want))
+	for name := range want {
+		wantNames[name] = true
+	}
+	testza.AssertEqual(t, wantNames, kept, "ids kept by tinctureBaseIDRe, by display name")
 	testza.AssertEqual(t, map[string]bool{
 		"Metadata/Items/Tinctures/TinctureStun":           true,
 		"Metadata/Items/Tinctures/TinctureIgnite":         true,

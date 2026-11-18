@@ -646,6 +646,9 @@ export declare namespace calculator {
     readonly ItemQuality: number;
     readonly SupportQuality: number;
     readonly GlobalQuality: number;
+    readonly ItemLevel: number;
+    readonly GlobalLevel: number;
+    readonly SupportLevel: number;
   }
   interface GemDisplayRow {
     readonly Group: number;
@@ -664,6 +667,9 @@ export declare namespace calculator {
     ItemQuality: number;
     GlobalQuality: number;
     SupportQuality: number;
+    ItemLevel: number;
+    GlobalLevel: number;
+    SupportLevel: number;
     ActorLevel?: number;
     GrantedEffectLevel?: raw.CalculatedLevel;
     CostEmptied: boolean;

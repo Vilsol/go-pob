@@ -90,7 +90,7 @@ func ItemSourceTooltip(build *pob.PathOfBuilding, name string, stats calculator.
 	if item == nil {
 		return calculator.ItemTooltip{}, false
 	}
-	t := calculator.AddItemTooltip(item, calculator.ItemTooltipContext{CharacterLevel: build.Build.Level, ClassName: string(build.Build.ClassName), ShowFlavourText: showFlavourText, Stats: stats})
+	t := calculator.AddItemTooltip(item, calculator.ItemTooltipContext{CharacterLevel: build.Build.Level, ClassName: string(build.Build.ClassName), ShowFlavourText: showFlavourText, Stats: stats, TreeVersion: calculator.CalcTreeVersion(build)})
 	appendItemModDebug(&t, item)
 	return t, true
 }

@@ -87,6 +87,7 @@ func ItemDBTooltip(build *pob.PathOfBuilding, kind string, name string, stats ca
 	if build != nil {
 		ctx.CharacterLevel = build.Build.Level
 		ctx.ClassName = string(build.Build.ClassName)
+		ctx.TreeVersion = calculator.CalcTreeVersion(build)
 	}
 	t := calculator.AddItemTooltip(item, ctx)
 	appendItemModDebug(&t, item)

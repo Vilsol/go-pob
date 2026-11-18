@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Vilsol/go-pob/data"
 	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/utils"
 )
@@ -16,6 +17,10 @@ var grantsSkillRe = regexp.MustCompile(`^Grants Level (\d+) (.+?)(?: Skill)?$`)
 func TestNodeSkillTooltips(t *testing.T) {
 	initItemsTabData(t)
 	build := loadCorpusBuild(t, "0005-occultist-vaal-double-strike.xml")
+	// the nodes are the latest tree's, so the build's spec is converted to it as the tree tab's convert button does
+	if err := ConvertSpecToVersion(build, data.LatestTreeVersion, false); err != nil {
+		t.Fatal(err)
+	}
 	graded := 0
 	for key, n := range latestSpecTree().Nodes {
 		for _, line := range n.Stats {

@@ -2761,7 +2761,17 @@ class PoBWorker {
   }
 
   private gemTooltipLines(gem: pob.Gem, display: calculator.GemDisplay | undefined): calculator.TooltipLine[] {
-    const none: calculator.GemDisplay = { Level: 0, Quality: 0, SocketQuality: 0, ItemQuality: 0, SupportQuality: 0, GlobalQuality: 0 };
+    const none: calculator.GemDisplay = {
+      Level: 0,
+      Quality: 0,
+      SocketQuality: 0,
+      ItemQuality: 0,
+      SupportQuality: 0,
+      GlobalQuality: 0,
+      ItemLevel: 0,
+      GlobalLevel: 0,
+      SupportLevel: 0
+    };
     return [...(exposition.GemTooltip(this.currentBuild, gem, display ?? none, display !== undefined, this.itemTipStats) ?? [])];
   }
 

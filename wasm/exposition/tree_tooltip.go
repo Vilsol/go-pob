@@ -19,7 +19,7 @@ func TreeTooltipExports(r bind.Registry) {
 }
 
 func NodeSkillTooltips(build *pob.PathOfBuilding, nodeID int64, stats calculator.ItemTooltipStats) [][]calculator.TooltipLine {
-	return calculator.NodeSkillTooltips(build, nodeID, calculator.ItemTooltipContext{ShowFlavourText: true, Stats: stats})
+	return calculator.NodeSkillTooltips(build, nodeID, calculator.ItemTooltipContext{ShowFlavourText: true, Stats: stats, TreeVersion: calculator.CalcTreeVersion(build)})
 }
 
 func GoldRespecPrice(build *pob.PathOfBuilding) int {

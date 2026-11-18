@@ -143,25 +143,9 @@ func TimelessTradeURL(q TimelessTradeQuery) TimelessTrade {
 			stats = append(stats, map[string]any{"filters": devotionFilters, "type": "and"})
 		}
 	}
-	search := map[string]any{
-		"query": map[string]any{"status": map[string]string{"option": tradeType}, "stats": stats},
-		"sort":  map[string]string{"price": "asc"},
-	}
+	search := map[string]any{"status": map[string]string{"option": tradeType}, "stats": stats}
 	encoded, _ := json.Marshal(search) //nolint:errchkjson // plain maps and structs
-	var q2 strings.Builder
-	for _, b := range encoded {
-		if (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z') || (b >= '0' && b <= '9') {
-			q2.WriteByte(b)
-		} else {
-			fmt.Fprintf(&q2, "%%%02X", b)
-		}
-	}
-	realm := strings.ToLower(q.Realm)
-	realmPath := realm + "/"
-	if realm == "pc" || realm == "" {
-		realmPath = ""
-	}
-	out.URL = "https://www.pathofexile.com/trade/search/" + realmPath + q.League + "/?q=" + q2.String()
+	out.URL = tradeBuildURL("https://www.pathofexile.com/trade/search", strings.ToLower(q.Realm), q.League, B64GzipEncode(string(encoded)))
 	return out
 }
 

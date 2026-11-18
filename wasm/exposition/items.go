@@ -166,6 +166,7 @@ func parsedItem(build *pob.PathOfBuilding, item *calculator.Item, itemID int, st
 	if build != nil {
 		ctx.CharacterLevel = build.Build.Level
 		ctx.ClassName = string(build.Build.ClassName)
+		ctx.TreeVersion = calculator.CalcTreeVersion(build)
 	}
 	p.Tooltip = calculator.AddItemTooltip(item, ctx)
 	appendItemModDebug(&p.Tooltip, item)

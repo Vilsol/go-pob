@@ -27,6 +27,9 @@ type GemDisplay struct {
 	ItemQuality    int
 	SupportQuality int
 	GlobalQuality  int
+	ItemLevel      int
+	GlobalLevel    int
+	SupportLevel   int
 }
 
 //pob:block:src/Classes/GemTooltip.lua:16-21
@@ -160,18 +163,32 @@ func addCommonGemInfo(t *ItemTooltip, ctx ItemTooltipContext, gi *gemTooltipInst
 	display := gi.display
 	grantedEffectLevel := grantedEffect.level(display.Level)
 	if addLevel {
-		bonus := ""
-		switch {
-		case display.Level > gi.gem.Level:
-			bonus = " (" + colorMagic + "+" + strconv.Itoa(display.Level-gi.gem.Level) + "^7)"
-		case display.Level < gi.gem.Level:
-			bonus = " (" + colorWarning + "-" + strconv.Itoa(gi.gem.Level-display.Level) + "^7)"
-		}
-		maxed := ""
+		globalLevels, itemLevels, supportLevels := display.GlobalLevel, display.ItemLevel, display.SupportLevel
+		maxLevel := ""
 		if gi.row.NaturalMaxLevel != 0 && gi.gem.Level >= gi.row.NaturalMaxLevel {
-			maxed = " (Max)"
+			maxLevel = " (Max)"
 		}
-		t.addLine(fmt.Sprintf("^x7F7F7FLevel: ^7%d%s%s", gi.gem.Level, bonus, maxed))
+		if itemLevels != 0 || globalLevels != 0 || supportLevels != 0 {
+			t.addLine("^x7F7F7FLevel: " + colorMagic + strconv.Itoa(display.Level))
+			t.addLine(fmt.Sprintf("^7%d Levels from Gem%s", gi.gem.Level, maxLevel))
+			for _, source := range []struct {
+				levels int
+				name   string
+			}{{itemLevels, "Item"}, {globalLevels, "Global Modifiers"}, {supportLevels, "Supports"}} {
+				if source.levels != 0 {
+					color := colorWarning
+					if source.levels > 0 {
+						color = colorMagic
+					}
+					t.addLine(color + fmt.Sprintf("%+d Levels from %s", source.levels, source.name))
+				}
+			}
+			if display.Level != gi.gem.Level+itemLevels+globalLevels+supportLevels {
+				t.addLine("^x7F7F7FLimited to Level " + strconv.Itoa(display.Level))
+			}
+		} else {
+			t.addLine(fmt.Sprintf("^x7F7F7FLevel: ^7%d%s", gi.gem.Level, maxLevel))
+		}
 	}
 	if grantedEffect.support {
 		if grantedEffectLevel.ManaMultiplier != nil {
@@ -244,9 +261,13 @@ func addCommonGemInfo(t *ItemTooltip, ctx ItemTooltipContext, gi *gemTooltipInst
 		for _, q := range []struct {
 			n    int
 			from string
-		}{{display.ItemQuality, "Item"}, {display.SupportQuality, "Support"}, {display.GlobalQuality, "Global Modifiers"}, {display.SocketQuality, "Socket Colour"}} {
-			if q.n > 0 {
-				t.addLine(colorMagic + fmt.Sprintf("+%d%% Quality from %s", q.n, q.from))
+		}{{display.ItemQuality, "Item"}, {display.GlobalQuality, "Global Modifiers"}, {display.SupportQuality, "Supports"}, {display.SocketQuality, "Socket Colour"}} {
+			if q.n != 0 {
+				color := colorWarning
+				if q.n > 0 {
+					color = colorMagic
+				}
+				t.addLine(color + fmt.Sprintf("%+d%% Quality from %s", q.n, q.from))
 			}
 		}
 	}
@@ -411,6 +432,7 @@ func (env *Environment) GemDisplays() []GemDisplayRow {
 		rows = append(rows, GemDisplayRow{Group: key[0], Gem: key[1], Display: GemDisplay{
 			Level: effect.Level, Quality: effect.Quality, SocketQuality: effect.SocketQuality,
 			ItemQuality: effect.ItemQuality, SupportQuality: effect.SupportQuality, GlobalQuality: effect.GlobalQuality,
+			ItemLevel: effect.ItemLevel, GlobalLevel: effect.GlobalLevel, SupportLevel: effect.SupportLevel,
 		}})
 	}
 	slices.SortFunc(rows, func(a, b GemDisplayRow) int {

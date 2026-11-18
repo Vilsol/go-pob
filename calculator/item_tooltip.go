@@ -130,6 +130,8 @@ type ItemTooltipContext struct {
 	Stats           ItemTooltipStats
 	RadiusData      map[string]float64
 	DBMode          bool
+	// TreeVersion is build.spec's tree, which the cluster jewel's notables are read from; empty is the latest
+	TreeVersion pob.TreeVersion
 }
 
 func (env *Environment) ItemTooltipStats() ItemTooltipStats {
@@ -631,7 +633,11 @@ func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 
 	if cj := readClusterJewelData(item); cj != nil {
 		t.addSeparator()
-		nodeMap := clusterNodeMap(data.LatestTreeVersion)
+		treeVersion := ctx.TreeVersion
+		if treeVersion == "" {
+			treeVersion = data.LatestTreeVersion
+		}
+		nodeMap := clusterNodeMap(hostedTreeVersion(treeVersion))
 		addNode := func(name string) {
 			node, ok := nodeMap[name]
 			if !ok {
