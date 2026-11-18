@@ -13,6 +13,7 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/andybalholm/brotli"
 	"github.com/dominikbraun/graph"
@@ -124,20 +125,10 @@ func (v *TreeVersionData) RawTree() []byte {
 		}
 	} else {
 		slog.Debug("fetching", slog.String("url", treeURL))
-		req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, treeURL, nil)
-		response, err := http.DefaultClient.Do(req)
+		var err error
+		compressedTree, err = fetchTree(context.Background(), treeURL)
 		if err != nil {
-			panic(fmt.Errorf("failed to fetch url: %s: %w", treeURL, err))
-		}
-		defer response.Body.Close()
-
-		if response.StatusCode != http.StatusOK {
-			panic(fmt.Errorf("failed to fetch url: %s: %s", treeURL, response.Status))
-		}
-
-		compressedTree, err = io.ReadAll(response.Body)
-		if err != nil {
-			panic(fmt.Errorf("failed to read response body: %w", err))
+			panic(err)
 		}
 		fetched = true
 	}
@@ -373,3 +364,48 @@ func (v *TreeVersionData) getGraph() (graph.Graph[int64, int64], map[int64]map[i
 }
 
 var TreeVersions = make(map[pob.TreeVersion]*TreeVersionData)
+
+// treeFetchAttempts and treeFetchBackoff: a CDN edge can reset a connection or answer 5xx for a moment, and one
+// such blip must not fail the tree load.
+const treeFetchAttempts = 3
+
+var treeFetchBackoff = 250 * time.Millisecond
+
+// fetchTree downloads url, retrying a transport error, a 5xx answer or a body cut short; any other status is final.
+func fetchTree(ctx context.Context, url string) ([]byte, error) {
+	wait := treeFetchBackoff
+	for attempt := 1; ; attempt++ {
+		b, retry, err := fetchTreeOnce(ctx, url)
+		if err == nil || !retry || attempt == treeFetchAttempts {
+			return b, err
+		}
+		select {
+		case <-ctx.Done():
+			return nil, fmt.Errorf("waiting to retry %s: %w", url, ctx.Err())
+		case <-time.After(wait):
+		}
+		wait *= 2
+	}
+}
+
+func fetchTreeOnce(ctx context.Context, url string) ([]byte, bool, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, false, fmt.Errorf("failed to create request: %w", err)
+	}
+	response, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, true, fmt.Errorf("failed to fetch url: %s: %w", url, err)
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return nil, response.StatusCode >= http.StatusInternalServerError, fmt.Errorf("failed to fetch url: %s: %s", url, response.Status)
+	}
+
+	b, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, true, fmt.Errorf("failed to read response body: %w", err)
+	}
+	return b, false, nil
+}
