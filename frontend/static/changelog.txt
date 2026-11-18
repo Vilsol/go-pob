@@ -1,3 +1,10 @@
+VERSION[0.11.1][2026/11/18]
+
+--- Fixed ---
+* calculator: auras, triggers, totems and supports follow PoB's own conditions
+* item corruption, crafting, tooltips and editor gaps follow PoB 2.68.1
+
+
 VERSION[0.11.0][2026/11/18]
 
 --- New ---
