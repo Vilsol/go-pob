@@ -1,4 +1,4 @@
-export type ItemDBKind = 'UNIQUE' | 'RARE';
+export type ItemDBKind = 'UNIQUE' | 'RARE' | 'VISCERA';
 
 export type ItemDBLists = {
   slots: string[];

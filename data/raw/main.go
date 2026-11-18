@@ -84,6 +84,8 @@ var unreadTables = []string{
 	"CraftingItemClassCategories",
 	"MonsterResistances",
 	"EffectivenessCostConstants",
+	"PassiveJewelRadii", "FishingLureTypes", "FishingHookTypes", "ShaperApparitionAbility", "MinionDoublingStatTypes",
+	"AtlasExiles", "ElderGuardians",
 }
 
 var (

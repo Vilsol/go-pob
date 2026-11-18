@@ -10,7 +10,8 @@
   "Rarity: UNIQUE\nReplica Abyssus\nEzomyte Burgonet\nArmour: 800\nArmourBasePercentile: 1\nLeague: Heist\nQuality: 20\nSockets: R-R-R-R\nLevelReq: 60\nImplicits: 0\n{range:0.5}+(20-25) to all Attributes\nAdds 40 to 75 Fire Damage to Attacks\nAdds 30 to 65 Cold Damage to Attacks\nAdds 10 to 130 Lightning Damage to Attacks\n{range:0.5}+(100-125)% to Melee Critical Strike Multiplier\n{range:0.5}(100-120)% increased Armour\n{range:0.5}(40-50)% increased Elemental Damage taken",
   "Rarity: UNIQUE\nLioneye's Remorse\nPinnacle Tower Shield\nArmour: 1611\nArmourBasePercentile: 1\nVariant: Pre 2.6.0\nVariant: Pre 3.0.0\nVariant: Pre 3.16.0\nVariant: Pre 3.29.0\nVariant: Current\nSelected Variant: 5\nQuality: 20\nSockets: R-R-R\nLevelReq: 70\nImplicits: 1\n{variant:3,4,5}{range:0.5}+(20-30) to maximum Life\n{variant:1,2,3}{range:0.5}(200-250)% increased Armour\n{variant:4,5}{range:0.5}(180-220)% increased Armour\n{variant:1}{range:0.5}+(80-100) to maximum Life\n{variant:2,3,4,5}{range:0.5}+(160-180) to maximum Life\n5% reduced Movement Speed\n{variant:1,2,3}20% increased Stun and Block Recovery\n{variant:4,5}20% increased Stun and Block Recovery\n{variant:1,2,3,4}-25 Physical Damage taken from Projectile Attacks\n{variant:5}-150 Physical Damage taken from Projectile Attacks\n+5% Chance to Block",
   "Rarity: UNIQUE\nSin Trek\nStealth Boots\nEvasion: 481\nEvasionBasePercentile: 1\nEnergy Shield: 125\nEnergyShieldBasePercentile: 1\nVariant: Pre 2.0.0\nVariant: Pre 2.6.0\nVariant: Pre 3.5.0\nVariant: Current\nSelected Variant: 4\nQuality: 20\nSockets: G-G-G-G\nLevelReq: 62\nImplicits: 0\n{range:0.5}+(20-30) to Dexterity\n{range:0.5}+(20-30) to Intelligence\n{range:0.5}(80-100)% increased Evasion Rating\n{variant:1}{range:0.5}+(50-70) to maximum Energy Shield\n{variant:2}{range:0.5}+(70-100) to maximum Energy Shield\n{variant:3}{range:0.5}+(100-160) to maximum Energy Shield\n{variant:4}{range:0.5}+(100-150) to maximum Energy Shield\n30% increased Movement Speed\nEnemies Cannot Leech Life From you",
-  "Rarity: UNIQUE\nThunderfist\nMurder Mitts\nEvasion: 382\nEvasionBasePercentile: 1\nEnergy Shield: 77\nEnergyShieldBasePercentile: 1\nVariant: Pre 1.0.0\nVariant: Pre 2.6.0\nVariant: Pre 3.19.0\nVariant: Current\nSelected Variant: 4\nQuality: 20\nSockets: G-G-G-G\nLevelReq: 67\nImplicits: 0\n{variant:1,2,3}Socketed Gems are Supported by Level 18 Added Lightning Damage\n{variant:4}Socketed Gems are Supported by Level 30 Added Lightning Damage\n{variant:1,3}Adds 1 to 100 Lightning Damage to Attacks\n{variant:2}Adds 1 to 40 Lightning Damage to Attacks\n10% increased Attack Speed\n{variant:4}{range:0.5}(150-200)% increased Evasion and Energy Shield\n{variant:1,2,3}{range:0.5}+(25-30) to maximum Energy Shield\n{variant:1,2,3}10% increased Stun Duration on Enemies\n{variant:1,2,3}100% increased Duration of Lightning Ailments\n{variant:4}100% increased Effect of Lightning Ailments"
+  "Rarity: UNIQUE\nThunderfist\nMurder Mitts\nEvasion: 382\nEvasionBasePercentile: 1\nEnergy Shield: 77\nEnergyShieldBasePercentile: 1\nVariant: Pre 1.0.0\nVariant: Pre 2.6.0\nVariant: Pre 3.19.0\nVariant: Current\nSelected Variant: 4\nQuality: 20\nSockets: G-G-G-G\nLevelReq: 67\nImplicits: 0\n{variant:1,2,3}Socketed Gems are Supported by Level 18 Added Lightning Damage\n{variant:4}Socketed Gems are Supported by Level 30 Added Lightning Damage\n{variant:1,3}Adds 1 to 100 Lightning Damage to Attacks\n{variant:2}Adds 1 to 40 Lightning Damage to Attacks\n10% increased Attack Speed\n{variant:4}{range:0.5}(150-200)% increased Evasion and Energy Shield\n{variant:1,2,3}{range:0.5}+(25-30) to maximum Energy Shield\n{variant:1,2,3}10% increased Stun Duration on Enemies\n{variant:1,2,3}100% increased Duration of Lightning Ailments\n{variant:4}100% increased Effect of Lightning Ailments",
+  "Rarity: UNIQUE\nGoldrim\nLeather Cap\nEvasion: 82\nEvasionBasePercentile: 1\nQuality: 20\nSockets: G-G-G-G\nLevelReq: 1\nImplicits: 0\n{range:0.5}+(30-50) to Evasion Rating\n+10% to Item Rarity\n{range:0.5}+(30-40)% to all Elemental Resistances\nReflects 4 Physical Damage to Melee Attackers"
  ],
  "pob": [
   {
@@ -9280,7 +9281,8 @@
    "VESTIGIAL": [],
    "sources": [
     "VESTIGIAL"
-   ]
+   ],
+   "vestigialError": "bad argument #1 to 'pairs' (table expected, got nil)"
   },
   {
    "EATER": [
@@ -12636,6 +12638,1743 @@
       "DivergentZombiesNeedNoCorpsesUnique__1"
      ],
      "label": "^xCBA5F1Raise Zombie does not require a corpse"
+    }
+   ],
+   "sources": [
+    "VESTIGIAL"
+   ]
+  },
+  {
+   "EATER": [
+    {
+     "ids": [
+      "AttackDamageEldritchImplicit1",
+      "AttackDamageEldritchImplicit2",
+      "AttackDamageEldritchImplicit3",
+      "AttackDamageEldritchImplicit4",
+      "AttackDamageEldritchImplicit5",
+      "AttackDamageEldritchImplicit6",
+      "AttackDamageEldritchImplicitUniquePresence2",
+      "AttackDamageEldritchImplicitUniquePresence3",
+      "AttackDamageEldritchImplicitUniquePresence4",
+      "AttackDamageEldritchImplicitUniquePresence5",
+      "AttackDamageEldritchImplicitUniquePresence6",
+      "AttackDamageEldritchImplicitPinnaclePresence3",
+      "AttackDamageEldritchImplicitPinnaclePresence4",
+      "AttackDamageEldritchImplicitPinnaclePresence5",
+      "AttackDamageEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Attack Damage"
+    },
+    {
+     "ids": [
+      "SpellDamageEldritchImplicit1",
+      "SpellDamageEldritchImplicit2",
+      "SpellDamageEldritchImplicit3",
+      "SpellDamageEldritchImplicit4",
+      "SpellDamageEldritchImplicit5",
+      "SpellDamageEldritchImplicit6",
+      "SpellDamageEldritchImplicitUniquePresence2",
+      "SpellDamageEldritchImplicitUniquePresence3",
+      "SpellDamageEldritchImplicitUniquePresence4",
+      "SpellDamageEldritchImplicitUniquePresence5",
+      "SpellDamageEldritchImplicitUniquePresence6",
+      "SpellDamageEldritchImplicitPinnaclePresence3",
+      "SpellDamageEldritchImplicitPinnaclePresence4",
+      "SpellDamageEldritchImplicitPinnaclePresence5",
+      "SpellDamageEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Spell Damage"
+    },
+    {
+     "ids": [
+      "EnergyShieldRegenerationEldritchImplicit1",
+      "EnergyShieldRegenerationEldritchImplicit2",
+      "EnergyShieldRegenerationEldritchImplicit3",
+      "EnergyShieldRegenerationEldritchImplicit4",
+      "EnergyShieldRegenerationEldritchImplicit5",
+      "EnergyShieldRegenerationEldritchImplicit6",
+      "EnergyShieldRegenerationEldritchImplicitUniquePresence2",
+      "EnergyShieldRegenerationEldritchImplicitUniquePresence3",
+      "EnergyShieldRegenerationEldritchImplicitUniquePresence4",
+      "EnergyShieldRegenerationEldritchImplicitUniquePresence5",
+      "EnergyShieldRegenerationEldritchImplicitUniquePresence6",
+      "EnergyShieldRegenerationEldritchImplicitPinnaclePresence3",
+      "EnergyShieldRegenerationEldritchImplicitPinnaclePresence4",
+      "EnergyShieldRegenerationEldritchImplicitPinnaclePresence5",
+      "EnergyShieldRegenerationEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Energy Shield Recharge Rate"
+    },
+    {
+     "ids": [
+      "ManaRegenerationEldritchImplicit1",
+      "ManaRegenerationEldritchImplicit2",
+      "ManaRegenerationEldritchImplicit3",
+      "ManaRegenerationEldritchImplicit4",
+      "ManaRegenerationEldritchImplicit5",
+      "ManaRegenerationEldritchImplicit6",
+      "ManaRegenerationEldritchImplicitUniquePresence2",
+      "ManaRegenerationEldritchImplicitUniquePresence3",
+      "ManaRegenerationEldritchImplicitUniquePresence4",
+      "ManaRegenerationEldritchImplicitUniquePresence5",
+      "ManaRegenerationEldritchImplicitUniquePresence6",
+      "ManaRegenerationEldritchImplicitPinnaclePresence3",
+      "ManaRegenerationEldritchImplicitPinnaclePresence4",
+      "ManaRegenerationEldritchImplicitPinnaclePresence5",
+      "ManaRegenerationEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Mana Regeneration Rate"
+    },
+    {
+     "ids": [
+      "IncreasedAilmentDurationEldritchImplicit1",
+      "IncreasedAilmentDurationEldritchImplicit2",
+      "IncreasedAilmentDurationEldritchImplicit3",
+      "IncreasedAilmentDurationEldritchImplicit4",
+      "IncreasedAilmentDurationEldritchImplicit5",
+      "IncreasedAilmentDurationEldritchImplicit6",
+      "IncreasedAilmentDurationEldritchImplicitUniquePresence2",
+      "IncreasedAilmentDurationEldritchImplicitUniquePresence3",
+      "IncreasedAilmentDurationEldritchImplicitUniquePresence4",
+      "IncreasedAilmentDurationEldritchImplicitUniquePresence5",
+      "IncreasedAilmentDurationEldritchImplicitUniquePresence6",
+      "IncreasedAilmentDurationEldritchImplicitPinnaclePresence3",
+      "IncreasedAilmentDurationEldritchImplicitPinnaclePresence4",
+      "IncreasedAilmentDurationEldritchImplicitPinnaclePresence5",
+      "IncreasedAilmentDurationEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Duration of Ailments on Enemies"
+    },
+    {
+     "ids": [
+      "ReducedFreezeDurationEldritchImplicit1",
+      "ReducedFreezeDurationEldritchImplicit2",
+      "ReducedFreezeDurationEldritchImplicit3",
+      "ReducedFreezeDurationEldritchImplicit4",
+      "ReducedFreezeDurationEldritchImplicit5",
+      "ReducedFreezeDurationEldritchImplicit6",
+      "ReducedFreezeDurationEldritchImplicitUniquePresence2",
+      "ReducedFreezeDurationEldritchImplicitUniquePresence3",
+      "ReducedFreezeDurationEldritchImplicitUniquePresence4",
+      "ReducedFreezeDurationEldritchImplicitUniquePresence5",
+      "ReducedFreezeDurationEldritchImplicitUniquePresence6",
+      "ReducedFreezeDurationEldritchImplicitPinnaclePresence3",
+      "ReducedFreezeDurationEldritchImplicitPinnaclePresence4",
+      "ReducedFreezeDurationEldritchImplicitPinnaclePresence5",
+      "ReducedFreezeDurationEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% reduced Freeze Duration on you"
+    },
+    {
+     "ids": [
+      "ReducedIgniteDurationOnSelfEldritchImplicit1",
+      "ReducedIgniteDurationOnSelfEldritchImplicit2",
+      "ReducedIgniteDurationOnSelfEldritchImplicit3",
+      "ReducedIgniteDurationOnSelfEldritchImplicit4",
+      "ReducedIgniteDurationOnSelfEldritchImplicit5",
+      "ReducedIgniteDurationOnSelfEldritchImplicit6",
+      "ReducedIgniteDurationOnSelfEldritchImplicitUniquePresence2",
+      "ReducedIgniteDurationOnSelfEldritchImplicitUniquePresence3",
+      "ReducedIgniteDurationOnSelfEldritchImplicitUniquePresence4",
+      "ReducedIgniteDurationOnSelfEldritchImplicitUniquePresence5",
+      "ReducedIgniteDurationOnSelfEldritchImplicitUniquePresence6",
+      "ReducedIgniteDurationOnSelfEldritchImplicitPinnaclePresence3",
+      "ReducedIgniteDurationOnSelfEldritchImplicitPinnaclePresence4",
+      "ReducedIgniteDurationOnSelfEldritchImplicitPinnaclePresence5",
+      "ReducedIgniteDurationOnSelfEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% reduced Ignite Duration on you"
+    },
+    {
+     "ids": [
+      "IncreasedManaRegenerationPerPowerChargeEldritchImplicit1",
+      "IncreasedManaRegenerationPerPowerChargeEldritchImplicit2",
+      "IncreasedManaRegenerationPerPowerChargeEldritchImplicit3",
+      "IncreasedManaRegenerationPerPowerChargeEldritchImplicit4",
+      "IncreasedManaRegenerationPerPowerChargeEldritchImplicit5",
+      "IncreasedManaRegenerationPerPowerChargeEldritchImplicit6",
+      "IncreasedManaRegenerationPerPowerChargeEldritchImplicitUniquePresence2",
+      "IncreasedManaRegenerationPerPowerChargeEldritchImplicitUniquePresence3",
+      "IncreasedManaRegenerationPerPowerChargeEldritchImplicitUniquePresence4",
+      "IncreasedManaRegenerationPerPowerChargeEldritchImplicitUniquePresence5",
+      "IncreasedManaRegenerationPerPowerChargeEldritchImplicitUniquePresence6",
+      "IncreasedManaRegenerationPerPowerChargeEldritchImplicitPinnaclePresence3",
+      "IncreasedManaRegenerationPerPowerChargeEldritchImplicitPinnaclePresence4",
+      "IncreasedManaRegenerationPerPowerChargeEldritchImplicitPinnaclePresence5",
+      "IncreasedManaRegenerationPerPowerChargeEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Mana Regeneration Rate per Power Charge"
+    },
+    {
+     "ids": [
+      "ChanceToIgniteEldritchImplicit1",
+      "ChanceToIgniteEldritchImplicit2",
+      "ChanceToIgniteEldritchImplicit3",
+      "ChanceToIgniteEldritchImplicit4",
+      "ChanceToIgniteEldritchImplicit5",
+      "ChanceToIgniteEldritchImplicit6",
+      "ChanceToIgniteEldritchImplicitUniquePresence2",
+      "ChanceToIgniteEldritchImplicitUniquePresence3",
+      "ChanceToIgniteEldritchImplicitUniquePresence4",
+      "ChanceToIgniteEldritchImplicitUniquePresence5",
+      "ChanceToIgniteEldritchImplicitUniquePresence6",
+      "ChanceToIgniteEldritchImplicitPinnaclePresence3",
+      "ChanceToIgniteEldritchImplicitPinnaclePresence4",
+      "ChanceToIgniteEldritchImplicitPinnaclePresence5",
+      "ChanceToIgniteEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% chance to Ignite"
+    },
+    {
+     "ids": [
+      "ChanceToFreezeEldritchImplicit1",
+      "ChanceToFreezeEldritchImplicit2",
+      "ChanceToFreezeEldritchImplicit3",
+      "ChanceToFreezeEldritchImplicit4",
+      "ChanceToFreezeEldritchImplicit5",
+      "ChanceToFreezeEldritchImplicit6",
+      "ChanceToFreezeEldritchImplicitUniquePresence2",
+      "ChanceToFreezeEldritchImplicitUniquePresence3",
+      "ChanceToFreezeEldritchImplicitUniquePresence4",
+      "ChanceToFreezeEldritchImplicitUniquePresence5",
+      "ChanceToFreezeEldritchImplicitUniquePresence6",
+      "ChanceToFreezeEldritchImplicitPinnaclePresence3",
+      "ChanceToFreezeEldritchImplicitPinnaclePresence4",
+      "ChanceToFreezeEldritchImplicitPinnaclePresence5",
+      "ChanceToFreezeEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% chance to Freeze"
+    },
+    {
+     "ids": [
+      "ChanceToShockEldritchImplicit1",
+      "ChanceToShockEldritchImplicit2",
+      "ChanceToShockEldritchImplicit3",
+      "ChanceToShockEldritchImplicit4",
+      "ChanceToShockEldritchImplicit5",
+      "ChanceToShockEldritchImplicit6",
+      "ChanceToShockEldritchImplicitUniquePresence2",
+      "ChanceToShockEldritchImplicitUniquePresence3",
+      "ChanceToShockEldritchImplicitUniquePresence4",
+      "ChanceToShockEldritchImplicitUniquePresence5",
+      "ChanceToShockEldritchImplicitUniquePresence6",
+      "ChanceToShockEldritchImplicitPinnaclePresence3",
+      "ChanceToShockEldritchImplicitPinnaclePresence4",
+      "ChanceToShockEldritchImplicitPinnaclePresence5",
+      "ChanceToShockEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% chance to Shock"
+    },
+    {
+     "ids": [
+      "ManaReservationEfficiencyEldritchImplicit1",
+      "ManaReservationEfficiencyEldritchImplicit2",
+      "ManaReservationEfficiencyEldritchImplicit3",
+      "ManaReservationEfficiencyEldritchImplicit4",
+      "ManaReservationEfficiencyEldritchImplicit5",
+      "ManaReservationEfficiencyEldritchImplicit6",
+      "ManaReservationEfficiencyEldritchImplicitUniquePresence2",
+      "ManaReservationEfficiencyEldritchImplicitUniquePresence3",
+      "ManaReservationEfficiencyEldritchImplicitUniquePresence4",
+      "ManaReservationEfficiencyEldritchImplicitUniquePresence5",
+      "ManaReservationEfficiencyEldritchImplicitUniquePresence6",
+      "ManaReservationEfficiencyEldritchImplicitPinnaclePresence3",
+      "ManaReservationEfficiencyEldritchImplicitPinnaclePresence4",
+      "ManaReservationEfficiencyEldritchImplicitPinnaclePresence5",
+      "ManaReservationEfficiencyEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Mana Reservation Efficiency of Skills"
+    },
+    {
+     "ids": [
+      "PhysicalDamageTakenAsFireUberEldritchImplicit1",
+      "PhysicalDamageTakenAsFireUberEldritchImplicit2",
+      "PhysicalDamageTakenAsFireUberEldritchImplicit3",
+      "PhysicalDamageTakenAsFireUberEldritchImplicit4",
+      "PhysicalDamageTakenAsFireUberEldritchImplicit5",
+      "PhysicalDamageTakenAsFireUberEldritchImplicit6",
+      "PhysicalDamageTakenAsFireUberEldritchImplicitUniquePresence2",
+      "PhysicalDamageTakenAsFireUberEldritchImplicitUniquePresence3",
+      "PhysicalDamageTakenAsFireUberEldritchImplicitUniquePresence4",
+      "PhysicalDamageTakenAsFireUberEldritchImplicitUniquePresence5",
+      "PhysicalDamageTakenAsFireUberEldritchImplicitUniquePresence6",
+      "PhysicalDamageTakenAsFireUberEldritchImplicitPinnaclePresence3",
+      "PhysicalDamageTakenAsFireUberEldritchImplicitPinnaclePresence4",
+      "PhysicalDamageTakenAsFireUberEldritchImplicitPinnaclePresence5",
+      "PhysicalDamageTakenAsFireUberEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% of Physical Damage from Hits taken as Fire Damage"
+    },
+    {
+     "ids": [
+      "PhysicalDamageTakenAsColdUberEldritchImplicit1",
+      "PhysicalDamageTakenAsColdUberEldritchImplicit2",
+      "PhysicalDamageTakenAsColdUberEldritchImplicit3",
+      "PhysicalDamageTakenAsColdUberEldritchImplicit4",
+      "PhysicalDamageTakenAsColdUberEldritchImplicit5",
+      "PhysicalDamageTakenAsColdUberEldritchImplicit6",
+      "PhysicalDamageTakenAsColdUberEldritchImplicitUniquePresence2",
+      "PhysicalDamageTakenAsColdUberEldritchImplicitUniquePresence3",
+      "PhysicalDamageTakenAsColdUberEldritchImplicitUniquePresence4",
+      "PhysicalDamageTakenAsColdUberEldritchImplicitUniquePresence5",
+      "PhysicalDamageTakenAsColdUberEldritchImplicitUniquePresence6",
+      "PhysicalDamageTakenAsColdUberEldritchImplicitPinnaclePresence3",
+      "PhysicalDamageTakenAsColdUberEldritchImplicitPinnaclePresence4",
+      "PhysicalDamageTakenAsColdUberEldritchImplicitPinnaclePresence5",
+      "PhysicalDamageTakenAsColdUberEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% of Physical Damage from Hits taken as Cold Damage"
+    },
+    {
+     "ids": [
+      "PhysicalDamageTakenAsLightningUberEldritchImplicit1",
+      "PhysicalDamageTakenAsLightningUberEldritchImplicit2",
+      "PhysicalDamageTakenAsLightningUberEldritchImplicit3",
+      "PhysicalDamageTakenAsLightningUberEldritchImplicit4",
+      "PhysicalDamageTakenAsLightningUberEldritchImplicit5",
+      "PhysicalDamageTakenAsLightningUberEldritchImplicit6",
+      "PhysicalDamageTakenAsLightningUberEldritchImplicitUniquePresence2",
+      "PhysicalDamageTakenAsLightningUberEldritchImplicitUniquePresence3",
+      "PhysicalDamageTakenAsLightningUberEldritchImplicitUniquePresence4",
+      "PhysicalDamageTakenAsLightningUberEldritchImplicitUniquePresence5",
+      "PhysicalDamageTakenAsLightningUberEldritchImplicitUniquePresence6",
+      "PhysicalDamageTakenAsLightningUberEldritchImplicitPinnaclePresence3",
+      "PhysicalDamageTakenAsLightningUberEldritchImplicitPinnaclePresence4",
+      "PhysicalDamageTakenAsLightningUberEldritchImplicitPinnaclePresence5",
+      "PhysicalDamageTakenAsLightningUberEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% of Physical Damage from Hits taken as Lightning Damage"
+    },
+    {
+     "ids": [
+      "PhysicalDamageTakenAsChaosUberEldritchImplicit1",
+      "PhysicalDamageTakenAsChaosUberEldritchImplicit2",
+      "PhysicalDamageTakenAsChaosUberEldritchImplicit3",
+      "PhysicalDamageTakenAsChaosUberEldritchImplicit4",
+      "PhysicalDamageTakenAsChaosUberEldritchImplicit5",
+      "PhysicalDamageTakenAsChaosUberEldritchImplicit6",
+      "PhysicalDamageTakenAsChaosUberEldritchImplicitUniquePresence2",
+      "PhysicalDamageTakenAsChaosUberEldritchImplicitUniquePresence3",
+      "PhysicalDamageTakenAsChaosUberEldritchImplicitUniquePresence4",
+      "PhysicalDamageTakenAsChaosUberEldritchImplicitUniquePresence5",
+      "PhysicalDamageTakenAsChaosUberEldritchImplicitUniquePresence6",
+      "PhysicalDamageTakenAsChaosUberEldritchImplicitPinnaclePresence3",
+      "PhysicalDamageTakenAsChaosUberEldritchImplicitPinnaclePresence4",
+      "PhysicalDamageTakenAsChaosUberEldritchImplicitPinnaclePresence5",
+      "PhysicalDamageTakenAsChaosUberEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% of Physical Damage from Hits taken as Chaos Damage"
+    },
+    {
+     "ids": [
+      "FireResistancePenetrationEldritchImplicit1",
+      "FireResistancePenetrationEldritchImplicit2",
+      "FireResistancePenetrationEldritchImplicit3",
+      "FireResistancePenetrationEldritchImplicit4",
+      "FireResistancePenetrationEldritchImplicit5",
+      "FireResistancePenetrationEldritchImplicit6",
+      "FireResistancePenetrationEldritchImplicitUniquePresence2",
+      "FireResistancePenetrationEldritchImplicitUniquePresence3",
+      "FireResistancePenetrationEldritchImplicitUniquePresence4",
+      "FireResistancePenetrationEldritchImplicitUniquePresence5",
+      "FireResistancePenetrationEldritchImplicitUniquePresence6",
+      "FireResistancePenetrationEldritchImplicitPinnaclePresence3",
+      "FireResistancePenetrationEldritchImplicitPinnaclePresence4",
+      "FireResistancePenetrationEldritchImplicitPinnaclePresence5",
+      "FireResistancePenetrationEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "Damage Penetrates #% Fire Resistance"
+    },
+    {
+     "ids": [
+      "ColdResistancePenetrationEldritchImplicit1",
+      "ColdResistancePenetrationEldritchImplicit2",
+      "ColdResistancePenetrationEldritchImplicit3",
+      "ColdResistancePenetrationEldritchImplicit4",
+      "ColdResistancePenetrationEldritchImplicit5",
+      "ColdResistancePenetrationEldritchImplicit6",
+      "ColdResistancePenetrationEldritchImplicitUniquePresence2",
+      "ColdResistancePenetrationEldritchImplicitUniquePresence3",
+      "ColdResistancePenetrationEldritchImplicitUniquePresence4",
+      "ColdResistancePenetrationEldritchImplicitUniquePresence5",
+      "ColdResistancePenetrationEldritchImplicitUniquePresence6",
+      "ColdResistancePenetrationEldritchImplicitPinnaclePresence3",
+      "ColdResistancePenetrationEldritchImplicitPinnaclePresence4",
+      "ColdResistancePenetrationEldritchImplicitPinnaclePresence5",
+      "ColdResistancePenetrationEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "Damage Penetrates #% Cold Resistance"
+    },
+    {
+     "ids": [
+      "LightningResistancePenetrationEldritchImplicit1",
+      "LightningResistancePenetrationEldritchImplicit2",
+      "LightningResistancePenetrationEldritchImplicit3",
+      "LightningResistancePenetrationEldritchImplicit4",
+      "LightningResistancePenetrationEldritchImplicit5",
+      "LightningResistancePenetrationEldritchImplicit6",
+      "LightningResistancePenetrationEldritchImplicitUniquePresence2",
+      "LightningResistancePenetrationEldritchImplicitUniquePresence3",
+      "LightningResistancePenetrationEldritchImplicitUniquePresence4",
+      "LightningResistancePenetrationEldritchImplicitUniquePresence5",
+      "LightningResistancePenetrationEldritchImplicitUniquePresence6",
+      "LightningResistancePenetrationEldritchImplicitPinnaclePresence3",
+      "LightningResistancePenetrationEldritchImplicitPinnaclePresence4",
+      "LightningResistancePenetrationEldritchImplicitPinnaclePresence5",
+      "LightningResistancePenetrationEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "Damage Penetrates #% Lightning Resistance"
+    },
+    {
+     "ids": [
+      "ArcaneSurgeEffectEldritchImplicit1",
+      "ArcaneSurgeEffectEldritchImplicit2",
+      "ArcaneSurgeEffectEldritchImplicit3",
+      "ArcaneSurgeEffectEldritchImplicit4",
+      "ArcaneSurgeEffectEldritchImplicit5",
+      "ArcaneSurgeEffectEldritchImplicit6",
+      "ArcaneSurgeEffectEldritchImplicitUniquePresence2",
+      "ArcaneSurgeEffectEldritchImplicitUniquePresence3",
+      "ArcaneSurgeEffectEldritchImplicitUniquePresence4",
+      "ArcaneSurgeEffectEldritchImplicitUniquePresence5",
+      "ArcaneSurgeEffectEldritchImplicitUniquePresence6",
+      "ArcaneSurgeEffectEldritchImplicitPinnaclePresence3",
+      "ArcaneSurgeEffectEldritchImplicitPinnaclePresence4",
+      "ArcaneSurgeEffectEldritchImplicitPinnaclePresence5",
+      "ArcaneSurgeEffectEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Effect of Arcane Surge on you"
+    },
+    {
+     "ids": [
+      "EnemyLifeRegenerationRateEldritchImplicit1",
+      "EnemyLifeRegenerationRateEldritchImplicit2",
+      "EnemyLifeRegenerationRateEldritchImplicit3",
+      "EnemyLifeRegenerationRateEldritchImplicit4",
+      "EnemyLifeRegenerationRateEldritchImplicit5",
+      "EnemyLifeRegenerationRateEldritchImplicit6",
+      "EnemyLifeRegenerationRateEldritchImplicitUniquePresence2",
+      "EnemyLifeRegenerationRateEldritchImplicitUniquePresence3",
+      "EnemyLifeRegenerationRateEldritchImplicitUniquePresence4",
+      "EnemyLifeRegenerationRateEldritchImplicitUniquePresence5",
+      "EnemyLifeRegenerationRateEldritchImplicitUniquePresence6",
+      "EnemyLifeRegenerationRateEldritchImplicitPinnaclePresence3",
+      "EnemyLifeRegenerationRateEldritchImplicitPinnaclePresence4",
+      "EnemyLifeRegenerationRateEldritchImplicitPinnaclePresence5",
+      "EnemyLifeRegenerationRateEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "Enemies you've Hit Recently have #% reduced Life Regeneration rate"
+    },
+    {
+     "ids": [
+      "EnergyShieldFromGlovesBootsEldritchImplicit1",
+      "EnergyShieldFromGlovesBootsEldritchImplicit2",
+      "EnergyShieldFromGlovesBootsEldritchImplicit3",
+      "EnergyShieldFromGlovesBootsEldritchImplicit4",
+      "EnergyShieldFromGlovesBootsEldritchImplicit5",
+      "EnergyShieldFromGlovesBootsEldritchImplicit6",
+      "EnergyShieldFromGlovesBootsEldritchImplicitUniquePresence2",
+      "EnergyShieldFromGlovesBootsEldritchImplicitUniquePresence3",
+      "EnergyShieldFromGlovesBootsEldritchImplicitUniquePresence4",
+      "EnergyShieldFromGlovesBootsEldritchImplicitUniquePresence5",
+      "EnergyShieldFromGlovesBootsEldritchImplicitUniquePresence6",
+      "EnergyShieldFromGlovesBootsEldritchImplicitPinnaclePresence3",
+      "EnergyShieldFromGlovesBootsEldritchImplicitPinnaclePresence4",
+      "EnergyShieldFromGlovesBootsEldritchImplicitPinnaclePresence5",
+      "EnergyShieldFromGlovesBootsEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Maximum Energy Shield from Equipped Gloves and Boots"
+    },
+    {
+     "ids": [
+      "IncreasedAilmentEffectOnEnemiesEldritchImplicit1",
+      "IncreasedAilmentEffectOnEnemiesEldritchImplicit2",
+      "IncreasedAilmentEffectOnEnemiesEldritchImplicit3",
+      "IncreasedAilmentEffectOnEnemiesEldritchImplicit4",
+      "IncreasedAilmentEffectOnEnemiesEldritchImplicit5",
+      "IncreasedAilmentEffectOnEnemiesEldritchImplicit6",
+      "IncreasedAilmentEffectOnEnemiesEldritchImplicitUniquePresence2",
+      "IncreasedAilmentEffectOnEnemiesEldritchImplicitUniquePresence3",
+      "IncreasedAilmentEffectOnEnemiesEldritchImplicitUniquePresence4",
+      "IncreasedAilmentEffectOnEnemiesEldritchImplicitUniquePresence5",
+      "IncreasedAilmentEffectOnEnemiesEldritchImplicitUniquePresence6",
+      "IncreasedAilmentEffectOnEnemiesEldritchImplicitPinnaclePresence3",
+      "IncreasedAilmentEffectOnEnemiesEldritchImplicitPinnaclePresence4",
+      "IncreasedAilmentEffectOnEnemiesEldritchImplicitPinnaclePresence5",
+      "IncreasedAilmentEffectOnEnemiesEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Effect of Non-Damaging Ailments"
+    },
+    {
+     "ids": [
+      "ReducedShockEffectOnSelfEldritchImplicit1",
+      "ReducedShockEffectOnSelfEldritchImplicit2",
+      "ReducedShockEffectOnSelfEldritchImplicit3",
+      "ReducedShockEffectOnSelfEldritchImplicit4",
+      "ReducedShockEffectOnSelfEldritchImplicit5",
+      "ReducedShockEffectOnSelfEldritchImplicit6",
+      "ReducedShockEffectOnSelfEldritchImplicitUniquePresence2",
+      "ReducedShockEffectOnSelfEldritchImplicitUniquePresence3",
+      "ReducedShockEffectOnSelfEldritchImplicitUniquePresence4",
+      "ReducedShockEffectOnSelfEldritchImplicitUniquePresence5",
+      "ReducedShockEffectOnSelfEldritchImplicitUniquePresence6",
+      "ReducedShockEffectOnSelfEldritchImplicitPinnaclePresence3",
+      "ReducedShockEffectOnSelfEldritchImplicitPinnaclePresence4",
+      "ReducedShockEffectOnSelfEldritchImplicitPinnaclePresence5",
+      "ReducedShockEffectOnSelfEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% reduced Effect of Shock on you"
+    }
+   ],
+   "EXARCH": [
+    {
+     "ids": [
+      "SpellAddedPhysicalDamageEldritchImplicit1",
+      "SpellAddedPhysicalDamageEldritchImplicit2",
+      "SpellAddedPhysicalDamageEldritchImplicit3",
+      "SpellAddedPhysicalDamageEldritchImplicit4",
+      "SpellAddedPhysicalDamageEldritchImplicit5",
+      "SpellAddedPhysicalDamageEldritchImplicit6",
+      "SpellAddedPhysicalDamageEldritchImplicitUniquePresence2",
+      "SpellAddedPhysicalDamageEldritchImplicitUniquePresence3",
+      "SpellAddedPhysicalDamageEldritchImplicitUniquePresence4",
+      "SpellAddedPhysicalDamageEldritchImplicitUniquePresence5",
+      "SpellAddedPhysicalDamageEldritchImplicitUniquePresence6",
+      "SpellAddedPhysicalDamageEldritchImplicitPinnaclePresence3",
+      "SpellAddedPhysicalDamageEldritchImplicitPinnaclePresence4",
+      "SpellAddedPhysicalDamageEldritchImplicitPinnaclePresence5",
+      "SpellAddedPhysicalDamageEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "Adds # to # Physical Damage to Spells"
+    },
+    {
+     "ids": [
+      "SpellAddedFireDamageEldritchImplicit1",
+      "SpellAddedFireDamageEldritchImplicit2",
+      "SpellAddedFireDamageEldritchImplicit3",
+      "SpellAddedFireDamageEldritchImplicit4",
+      "SpellAddedFireDamageEldritchImplicit5",
+      "SpellAddedFireDamageEldritchImplicit6",
+      "SpellAddedFireDamageEldritchImplicitUniquePresence2",
+      "SpellAddedFireDamageEldritchImplicitUniquePresence3",
+      "SpellAddedFireDamageEldritchImplicitUniquePresence4",
+      "SpellAddedFireDamageEldritchImplicitUniquePresence5",
+      "SpellAddedFireDamageEldritchImplicitUniquePresence6",
+      "SpellAddedFireDamageEldritchImplicitPinnaclePresence3",
+      "SpellAddedFireDamageEldritchImplicitPinnaclePresence4",
+      "SpellAddedFireDamageEldritchImplicitPinnaclePresence5",
+      "SpellAddedFireDamageEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "Adds # to # Fire Damage to Spells"
+    },
+    {
+     "ids": [
+      "SpellAddedColdDamageEldritchImplicit1",
+      "SpellAddedColdDamageEldritchImplicit2",
+      "SpellAddedColdDamageEldritchImplicit3",
+      "SpellAddedColdDamageEldritchImplicit4",
+      "SpellAddedColdDamageEldritchImplicit5",
+      "SpellAddedColdDamageEldritchImplicit6",
+      "SpellAddedColdDamageEldritchImplicitUniquePresence2",
+      "SpellAddedColdDamageEldritchImplicitUniquePresence3",
+      "SpellAddedColdDamageEldritchImplicitUniquePresence4",
+      "SpellAddedColdDamageEldritchImplicitUniquePresence5",
+      "SpellAddedColdDamageEldritchImplicitUniquePresence6",
+      "SpellAddedColdDamageEldritchImplicitPinnaclePresence3",
+      "SpellAddedColdDamageEldritchImplicitPinnaclePresence4",
+      "SpellAddedColdDamageEldritchImplicitPinnaclePresence5",
+      "SpellAddedColdDamageEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "Adds # to # Cold Damage to Spells"
+    },
+    {
+     "ids": [
+      "SpellAddedLightningDamageEldritchImplicit1",
+      "SpellAddedLightningDamageEldritchImplicit2",
+      "SpellAddedLightningDamageEldritchImplicit3",
+      "SpellAddedLightningDamageEldritchImplicit4",
+      "SpellAddedLightningDamageEldritchImplicit5",
+      "SpellAddedLightningDamageEldritchImplicit6",
+      "SpellAddedLightningDamageEldritchImplicitUniquePresence2",
+      "SpellAddedLightningDamageEldritchImplicitUniquePresence3",
+      "SpellAddedLightningDamageEldritchImplicitUniquePresence4",
+      "SpellAddedLightningDamageEldritchImplicitUniquePresence5",
+      "SpellAddedLightningDamageEldritchImplicitUniquePresence6",
+      "SpellAddedLightningDamageEldritchImplicitPinnaclePresence3",
+      "SpellAddedLightningDamageEldritchImplicitPinnaclePresence4",
+      "SpellAddedLightningDamageEldritchImplicitPinnaclePresence5",
+      "SpellAddedLightningDamageEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "Adds # to # Lightning Damage to Spells"
+    },
+    {
+     "ids": [
+      "SpellAddedChaosDamageEldritchImplicit1",
+      "SpellAddedChaosDamageEldritchImplicit2",
+      "SpellAddedChaosDamageEldritchImplicit3",
+      "SpellAddedChaosDamageEldritchImplicit4",
+      "SpellAddedChaosDamageEldritchImplicit5",
+      "SpellAddedChaosDamageEldritchImplicit6",
+      "SpellAddedChaosDamageEldritchImplicitUniquePresence2",
+      "SpellAddedChaosDamageEldritchImplicitUniquePresence3",
+      "SpellAddedChaosDamageEldritchImplicitUniquePresence4",
+      "SpellAddedChaosDamageEldritchImplicitUniquePresence5",
+      "SpellAddedChaosDamageEldritchImplicitUniquePresence6",
+      "SpellAddedChaosDamageEldritchImplicitPinnaclePresence3",
+      "SpellAddedChaosDamageEldritchImplicitPinnaclePresence4",
+      "SpellAddedChaosDamageEldritchImplicitPinnaclePresence5",
+      "SpellAddedChaosDamageEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "Adds # to # Chaos Damage to Spells"
+    },
+    {
+     "ids": [
+      "IncreasedCastSpeedEldritchImplicit1",
+      "IncreasedCastSpeedEldritchImplicit2",
+      "IncreasedCastSpeedEldritchImplicit3",
+      "IncreasedCastSpeedEldritchImplicit4",
+      "IncreasedCastSpeedEldritchImplicit5",
+      "IncreasedCastSpeedEldritchImplicit6",
+      "IncreasedCastSpeedEldritchImplicitUniquePresence2",
+      "IncreasedCastSpeedEldritchImplicitUniquePresence3",
+      "IncreasedCastSpeedEldritchImplicitUniquePresence4",
+      "IncreasedCastSpeedEldritchImplicitUniquePresence5",
+      "IncreasedCastSpeedEldritchImplicitUniquePresence6",
+      "IncreasedCastSpeedEldritchImplicitPinnaclePresence3",
+      "IncreasedCastSpeedEldritchImplicitPinnaclePresence4",
+      "IncreasedCastSpeedEldritchImplicitPinnaclePresence5",
+      "IncreasedCastSpeedEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Cast Speed"
+    },
+    {
+     "ids": [
+      "SpellCriticalStrikeChanceEldritchImplicit1",
+      "SpellCriticalStrikeChanceEldritchImplicit2",
+      "SpellCriticalStrikeChanceEldritchImplicit3",
+      "SpellCriticalStrikeChanceEldritchImplicit4",
+      "SpellCriticalStrikeChanceEldritchImplicit5",
+      "SpellCriticalStrikeChanceEldritchImplicit6",
+      "SpellCriticalStrikeChanceEldritchImplicitUniquePresence2",
+      "SpellCriticalStrikeChanceEldritchImplicitUniquePresence3",
+      "SpellCriticalStrikeChanceEldritchImplicitUniquePresence4",
+      "SpellCriticalStrikeChanceEldritchImplicitUniquePresence5",
+      "SpellCriticalStrikeChanceEldritchImplicitUniquePresence6",
+      "SpellCriticalStrikeChanceEldritchImplicitPinnaclePresence3",
+      "SpellCriticalStrikeChanceEldritchImplicitPinnaclePresence4",
+      "SpellCriticalStrikeChanceEldritchImplicitPinnaclePresence5",
+      "SpellCriticalStrikeChanceEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Spell Critical Strike Chance"
+    },
+    {
+     "ids": [
+      "MaximumLightningResistanceImplicitEldritchImplicit1",
+      "MaximumLightningResistanceImplicitEldritchImplicit2",
+      "MaximumLightningResistanceImplicitEldritchImplicit3",
+      "MaximumLightningResistanceImplicitEldritchImplicit4",
+      "MaximumLightningResistanceImplicitEldritchImplicit5",
+      "MaximumLightningResistanceImplicitEldritchImplicit6",
+      "MaximumLightningResistanceImplicitEldritchImplicitUniquePresence2",
+      "MaximumLightningResistanceImplicitEldritchImplicitUniquePresence3",
+      "MaximumLightningResistanceImplicitEldritchImplicitUniquePresence4",
+      "MaximumLightningResistanceImplicitEldritchImplicitUniquePresence5",
+      "MaximumLightningResistanceImplicitEldritchImplicitUniquePresence6",
+      "MaximumLightningResistanceImplicitEldritchImplicitPinnaclePresence3",
+      "MaximumLightningResistanceImplicitEldritchImplicitPinnaclePresence4",
+      "MaximumLightningResistanceImplicitEldritchImplicitPinnaclePresence5",
+      "MaximumLightningResistanceImplicitEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "+#% to maximum Lightning Resistance"
+    },
+    {
+     "ids": [
+      "MinionLifeEldritchImplicit1",
+      "MinionLifeEldritchImplicit2",
+      "MinionLifeEldritchImplicit3",
+      "MinionLifeEldritchImplicit4",
+      "MinionLifeEldritchImplicit5",
+      "MinionLifeEldritchImplicit6",
+      "MinionLifeEldritchImplicitUniquePresence2",
+      "MinionLifeEldritchImplicitUniquePresence3",
+      "MinionLifeEldritchImplicitUniquePresence4",
+      "MinionLifeEldritchImplicitUniquePresence5",
+      "MinionLifeEldritchImplicitUniquePresence6",
+      "MinionLifeEldritchImplicitPinnaclePresence3",
+      "MinionLifeEldritchImplicitPinnaclePresence4",
+      "MinionLifeEldritchImplicitPinnaclePresence5",
+      "MinionLifeEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "Minions have #% increased maximum Life"
+    },
+    {
+     "ids": [
+      "MinionRunSpeedEldritchImplicit1",
+      "MinionRunSpeedEldritchImplicit2",
+      "MinionRunSpeedEldritchImplicit3",
+      "MinionRunSpeedEldritchImplicit4",
+      "MinionRunSpeedEldritchImplicit5",
+      "MinionRunSpeedEldritchImplicit6",
+      "MinionRunSpeedEldritchImplicitUniquePresence2",
+      "MinionRunSpeedEldritchImplicitUniquePresence3",
+      "MinionRunSpeedEldritchImplicitUniquePresence4",
+      "MinionRunSpeedEldritchImplicitUniquePresence5",
+      "MinionRunSpeedEldritchImplicitUniquePresence6",
+      "MinionRunSpeedEldritchImplicitPinnaclePresence3",
+      "MinionRunSpeedEldritchImplicitPinnaclePresence4",
+      "MinionRunSpeedEldritchImplicitPinnaclePresence5",
+      "MinionRunSpeedEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "Minions have #% increased Movement Speed"
+    },
+    {
+     "ids": [
+      "AreaOfEffectEldritchImplicit1",
+      "AreaOfEffectEldritchImplicit2",
+      "AreaOfEffectEldritchImplicit3",
+      "AreaOfEffectEldritchImplicit4",
+      "AreaOfEffectEldritchImplicit5",
+      "AreaOfEffectEldritchImplicit6",
+      "AreaOfEffectEldritchImplicitUniquePresence2",
+      "AreaOfEffectEldritchImplicitUniquePresence3",
+      "AreaOfEffectEldritchImplicitUniquePresence4",
+      "AreaOfEffectEldritchImplicitUniquePresence5",
+      "AreaOfEffectEldritchImplicitUniquePresence6",
+      "AreaOfEffectEldritchImplicitPinnaclePresence3",
+      "AreaOfEffectEldritchImplicitPinnaclePresence4",
+      "AreaOfEffectEldritchImplicitPinnaclePresence5",
+      "AreaOfEffectEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Area of Effect"
+    },
+    {
+     "ids": [
+      "CurseEffectTemporalChainsEldritchImplicit1",
+      "CurseEffectTemporalChainsEldritchImplicit2",
+      "CurseEffectTemporalChainsEldritchImplicit3",
+      "CurseEffectTemporalChainsEldritchImplicit4",
+      "CurseEffectTemporalChainsEldritchImplicit5",
+      "CurseEffectTemporalChainsEldritchImplicit6",
+      "CurseEffectTemporalChainsEldritchImplicitUniquePresence2",
+      "CurseEffectTemporalChainsEldritchImplicitUniquePresence3",
+      "CurseEffectTemporalChainsEldritchImplicitUniquePresence4",
+      "CurseEffectTemporalChainsEldritchImplicitUniquePresence5",
+      "CurseEffectTemporalChainsEldritchImplicitUniquePresence6",
+      "CurseEffectTemporalChainsEldritchImplicitPinnaclePresence3",
+      "CurseEffectTemporalChainsEldritchImplicitPinnaclePresence4",
+      "CurseEffectTemporalChainsEldritchImplicitPinnaclePresence5",
+      "CurseEffectTemporalChainsEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Temporal Chains Curse Effect"
+    },
+    {
+     "ids": [
+      "CurseEffectConductivityEldritchImplicit1",
+      "CurseEffectConductivityEldritchImplicit2",
+      "CurseEffectConductivityEldritchImplicit3",
+      "CurseEffectConductivityEldritchImplicit4",
+      "CurseEffectConductivityEldritchImplicit5",
+      "CurseEffectConductivityEldritchImplicit6",
+      "CurseEffectConductivityEldritchImplicitUniquePresence2",
+      "CurseEffectConductivityEldritchImplicitUniquePresence3",
+      "CurseEffectConductivityEldritchImplicitUniquePresence4",
+      "CurseEffectConductivityEldritchImplicitUniquePresence5",
+      "CurseEffectConductivityEldritchImplicitUniquePresence6",
+      "CurseEffectConductivityEldritchImplicitPinnaclePresence3",
+      "CurseEffectConductivityEldritchImplicitPinnaclePresence4",
+      "CurseEffectConductivityEldritchImplicitPinnaclePresence5",
+      "CurseEffectConductivityEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Conductivity Curse Effect"
+    },
+    {
+     "ids": [
+      "CurseEffectElementalWeaknessEldritchImplicit1",
+      "CurseEffectElementalWeaknessEldritchImplicit2",
+      "CurseEffectElementalWeaknessEldritchImplicit3",
+      "CurseEffectElementalWeaknessEldritchImplicit4",
+      "CurseEffectElementalWeaknessEldritchImplicit5",
+      "CurseEffectElementalWeaknessEldritchImplicit6",
+      "CurseEffectElementalWeaknessEldritchImplicitUniquePresence2",
+      "CurseEffectElementalWeaknessEldritchImplicitUniquePresence3",
+      "CurseEffectElementalWeaknessEldritchImplicitUniquePresence4",
+      "CurseEffectElementalWeaknessEldritchImplicitUniquePresence5",
+      "CurseEffectElementalWeaknessEldritchImplicitUniquePresence6",
+      "CurseEffectElementalWeaknessEldritchImplicitPinnaclePresence3",
+      "CurseEffectElementalWeaknessEldritchImplicitPinnaclePresence4",
+      "CurseEffectElementalWeaknessEldritchImplicitPinnaclePresence5",
+      "CurseEffectElementalWeaknessEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Elemental Weakness Curse Effect"
+    },
+    {
+     "ids": [
+      "CurseEffectEnfeebleEldritchImplicit1",
+      "CurseEffectEnfeebleEldritchImplicit2",
+      "CurseEffectEnfeebleEldritchImplicit3",
+      "CurseEffectEnfeebleEldritchImplicit4",
+      "CurseEffectEnfeebleEldritchImplicit5",
+      "CurseEffectEnfeebleEldritchImplicit6",
+      "CurseEffectEnfeebleEldritchImplicitUniquePresence2",
+      "CurseEffectEnfeebleEldritchImplicitUniquePresence3",
+      "CurseEffectEnfeebleEldritchImplicitUniquePresence4",
+      "CurseEffectEnfeebleEldritchImplicitUniquePresence5",
+      "CurseEffectEnfeebleEldritchImplicitUniquePresence6",
+      "CurseEffectEnfeebleEldritchImplicitPinnaclePresence3",
+      "CurseEffectEnfeebleEldritchImplicitPinnaclePresence4",
+      "CurseEffectEnfeebleEldritchImplicitPinnaclePresence5",
+      "CurseEffectEnfeebleEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Enfeeble Curse Effect"
+    },
+    {
+     "ids": [
+      "CurseEffectFlammabilityEldritchImplicit1",
+      "CurseEffectFlammabilityEldritchImplicit2",
+      "CurseEffectFlammabilityEldritchImplicit3",
+      "CurseEffectFlammabilityEldritchImplicit4",
+      "CurseEffectFlammabilityEldritchImplicit5",
+      "CurseEffectFlammabilityEldritchImplicit6",
+      "CurseEffectFlammabilityEldritchImplicitUniquePresence2",
+      "CurseEffectFlammabilityEldritchImplicitUniquePresence3",
+      "CurseEffectFlammabilityEldritchImplicitUniquePresence4",
+      "CurseEffectFlammabilityEldritchImplicitUniquePresence5",
+      "CurseEffectFlammabilityEldritchImplicitUniquePresence6",
+      "CurseEffectFlammabilityEldritchImplicitPinnaclePresence3",
+      "CurseEffectFlammabilityEldritchImplicitPinnaclePresence4",
+      "CurseEffectFlammabilityEldritchImplicitPinnaclePresence5",
+      "CurseEffectFlammabilityEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Flammability Curse Effect"
+    },
+    {
+     "ids": [
+      "CurseEffectFrostbiteEldritchImplicit1",
+      "CurseEffectFrostbiteEldritchImplicit2",
+      "CurseEffectFrostbiteEldritchImplicit3",
+      "CurseEffectFrostbiteEldritchImplicit4",
+      "CurseEffectFrostbiteEldritchImplicit5",
+      "CurseEffectFrostbiteEldritchImplicit6",
+      "CurseEffectFrostbiteEldritchImplicitUniquePresence2",
+      "CurseEffectFrostbiteEldritchImplicitUniquePresence3",
+      "CurseEffectFrostbiteEldritchImplicitUniquePresence4",
+      "CurseEffectFrostbiteEldritchImplicitUniquePresence5",
+      "CurseEffectFrostbiteEldritchImplicitUniquePresence6",
+      "CurseEffectFrostbiteEldritchImplicitPinnaclePresence3",
+      "CurseEffectFrostbiteEldritchImplicitPinnaclePresence4",
+      "CurseEffectFrostbiteEldritchImplicitPinnaclePresence5",
+      "CurseEffectFrostbiteEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Frostbite Curse Effect"
+    },
+    {
+     "ids": [
+      "CurseEffectPunishmentEldritchImplicit1",
+      "CurseEffectPunishmentEldritchImplicit2",
+      "CurseEffectPunishmentEldritchImplicit3",
+      "CurseEffectPunishmentEldritchImplicit4",
+      "CurseEffectPunishmentEldritchImplicit5",
+      "CurseEffectPunishmentEldritchImplicit6",
+      "CurseEffectPunishmentEldritchImplicitUniquePresence2",
+      "CurseEffectPunishmentEldritchImplicitUniquePresence3",
+      "CurseEffectPunishmentEldritchImplicitUniquePresence4",
+      "CurseEffectPunishmentEldritchImplicitUniquePresence5",
+      "CurseEffectPunishmentEldritchImplicitUniquePresence6",
+      "CurseEffectPunishmentEldritchImplicitPinnaclePresence3",
+      "CurseEffectPunishmentEldritchImplicitPinnaclePresence4",
+      "CurseEffectPunishmentEldritchImplicitPinnaclePresence5",
+      "CurseEffectPunishmentEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Punishment Curse Effect"
+    },
+    {
+     "ids": [
+      "CurseEffectVulnerabilityEldritchImplicit1",
+      "CurseEffectVulnerabilityEldritchImplicit2",
+      "CurseEffectVulnerabilityEldritchImplicit3",
+      "CurseEffectVulnerabilityEldritchImplicit4",
+      "CurseEffectVulnerabilityEldritchImplicit5",
+      "CurseEffectVulnerabilityEldritchImplicit6",
+      "CurseEffectVulnerabilityEldritchImplicitUniquePresence2",
+      "CurseEffectVulnerabilityEldritchImplicitUniquePresence3",
+      "CurseEffectVulnerabilityEldritchImplicitUniquePresence4",
+      "CurseEffectVulnerabilityEldritchImplicitUniquePresence5",
+      "CurseEffectVulnerabilityEldritchImplicitUniquePresence6",
+      "CurseEffectVulnerabilityEldritchImplicitPinnaclePresence3",
+      "CurseEffectVulnerabilityEldritchImplicitPinnaclePresence4",
+      "CurseEffectVulnerabilityEldritchImplicitPinnaclePresence5",
+      "CurseEffectVulnerabilityEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Vulnerability Curse Effect"
+    },
+    {
+     "ids": [
+      "ManaCostEfficiencyEldritchImplicit1",
+      "ManaCostEfficiencyEldritchImplicit2",
+      "ManaCostEfficiencyEldritchImplicit3",
+      "ManaCostEfficiencyEldritchImplicit4",
+      "ManaCostEfficiencyEldritchImplicit5",
+      "ManaCostEfficiencyEldritchImplicit6",
+      "ManaCostEfficiencyEldritchImplicitUniquePresence2",
+      "ManaCostEfficiencyEldritchImplicitUniquePresence3",
+      "ManaCostEfficiencyEldritchImplicitUniquePresence4",
+      "ManaCostEfficiencyEldritchImplicitUniquePresence5",
+      "ManaCostEfficiencyEldritchImplicitUniquePresence6",
+      "ManaCostEfficiencyEldritchImplicitPinnaclePresence3",
+      "ManaCostEfficiencyEldritchImplicitPinnaclePresence4",
+      "ManaCostEfficiencyEldritchImplicitPinnaclePresence5",
+      "ManaCostEfficiencyEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Mana Cost Efficiency"
+    },
+    {
+     "ids": [
+      "ColdDamageTakenGainedAsLifeEldritchImplicit1",
+      "ColdDamageTakenGainedAsLifeEldritchImplicit2",
+      "ColdDamageTakenGainedAsLifeEldritchImplicit3",
+      "ColdDamageTakenGainedAsLifeEldritchImplicit4",
+      "ColdDamageTakenGainedAsLifeEldritchImplicit5",
+      "ColdDamageTakenGainedAsLifeEldritchImplicit6",
+      "ColdDamageTakenGainedAsLifeEldritchImplicitUniquePresence2",
+      "ColdDamageTakenGainedAsLifeEldritchImplicitUniquePresence3",
+      "ColdDamageTakenGainedAsLifeEldritchImplicitUniquePresence4",
+      "ColdDamageTakenGainedAsLifeEldritchImplicitUniquePresence5",
+      "ColdDamageTakenGainedAsLifeEldritchImplicitUniquePresence6",
+      "ColdDamageTakenGainedAsLifeEldritchImplicitPinnaclePresence3",
+      "ColdDamageTakenGainedAsLifeEldritchImplicitPinnaclePresence4",
+      "ColdDamageTakenGainedAsLifeEldritchImplicitPinnaclePresence5",
+      "ColdDamageTakenGainedAsLifeEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% of Cold Damage taken Recouped as Life"
+    },
+    {
+     "ids": [
+      "IncreasedDamagePerPowerChargeEldritchImplicit1",
+      "IncreasedDamagePerPowerChargeEldritchImplicit2",
+      "IncreasedDamagePerPowerChargeEldritchImplicit3",
+      "IncreasedDamagePerPowerChargeEldritchImplicit4",
+      "IncreasedDamagePerPowerChargeEldritchImplicit5",
+      "IncreasedDamagePerPowerChargeEldritchImplicit6",
+      "IncreasedDamagePerPowerChargeEldritchImplicitUniquePresence2",
+      "IncreasedDamagePerPowerChargeEldritchImplicitUniquePresence3",
+      "IncreasedDamagePerPowerChargeEldritchImplicitUniquePresence4",
+      "IncreasedDamagePerPowerChargeEldritchImplicitUniquePresence5",
+      "IncreasedDamagePerPowerChargeEldritchImplicitUniquePresence6",
+      "IncreasedDamagePerPowerChargeEldritchImplicitPinnaclePresence3",
+      "IncreasedDamagePerPowerChargeEldritchImplicitPinnaclePresence4",
+      "IncreasedDamagePerPowerChargeEldritchImplicitPinnaclePresence5",
+      "IncreasedDamagePerPowerChargeEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Damage per Power Charge"
+    },
+    {
+     "ids": [
+      "CurseEffectDespairEldritchImplicit1",
+      "CurseEffectDespairEldritchImplicit2",
+      "CurseEffectDespairEldritchImplicit3",
+      "CurseEffectDespairEldritchImplicit4",
+      "CurseEffectDespairEldritchImplicit5",
+      "CurseEffectDespairEldritchImplicit6",
+      "CurseEffectDespairEldritchImplicitUniquePresence2",
+      "CurseEffectDespairEldritchImplicitUniquePresence3",
+      "CurseEffectDespairEldritchImplicitUniquePresence4",
+      "CurseEffectDespairEldritchImplicitUniquePresence5",
+      "CurseEffectDespairEldritchImplicitUniquePresence6",
+      "CurseEffectDespairEldritchImplicitPinnaclePresence3",
+      "CurseEffectDespairEldritchImplicitPinnaclePresence4",
+      "CurseEffectDespairEldritchImplicitPinnaclePresence5",
+      "CurseEffectDespairEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% increased Despair Curse Effect"
+    },
+    {
+     "ids": [
+      "FireDamageTakenGainedAsLifeEldritchImplicit1",
+      "FireDamageTakenGainedAsLifeEldritchImplicit2",
+      "FireDamageTakenGainedAsLifeEldritchImplicit3",
+      "FireDamageTakenGainedAsLifeEldritchImplicit4",
+      "FireDamageTakenGainedAsLifeEldritchImplicit5",
+      "FireDamageTakenGainedAsLifeEldritchImplicit6",
+      "FireDamageTakenGainedAsLifeEldritchImplicitUniquePresence2",
+      "FireDamageTakenGainedAsLifeEldritchImplicitUniquePresence3",
+      "FireDamageTakenGainedAsLifeEldritchImplicitUniquePresence4",
+      "FireDamageTakenGainedAsLifeEldritchImplicitUniquePresence5",
+      "FireDamageTakenGainedAsLifeEldritchImplicitUniquePresence6",
+      "FireDamageTakenGainedAsLifeEldritchImplicitPinnaclePresence3",
+      "FireDamageTakenGainedAsLifeEldritchImplicitPinnaclePresence4",
+      "FireDamageTakenGainedAsLifeEldritchImplicitPinnaclePresence5",
+      "FireDamageTakenGainedAsLifeEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% of Fire Damage taken Recouped as Life"
+    },
+    {
+     "ids": [
+      "LightningDamageTakenGainedAsLifeEldritchImplicit1",
+      "LightningDamageTakenGainedAsLifeEldritchImplicit2",
+      "LightningDamageTakenGainedAsLifeEldritchImplicit3",
+      "LightningDamageTakenGainedAsLifeEldritchImplicit4",
+      "LightningDamageTakenGainedAsLifeEldritchImplicit5",
+      "LightningDamageTakenGainedAsLifeEldritchImplicit6",
+      "LightningDamageTakenGainedAsLifeEldritchImplicitUniquePresence2",
+      "LightningDamageTakenGainedAsLifeEldritchImplicitUniquePresence3",
+      "LightningDamageTakenGainedAsLifeEldritchImplicitUniquePresence4",
+      "LightningDamageTakenGainedAsLifeEldritchImplicitUniquePresence5",
+      "LightningDamageTakenGainedAsLifeEldritchImplicitUniquePresence6",
+      "LightningDamageTakenGainedAsLifeEldritchImplicitPinnaclePresence3",
+      "LightningDamageTakenGainedAsLifeEldritchImplicitPinnaclePresence4",
+      "LightningDamageTakenGainedAsLifeEldritchImplicitPinnaclePresence5",
+      "LightningDamageTakenGainedAsLifeEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% of Lightning Damage taken Recouped as Life"
+    },
+    {
+     "ids": [
+      "PhysicalDamageTakenGainedAsLifeEldritchImplicit1",
+      "PhysicalDamageTakenGainedAsLifeEldritchImplicit2",
+      "PhysicalDamageTakenGainedAsLifeEldritchImplicit3",
+      "PhysicalDamageTakenGainedAsLifeEldritchImplicit4",
+      "PhysicalDamageTakenGainedAsLifeEldritchImplicit5",
+      "PhysicalDamageTakenGainedAsLifeEldritchImplicit6",
+      "PhysicalDamageTakenGainedAsLifeEldritchImplicitUniquePresence2",
+      "PhysicalDamageTakenGainedAsLifeEldritchImplicitUniquePresence3",
+      "PhysicalDamageTakenGainedAsLifeEldritchImplicitUniquePresence4",
+      "PhysicalDamageTakenGainedAsLifeEldritchImplicitUniquePresence5",
+      "PhysicalDamageTakenGainedAsLifeEldritchImplicitUniquePresence6",
+      "PhysicalDamageTakenGainedAsLifeEldritchImplicitPinnaclePresence3",
+      "PhysicalDamageTakenGainedAsLifeEldritchImplicitPinnaclePresence4",
+      "PhysicalDamageTakenGainedAsLifeEldritchImplicitPinnaclePresence5",
+      "PhysicalDamageTakenGainedAsLifeEldritchImplicitPinnaclePresence6"
+     ],
+     "label": "#% of Physical Damage taken Recouped as Life"
+    }
+   ],
+   "VESTIGIAL": [
+    {
+     "ids": [
+      "DivergentAbyssJewelSocketUnique__12"
+     ],
+     "label": "^xCBA5F1Has 1 Abyssal Socket"
+    },
+    {
+     "ids": [
+      "DivergentAbyssJewelSocketUnique__17"
+     ],
+     "label": "^xCBA5F1Has 1 Abyssal Socket"
+    },
+    {
+     "ids": [
+      "DivergentAbyssJewelSocketUnique__18"
+     ],
+     "label": "^xCBA5F1Has 1 Abyssal Socket"
+    },
+    {
+     "ids": [
+      "DivergentAddedChaosDamagePerCurseUnique__1"
+     ],
+     "label": "^xCBA5F1Adds 37 to 71 Chaos Damage for each Curse on the Enemy"
+    },
+    {
+     "ids": [
+      "DivergentAdditionalBaseCritUnique__1"
+     ],
+     "label": "^xCBA5F1+0.3% to Critical Strike Chance"
+    },
+    {
+     "ids": [
+      "DivergentAdditionalHolyRelicUnique__1"
+     ],
+     "label": "^xCBA5F1+1 to maximum number of Summoned Holy Relics"
+    },
+    {
+     "ids": [
+      "DivergentAllAttributesUnique__21"
+     ],
+     "label": "^xCBA5F1+20 to all Attributes"
+    },
+    {
+     "ids": [
+      "DivergentAlternateColdAilmentUnique__1"
+     ],
+     "label": "^xCBA5F125% chance to inflict Brittle/Cannot inflict Freeze or Chill"
+    },
+    {
+     "ids": [
+      "DivergentAlternateFireAilmentUnique__1"
+     ],
+     "label": "^xCBA5F125% chance to Scorch Enemies/Cannot inflict Ignite"
+    },
+    {
+     "ids": [
+      "DivergentAlternateLightningAilmentUnique__1__"
+     ],
+     "label": "^xCBA5F125% chance to Sap Enemies/Cannot inflict Shock"
+    },
+    {
+     "ids": [
+      "DivergentAnyRingMagicDamageExtraRollUnique__1"
+     ],
+     "label": "^xCBA5F1Damage of Enemies Hitting you is Unlucky while you have a Magic Ring Equipped"
+    },
+    {
+     "ids": [
+      "DivergentArmourIncreasedByUncappedFireResistanceUnique__1"
+     ],
+     "label": "^xCBA5F1Armour is increased by 50% of Overcapped Fire Resistance"
+    },
+    {
+     "ids": [
+      "DivergentAttackLightningDamageMaximumManaUnique__1__"
+     ],
+     "label": "^xCBA5F1Attack Skills have Added Lightning Damage equal to 3% of maximum Mana"
+    },
+    {
+     "ids": [
+      "DivergentAttackerTakesColdDamageUnique__1"
+     ],
+     "label": "^xCBA5F1Reflects 100 Cold Damage to Melee Attackers"
+    },
+    {
+     "ids": [
+      "DivergentAttackerTakesFireDamageUnique__1"
+     ],
+     "label": "^xCBA5F1Reflects 100 Fire Damage to Melee Attackers"
+    },
+    {
+     "ids": [
+      "DivergentAttackerTakesLightningDamageUnique__1"
+     ],
+     "label": "^xCBA5F1Reflects 100 Lightning Damage to Melee Attackers"
+    },
+    {
+     "ids": [
+      "DivergentAvoidFreezeAndChillIfFireSkillUsedRecentlyUnique__1"
+     ],
+     "label": "^xCBA5F1100% chance to Avoid being Chilled or Frozen if you have used a Fire Skill Recently"
+    },
+    {
+     "ids": [
+      "DivergentAvoidInterruptionWhileCastingUnique__1"
+     ],
+     "label": "^xCBA5F1Ignore Stuns while Casting"
+    },
+    {
+     "ids": [
+      "DivergentCannotLoseCrabBarriersIfLostRecentlyUnique__1"
+     ],
+     "label": "^xCBA5F1Cannot lose Crab Barriers if you have lost Crab Barriers Recently"
+    },
+    {
+     "ids": [
+      "DivergentChanceToBlockSpellsPerPowerChargeUnique__2_"
+     ],
+     "label": "^xCBA5F1+3% Chance to Block Spell Damage per Power Charge"
+    },
+    {
+     "ids": [
+      "DivergentChanceToCastOnManaSpentUnique__1"
+     ],
+     "label": "^xCBA5F125% chance to Trigger Socketed Spells when you Spend at least 100 Mana on an/Upfront Cost to Use or Trigger a Skill, with a 0.1 second Cooldown"
+    },
+    {
+     "ids": [
+      "DivergentChanceToSuppressSpellsWhileChannellingUnique__1____"
+     ],
+     "label": "^xCBA5F1+20% chance to Suppress Spell Damage while Channelling"
+    },
+    {
+     "ids": [
+      "DivergentChaosResistanceIsZeroUnique__1"
+     ],
+     "label": "^xCBA5F1Chaos Resistance is Zero"
+    },
+    {
+     "ids": [
+      "DivergentColdAddedAsFireChilledEnemyUnique__1"
+     ],
+     "label": "^xCBA5F1Gain 1% of Cold Damage as Extra Fire Damage per 1% Chill Effect on Enemy"
+    },
+    {
+     "ids": [
+      "DivergentColdDamageOverTimeMultiplierUnique__2"
+     ],
+     "label": "^xCBA5F1+25% to Cold Damage over Time Multiplier"
+    },
+    {
+     "ids": [
+      "DivergentColdExposureOnHitUnique__1"
+     ],
+     "label": "^xCBA5F125% chance to inflict Cold Exposure on Hit"
+    },
+    {
+     "ids": [
+      "DivergentColdIgnitesUniqueHelmetDexInt4_"
+     ],
+     "label": "^xCBA5F1Your Cold Damage can Ignite but not Freeze or Chill"
+    },
+    {
+     "ids": [
+      "DivergentColdResistanceOverrideUnique__1"
+     ],
+     "label": "^xCBA5F1Cold Resistance is 70%"
+    },
+    {
+     "ids": [
+      "DivergentCriticalStrikeChanceUniqueHelmetDex6"
+     ],
+     "label": "^xCBA5F160% increased Global Critical Strike Chance"
+    },
+    {
+     "ids": [
+      "DivergentDamageYouReflectGainedAsLifeUniqueHelmetDexInt6"
+     ],
+     "label": "^xCBA5F1100% of Damage you Reflect to Enemies when Hit is leeched as Life"
+    },
+    {
+     "ids": [
+      "DivergentDisplayDamageAuraUniqueHelmetDexInt2"
+     ],
+     "label": "^xCBA5F1You and Allies within 7.5 metres gain 25% increased Damage"
+    },
+    {
+     "ids": [
+      "DivergentDisplaySocketedGemGetsFasterAttackUniqueHelmetStrDex4"
+     ],
+     "label": "^xCBA5F1Socketed Gems are Supported by Level 30 Faster Attacks Support"
+    },
+    {
+     "ids": [
+      "DivergentEnemyExtraDamagerollsWithPhysicalDamageUnique_1"
+     ],
+     "label": "^xCBA5F1Physical Damage of Enemies Hitting you is Unlucky"
+    },
+    {
+     "ids": [
+      "DivergentEnergyShieldAdditiveModifiersInsteadApplyToWardUnique__"
+     ],
+     "label": "^xCBA5F1Increases and Reductions to Maximum Energy Shield instead apply to Ward"
+    },
+    {
+     "ids": [
+      "DivergentEnergyShieldRechargeOnKillUnique__1__"
+     ],
+     "label": "^xCBA5F110% chance for Energy Shield Recharge to start when you Kill an Enemy"
+    },
+    {
+     "ids": [
+      "DivergentEvasionModifersApplyToSpellDamageUnique__1"
+     ],
+     "label": "^xCBA5F1Increases and Reductions to your Evasion Rating also apply to your Spell Damage at 50% of their value"
+    },
+    {
+     "ids": [
+      "DivergentEvasionRatingPercentOnLowLifeUniqueHelmetDex4"
+     ],
+     "label": "^xCBA5F1150% increased Global Evasion Rating when on Low Life"
+    },
+    {
+     "ids": [
+      "DivergentFireExposureOnHitUnique__1"
+     ],
+     "label": "^xCBA5F125% chance to inflict Fire Exposure on Hit"
+    },
+    {
+     "ids": [
+      "DivergentFireResistanceOverrideUnique__1__"
+     ],
+     "label": "^xCBA5F1Fire Resistance is 70%"
+    },
+    {
+     "ids": [
+      "DivergentFireShocksUniqueHelmetDexInt4"
+     ],
+     "label": "^xCBA5F1Your Fire Damage can Shock but not Ignite"
+    },
+    {
+     "ids": [
+      "DivergentFrenzyChargeOnCritCloseRangeUnique__1"
+     ],
+     "label": "^xCBA5F120% chance to gain a Frenzy Charge on Critical Strike at Close Range"
+    },
+    {
+     "ids": [
+      "DivergentGainArmourEqualToManaReservedUnique__1"
+     ],
+     "label": "^xCBA5F11% increased Armour per 100 Reserved Mana"
+    },
+    {
+     "ids": [
+      "DivergentGainManaAsExtraEnergyShieldUnique__1"
+     ],
+     "label": "^xCBA5F1Gain 10% of Maximum Mana as Extra Maximum Energy Shield"
+    },
+    {
+     "ids": [
+      "DivergentGlobalIncreaseMinionSpellSkillGemLevelUnique__3"
+     ],
+     "label": "^xCBA5F1+1 to Level of all Minion Skill Gems"
+    },
+    {
+     "ids": [
+      "DivergentGlobalIncreaseMinionSpellSkillGemLevelUnique__4"
+     ],
+     "label": "^xCBA5F1+1 to Level of all Minion Skill Gems"
+    },
+    {
+     "ids": [
+      "DivergentGrantsAvianTornadoUnique__1__"
+     ],
+     "label": "^xCBA5F1Trigger Level 20 Twister when you gain Avian's Might or Avian's Flight"
+    },
+    {
+     "ids": [
+      "DivergentGrantsCatAspect1"
+     ],
+     "label": "^xCBA5F1Grants Level 20 Aspect of the Cat"
+    },
+    {
+     "ids": [
+      "DivergentGrantsVoidGazeUnique__1"
+     ],
+     "label": "^xCBA5F1Trigger Level 10 Void Gaze when you use a Skill"
+    },
+    {
+     "ids": [
+      "DivergentHarbingerSkillOnEquipUnique2_5"
+     ],
+     "label": "^xCBA5F1Grants Summon Greater Harbinger of Storms"
+    },
+    {
+     "ids": [
+      "DivergentHarbingerSkillOnEquipUnique__5"
+     ],
+     "label": "^xCBA5F1Grants Summon Harbinger of Storms"
+    },
+    {
+     "ids": [
+      "DivergentIncreaseProjectileAttackDamagePerAccuracyUnique__1"
+     ],
+     "label": "^xCBA5F11% increased Projectile Attack Damage per 400 Accuracy Rating"
+    },
+    {
+     "ids": [
+      "DivergentIncreasedElementalResistancesUnique__1"
+     ],
+     "label": "^xCBA5F110% increased Elemental Resistances"
+    },
+    {
+     "ids": [
+      "DivergentIncreasedExperienceUniqueIntHelmet3"
+     ],
+     "label": "^xCBA5F15% increased Experience gain"
+    },
+    {
+     "ids": [
+      "DivergentIncreasedLifeWhileNoCorruptedItemsUnique__1"
+     ],
+     "label": "^xCBA5F112% increased Maximum Life if no Equipped Items are Corrupted"
+    },
+    {
+     "ids": [
+      "DivergentKeystoneAncestralBondUnique__2"
+     ],
+     "label": "^xCBA5F1Ancestral Bond"
+    },
+    {
+     "ids": [
+      "DivergentKeystoneUnwaveringStanceUnique__1"
+     ],
+     "label": "^xCBA5F1Unwavering Stance"
+    },
+    {
+     "ids": [
+      "DivergentLifeRegenerationPer500EnergyShieldUnique__1"
+     ],
+     "label": "^xCBA5F1Regenerate 0.2% of Life per second per 500 Player Maximum Energy Shield"
+    },
+    {
+     "ids": [
+      "DivergentLifeRegenerationWith1000EnergyShieldUnique__1"
+     ],
+     "label": "^xCBA5F1Regenerate 100 Life per second if you have at least 1000 Maximum Energy Shield"
+    },
+    {
+     "ids": [
+      "DivergentLightRadiusToDamageUnique_1"
+     ],
+     "label": "^xCBA5F1Increases and Reductions to Light Radius also apply to Damage"
+    },
+    {
+     "ids": [
+      "DivergentLightningAddedAsColdShockedEnemyUnique__1"
+     ],
+     "label": "^xCBA5F1Gain 1% of Lightning Damage as Extra Cold Damage per 2% Shock Effect on Enemy"
+    },
+    {
+     "ids": [
+      "DivergentLightningFreezesUniqueHelmetDexInt4"
+     ],
+     "label": "^xCBA5F1Your Lightning Damage can Freeze but not Shock"
+    },
+    {
+     "ids": [
+      "DivergentLightningResistanceOverrideUnique__1_"
+     ],
+     "label": "^xCBA5F1Lightning Resistance is 70%"
+    },
+    {
+     "ids": [
+      "DivergentLinkedMinionsStealRareModsUnique_1"
+     ],
+     "label": "^xCBA5F1On Killing a Rare monster, a random Linked Minion gains its Modifiers for 20 seconds"
+    },
+    {
+     "ids": [
+      "DivergentLocalIncreaseSocketedGemLevelUnique__8"
+     ],
+     "label": "^xCBA5F1+2 to Level of Socketed Gems"
+    },
+    {
+     "ids": [
+      "DivergentLocalIncreaseSocketedHeraldLevelUnique__2"
+     ],
+     "label": "^xCBA5F1+4 to Level of Socketed Herald Gems"
+    },
+    {
+     "ids": [
+      "DivergentManaRegenerationAuraUnique__1"
+     ],
+     "label": "^xCBA5F1You and Allies within 7.5 metres have 30% increased Mana Regeneration Rate"
+    },
+    {
+     "ids": [
+      "DivergentManaReservationEfficiencyPerAttributeUnique__1"
+     ],
+     "label": "^xCBA5F13% increased Mana Reservation Efficiency of Skills per 250 total Attributes"
+    },
+    {
+     "ids": [
+      "DivergentManaReservationEfficiencyUniqueHelmetDex5_"
+     ],
+     "label": "^xCBA5F116% increased Mana Reservation Efficiency of Skills"
+    },
+    {
+     "ids": [
+      "DivergentMeleeWeaponCriticalStrikeMultiplierReplicaUniqueHelmetStr3"
+     ],
+     "label": "^xCBA5F1+50% to Melee Critical Strike Multiplier"
+    },
+    {
+     "ids": [
+      "DivergentMeleeWeaponCriticalStrikeMultiplierUniqueHelmetStr3"
+     ],
+     "label": "^xCBA5F1+50% to Melee Critical Strike Multiplier"
+    },
+    {
+     "ids": [
+      "DivergentMinionAttackBlockChanceUnique__2"
+     ],
+     "label": "^xCBA5F1Minions have +25% Chance to Block Attack Damage"
+    },
+    {
+     "ids": [
+      "DivergentMinionAttackSpeedPerXDexUnique__1"
+     ],
+     "label": "^xCBA5F12% increased Minion Attack Speed per 50 Dexterity"
+    },
+    {
+     "ids": [
+      "DivergentMinionCriticalStrikeChanceMaximumPowerChargeUnique__1"
+     ],
+     "label": "^xCBA5F1Minions have 50% increased Critical Strike Chance per Maximum Power Charge you have"
+    },
+    {
+     "ids": [
+      "DivergentMinionLargerAggroRadiusUnique__1"
+     ],
+     "label": "^xCBA5F1Minions are Aggressive"
+    },
+    {
+     "ids": [
+      "DivergentMinionLifeIncreasedByOvercappedFireResistanceUnique__1"
+     ],
+     "label": "^xCBA5F1Minion Life is increased by their Overcapped Fire Resistance"
+    },
+    {
+     "ids": [
+      "DivergentMinionSpellBlockChanceUnique__2"
+     ],
+     "label": "^xCBA5F1Minions have +25% Chance to Block Spell Damage"
+    },
+    {
+     "ids": [
+      "DivergentMinionsGainYourStrengthUnique__1"
+     ],
+     "label": "^xCBA5F1Half of your Strength is added to your Minions"
+    },
+    {
+     "ids": [
+      "DivergentMovementVelocityUniqueHelmetStrDex2"
+     ],
+     "label": "^xCBA5F110% increased Movement Speed"
+    },
+    {
+     "ids": [
+      "DivergentNearbyEnemiesHaveReducedAllResistancesUnique__1"
+     ],
+     "label": "^xCBA5F1Enemies within 6 metres have -10% to all Resistances"
+    },
+    {
+     "ids": [
+      "DivergentNearbyEnemyReservesLifeUnique__1"
+     ],
+     "label": "^xCBA5F1Enemy Monsters within 3 metres have at least 8% of Life Reserved"
+    },
+    {
+     "ids": [
+      "DivergentNonInstantManaRecoveryAlsoAffectsLifeUnique__1"
+     ],
+     "label": "^xCBA5F1Non-instant Mana Recovery from Flasks is also Recovered as Life"
+    },
+    {
+     "ids": [
+      "DivergentOnslaughtBuffOnKillUniqueHelmet1"
+     ],
+     "label": "^xCBA5F120% chance to gain Onslaught for 4 seconds on Kill"
+    },
+    {
+     "ids": [
+      "DivergentPainAttunement"
+     ],
+     "label": "^xCBA5F1Pain Attunement"
+    },
+    {
+     "ids": [
+      "DivergentPercentDexterityIfStrengthHigherThanIntelligenceUnique__1"
+     ],
+     "label": "^xCBA5F115% increased Dexterity if Strength is higher than Intelligence"
+    },
+    {
+     "ids": [
+      "DivergentPercentageDexterityUniqueHelmetStrDex6"
+     ],
+     "label": "^xCBA5F110% increased Dexterity"
+    },
+    {
+     "ids": [
+      "DivergentPercentageIntelligenceUniqueHelmetStrDex6"
+     ],
+     "label": "^xCBA5F110% increased Intelligence"
+    },
+    {
+     "ids": [
+      "DivergentPercentageStrengthUniqueHelmetStrDex6"
+     ],
+     "label": "^xCBA5F110% increased Strength"
+    },
+    {
+     "ids": [
+      "DivergentPetrificationStatueUnique__1"
+     ],
+     "label": "^xCBA5F1Grants Level 1 Petrification Statue"
+    },
+    {
+     "ids": [
+      "DivergentPhysAddedAsChaosWithMaxPowerChargesUnique__1"
+     ],
+     "label": "^xCBA5F1Gain 12% of Physical Damage as Extra Chaos Damage while at maximum Power Charges"
+    },
+    {
+     "ids": [
+      "DivergentPhysicalDamageOnSkillUseUniqueHelmetInt8"
+     ],
+     "label": "^xCBA5F1Your Skills deal you 200% of Mana Spent on Upfront Skill Mana Costs as Physical Damage"
+    },
+    {
+     "ids": [
+      "DivergentPlaceAdditionalMineWith600DexterityUnique__1"
+     ],
+     "label": "^xCBA5F1Skills which throw Mines throw up to 1 additional Mine if you have at least 800 Dexterity"
+    },
+    {
+     "ids": [
+      "DivergentPlaceAdditionalMineWith600IntelligenceUnique__1"
+     ],
+     "label": "^xCBA5F1Skills which throw Mines throw up to 1 additional Mine if you have at least 800 Intelligence"
+    },
+    {
+     "ids": [
+      "DivergentPowerChargeOnHitWebbedEnemyUnique__1"
+     ],
+     "label": "^xCBA5F110% chance to gain a Power Charge on hitting an Enemy affected by a Spider's Web"
+    },
+    {
+     "ids": [
+      "DivergentProjectileSpeedUnique__8"
+     ],
+     "label": "^xCBA5F130% increased Projectile Speed"
+    },
+    {
+     "ids": [
+      "DivergentRageCasterStats50PercentValueUnique__1"
+     ],
+     "label": "^xCBA5F1Rage grants Spell Damage instead of Attack Damage at 50% of the value"
+    },
+    {
+     "ids": [
+      "DivergentRagingSpiritFireSplashDamageUnique__1"
+     ],
+     "label": "^xCBA5F1Summoned Raging Spirits' Melee Strikes deal Fire-only Splash/Damage to Surrounding Targets"
+    },
+    {
+     "ids": [
+      "DivergentRandomCurseWhenHitChanceUnique__1"
+     ],
+     "label": "^xCBA5F1Curse Enemies which Hit you with a random Hex, ignoring Curse Limit"
+    },
+    {
+     "ids": [
+      "DivergentRecoverLifeOnSuppressUnique__1"
+     ],
+     "label": "^xCBA5F1Recover 100 Life when you Suppress Spell Damage"
+    },
+    {
+     "ids": [
+      "DivergentReducedReservationForSocketedCurseGemsUnique__1"
+     ],
+     "label": "^xCBA5F1Socketed Curse Gems have 30% increased Reservation Efficiency"
+    },
+    {
+     "ids": [
+      "DivergentSetElementalResistancesUniqueHelmetStrInt4"
+     ],
+     "label": "^xCBA5F1Elemental Resistances are Zero"
+    },
+    {
+     "ids": [
+      "DivergentShrineBuffEffectUniqueHelmetDexInt3"
+     ],
+     "label": "^xCBA5F150% increased Effect of Shrine Buffs on you"
+    },
+    {
+     "ids": [
+      "DivergentSkillsExertAttacksDoNotCountChanceUnique__1"
+     ],
+     "label": "^xCBA5F1Skills which Exert an Attack have 30% chance to not count that Attack"
+    },
+    {
+     "ids": [
+      "DivergentSocketedGemQualityUnique__1"
+     ],
+     "label": "^xCBA5F1+20% to Quality of Socketed Gems"
+    },
+    {
+     "ids": [
+      "DivergentSocketedGemsHaveReducedManaCostUniqueHelmetDexInt5"
+     ],
+     "label": "^xCBA5F1Socketed Gems have 50% less Mana Cost"
+    },
+    {
+     "ids": [
+      "DivergentSocketedGemsSupportedByBlasphemyUnique__3"
+     ],
+     "label": "^xCBA5F1Socketed Gems are Supported by Level 30 Blasphemy Support"
+    },
+    {
+     "ids": [
+      "DivergentSocketedGemsSupportedByCastOnDeathUniqueHelmetStrInt5"
+     ],
+     "label": "^xCBA5F1Socketed Gems are Supported by Level 20 Cast on Death Support"
+    },
+    {
+     "ids": [
+      "DivergentSocketedWarcryCooldownCountUnique__1"
+     ],
+     "label": "^xCBA5F1Socketed Warcry Skills have +1 Cooldown Use"
+    },
+    {
+     "ids": [
+      "DivergentSpellDamageFromMainHandWeaponDamageUnique__1"
+     ],
+     "label": "^xCBA5F1Spells you Cast have Added Spell Damage equal to 15% of the Damage of your Main Hand Weapon"
+    },
+    {
+     "ids": [
+      "DivergentSpellDamageModifiersApplyToAttackDamageUniqueHelmetInt7"
+     ],
+     "label": "^xCBA5F1Attacks have 100% Arcane Might"
+    },
+    {
+     "ids": [
+      "DivergentSpellsCriticalChanceFinalRepeatUnique__1"
+     ],
+     "label": "^xCBA5F1Spell Skills have 100% increased Critical Strike Chance on Final Repeat"
+    },
+    {
+     "ids": [
+      "DivergentSpellsDoubleDamageChanceUnique__1"
+     ],
+     "label": "^xCBA5F1Spells have a 10% chance to deal Double Damage"
+    },
+    {
+     "ids": [
+      "DivergentTouchedByTormentedSpiritsUnique__1"
+     ],
+     "label": "^xCBA5F1You can be Touched by Tormented Spirits"
+    },
+    {
+     "ids": [
+      "DivergentTransfigurationOfBodyUnique__1"
+     ],
+     "label": "^xCBA5F1Transfiguration of Body"
+    },
+    {
+     "ids": [
+      "DivergentTransfigurationOfMindUnique__1"
+     ],
+     "label": "^xCBA5F1Transfiguration of Mind"
+    },
+    {
+     "ids": [
+      "DivergentTransfigurationOfSoulUnique__1_"
+     ],
+     "label": "^xCBA5F1Transfiguration of Soul"
+    },
+    {
+     "ids": [
+      "DivergentTriggerFeastOfFleshSkillUnique__1_"
+     ],
+     "label": "^xCBA5F1Trigger Level 15 Feast of Flesh every 5 seconds"
+    },
+    {
+     "ids": [
+      "DivergentTriggerSocketedSpellOnBowAttackUnique__2"
+     ],
+     "label": "^xCBA5F110% chance to Trigger a Socketed Spell when you Attack with a Bow, with a 0.3 second Cooldown"
+    },
+    {
+     "ids": [
+      "DivergentUnaffectedByPoisonUnique__1_"
+     ],
+     "label": "^xCBA5F1Unaffected by Poison"
+    },
+    {
+     "ids": [
+      "DivergentWarcryAreaOfEffectUnique__2"
+     ],
+     "label": "^xCBA5F1Warcry Skills have 25% increased Area of Effect"
+    },
+    {
+     "ids": [
+      "DivergentWarcryCorpseExplosionUnique__1"
+     ],
+     "label": "^xCBA5F1Nearby corpses Explode when you Warcry, dealing 5% of their Life as Physical Damage"
+    },
+    {
+     "ids": [
+      "DivergentWarcrySpeedUnique__1"
+     ],
+     "label": "^xCBA5F125% increased Warcry Speed"
     }
    ],
    "sources": [

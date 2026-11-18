@@ -86,6 +86,7 @@ var (
 		VestigialMods  map[string]string              `json:"vestigialModMappings"`
 		SpecialCorrupt []AffixMod                     `json:"specialCorruptionMods"`
 		DropRestricted map[string][]DropRestrictedMod `json:"dropRestricted"`
+		Viscera        []string                       `json:"viscera"`
 	}
 )
 
@@ -156,6 +157,12 @@ func NecropolisMods() []AffixMod {
 func BeastCraftMods() []AffixMod {
 	itemCraftOnce.Do(loadItemCraft)
 	return itemCraft.BeastCraft
+}
+
+// Viscera is data.viscera (Data/Viscera.lua): the item text of every Viscera mod, in game data order.
+func Viscera() []string {
+	itemCraftOnce.Do(loadItemCraft)
+	return itemCraft.Viscera
 }
 
 func CrucibleMods() []CrucibleMod {

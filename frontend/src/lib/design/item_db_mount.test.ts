@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/svelte';
+import { cleanup, fireEvent, render, screen } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import ItemDB from './ItemDB.svelte';
 import { defaultItemDBFilter, type ItemDBRowPlain } from './item_db';
@@ -58,5 +58,25 @@ describe('the item database list', () => {
     await rerender({ ...props, error: '', note: 'Added Item 1' });
     expect(screen.queryByRole('alert')).toBeNull();
     expect(screen.getByRole('status').classList.contains('text-better')).toBe(true);
+  });
+
+  it('offers the Viscera database as a third tab (ItemsTab.lua:299) and names its list after it', async () => {
+    render(ItemDB, {
+      kind: 'UNIQUE',
+      kinds: ['UNIQUE', 'RARE', 'VISCERA'],
+      filter: defaultItemDBFilter(),
+      sort: '',
+      rows: [],
+      onadd: noop,
+      onopen: noop,
+      oncopy: noop
+    });
+    await tick();
+    expect(screen.getAllByRole('tab').map((t) => t.textContent?.trim())).toEqual(['Uniques', 'Templates', 'Viscera']);
+    await fireEvent.click(screen.getByRole('tab', { name: 'Viscera' }));
+    await tick();
+    expect(screen.getByRole('tab', { name: 'Viscera', selected: true })).toBeTruthy();
+    expect(screen.getByRole('table', { name: 'Viscera list' })).toBeTruthy();
+    expect(screen.getByLabelText('Search viscera')).toBeTruthy();
   });
 });

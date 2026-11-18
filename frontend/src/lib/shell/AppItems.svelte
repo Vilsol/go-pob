@@ -286,7 +286,7 @@
       };
     }
     // ItemDBControl.lua:320-328
-    const db = /^db:(UNIQUE|RARE):(.+)$/.exec(key);
+    const db = /^db:(UNIQUE|RARE|VISCERA):(.+)$/.exec(key);
     if (db) {
       return async () => {
         const t = await syncWrap?.GetItemDBText(db[1], db[2]);
@@ -716,7 +716,12 @@
 
   // ItemsTab.lua:273-296
 
-  const dbFilters = $state<Record<ItemDBKind, ItemDBFilterInput>>({ UNIQUE: defaultItemDBFilter(), RARE: defaultItemDBFilter() });
+  const DB_KINDS: ItemDBKind[] = ['UNIQUE', 'RARE', 'VISCERA'];
+  const dbFilters = $state<Record<ItemDBKind, ItemDBFilterInput>>({
+    UNIQUE: defaultItemDBFilter(),
+    RARE: defaultItemDBFilter(),
+    VISCERA: defaultItemDBFilter()
+  });
   let dbSort = $state('');
   let dbLists = $state<Partial<Record<ItemDBKind, ItemDBLists>>>({});
   let dbRows = $state<ItemDBRowPlain[]>([]);
@@ -749,7 +754,7 @@
       dbBusy = true;
       const read = syncWrap?.GetItemDBRows(kind, filter, sort);
       if (!read) return;
-      track(read, 'itemdb', kind === 'UNIQUE' ? 'Loading the uniques' : 'Loading the rare templates')
+      track(read, 'itemdb', kind === 'UNIQUE' ? 'Loading the uniques' : kind === 'RARE' ? 'Loading the rare templates' : 'Loading the viscera')
         .then((rows) => {
           if (mine !== dbSeq) return;
           dbRows = rows;
@@ -1129,6 +1134,7 @@
     {#snippet itemDB()}
       <ItemDB
         bind:kind={dbKind}
+        kinds={DB_KINDS}
         lists={dbLists[dbKind]}
         bind:filter={dbFilters[dbKind]}
         bind:sort={dbSort}

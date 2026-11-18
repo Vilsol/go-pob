@@ -105,7 +105,17 @@ for k, raw in ipairs(items) do
 		and (not displayDBUnique.source or titleLower == "stasis prison") then
 		t_insert(sources, "VESTIGIAL")
 	end
+	-- PoB raises inside the Vestigial list for some bases; record the error rather than an empty list
+	local vestigial, vestigialError = {}, nil
+	if #sources > 0 then
+		local ok, res = pcall(buildMods, item, "VESTIGIAL")
+		if ok then
+			vestigial = res
+		else
+			vestigialError = tostring(res):gsub("^.-:%d+: ", "")
+		end
+	end
 	out[k] = { EXARCH = buildMods(item, "EXARCH"), EATER = buildMods(item, "EATER"), sources = sources,
-		VESTIGIAL = #sources > 0 and buildMods(item, "VESTIGIAL") or {} }
+		VESTIGIAL = vestigial, vestigialError = vestigialError }
 end
 io.open(outPath, "w"):write(json.encode(out))

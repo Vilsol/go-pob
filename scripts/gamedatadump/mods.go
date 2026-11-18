@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math"
 	"regexp"
+	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/Vilsol/go-pob-data/poe"
@@ -124,8 +126,166 @@ func (x *modsExport) describeMod(m *poe.Mod, stat2 *[2]int) ([]string, []float64
 		}
 		stats[s.Stat.ID] = v
 	}
-	// statdesc.lua:589 calls describeModStats (:555-570); its granted-effect lines need Mods columns go-pob-data lacks.
-	return x.describer.describeStats(stats)
+	return x.describer.describeModStats(m, stats)
+}
+
+var grantedEffectNames map[string]string
+
+// getGrantedEffectNames maps granted effect ids to gem names.
+// Secondary effects such as Snipe Support have their own name instead of the gem's
+//
+//pob:src/Export/statdesc.lua:471-491
+func getGrantedEffectNames() (map[string]string, error) {
+	if grantedEffectNames != nil {
+		return grantedEffectNames, nil
+	}
+	ctx, cache := gameDataContext(), assetCache()
+	for _, t := range []struct {
+		name string
+		init func() error
+	}{
+		{"ClientStrings", func() error { return poe.InitializeClientStrings(ctx, raw.LatestVersion, cache) }},
+		{"BaseItemTypes", func() error { return poe.InitializeBaseItemTypes(ctx, raw.LatestVersion, cache) }},
+		{"ActiveSkills", func() error { return poe.InitializeActiveSkills(ctx, raw.LatestVersion, cache) }},
+		{"GrantedEffects", func() error { return poe.InitializeGrantedEffects(ctx, raw.LatestVersion, cache) }},
+		{"GrantedEffectsPerLevel", func() error { return poe.InitializeGrantedEffectsPerLevels(ctx, raw.LatestVersion, cache) }},
+		{"GemEffects", func() error { return poe.InitializeGemEffects(ctx, raw.LatestVersion, cache) }},
+		{"SkillGems", func() error { return poe.InitializeSkillGems(ctx, raw.LatestVersion, cache) }},
+	} {
+		if err := t.init(); err != nil {
+			return nil, fmt.Errorf("%s: %w", t.name, err)
+		}
+	}
+	names := map[string]string{}
+	for _, gem := range poe.SkillGems {
+		for _, gemEffect := range gem.GetGemVariants() {
+			if id := poe.GrantedEffects[gemEffect.GrantedEffect].ID; names[id] == "" {
+				names[id] = poe.BaseItemTypes[gem.BaseItemType].Name
+			}
+			if gemEffect.GrantedEffect2 != nil {
+				name := gemEffect.SupportName
+				if name == "" {
+					name = poe.BaseItemTypes[gem.BaseItemType].Name
+				}
+				if id := poe.GrantedEffects[*gemEffect.GrantedEffect2].ID; names[id] == "" {
+					names[id] = name
+				}
+			}
+		}
+	}
+	grantedEffectNames = names
+	return names, nil
+}
+
+// describeGrantedEffects: 3.30 moved the gem and level of most "Supported by" and "Grants" mods from their display
+// stats, which are now 0, into a GrantedEffect column on the mod row. The display stat may still hold a level when
+// describing legacy values. These mods might also have no stats at all, in which case the line is only shown if the
+// mod is flagged to show it. Trigger mods are not
+//
+//pob:src/Export/statdesc.lua:498-552
+func (e *exportDescriber) describeGrantedEffects(m *poe.Mod, stats map[string]*edRange) ([]string, []float64, error) {
+	var hasDisplayStat bool
+	var level *edRange
+	// Only handle display stats that GGG zeroed. If a legacy value is given for one that still has a description, describeStats handles it
+	for _, s := range m.Stats() {
+		if strings.HasPrefix(s.Stat.ID, "local_display_") && s.Min == 0 && s.Max == 0 {
+			if value := stats[s.Stat.ID]; value != nil && (value.min != 0 || value.max != 0) {
+				if _, ok := e.descriptors[s.Stat.ID]; ok {
+					return nil, nil, nil
+				}
+				level = value
+			}
+			hasDisplayStat = true
+		}
+	}
+	if !hasDisplayStat && (m.StatsKey1 != nil || !m.ShowGrantedEffects) {
+		return nil, nil, nil
+	}
+	names, err := getGrantedEffectNames()
+	if err != nil {
+		return nil, nil, err
+	}
+	var out []string
+	var orders []float64
+	seen := map[string]bool{}
+	for _, key := range m.GrantedEffectsPerLevelKeys {
+		levelRow := poe.GrantedEffectsPerLevels[key]
+		grantedEffect := poe.GrantedEffects[levelRow.GrantedEffect]
+		// Supports are named after their gem and actives after their skill. The stat order of a remaining descriptor of the same kind is borrowed
+		var name, template, orderStat string
+		if grantedEffect.IsSupport {
+			name, template, orderStat = names[grantedEffect.ID], "ModGrantsSupportEffect", "local_random_support_gem_level"
+		} else {
+			if grantedEffect.ActiveSkill != nil {
+				name = poe.ActiveSkills[*grantedEffect.ActiveSkill].DisplayedName
+			}
+			template, orderStat = "ModGrantsEffect", "local_display_grants_skill_frostbite_level"
+		}
+		if name == "" || seen[name] {
+			continue
+		}
+		seen[name] = true
+		var levelText string
+		hasLevel := false
+		if level != nil {
+			levelText, hasLevel = luaNumber(level.min), true
+			if level.min != level.max {
+				levelText = "(" + luaNumber(level.min) + "-" + luaNumber(level.max) + ")"
+			}
+			// Skills that cannot be supported, such as Harbinger skills, are shown without a level
+		} else if grantedEffect.IsSupport || !grantedEffect.CannotBeSupported {
+			levelText, hasLevel = strconv.Itoa(levelRow.Level), true
+		}
+		if hasLevel {
+			template += "WithLevel"
+		}
+		// The same templates the client uses, e.g. "Socketed Gems are Supported by Level {1} {0}"
+		row, ok := poe.ClientStringsByID[template]
+		if !ok {
+			return nil, nil, fmt.Errorf("ClientStrings has no %s", template)
+		}
+		order, ok := e.descriptors[orderStat]
+		if !ok {
+			return nil, nil, fmt.Errorf("no stat descriptor for %s", orderStat)
+		}
+		out = append(out, strings.ReplaceAll(strings.ReplaceAll(row.Text, "{0}", name), "{1}", levelText))
+		orders = append(orders, float64(order.order))
+	}
+	return out, orders, nil
+}
+
+// describeModStats is describeStats with the granted effect lines of the mod inserted by stat order
+//
+//pob:src/Export/statdesc.lua:554-570
+func (e *exportDescriber) describeModStats(m *poe.Mod, stats map[string][2]float64) ([]string, []float64, error) {
+	ranges := make(map[string]*edRange, len(stats))
+	for s, v := range stats {
+		ranges[s] = &edRange{min: v[0], max: v[1]}
+	}
+	grantedOut, grantedOrders, err := e.describeGrantedEffects(m, ranges)
+	if err != nil {
+		return nil, nil, err
+	}
+	out, orders, err := e.describeRanges(ranges)
+	if err != nil {
+		return nil, nil, err
+	}
+	for i, line := range grantedOut {
+		index := len(orders)
+		for j, order := range orders {
+			if order > grantedOrders[i] {
+				index = j
+				break
+			}
+		}
+		out = slices.Insert(out, index, line)
+		orders = slices.Insert(orders, index, grantedOrders[i])
+	}
+	return out, orders, nil
+}
+
+func luaNumber(v float64) string {
+	return strconv.FormatFloat(v, 'g', 14, 64)
 }
 
 //pob:src/Export/Scripts/mods.lua:46-204

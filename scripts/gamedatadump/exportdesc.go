@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/Vilsol/go-pob-data/loader"
+	"github.com/Vilsol/go-pob-data/poe"
 
 	"github.com/Vilsol/go-pob/data/raw"
 )
@@ -26,6 +27,7 @@ type exportDescriber struct {
 type edRange struct {
 	min, max   float64
 	fmt        string
+	text       string
 	minZ, maxZ bool
 }
 
@@ -173,9 +175,17 @@ func edFormat(v float64, f string, sign bool) string {
 	return s
 }
 
+// edScalar is string.format("%"..v.fmt, v.min); the "s" format carries a formatter's name.
+func edScalar(v *edRange, sign bool) string {
+	if v.fmt == "s" {
+		return v.text
+	}
+	return edFormat(v.min, v.fmt, sign)
+}
+
 func edValue(v *edRange) string {
 	if v.min == v.max {
-		return edFormat(v.min, v.fmt, false)
+		return edScalar(v, false)
 	}
 	return "(" + edFormat(v.min, v.fmt, false) + "-" + edFormat(v.max, v.fmt, false) + ")"
 }
@@ -265,7 +275,6 @@ func edApplySpec(val []*edRange, spec sdSpec) error {
 		scale(func(x float64) float64 { return x * 0.3 }, "")
 	case "mod_value_to_item_class":
 		return fmt.Errorf("handler %s needs ItemClasses, which no ported export reads", spec.K)
-	// statdesc.lua:399-403's formatter-name arm is unported: go-pob-data carries none of its eight tables.
 	case "multiplicative_damage_modifier":
 		scale(func(x float64) float64 { return 100 + x }, "")
 	case "multiply_by_four":
@@ -278,8 +287,76 @@ func edApplySpec(val []*edRange, spec sdSpec) error {
 		scale(func(x float64) float64 { return x * 2 }, "")
 	case "plus_two_hundred":
 		scale(func(x float64) float64 { return x + 200 }, "")
+	default:
+		// statdesc.lua:399-403 sits before multiplicative_damage_modifier; no case above shares a formatter's name.
+		names, err := getDescriptionFormatterNames()
+		if err != nil {
+			return err
+		}
+		if list, ok := names[spec.K]; ok {
+			// Ranges describe the lowest value, as the per-value descriptions did before 3.30
+			v.text = strconv.FormatFloat(v.min, 'g', 14, 64)
+			if i := int(v.min); float64(i) == v.min && i >= 1 && i <= len(list) {
+				v.text = list[i-1]
+			}
+			v.max = v.min
+			v.fmt = "s"
+		}
 	}
 	return nil
+}
+
+var descriptionFormatterNames map[string][]string
+
+// getDescriptionFormatterNames: 3.30 replaced the per-value descriptions of these stats with formatter functions. The
+// stat value is a row number in these tables.
+//
+//pob:src/Export/statdesc.lua:176-206
+func getDescriptionFormatterNames() (map[string][]string, error) {
+	if descriptionFormatterNames != nil {
+		return descriptionFormatterNames, nil
+	}
+	ctx, cache := gameDataContext(), assetCache()
+	for name, init := range map[string]func() error{
+		"ClientStrings":           func() error { return poe.InitializeClientStrings(ctx, raw.LatestVersion, cache) },
+		"PassiveJewelRadii":       func() error { return poe.InitializePassiveJewelRadii(ctx, raw.LatestVersion, cache) },
+		"FishingLureTypes":        func() error { return poe.InitializeFishingLureTypes(ctx, raw.LatestVersion, cache) },
+		"FishingHookTypes":        func() error { return poe.InitializeFishingHookTypes(ctx, raw.LatestVersion, cache) },
+		"ShaperApparitionAbility": func() error { return poe.InitializeShaperApparitionAbilities(ctx, raw.LatestVersion, cache) },
+		"MinionDoublingStatTypes": func() error { return poe.InitializeMinionDoublingStatTypes(ctx, raw.LatestVersion, cache) },
+		"AtlasExiles":             func() error { return poe.InitializeAtlasExiles(ctx, raw.LatestVersion, cache) },
+		"ElderGuardians":          func() error { return poe.InitializeElderGuardians(ctx, raw.LatestVersion, cache) },
+	} {
+		if err := init(); err != nil {
+			return nil, fmt.Errorf("%s: %w", name, err)
+		}
+	}
+	rowNames := func(n int, getName func(int) string) []string {
+		names := make([]string, n)
+		for i := range names {
+			names[i] = getName(i)
+		}
+		return names
+	}
+	var pearlSlots []string
+	for _, row := range poe.ClientStrings {
+		if strings.HasPrefix(row.ID, "PelagicPearlSlotType") {
+			pearlSlots = append(pearlSlots, row.Text)
+		}
+	}
+	descriptionFormatterNames = map[string][]string{
+		"passive_jewel_radius": rowNames(len(poe.PassiveJewelRadii), func(i int) string {
+			return poe.ClientStrings[*poe.PassiveJewelRadii[i].ClientString].Text
+		}),
+		"fishing_lure_type":         rowNames(len(poe.FishingLureTypes), func(i int) string { return poe.FishingLureTypes[i].Name }),
+		"fishing_hook_type":         rowNames(len(poe.FishingHookTypes), func(i int) string { return poe.FishingHookTypes[i].Name }),
+		"pelagic_pearl_slot":        pearlSlots,
+		"shaper_apparition_ability": rowNames(len(poe.ShaperApparitionAbilities), func(i int) string { return poe.ShaperApparitionAbilities[i].Name }),
+		"minion_doubling_type":      rowNames(len(poe.MinionDoublingStatTypes), func(i int) string { return poe.MinionDoublingStatTypes[i].Name }),
+		"atlas_exile_citadel_index": rowNames(len(poe.AtlasExiles), func(i int) string { return poe.AtlasExiles[i].CitadelName }),
+		"elder_guardian_index":      rowNames(len(poe.ElderGuardians), func(i int) string { return poe.ElderGuardians[i].Name }),
+	}
+	return descriptionFormatterNames, nil
 }
 
 func (e *exportDescriber) describeStats(stats map[string][2]float64) ([]string, []float64, error) {
@@ -372,7 +449,7 @@ func (e *exportDescriber) describeRanges(stats map[string]*edRange) ([]string, [
 			sign := sub[2] == "+"
 			switch {
 			case v.min == v.max:
-				return edFormat(v.min, v.fmt, sign)
+				return edScalar(v, sign)
 			case sign && v.max < 0:
 				return "-(" + edFormat(-v.min, v.fmt, false) + "-" + edFormat(-v.max, v.fmt, false) + ")"
 			case sign:

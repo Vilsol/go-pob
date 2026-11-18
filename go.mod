@@ -5,7 +5,7 @@ go 1.26.11
 require (
 	github.com/MarvinJWendt/testza v0.5.2
 	github.com/Vilsol/crystalline v0.2.0
-	github.com/Vilsol/go-pob-data v0.5.18-0.20261116221402-5ea6c648b7d5
+	github.com/Vilsol/go-pob-data v0.5.18-0.20261117171323-a96d84da7b44
 	github.com/andybalholm/brotli v1.1.1
 	github.com/dominikbraun/graph v0.23.0
 	github.com/felixge/fgprof v0.9.5

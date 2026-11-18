@@ -55,6 +55,8 @@
   const uid = $props.id();
   const els: Record<string, HTMLButtonElement> = $state({});
   const unique = $derived(kind === 'UNIQUE');
+  const names = { UNIQUE: ['Uniques', 'Unique'], RARE: ['Templates', 'Template'], VISCERA: ['Viscera', 'Viscera'] };
+  const [listName, rowName] = $derived(names[kind]);
   const opts = (list: string[] | undefined) => (list ?? []).map((label, i) => ({ value: String(i + 1), label }));
   const pick = (key: keyof Omit<ItemDBFilterInput, 'search'>) => (e: Event & { currentTarget: HTMLSelectElement }) =>
     (filter = { ...filter, [key]: Number(e.currentTarget.value) });
@@ -88,7 +90,8 @@
     label="Item database"
     tabs={[
       { id: 'UNIQUE', label: 'Uniques' },
-      { id: 'RARE', label: 'Templates' }
+      { id: 'RARE', label: 'Templates' },
+      { id: 'VISCERA', label: 'Viscera' }
     ].filter((t) => kinds.includes(t.id as ItemDBKind))}
     selected={kind}
     onchange={(id) => {
@@ -103,7 +106,7 @@
     <aside aria-label="Filters" class="panel flex w-62.5 shrink-0 flex-col gap-2.5 self-start p-3 text-12 max-phone:w-auto max-phone:self-stretch">
       <SearchField
         placeholder="Search"
-        label="Search {unique ? 'uniques' : 'templates'}"
+        label="Search {listName.toLowerCase()}"
         value={filter.search}
         oninput={(e: Event & { currentTarget: HTMLInputElement }) => (filter = { ...filter, search: e.currentTarget.value })} />
       <FloatingLabel label="Search in"
@@ -147,10 +150,10 @@
       {/if}
     </aside>
     <section
-      aria-label={unique ? 'Uniques' : 'Templates'}
+      aria-label={listName}
       aria-busy={busy}
       class="panel relative min-w-0 grow self-start overflow-hidden text-12 max-phone:shrink-0 max-phone:self-stretch">
-      <div role="table" aria-label="{unique ? 'Unique' : 'Template'} list" class="max-h-[70vh] overflow-y-auto max-phone:max-h-none">
+      <div role="table" aria-label="{rowName} list" class="max-h-[70vh] overflow-y-auto max-phone:max-h-none">
         <div role="row" class="data-row data-head sticky top-0 z-raised grid-cols-24 py-2 max-phone:hidden">
           <span role="columnheader" class="col-span-9">ITEM</span><span role="columnheader" class="col-span-5">TYPE</span><span
             role="columnheader"

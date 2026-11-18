@@ -316,6 +316,22 @@ func TestCorruptSortValues(t *testing.T) {
 	}
 }
 
+func vestigialMappingWithoutMod(item *Item) bool {
+	table, _ := data.AffixTable("Vestigial")
+	ids := map[string]bool{}
+	for _, m := range table {
+		ids[m.ID] = true
+	}
+	for id, uniqueTitle := range data.VestigialModMappings() {
+		titleLower := luaLower(uniqueTitle)
+		unique := uniqueDBByTitle()[titleLower]
+		if unique != nil && unique.Base.Type == item.Base.Type && luaLower(item.Title) != titleLower && !ids[id] {
+			return true
+		}
+	}
+	return false
+}
+
 // TestImplicitListsAgainstPoB: AddImplicitPopup.lua:45-181: the Add Implicit popup's Exarch / Eater types and modifiers for four bases.
 func TestImplicitListsAgainstPoB(t *testing.T) {
 	initItemsTabData(t)
@@ -328,6 +344,7 @@ func TestImplicitListsAgainstPoB(t *testing.T) {
 		Pob   []struct {
 			EXARCH, EATER, VESTIGIAL []group
 			Sources                  []string
+			VestigialError           string
 		}
 	}
 	raw, err := os.ReadFile("../testdata/craft-ui/implicit_lists.json")
@@ -367,7 +384,13 @@ func TestImplicitListsAgainstPoB(t *testing.T) {
 		if offered != slices.Contains(want.Sources, "VESTIGIAL") {
 			t.Errorf("item %d: Vestigial offered %v, PoB %v", k, offered, want.Sources)
 		}
-		if offered {
+		if offered && want.VestigialError != "" {
+			// AddImplicitPopup.lua:122-132 copies data.itemMods.Vestigial[id] for every mapping to a unique on this base
+			// type; PoB raises when one has no mod, so there is no list to compare. Assert that cause instead.
+			if !vestigialMappingWithoutMod(item) {
+				t.Errorf("item %d: PoB raised %q in the Vestigial list, but no mapping on this base type lacks its mod", k, want.VestigialError)
+			}
+		} else if offered {
 			vestigial++
 			if a, b := flat(got["VESTIGIAL"]), flat(want.VESTIGIAL); !slices.Equal(a, b) {
 				t.Errorf("item %d VESTIGIAL: %d entries, want %d; first %v, want %v", k, len(a), len(b), a[:min(1, len(a))], b[:min(1, len(b))])

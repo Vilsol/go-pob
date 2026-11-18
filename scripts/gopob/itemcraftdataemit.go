@@ -52,12 +52,16 @@ func oracleItemCraftDataEmit(argv []string) int {
 		//go-only: a new emitter, written in Go from the start; there is no original to share the wording with
 		return oeRefuse("the dump carries no crafting bench or essence table; Data.lua did not load. Re-run `go run ./scripts/gamedatadump item-craft-mods`.")
 	}
+	if len(oeArray(dump["viscera"])) < 100 {
+		//go-only: a new emitter, written in Go from the start; there is no original to share the wording with
+		return oeRefuse("the dump carries no Viscera items. Re-run `go run ./scripts/gamedatadump item-craft-mods`.")
+	}
 	blob, err := json.Marshal(map[string]any{"sources": dump["sources"], "enchantments": enchantments, "bases": dump["bases"], "affixTables": dump["affixTables"],
 		"masterMods": dump["masterMods"], "essences": dump["essences"], "veiledMods": dump["veiledMods"], "necropolisMods": dump["necropolisMods"],
 		"beastCraft": dump["beastCraft"], "crucible": dump["crucible"], "casterTagCrucibleUniques": dump["casterTagCrucibleUniques"],
 		"minionTagCrucibleUniques": dump["minionTagCrucibleUniques"], "vestigialUniqueBaseTypes": dump["vestigialUniqueBaseTypes"],
 		"vestigialModMappings": dump["vestigialModMappings"], "specialCorruptionMods": dump["specialCorruptionMods"],
-		"dropRestricted": dump["dropRestricted"]})
+		"dropRestricted": dump["dropRestricted"], "viscera": dump["viscera"]})
 	if err != nil {
 		//go-only: a new emitter, written in Go from the start; there is no original to share the wording with
 		return oeRefuse("the dump does not re-encode: " + err.Error())

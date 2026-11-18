@@ -16,8 +16,9 @@ import (
 type ItemDBKind string
 
 const (
-	ItemDBUnique ItemDBKind = "UNIQUE"
-	ItemDBRare   ItemDBKind = "RARE"
+	ItemDBUnique  ItemDBKind = "UNIQUE"
+	ItemDBRare    ItemDBKind = "RARE"
+	ItemDBViscera ItemDBKind = "VISCERA"
 )
 
 type itemDBList struct {
@@ -27,13 +28,16 @@ type itemDBList struct {
 }
 
 var (
-	itemDBOnce  [2]sync.Once
-	itemDBLists [2]itemDBList
+	itemDBOnce  [3]sync.Once
+	itemDBLists [3]itemDBList
 )
 
 func itemDBIndex(kind ItemDBKind) int {
 	if kind == ItemDBRare {
 		return 1
+	}
+	if kind == ItemDBViscera {
+		return 2
 	}
 	return 0
 }
@@ -47,6 +51,17 @@ func loadItemDB(kind ItemDBKind) itemDBList {
 			item.parseRaw(data.SanitiseItemText(e.Raw), RarityUnique, true)
 			if item.Base != nil {
 				byName[item.Name] = item
+			}
+		}
+	} else if kind == ItemDBViscera {
+		//pob:block:src/Modules/Main.lua:204-212
+		for _, raw := range data.Viscera() {
+			item := &Item{}
+			item.parseRaw(raw, RarityRare, true)
+			if item.Base != nil {
+				parsed := &Item{}
+				parsed.parseRaw(buildRawText(item), RarityRare, true)
+				byName[parsed.Name] = parsed
 			}
 		}
 	} else {
@@ -117,8 +132,8 @@ func ItemDB(kind ItemDBKind) []*Item {
 }
 
 func resetItemDB() {
-	itemDBOnce = [2]sync.Once{}
-	itemDBLists = [2]itemDBList{}
+	itemDBOnce = [3]sync.Once{}
+	itemDBLists = [3]itemDBList{}
 }
 
 //pob:src/Classes/ItemDBControl.lua:78-96

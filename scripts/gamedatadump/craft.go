@@ -243,6 +243,10 @@ func dumpItemCraftMods() (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	viscera, err := dumpViscera()
+	if err != nil {
+		return nil, err
+	}
 	return map[string]any{
 		"pobVersion": "go-pob-data " + raw.LatestVersion, "affixTables": affixTables,
 		"veiledMods": byID(lastByID(veiled)), "necropolisMods": byID(lastByID(necropolis)), "beastCraft": byID(lastByID(beast)), "crucible": crucible, "essences": essences, "masterMods": masterMods,
@@ -251,7 +255,7 @@ func dumpItemCraftMods() (any, error) {
 		"minionTagCrucibleUniques": sortedKeys(literals["data.minionTagCrucibleUniques"].hash),
 		"vestigialUniqueBaseTypes": sortedKeys(literals["data.vestigialUniqueBaseTypes"].hash),
 		"vestigialModMappings":     vestigialMappings, "specialCorruptionMods": byID(specialCorruption),
-		"dropRestricted": dropRestricted,
+		"dropRestricted": dropRestricted, "viscera": viscera,
 	}, nil
 }
 

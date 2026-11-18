@@ -635,6 +635,7 @@ scripts/gamedatadump/masters.go     PORT       src/Export/Scripts/masters.lua
 scripts/gamedatadump/enchant.go     PORT       src/Export/Scripts/enchant.lua,src/Modules/Data.lua
 scripts/gamedatadump/bases.go       PORT       src/Export/Scripts/bases.lua
 scripts/gamedatadump/flavour.go     PORT       src/Export/Scripts/flavourText.lua
+scripts/gamedatadump/viscera.go     PORT       src/Export/Scripts/viscera.lua
 wasm/exposition/ui_exports.go           GO-NATIVE  crystalline binding surface for the frontend
 calculator/party_export.go         PORT       src/Modules/CalcPerform.lua,src/Classes/PartyTab.lua,src/Modules/ModTools.lua
 calculator2/breakdown.go            PORT       src/Modules/CalcBreakdown.lua
