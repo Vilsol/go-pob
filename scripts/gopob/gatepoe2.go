@@ -15,15 +15,23 @@ import (
 	"github.com/Vilsol/go-pob/scripts/gopob/internal/root"
 )
 
-// The PoE2 corpus gate's summary lines, cached by the committed gate inputs (every tracked file but the frontend, desktop, CI, Nix and docs) and the corpus and oracle it read, so a base is
-// measured once per commit rather than once per change on top of it. A dirty tree is measured fresh and never stored: the tree hash
-// cannot see uncommitted work.
+// A corpus gate's summary lines, cached by its package's dependency closure (gateClosure) and the corpus and oracle it
+// read, so a base is measured once per closure rather than once per commit. Uncommitted work inside the closure is
+// measured fresh and never stored: the key cannot see it.
 
 // what is run as "the PoE2 corpus gate": every PoE2 corpus test, the authoritative TestCorpusPoE2VsOracle among them
 const gp2DefaultRun = "TestCorpusPoE2"
 
-// the local PoE2 corpus, oracle and dump links the tests read
-const gp2Inputs = "testdata/*poe2*"
+type gateGame struct {
+	name, pkg, run, cache string
+	// the local corpus, oracle and dump links the tests read
+	data []string
+}
+
+var (
+	gateGamePoE2 = gateGame{name: "gate-poe2", pkg: "./calculator2/", run: gp2DefaultRun, cache: "gatecache-poe2", data: []string{"testdata/*poe2*"}}
+	gateGamePoE1 = gateGame{name: "gate-cached", pkg: "./calculator/", run: "TestCorpus3_29VsOracle", cache: "gatecache-poe1", data: []string{"testdata/corpus-3.*", "testdata/oracle-3.*"}}
+)
 
 var gp2Summary = regexp.MustCompile(`^=== [^RPCN]|^=== (?:CORPUS|every)|^\d+ (?:graded|builds)|matched \d+ / \d+|^first failure: |above the floor|^\s*--- (?:PASS|FAIL|SKIP)|^(?:ok|FAIL)\s|^[A-Z_]+: \d+ builds`)
 
@@ -34,12 +42,16 @@ func gp2Git(repo string, args ...string) (string, error) {
 	return strings.TrimSpace(string(out)), err
 }
 
-// gp2DataKey names the PoE2 corpus, oracle and dumps by where they resolve to, their size and modification time and
+// gp2DataKey names the corpus, oracle and dumps by where they resolve to, their size and modification time and
 // entry count, and for a small directory (an oracle) each entry's size and time
-func gp2DataKey(repo string) (string, error) {
-	links, err := filepath.Glob(filepath.Join(repo, gp2Inputs))
-	if err != nil || len(links) == 0 {
-		return "", fmt.Errorf("nothing matches %s", gp2Inputs)
+func gp2DataKey(repo string, globs []string) (string, error) {
+	var links []string
+	for _, g := range globs {
+		m, _ := filepath.Glob(filepath.Join(repo, g))
+		links = append(links, m...)
+	}
+	if len(links) == 0 {
+		return "", fmt.Errorf("nothing matches %s", strings.Join(globs, " "))
 	}
 	var b strings.Builder
 	for _, link := range links {
@@ -89,16 +101,18 @@ func gp2Filter(out string) []string {
 }
 
 type gp2Env struct {
+	game    gateGame
 	repo    string
 	pattern string
 	out     io.Writer
 	// runs the gate and returns its whole output
-	run func() (string, error)
+	run     func() (string, error)
+	closure func() (gateClosure, error)
 }
 
-func gp2RunGoTest(repo, pattern string) func() (string, error) {
+func gp2RunGoTest(repo, pkg, pattern string) func() (string, error) {
 	return func() (string, error) {
-		cmd := exec.CommandContext(context.Background(), "go", "test", "./calculator2/", "-run", pattern, "-count=1", "-v", "-timeout", "60m") //nolint:gosec // the caller's -run pattern
+		cmd := exec.CommandContext(context.Background(), "go", "test", pkg, "-run", pattern, "-count=1", "-v", "-timeout", "60m") //nolint:gosec // the caller's -run pattern
 		cmd.Dir = repo
 		cmd.Env = append(os.Environ(), "CORPUS=true")
 		out, err := cmd.CombinedOutput()
@@ -107,73 +121,82 @@ func gp2RunGoTest(repo, pattern string) func() (string, error) {
 }
 
 func (e gp2Env) gate(force bool) int {
-	tree, err := gateInputsKey(e.repo)
+	name := e.game.name
+	closure, err := e.closure()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "REFUSING: gate-poe2: no HEAD inputs: "+err.Error())
+		fmt.Fprintln(os.Stderr, "REFUSING: "+name+": no dependency closure: "+err.Error())
 		return root.RefusalCode
 	}
-	data, err := gp2DataKey(e.repo)
+	tree, err := closure.key(e.repo)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "REFUSING: gate-poe2: the local PoE2 corpus is missing, so there is no number to report: "+err.Error())
+		fmt.Fprintln(os.Stderr, "REFUSING: "+name+": no HEAD inputs: "+err.Error())
 		return root.RefusalCode
 	}
-	status, err := gp2Git(e.repo, "status", "--porcelain")
+	data, err := gp2DataKey(e.repo, e.game.data)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "REFUSING: gate-poe2: git status: "+err.Error())
+		fmt.Fprintln(os.Stderr, "REFUSING: "+name+": the local corpus is missing, so there is no number to report: "+err.Error())
+		return root.RefusalCode
+	}
+	dirty, err := closure.dirty(e.repo)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "REFUSING: "+name+": git status: "+err.Error())
 		return root.RefusalCode
 	}
 	common, err := gp2Git(e.repo, "rev-parse", "--path-format=absolute", "--git-common-dir")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "REFUSING: gate-poe2: no git dir: "+err.Error())
+		fmt.Fprintln(os.Stderr, "REFUSING: "+name+": no git dir: "+err.Error())
 		return root.RefusalCode
 	}
-	dir := filepath.Join(common, "gatecache-poe2")
+	dir := filepath.Join(common, e.game.cache)
 	key := gp2Key(tree, e.pattern, data)
 	file := filepath.Join(dir, key+".txt")
-	dirty := status != ""
 
 	if !dirty && !force {
 		if b, err := os.ReadFile(file); err == nil && len(b) > 0 { //nolint:gosec // this repository's own cache
 			_, _ = e.out.Write(b)
-			_, _ = fmt.Fprintf(e.out, "(cached) -run %s measured at gate inputs %s; FORCE_GATES=1 or --force re-runs; whole output %s\n", e.pattern, tree[:12], filepath.Join(dir, key+".log"))
+			_, _ = fmt.Fprintf(e.out, "(cached) -run %s measured at dependency closure %s; FORCE_GATES=1 or --force re-runs; whole output %s\n", e.pattern, tree[:12], filepath.Join(dir, key+".log"))
 			return 0
 		}
 	}
 	if dirty {
-		_, _ = fmt.Fprintln(e.out, "(uncached) the working tree is dirty: measuring fresh, not storing")
+		_, _ = fmt.Fprintln(e.out, "(uncached) uncommitted work touches "+e.game.pkg+"'s dependency closure: measuring fresh, not storing")
 	}
 
 	out, runErr := e.run()
 	body := strings.Join(gp2Filter(out), "\n") + "\n"
 	_, _ = io.WriteString(e.out, body)
 	if runErr != nil {
-		log := filepath.Join(os.TempDir(), "gate-poe2-"+tree[:12]+".log")
+		log := filepath.Join(os.TempDir(), name+"-"+tree[:12]+".log")
 		_ = os.WriteFile(log, []byte(out), 0o600)
 		_, _ = fmt.Fprintf(e.out, "GATE FAILED: %v (not stored); the whole output is in %s\n", runErr, log)
 		return 1
 	}
 	if !strings.Contains(body, "matched ") {
-		fmt.Fprintln(os.Stderr, "REFUSING: gate-poe2: the gate printed no matched line (did it skip?); nothing stored")
+		fmt.Fprintln(os.Stderr, "REFUSING: "+name+": the gate printed no matched line (did it skip?); nothing stored")
 		return root.RefusalCode
 	}
 	if dirty {
 		return 0
 	}
 	if err := os.MkdirAll(dir, 0o750); err != nil {
-		fmt.Fprintln(os.Stderr, "gate-poe2: not stored: "+err.Error())
+		fmt.Fprintln(os.Stderr, name+": not stored: "+err.Error())
 		return 0
 	}
 	_ = os.WriteFile(filepath.Join(dir, key+".log"), []byte(out), 0o600)
 	if err := os.WriteFile(file, []byte(body), 0o600); err != nil {
-		fmt.Fprintln(os.Stderr, "gate-poe2: not stored: "+err.Error())
+		fmt.Fprintln(os.Stderr, name+": not stored: "+err.Error())
 	}
-	_, _ = fmt.Fprintf(e.out, "(stored) tree %s\n", tree[:12])
+	_, _ = fmt.Fprintf(e.out, "(stored) dependency closure %s\n", tree[:12])
 	return 0
 }
 
-func gatePoE2(argv []string) int {
+func gatePoE2(argv []string) int { return gateCachedMain(gateGamePoE2, argv) }
+
+func gateCached(argv []string) int { return gateCachedMain(gateGamePoE1, argv) }
+
+func gateCachedMain(g gateGame, argv []string) int {
 	force := os.Getenv("FORCE_GATES") != ""
-	pattern := gp2DefaultRun
+	pattern := g.run
 	for i := 0; i < len(argv); i++ {
 		switch a := argv[i]; {
 		case a == "--force":
@@ -182,14 +205,15 @@ func gatePoE2(argv []string) int {
 			i++
 			pattern = argv[i]
 		default:
-			fmt.Fprintln(os.Stderr, "REFUSING: gate-poe2: unknown argument "+a+"; usage: gate-poe2 [--force] [--run <go test -run pattern>]")
+			fmt.Fprintln(os.Stderr, "REFUSING: "+g.name+": unknown argument "+a+"; usage: "+g.name+" [--force] [--run <go test -run pattern>]")
 			return 64
 		}
 	}
 	repo, err := root.Resolve()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "REFUSING: gate-poe2: "+err.Error())
+		fmt.Fprintln(os.Stderr, "REFUSING: "+g.name+": "+err.Error())
 		return root.RefusalCode
 	}
-	return gp2Env{repo: repo, pattern: pattern, out: os.Stdout, run: gp2RunGoTest(repo, pattern)}.gate(force)
+	return gp2Env{game: g, repo: repo, pattern: pattern, out: os.Stdout, run: gp2RunGoTest(repo, g.pkg, pattern),
+		closure: func() (gateClosure, error) { return gateClosureOf(repo, g.pkg) }}.gate(force)
 }

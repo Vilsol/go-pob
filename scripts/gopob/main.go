@@ -103,8 +103,10 @@ const usage = `gopob <subcommand> [flags]
                         it carries the disagreement rate and is as much the point as the blob
   affected-tests        [--dry] [go test args...] BASE=<ref>: go test only the packages the change
                         since BASE (default merge-base dev) and the working tree can reach
-  gate-poe2 [--force]   the PoE2 corpus gate's summary lines, cached by the committed gate inputs (all but frontend, desktop, CI, Nix, docs) and the corpus it
-                        read; a dirty tree is measured fresh and never stored. FORCE_GATES=1 re-runs
+  gate-poe2 [--force]   the PoE2 corpus gate's summary lines, cached by calculator2's dependency closure and the corpus it
+                        read; uncommitted work in that closure is measured fresh and never stored. FORCE_GATES=1 re-runs
+  gate-cached [--force] the same for the PoE1 gate (TestCorpus3_29VsOracle, --run for another), cached by calculator's
+                        dependency closure and the PoE1 corpus and oracle
   test-tiers fast|affected|slow [go test args] | record <log>...
                         the operator suite split at 10s per test (scripts/gopob/operator_slow_tests.txt);
                         fast names any test that crossed the line, record rewrites the list
@@ -239,6 +241,8 @@ func main() {
 		os.Exit(affectedTests(os.Args[2:]))
 	case "gate-poe2":
 		os.Exit(gatePoE2(os.Args[2:]))
+	case "gate-cached":
+		os.Exit(gateCached(os.Args[2:]))
 	case "test-tiers":
 		os.Exit(testTiers(os.Args[2:]))
 	case "corpus-grep":

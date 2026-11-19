@@ -344,12 +344,20 @@ description = "Tier 2: the AUTHORITATIVE accuracy gate alone (~16s, GREEN at bas
 run = 'CORPUS=true {{vars.NICE}} go test ./calculator/ -run TestCorpus3_29VsOracle -count=1 -v -timeout 60m'
 
 [tasks.gate-poe2]
-description = "The PoE2 corpus tests' summary lines (every TestCorpusPoE2* by default, --run <pattern> for one), cached by the committed gate inputs (all but frontend, desktop, CI, Nix, docs) and the local corpus; a dirty tree is measured fresh and never stored, --force re-runs"
+description = "The PoE2 corpus tests' summary lines (every TestCorpusPoE2* by default, --run <pattern> for one), cached by calculator2's committed dependency closure and the local corpus; uncommitted work in that closure is measured fresh and never stored, --force re-runs"
 usage = '''
 flag "--run <run>" env="RUN" default="TestCorpusPoE2"
 flag "--force" env="FORCE"
 '''
 run = '{{vars.GOPOB}} gate-poe2 --run "{{usage.run}}" {% if usage.force %}--force{% endif %}'
+
+[tasks.gate-cached]
+description = "The gate's summary lines (--run <pattern> for another test), cached by calculator's committed dependency closure and the PoE1 corpus and oracle; uncommitted work in that closure is measured fresh and never stored, --force re-runs. WORKLIST= needs mise run gate"
+usage = '''
+flag "--run <run>" env="RUN" default="TestCorpus3_29VsOracle"
+flag "--force" env="FORCE"
+'''
+run = '{{vars.GOPOB}} gate-cached --run "{{usage.run}}" {% if usage.force %}--force{% endif %}'
 
 [tasks.gate-tight]
 description = "The gate's pairs graded at relative 1e-9 (sub-tolerance drift the gate passes); asserts a miss ceiling. WORKLIST=<dir> writes stats.tsv / builds.tsv."
@@ -578,6 +586,13 @@ run = [
   '{{vars.GOPOB}} fma-census',
   { task = "lint-tasks" },
 ]
+
+[tasks.lint-pkg]
+description = "golangci-lint over the packages given (--pkgs './calculator/... ./mod/...') with lint-go's cache: the per-fix lint; lint-go once before FINAL"
+usage = '''
+flag "--pkgs <pkgs>" env="PKGS" required=#true
+'''
+run = 'GOLANGCI_LINT_CACHE="{{config_root}}/.cache/golangci-lint" {{vars.NICE}} golangci-lint run {{usage.pkgs}}'
 
 [tasks.lint-frontend]
 description = "Lint frontend"

@@ -2,11 +2,9 @@ package calculator
 
 import "testing"
 
-// TestManaInfusedStaffNeedsMana: Mana-Infused Staff carries skill("requiresManaReservation", true); with no Mana,
-// CalcPerform.lua:2013-2016 disables it before any reservation is summed, and Blood Magic's reserve-life rule skips it
-// (:2032). The wants are the pinned PoB's dump of the build with "Removes all Mana" and "Skills Reserve Life instead
-// of Mana" added: its skillData carries requiresManaReservation, the skill is
-// disabled and it reserves nothing.
+// TestManaInfusedStaffNeedsMana: with no Mana, CalcPerform.lua:2013-2016 disables a requiresManaReservation skill
+// and Blood Magic's reserve-life rule skips it (:2032). The wants are the pinned PoB's dump with "Removes all Mana"
+// and "Skills Reserve Life instead of Mana" added: the skill is disabled and reserves nothing.
 //
 //pob:block:src/Modules/CalcPerform.lua:2013-2016,src/Modules/CalcPerform.lua:2032
 func TestManaInfusedStaffNeedsMana(t *testing.T) {

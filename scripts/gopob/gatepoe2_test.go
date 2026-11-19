@@ -63,7 +63,8 @@ type gp2Fake struct {
 }
 
 func (f *gp2Fake) env(repo string, w *bytes.Buffer) gp2Env {
-	return gp2Env{repo: repo, pattern: gp2DefaultRun, out: w, run: func() (string, error) { f.calls++; return f.out, f.err }}
+	return gp2Env{game: gateGamePoE2, repo: repo, pattern: gp2DefaultRun, out: w, run: func() (string, error) { f.calls++; return f.out, f.err },
+		closure: func() (gateClosure, error) { return newGateClosure("."), nil }}
 }
 
 func TestGatePoE2CachesACleanTreeOnce(t *testing.T) {
