@@ -727,9 +727,11 @@ func helmetFocusHandler(env *Environment) {
 	//pob:src/Modules/CalcTriggers.lua:173-180
 	modActionCooldown := math.Max(triggeredCD, triggerCD/icdrSkill)
 	rateCapAdjusted := math.Ceil(modActionCooldown*data.ServerTickRate) / data.ServerTickRate
+	triggerRate := math.Inf(1)
 	if rateCapAdjusted != 0 {
-		output["TriggerRateCap"] = 1 / rateCapAdjusted
+		triggerRate = 1 / rateCapAdjusted
 	}
+	output["TriggerRateCap"] = triggerRate
 	//pob:src/Modules/CalcTriggers.lua:181
 	output["SkillTriggerRate"] = 1 / focusTotalCD
 
@@ -999,9 +1001,6 @@ type triggerCooldownParts struct {
 //pob:block:src/Modules/CalcTriggers.lua:578-601
 func triggerCooldowns(mainSkill *ActiveSkill, castTimeSkill *ActiveSkill, configIgnoresTickRate bool) triggerCooldownParts {
 	icdr := calclib.Mod(mainSkill.SkillModList, mainSkill.SkillCfg, "CooldownRecovery")
-	if icdr == 0 {
-		icdr = 1
-	}
 	addedCooldown := mainSkill.SkillModList.Sum(mod.TypeBase, mainSkill.SkillCfg, "CooldownRecovery")
 	cooldownOverride := mainSkill.SkillModList.Override(mainSkill.SkillCfg, "CooldownRecovery")
 
@@ -1035,9 +1034,9 @@ func triggerCooldowns(mainSkill *ActiveSkill, castTimeSkill *ActiveSkill, config
 	}
 
 	//pob:src/Modules/CalcTriggers.lua:599-601
-	actionCooldown := math.Max(triggerCD+addsCastTime, triggeredCD+addedCooldown)
-	actionCooldownAdjusted := math.Max(triggerCDAdjusted, triggeredCDAdjusted)
-	actionCooldownTickRounded := math.Max(triggerCDTickRounded, triggeredCDTickRounded)
+	actionCooldown := luaMax(triggerCD+addsCastTime, triggeredCD+addedCooldown)
+	actionCooldownAdjusted := luaMax(triggerCDAdjusted, triggeredCDAdjusted)
+	actionCooldownTickRounded := luaMax(triggerCDTickRounded, triggeredCDTickRounded)
 	var override *float64
 	if cooldownOverride != nil {
 		v := utils.Or(cooldownOverride, 0)
@@ -1344,9 +1343,6 @@ func calcsTriggers(env *Environment, actor *Actor) {
 		}
 		env.Player.ModDB.AddMod(mod.NewFlag("UsesCurseOverlaps", true).Source("Config"))
 		icdr := calclib.Mod(mainSkill.SkillModList, mainSkill.SkillCfg, "CooldownRecovery")
-		if icdr == 0 {
-			icdr = 1
-		}
 		vixensCD := float64(0)
 		if vixens := poe.GrantedEffectByID("SupportUniqueCastCurseOnCurse"); vixens != nil {
 			if level, ok := raw2.GetCalculatedGrantedEffect(vixens).GetCalculatedLevels()[1]; ok && level != nil && level.Cooldown != nil {
@@ -1699,4 +1695,12 @@ func snipeTriggerConfig(env *Environment, mainSkill *ActiveSkill) *triggerConfig
 	}
 
 	return &triggerConfig{trigRate: trigRate, source: source}
+}
+
+// luaMax is LuaJIT's two-argument math.max: a NaN in either place yields the second argument.
+func luaMax(a, b float64) float64 {
+	if a > b {
+		return a
+	}
+	return b
 }

@@ -820,7 +820,7 @@ func performMirageArcher(env *Environment) {
 	}
 
 	//pob:block:src/Modules/CalcActiveSkill.lua:182
-	newEnv := initEnvOnly(env.Build.WithMainSkill(groupIndex, skillIndex), env.Cache, env.Mode, env.override)
+	newEnv := initEnvOnly(env.Build.WithMainSkill(groupIndex, skillIndex), env.Cache, OutputModeCalculator, env.override)
 	newEnv.triggerCache = env.triggerCache
 	newSkill := newEnv.Player.MainSkill
 	if newSkill == nil || newSkill.SkillModList == nil {
@@ -992,7 +992,7 @@ func performSacredWisps(env *Environment) {
 	}
 
 	//pob:block:src/Modules/CalcActiveSkill.lua:182
-	newEnv := initEnvOnly(env.Build.WithMainSkill(groupIndex, skillIndex), env.Cache, env.Mode, env.override)
+	newEnv := initEnvOnly(env.Build.WithMainSkill(groupIndex, skillIndex), env.Cache, OutputModeCalculator, env.override)
 	newEnv.triggerCache = env.triggerCache
 	newSkill := newEnv.Player.MainSkill
 	if newSkill == nil || newSkill.SkillModList == nil {
@@ -1028,8 +1028,9 @@ func performSacredWisps(env *Environment) {
 	newSkill.Marked = true
 	PerformCalc(newEnv)
 
-	//pob:block:src/Modules/CalcMirages.lua:326
+	//pob:block:src/Modules/CalcMirages.lua:330-331
 	skill.Mirage.Output = newEnv.Player.Output
+	skill.SkillFlags[SkillFlag("wisp")] = true
 }
 
 func activeSkillIndexInGroup(env *Environment, skill *ActiveSkill) int {
@@ -1114,9 +1115,6 @@ type triggerRotationSkill struct {
 //pob:src/Modules/CalcTriggers.lua:65-67
 func packageSkillDataForSimulation(env *Environment, skill *ActiveSkill) *triggerRotationSkill {
 	icdr := calclib.Mod(skill.SkillModList, skill.SkillCfg, "CooldownRecovery")
-	if icdr == 0 {
-		icdr = 1
-	}
 
 	var cdOverride *float64
 	if o := skill.SkillModList.Override(skill.SkillCfg, "CooldownRecovery"); o != nil {
@@ -1161,9 +1159,6 @@ func calcMultiSpellRotationImpact329(env *Environment, skillRotation []*triggerR
 
 	for _, skill := range skillRotation {
 		icdr := skill.icdr
-		if icdr == 0 {
-			icdr = 1
-		}
 		triggered := (skill.cd + skill.addedCooldown) / icdr
 		if skill.cdOverride != nil {
 			triggered = *skill.cdOverride
@@ -1223,9 +1218,6 @@ func calcActualTriggerRate(env *Environment, source *ActiveSkill, sourceAPS *flo
 
 		mainSkill := env.Player.MainSkill
 		icdr := calclib.Mod(mainSkill.SkillModList, mainSkill.SkillCfg, "CooldownRecovery")
-		if icdr == 0 {
-			icdr = 1
-		}
 
 		addsCastTime := processAddedCastTime(mainSkill)
 		if addsCastTime != 0 {
@@ -1852,24 +1844,37 @@ func performCalc(env *Environment, skipEHP bool) {
 		flaskBuffOrder := make([]string, 0, len(env.Flasks)*2)
 		flaskBuffsNonUtility := make(map[string]*moddb.ModList)
 		flaskBuffNonUtilityOrder := make([]string, 0, len(env.Flasks))
-		usingFlask := false
-		usingLifeFlask := false
-		usingManaFlask := false
-		usingNonUtilityFlask := false
+		flaskConditions := make(map[string]bool)
+		flaskConditionsNonUtility := make(map[string]bool)
 		for _, item := range env.Flasks {
 			isLifeFlask := item.Base != nil && item.Base.Flask != nil && item.Base.Flask.Life > 0
 			isManaFlask := item.Base != nil && item.Base.Flask != nil && item.Base.Flask.Mana > 0
 
+			//pob:block:src/Modules/CalcPerform.lua:1797-1823
 			if getFlaskInstantRecovery(env, item) < 100 {
-				usingFlask = true
+				flaskConditions["UsingFlask"] = true
+				flaskConditions["Using"+strings.Join(strings.Fields(item.BaseName), "")] = true
 				if isLifeFlask || isManaFlask {
-					usingNonUtilityFlask = true
+					flaskConditionsNonUtility["UsingFlask"] = true
+					flaskConditionsNonUtility["Using"+strings.Join(strings.Fields(item.BaseName), "")] = true
 				}
 				if isLifeFlask && !env.ModDB.Flag(nil, "CannotRecoverLifeOutsideLeech") {
-					usingLifeFlask = true
+					flaskConditions["UsingLifeFlask"] = true
+					flaskConditionsNonUtility["UsingLifeFlask"] = true
 				}
 				if isManaFlask {
-					usingManaFlask = true
+					flaskConditions["UsingManaFlask"] = true
+					flaskConditionsNonUtility["UsingManaFlask"] = true
+				}
+			}
+			if item.BaseName == "Iron Flask" {
+				chargesGeneratedOnWardBreak := env.ModDB.Sum(mod.TypeBase, nil, "IronFlaskChargesGeneratedOnWardBreak")
+				if chargesGeneratedOnWardBreak > 0 {
+					gainMod := item.FlaskData["gainMod"] * (1 + env.ModDB.Sum(mod.TypeIncrease, nil, "FlaskChargesGained")/100)
+					chargesUsed := item.FlaskData["chargesUsed"] * (1 + env.ModDB.Sum(mod.TypeIncrease, nil, "FlaskChargesUsed")/100)
+					if chargesGeneratedOnWardBreak*gainMod > chargesUsed {
+						flaskConditions["UnbrokenWard"] = true
+					}
 				}
 			}
 
@@ -1927,16 +1932,16 @@ func performCalc(env *Environment, skipEHP bool) {
 		//pob:block:src/Modules/CalcPerform.lua:1839-1849
 		if !env.ModDB.Flag(nil, "FlasksDoNotApplyToPlayer") {
 			if env.ModDB.Flag(nil, "UtilityFlasksDoNotApplyToPlayer") {
-				env.ModDB.Conditions["UsingFlask"] = usingNonUtilityFlask
-				env.ModDB.Conditions["UsingLifeFlask"] = usingLifeFlask
-				env.ModDB.Conditions["UsingManaFlask"] = usingManaFlask
+				for flaskCond, status := range flaskConditionsNonUtility {
+					env.ModDB.Conditions[flaskCond] = status
+				}
 				for _, key := range flaskBuffNonUtilityOrder {
 					env.ModDB.AddList(flaskBuffsNonUtility[key])
 				}
 			} else {
-				env.ModDB.Conditions["UsingFlask"] = usingFlask
-				env.ModDB.Conditions["UsingLifeFlask"] = usingLifeFlask
-				env.ModDB.Conditions["UsingManaFlask"] = usingManaFlask
+				for flaskCond, status := range flaskConditions {
+					env.ModDB.Conditions[flaskCond] = status
+				}
 				for _, key := range flaskBuffOrder {
 					env.ModDB.AddList(flaskBuffs[key])
 				}
@@ -1951,22 +1956,41 @@ func performCalc(env *Environment, skipEHP bool) {
 	// Calculate attributes and life/mana pools
 	doActorAttribsPoolsConditions(env, env.Player)
 
-	//pob:src/Modules/CalcPerform.lua:1646-1658
+	//pob:src/Modules/CalcPerform.lua:1980-1999
 	if env.Minion != nil {
-		for _, value := range env.Player.MainSkill.SkillModList.List(env.Player.MainSkill.SkillCfg, "MinionModifier") {
-			minionMod, ok := value.(mod.MinionModifier)
-			if !ok {
-				continue
+		hostile := env.Minion.MinionData != nil && env.Minion.MinionData.Hostile
+		if hostile {
+			for _, value := range env.ModDB.Tabulate("", nil, "EnemyModifier") {
+				if value.Mod.Value() == nil || value.Mod.Value().Type() != mod.ModValueMultiTypeList {
+					continue
+				}
+				payload, ok := value.Mod.Value().List().(mod.EnemyModifier)
+				if !ok || payload.Mod == nil {
+					continue
+				}
+				source := payload.Mod.GetSource()
+				if source == "" {
+					source = value.Mod.GetSource()
+				}
+				env.Minion.ModDB.AddMod(payload.Mod.Clone().Source(source))
 			}
-			env.Minion.ModDB.AddMod(minionMod.Mod)
 		}
-		for _, value := range env.Minion.ModDB.List(nil, "Keystone") {
-			name, ok := value.(string)
-			if !ok {
-				continue
+		if !hostile {
+			for _, value := range env.Player.MainSkill.SkillModList.List(env.Player.MainSkill.SkillCfg, "MinionModifier") {
+				minionMod, ok := value.(mod.MinionModifier)
+				if !ok {
+					continue
+				}
+				env.Minion.ModDB.AddMod(minionMod.Mod)
 			}
-			if list := keystoneModList(env, env.Spec.TreeVersion, name); list != nil {
-				env.Minion.ModDB.AddList(list)
+			for _, value := range env.Minion.ModDB.List(nil, "Keystone") {
+				name, ok := value.(string)
+				if !ok {
+					continue
+				}
+				if list := keystoneModList(env, env.Spec.TreeVersion, name); list != nil {
+					env.Minion.ModDB.AddList(list)
+				}
 			}
 		}
 		doActorAttribsPoolsConditions(env, env.Minion.Actor)
@@ -1989,7 +2013,8 @@ func performCalc(env *Environment, skipEHP bool) {
 			!activeSkill.SkillTypes[data.SkillTypeReservationBecomesCost] && !activeSkill.SkillFlags[SkillFlagDisable] {
 			skillModList := activeSkill.SkillModList
 			skillCfg := activeSkill.SkillCfg
-			mult := skillModList.More(skillCfg, "SupportManaMultiplier")
+			//pob:block:src/Modules/CalcPerform.lua:2020
+			mult := math.Floor(float64(skillModList.More(skillCfg, "SupportManaMultiplier")*10000)+0.0001) / 10000
 			pool := map[string]map[string]float64{
 				"Mana": {},
 				"Life": {},
@@ -2417,8 +2442,8 @@ func performCalc(env *Environment, skipEHP bool) {
 					}
 					//pob:block:src/Modules/CalcPerform.lua:2377-2382
 					if exports != nil && (buff.ApplyAllies || skillModList.Flag(nil, "BuffAppliesToAllies") || skillModList.Flag(nil, "BuffAppliesToPartyMembers")) {
-						inc := modStore.Sum(mod.TypeIncrease, skillCfg, "BuffEffect") + skillModList.Sum(mod.TypeIncrease, skillCfg, buffNameKey+"Effect")
-						more := modStore.More(skillCfg, "BuffEffect")
+						inc := modStore.Sum(mod.TypeIncrease, cfg, "BuffEffect") + skillModList.Sum(mod.TypeIncrease, cfg, buffNameKey+"Effect")
+						more := modStore.More(cfg, "BuffEffect")
 						exports.otherEffects[buff.Name] = &partyBuffExport{effectMult: (1 + inc/100) * more, modList: joinModLists(buff.ModList, buff.UnscalableModList)}
 					}
 				}
@@ -2467,6 +2492,8 @@ func performCalc(env *Environment, skipEHP bool) {
 						if env.ModDB.Flag(nil, "AlliesAurasCannotAffectSelf") || !allyBuffs.strongerThan("Aura", buff.Name, mult) {
 							activeSkill.BuffSkill = true
 							affectedByAura[env.Player] = true
+							//pob:block:src/Modules/CalcPerform.lua:2501
+							env.ModDB.Conditions["AffectedByAura"] = true
 							//pob:block:src/Modules/CalcPerform.lua:2006-2008
 							if strings.HasPrefix(buff.Name, "Vaal") {
 								base := ""
@@ -2499,6 +2526,8 @@ func performCalc(env *Environment, skipEHP bool) {
 							activeSkill.MinionBuffSkill = true
 							affectedByAura[env.Minion.Actor] = true
 							env.Minion.ModDB.Conditions["AffectedBy"+buffNameKey] = true
+							//pob:block:src/Modules/CalcPerform.lua:2520
+							env.Minion.ModDB.Conditions["AffectedByAura"] = true
 							srcList := moddb.NewModList()
 							srcList.ScaleAddList(buff.ModList, mult)
 							srcList.ScaleAddList(extraAuraModList, mult)
@@ -2597,6 +2626,11 @@ func performCalc(env *Environment, skipEHP bool) {
 							mergeBuff(buff.UnscalableModList, buffs, buff.Name)
 						}
 
+						//pob:block:src/Modules/CalcPerform.lua:2423
+						var extraWarcryModList *moddb.ModList
+						if warcryDisplayName(activeSkill) == "Rallying Cry" {
+							extraWarcryModList = moddb.NewModList()
+						}
 						//pob:src/Modules/CalcPerform.lua:2438-2447
 						if env.Minion != nil {
 							activeSkill.MinionBuffSkill = true
@@ -2613,7 +2647,6 @@ func performCalc(env *Environment, skipEHP bool) {
 								powerBonus := math.Floor(math.Min(warcryPower, 30) / 5)
 								rallyingWeaponEffect := math.Floor(activeSkill.SkillModList.Sum(mod.TypeBase, env.Player.MainSkill.SkillCfg, "RallyingCryAllyDamageBonusPer5Power") * powerBonus)
 								rallyingBonusMoreMultiplier := 1 + activeSkill.SkillModList.Sum(mod.TypeBase, env.Player.MainSkill.SkillCfg, "RallyingCryMinionDamageBonusMultiplier")
-								extraWarcryModList := moddb.NewModList()
 								for _, damageType := range rallyingCryDamageTypes {
 									minBase, maxBase := weaponDataDamage(env.Player.WeaponData1, damageType)
 									if minBase != 0 {
@@ -2631,7 +2664,7 @@ func performCalc(env *Environment, skipEHP bool) {
 						if exports != nil {
 							inc := activeSkill.SkillModList.Sum(mod.TypeIncrease, skillCfg, "BuffEffect")
 							more := activeSkill.SkillModList.More(skillCfg, "BuffEffect")
-							mods := joinModLists(buff.ModList, buff.UnscalableModList)
+							mods := joinModLists(buff.ModList, buff.UnscalableModList, extraWarcryModList)
 							exports.warcry[buff.Name] = &partyBuffExport{effectMult: (1 + inc/100) * more * uptime, modList: mods, warcryPowerBonus: warcryPowerBonuses(mods, warcryPower)}
 						}
 					}
@@ -3412,10 +3445,6 @@ func performCalc(env *Environment, skipEHP bool) {
 					activeSkill.SkillModList.Flag(env.Player.MainSkill.SkillCfg, "SelfAurasAffectYouAndLinkedTarget") {
 					skipAddingCurse = true
 					break
-				}
-				if activeSkill.SkillData.ManaReservedBase > env.Player.Output["Mana"] ||
-					activeSkill.SkillData.LifeReservedBase > env.Player.Output["Life"] {
-					skipAddingCurse = true
 				}
 				break
 			}
@@ -4657,9 +4686,6 @@ func performCalc(env *Environment, skipEHP bool) {
 				prepareAllyMinion(env, activeSkill)
 				minionLife = activeSkill.Minion.Output["Life"]
 			}
-			if minionLife <= 0 {
-				continue
-			}
 			var pools []allyLifePool
 			//pob:src/Modules/CalcPerform.lua:3712
 			var skillPool allyLifePool
@@ -4720,7 +4746,7 @@ func performCalc(env *Environment, skipEHP bool) {
 					}
 					spectreCount++
 					entry := env.Player.addAllyLife(pool.life, activeSkill.Minion.Actor, minionLife, 1)
-					if firstSpectreLife == 0 {
+					if firstSpectreEntry == nil {
 						firstSpectreLife = minionLife
 						firstSpectreEntry = entry
 					}
@@ -4740,7 +4766,7 @@ func performCalc(env *Environment, skipEHP bool) {
 			}
 		}
 
-		if firstSpectreLife > 0 && spectreCount < spectreLimit {
+		if firstSpectreEntry != nil && spectreCount < spectreLimit {
 			//pob:block:src/Modules/CalcPerform.lua:3789-3790
 			firstSpectreEntry.count += spectreLimit - spectreCount
 			firstSpectreEntry.life += float64(firstSpectreLife * (spectreLimit - spectreCount))
@@ -5342,8 +5368,14 @@ func DoActorCharges(env *Environment, actor *Actor) {
 	actor.Output["FrenzyChargesDuration"] = math.Floor(modDB.Sum(mod.TypeBase, nil, "ChargeDuration") * calclib.Mod(modDB, nil, "FrenzyChargesDuration", "ChargeDuration"))
 	replaceChargesMaxFromFlag(modDB, "MaximumEnduranceChargesIsMaximumFrenzyCharges", "EnduranceChargesMax", actor.Output["FrenzyChargesMax"])
 	actor.Output["EnduranceChargesMin"] = max(modDB.Sum(mod.TypeBase, nil, "EnduranceChargesMin"), 0)
-	actor.Output["EnduranceChargesMax"] = chargesMax(modDB, "EnduranceChargesMax",
-		utils.Ternary(modDB.Flag(nil, "MaximumEnduranceChargesIsMaximumFrenzyCharges"), actor.Output["FrenzyChargesMax"], modDB.Sum(mod.TypeBase, nil, "EnduranceChargesMax")))
+	//pob:block:src/Modules/CalcPerform.lua:1003
+	enduranceChargesMax := utils.Ternary(modDB.Flag(nil, "MaximumEnduranceChargesIsMaximumFrenzyCharges"), actor.Output["FrenzyChargesMax"], modDB.Sum(mod.TypeBase, nil, "EnduranceChargesMax"))
+	if partyMembers := env.partyMembers(); partyMembers.modDB.Flag(nil, "PartyMemberMaximumEnduranceChargesEqualToYours") {
+		if v, ok := partyMembers.GetOutput("EnduranceChargesMax"); ok {
+			enduranceChargesMax = v
+		}
+	}
+	actor.Output["EnduranceChargesMax"] = chargesMax(modDB, "EnduranceChargesMax", enduranceChargesMax)
 	//pob:block:src/Modules/CalcPerform.lua:1004
 	actor.Output["EnduranceChargesDuration"] = math.Floor(modDB.Sum(mod.TypeBase, nil, "ChargeDuration") * calclib.Mod(modDB, nil, "EnduranceChargesDuration", "ChargeDuration"))
 	actor.Output["SiphoningChargesMax"] = max(modDB.Sum(mod.TypeBase, nil, "SiphoningChargesMax"), 0)
@@ -5385,6 +5417,16 @@ func DoActorCharges(env *Environment, actor *Actor) {
 	actor.Output["SpiritInfusions"] = 0
 
 	// Conditionally over-write Charge values
+	//pob:block:src/Modules/CalcPerform.lua:1039-1047
+	if modDB.Flag(nil, "MinimumFrenzyChargesIsMaximumFrenzyCharges") {
+		actor.Output["FrenzyChargesMin"] = actor.Output["FrenzyChargesMax"]
+	}
+	if modDB.Flag(nil, "MinimumEnduranceChargesIsMaximumEnduranceCharges") {
+		actor.Output["EnduranceChargesMin"] = actor.Output["EnduranceChargesMax"]
+	}
+	if modDB.Flag(nil, "MinimumPowerChargesIsMaximumPowerCharges") {
+		actor.Output["PowerChargesMin"] = actor.Output["PowerChargesMax"]
+	}
 	if modDB.Flag(nil, "UsePowerCharges") {
 		actor.Output["PowerCharges"] = utils.Or(modDB.Override(nil, "PowerCharges"), actor.Output["PowerChargesMax"])
 	}
@@ -5492,9 +5534,22 @@ func DoActorMisc(env *Environment, actor *Actor) {
 		if env.Player.MainSkill.BaseSkillModList.Flag(env.Player.MainSkill.SkillCfg, "Cruelty") {
 			modDB.Multipliers["Cruelty"] = utils.Or(modDB.Override(nil, "Cruelty"), 40)
 		}
+		//pob:block:src/Modules/CalcPerform.lua:651-655
+		// Minimum Rage
+		if minimumRage := modDB.Sum(mod.TypeBase, nil, "MinimumRage"); minimumRage > modDB.Multipliers["Rage"] {
+			modDB.Multipliers["Rage"] = minimumRage
+		}
 		alliedFortify := float64(0)
+		parentFortify, parentFortifyOk := float64(0), false
 		if modDB.Flag(nil, "YourFortifyEqualToParent") && actor.Parent != nil {
-			alliedFortify = actor.Parent.Output["FortificationStacks"]
+			parentFortify, parentFortifyOk = actor.Parent.Output["FortificationStacks"]
+		}
+		if parentFortifyOk {
+			alliedFortify = parentFortify
+		} else if partyMembers := env.partyMembers(); partyMembers.modDB.Flag(nil, "PartyMemberFortifyEqualToYours") {
+			if v, ok := partyMembers.GetOutput("FortificationStacks"); ok {
+				alliedFortify = v
+			}
 		}
 		if modDB.Sum(mod.TypeBase, nil, "MinimumFortification") > 0 || alliedFortify > 0 {
 			modDB.Conditions["Fortified"] = true
@@ -5789,11 +5844,12 @@ func DoActorMisc(env *Environment, actor *Actor) {
 				avoidShock = math.Floor(min(avoid, 100))
 			}
 
+			effect := float64(0)
 			if avoidShock != 100 {
-				effect := min(max(math.Floor(shockValue*totalShockSelfEffect), 0),
+				effect = min(max(math.Floor(shockValue*totalShockSelfEffect), 0),
 					utils.Or(modDB.Override(nil, "ShockMax"), data.NonDamagingAilments[data.AilmentShock].Max))
-				modDB.AddMod(mod.NewFloat("DamageTaken", mod.TypeIncrease, effect).Source("Shock"))
 			}
+			modDB.AddMod(mod.NewFloat("DamageTaken", mod.TypeIncrease, effect).Source("Shock"))
 		}
 		//pob:block:src/Modules/CalcPerform.lua:894-903
 		if modDB.Flag(nil, "Scorch") {
@@ -5815,11 +5871,12 @@ func DoActorMisc(env *Environment, actor *Actor) {
 				avoidScorch = math.Floor(min(avoid, 100))
 			}
 
+			effect := float64(0)
 			if avoidScorch != 100 {
-				effect := min(max(math.Floor(scorchValue*totalScorchSelfEffect), 0),
+				effect = min(max(math.Floor(scorchValue*totalScorchSelfEffect), 0),
 					utils.Or(modDB.Override(nil, "ScorchMax"), data.NonDamagingAilments[data.AilmentScorch].Max))
-				modDB.AddMod(mod.NewFloat("ElementalResist", mod.TypeBase, -effect).Source("Scorch"))
 			}
+			modDB.AddMod(mod.NewFloat("ElementalResist", mod.TypeBase, -effect).Source("Scorch"))
 		}
 		if modDB.Flag(nil, "Freeze") {
 			effect := max(math.Floor(70*calclib.Mod(modDB, nil, "SelfChillEffect")), 0)
@@ -6388,7 +6445,7 @@ func mergeTinctures(env *Environment, effectInc, effectIncMagic, tinctureLimit f
 			srcList := moddb.NewModList()
 			srcList.ScaleAddList(asModList(item.Mods), effectMod)
 			key := item.Title
-			if item.Rarity != RarityUnique {
+			if item.Rarity != RarityUnique && item.Rarity != RarityRelic {
 				key = flaskModKey(item.Mods)
 			}
 			tinctureBuffOrder = mergeFlaskBuff(srcList, tinctureBuffs, tinctureBuffOrder, key)
