@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding>
+	<Build className="Witch" ascendClassName="None" level="90" mainSocketGroup="1" targetVersion="3_0" bandit="None" pantheonMajorGod="None" pantheonMinorGod="None" characterLevelAutoMode="false" viewMode="CALCS">
+	</Build>
+	<Tree activeSpec="1">
+		<Spec treeVersion="3_29" classId="3" ascendClassId="0" nodes=""/>
+	</Tree>
+	<Skills activeSkillSet="1">
+		<SkillSet id="1">
+			<Skill enabled="true" mainActiveSkill="1" mainActiveSkillCalcs="1">
+				<Gem gemId="Metadata/Items/Gems/SkillGemFireball" variantId="Fireball" skillId="Fireball" level="20" quality="0" enabled="true"/>
+			</Skill>
+		</SkillSet>
+	</Skills>
+	<Items activeItemSet="1">
+
+		<ItemSet id="1">
+
+		</ItemSet>
+	</Items>
+	<Calcs>
+
+	</Calcs>
+	<Party destination="All" ShowAdvanceTools="true" append="false">
+		<ImportedBuffs name="PartyMemberStats">EnemyFireResistEqualToYours
+FireResist=-30
+</ImportedBuffs>
+	</Party>
+	<Config activeConfigSet="1">
+		<ConfigSet id="1">
+
+		</ConfigSet>
+	</Config>
+</PathOfBuilding>

@@ -549,6 +549,8 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			resist = override.Float()
 		case env.ModDB.Flag(nil, "Enemy"+string(damageType)+"ResistEqualToYours"):
 			resist = env.Player.Output[string(damageType)+"Resist"]
+		case env.partyMembers().modDB.Flag(nil, "Enemy"+string(damageType)+"ResistEqualToYours"):
+			resist = env.partyMembers().output[string(damageType)+"Resist"]
 		default:
 			names := []string{string(damageType) + "Resist"}
 			if damageType.IsElemental() {
@@ -697,7 +699,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 	if skillCfg.SkillCond["SkillIsTriggered"] {
 		skillFlags[SkillFlagTriggered] = true
 	}
-	skillCfg.SkillCond["SkillIsFocused"] = skillData.TriggeredByFocus
+	skillCfg.SkillCond["SkillIsFocused"] = skillData.ChanceToTriggerOnFocus != nil
 	if skillCfg.SkillCond["SkillIsFocused"] {
 		skillFlags[SkillFlagFocused] = true
 	}
@@ -835,6 +837,18 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			if cValue.Mod.Name() == "Speed" && cValue.Mod.Type() == "INC" && (cValue.Mod.Flags() == 0 || (cValue.Mod.Flags()&mod.MFlagAttack) != 0) {
 				modifiers := calclib.GetConvertedModTags(cValue.Mod, multiplier, true)
 				skillModList.AddMod(mod.NewFloat("Speed", "INC", cValue.Mod.Value().Float()*multiplier).Source(cValue.Mod.GetSource()).Flag(mod.MFlagAttack).KeywordFlag(cValue.Mod.KeywordFlags()).Tag(modifiers...))
+			}
+		}
+	}
+	//pob:block:src/Modules/CalcOffence.lua:634-643
+	if skillModList.Flag(nil, "MinionCastSpeedAppliesToPlayer") {
+		// Minion Cast Speed conversion from Spinehail
+		multiplier := utils.OrF(skillModList.Max(skillCfg, "ImprovedMinionCastSpeedAppliesToPlayer"), 100) / 100
+		for _, value := range skillModList.List(skillCfg, "MinionModifier") {
+			cValue := value.(mod.MinionModifier)
+			if cValue.Mod.Name() == "Speed" && cValue.Mod.Type() == "INC" && (cValue.Mod.Flags() == 0 || (cValue.Mod.Flags()&mod.MFlagCast) != 0) {
+				modifiers := calclib.GetConvertedModTags(cValue.Mod, multiplier, true)
+				skillModList.AddMod(mod.NewFloat("Speed", "INC", cValue.Mod.Value().Float()*multiplier).Source(cValue.Mod.GetSource()).Flag(mod.MFlagCast).KeywordFlag(cValue.Mod.KeywordFlags()).Tag(modifiers...))
 			}
 		}
 	}
@@ -1127,6 +1141,25 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					addWandDamage(damageType, suffix, w2*mult)
 				}
 			}
+		}
+	}
+	//pob:block:src/Modules/CalcOffence.lua:932-942
+	if skillData.GainPercentBaseDaggerDamageToSpells != 0 {
+		weapon1IsDagger := (actor.WeaponData1.AddedUsingDagger != nil && *actor.WeaponData1.AddedUsingDagger) || actor.WeaponData1.Type == "Dagger"
+		weapon2IsDagger := (actor.WeaponData2.AddedUsingDagger != nil && *actor.WeaponData2.AddedUsingDagger) || actor.WeaponData2.Type == "Dagger"
+		mult := skillData.GainPercentBaseDaggerDamageToSpells / 100 * utils.Ternary(weapon1IsDagger && weapon2IsDagger, 0.5, 1.0)
+		for _, damageType := range data.DamageType("").Values() {
+			var baseMin, baseMax float64
+			if weapon1IsDagger {
+				baseMin += utils.GetOr[float64](actor.WeaponData1, string(damageType)+"Min", 0)
+				baseMax += utils.GetOr[float64](actor.WeaponData1, string(damageType)+"Max", 0)
+			}
+			if weapon2IsDagger {
+				baseMin += utils.GetOr[float64](actor.WeaponData2, string(damageType)+"Min", 0)
+				baseMax += utils.GetOr[float64](actor.WeaponData2, string(damageType)+"Max", 0)
+			}
+			skillModList.AddMod(mod.NewFloat(string(damageType)+"Min", "BASE", math.Floor(baseMin*mult)).Source("Blade Blast of Dagger Detonation").Flag(mod.MFlagSpell))
+			skillModList.AddMod(mod.NewFloat(string(damageType)+"Max", "BASE", math.Floor(baseMax*mult)).Source("Blade Blast of Dagger Detonation").Flag(mod.MFlagSpell))
 		}
 	}
 	if skillModList.Sum(mod.TypeBase, nil, "CritMultiplierAppliesToDegen") > 0 {
@@ -1454,7 +1487,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		for _, pool := range []string{"Life", "Mana"} {
 			actor.Output[pool+"ReservedMod"] = 0
 			if calclib.Mod(skillModList, skillCfg, "SupportManaMultiplier") > 0 && calclib.Mod(skillModList, skillCfg, pool+"Reserved", "Reserved") > 0 {
-				actor.Output[pool+"ReservedMod"] = calclib.Mod(skillModList, skillCfg, pool+"Reserved", "Reserved") * calclib.Mod(skillModList, skillCfg, "SupportManaMultiplier") / max(0, calclib.Mod(skillModList, skillCfg, pool+"ReservationEfficiency", "ReservationEfficiency"))
+				actor.Output[pool+"ReservedMod"] = calclib.Mod(skillModList, skillCfg, pool+"Reserved", "Reserved") * (math.Floor(float64(calclib.Mod(skillModList, skillCfg, "SupportManaMultiplier")*10000)+0.0001) / 10000) / max(0, calclib.Mod(skillModList, skillCfg, pool+"ReservationEfficiency", "ReservationEfficiency"))
 			}
 		}
 	}
@@ -1519,14 +1552,18 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		actor.Output["TrapThrowingTime"] = 1 / actor.Output["TrapThrowingSpeed"]
 		skillData.TimeOverride = actor.Output["TrapThrowingTime"] / actor.Output["TrapThrowCount"]
 
-		if baseCooldown := utils.OrF(skillData.TrapCooldown, skillData.Cooldown); baseCooldown != 0 {
-			//pob:block:src/Modules/CalcOffence.lua:1299
-			if override := skillModList.Override(skillCfg, "CooldownRecovery"); override != nil {
-				actor.Output["TrapCooldown"] = override.Float()
+		//pob:block:src/Modules/CalcOffence.lua:1296-1304
+		if baseCooldown := utils.OrF(skillData.TrapCooldown, skillData.Cooldown); baseCooldown != 0 || skillModList.Sum(mod.TypeBase, skillCfg, "CooldownRecovery") != 0 {
+			if baseCooldown != 0 {
+				if override := skillModList.Override(skillCfg, "CooldownRecovery"); override != nil {
+					actor.Output["TrapCooldown"] = override.Float()
+				} else {
+					actor.Output["TrapCooldown"] = baseCooldown / calclib.Mod(skillModList, skillCfg, "CooldownRecovery")
+				}
+				actor.Output["TrapCooldown"] = math.Ceil(actor.Output["TrapCooldown"]*data.ServerTickRate) / data.ServerTickRate
 			} else {
-				actor.Output["TrapCooldown"] = baseCooldown / calclib.Mod(skillModList, skillCfg, "CooldownRecovery")
+				actor.Output["TrapCooldown"] = calcSkillCooldown(skillModList, skillCfg, skillData)
 			}
-			actor.Output["TrapCooldown"] = math.Ceil(actor.Output["TrapCooldown"]*data.ServerTickRate) / data.ServerTickRate
 		}
 
 		incArea, moreArea := calclib.Mods(skillModList, skillCfg, "TrapTriggerAreaOfEffect")
@@ -1768,7 +1805,8 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			}
 		}
 		durationBase := (skillData.Duration) + skillModList.Sum(mod.TypeBase, skillCfg, "Duration", "PrimaryDuration")
-		if durationBase > 0 {
+		//pob:block:src/Modules/CalcOffence.lua:1506-1507
+		if durationBase > 0 && !(activeSkill.Minion != nil && skillModList.Flag(skillCfg, activeSkill.Minion.Type+"PermanentDuration")) {
 			actor.Output["Duration"] = durationBase * actor.Output["DurationMod"]
 			if skillData.Debuff {
 				actor.Output["Duration"] = actor.Output["Duration"] * debuffDurationMult
@@ -2460,7 +2498,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				//pob:src/Modules/CalcOffence.lua:2157
 				mainOrOff(stat)
 				if breakdown != nil {
-					breakdown.AddLine(stat, luaSprintf("All ailment stacks comes from %s", utils.Ternary(actor.OutputTable[OutTableMainHand][stat] != 0, "Main Hand", "Off Hand")))
+					breakdown.AddLine(stat, luaSprintf("All ailment stacks comes from %s", utils.Ternary(utils.Has(actor.OutputTable[OutTableMainHand], stat), "Main Hand", "Off Hand")))
 				}
 			}
 		} else if mode == ModeDPS {
@@ -2551,8 +2589,11 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		}
 
 		// enemy block chance
-		//pob:block:src/Modules/CalcOffence.lua:1668-1670
-		pass.Output["enemyBlockChance"] = min(max(enemyDB.Sum(mod.TypeBase, pass.Config, "BlockChance"), 0), 100)
+		//pob:block:src/Modules/CalcOffence.lua:2267-2270
+		pass.Output["enemyBlockChance"] = max(min(enemyDB.Sum(mod.TypeBase, pass.Config, "BlockChance"), 100)-skillModList.Sum(mod.TypeBase, pass.Config, "reduceEnemyBlock"), 0)
+		if enemyDB.Flag(nil, "CannotBlockAttacks") && isAttack {
+			pass.Output["enemyBlockChance"] = 0
+		}
 		pass.Output["HitChance"] = pass.Output["AccuracyHitChance"] * (1 - pass.Output["enemyBlockChance"]/100)
 		//pob:block:src/Modules/CalcOffence.lua:2273-2275
 		if pass.Output["enemyBlockChance"] > 0 && !isAttack {
@@ -2664,10 +2705,11 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					baseTime = 1/utils.OrDefault(pass.Source.AttackRate, 1) + skillModList.Sum(mod.TypeBase, pass.Config, "Speed")
 				}
 			} else {
+				//pob:block:src/Modules/CalcOffence.lua:2338
 				baseTime = 1
 				if skillData.CastTimeOverride != 0 {
 					baseTime = skillData.CastTimeOverride
-				} else if activeSkill.ActiveEffect.GrantedEffect.CastTime() != 0 {
+				} else if !PoBSkillDeclaresNoCastTime(activeSkill.ActiveEffect.GrantedEffect.Raw) {
 					baseTime = activeSkill.ActiveEffect.GrantedEffect.CastTime()
 				}
 			}
@@ -2922,6 +2964,10 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 	//pob:block:src/Modules/CalcOffence.lua:2522-2524
 	if repeatMode == "FINAL" || skillModList.Flag(nil, "OnlyFinalRepeat") {
 		skillData.DpsMultiplier /= utils.OrDefault(actor.Output["Repeats"], 1)
+	}
+	//pob:block:src/Modules/CalcOffence.lua:2525-2527
+	if skillModList.Flag(nil, "TriggeredBySnipe") {
+		skillFlags[SkillFlag("channelRelease")] = true
 	}
 
 	quantityMultiplier := math.Max(skillModList.Sum(mod.TypeBase, skillCfg, "QuantityMultiplier"), 1)
@@ -3614,9 +3660,10 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		// Calculate chance and multiplier for dealing double damage on Normal and Crit
 		pass.Output["DoubleDamageChanceOnCrit"] = min(skillModList.Sum(mod.TypeBase, pass.Config, "DoubleDamageChanceOnCrit"), 100)
 		pass.Output["DoubleDamageChance"] = min(skillModList.Sum(mod.TypeBase, pass.Config, "DoubleDamageChance")+(utils.Ternary(env.ModeEffective, enemyDB.Sum(mod.TypeBase, pass.Config, "SelfDoubleDamageChance"), 0))+(pass.Output["DoubleDamageChanceOnCrit"]*pass.Output["CritChance"]/100), 100)
-		if actor.Output["IntimidatingUpTimeRatio"] != 0 && activeSkill.SkillModList.Flag(nil, "Condition:WarcryMaxHit") {
+		//pob:block:src/Modules/CalcOffence.lua:3325-3329
+		if utils.Has(actor.Output, "IntimidatingUpTimeRatio") && activeSkill.SkillModList.Flag(nil, "Condition:WarcryMaxHit") {
 			pass.Output["DoubleDamageChance"] = 100
-		} else if actor.Output["IntimidatingUpTimeRatio"] != 0 {
+		} else if utils.Has(actor.Output, "IntimidatingUpTimeRatio") {
 			pass.Output["DoubleDamageChance"] = min(pass.Output["DoubleDamageChance"]+actor.Output["IntimidatingUpTimeRatio"], 100)
 		}
 
@@ -4746,7 +4793,8 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			output["KnockbackChanceOnHit"] = skillModList.Sum(mod.TypeBase, cfg, "EnemyKnockbackChance")
 		}
 
-		output["ImpaleChance"] = min(100, skillModList.Sum(mod.TypeBase, cfg, "ImpaleChance"))
+		//pob:block:src/Modules/CalcOffence.lua:4312
+		output["ImpaleChance"] = utils.Ternary(env.ModeEffective, min(100, skillModList.Sum(mod.TypeBase, cfg, "ImpaleChance")), 0)
 
 		if skillModList.Sum(mod.TypeBase, cfg, "FireExposureChance") > 0 {
 			skillFlags["applyFireExposure"] = true
@@ -5452,6 +5500,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 				)
 				if groundMult > 0 {
 					output["CausticGroundDPS"] = min(baseVal*effectMod*rateMod*effMult*groundMult/100, data.DotDpsCap)
+					globalOutput["CausticGroundFromPoison"] = 1
 					//pob:block:src/Modules/CalcOffence.lua:4924-4931
 					if breakdown != nil {
 						breakdown.Data["CausticGroundDPS"] = &Entry{Lines: []string{
@@ -5884,6 +5933,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 					takenMore := enemyDB.More(dotCfg, "DamageTaken", "DamageTakenOverTime", "FireDamageTaken", "FireDamageTakenOverTime", "ElementalDamageTaken")
 					fireEffMult := (1 - resist/100) * (1 + takenInc/100) * takenMore
 					globalOutput["BurningGroundDPS"] = min(baseVal*effectMod*rateMod*fireEffMult*groundMult/100, data.DotDpsCap)
+					globalOutput["BurningGroundFromIgnite"] = 1
 					//pob:block:src/Modules/CalcOffence.lua:5277-5284
 					if globalBreakdown != nil {
 						globalBreakdown.Data["BurningGroundDPS"] = &Entry{Lines: []string{
@@ -6352,6 +6402,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			total := baseDropsBurningGround * (1 + inc/100) * more * (1 + mult/100) * effMult
 			if current, ok := actor.Output["BurningGroundDPS"]; !ok || current < total {
 				actor.Output["BurningGroundDPS"] = total
+				actor.Output["BurningGroundFromIgnite"] = 0
 			}
 		}
 	}
@@ -6504,12 +6555,14 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		//pob:block:src/Modules/CalcOffence.lua:5932-5951
 		switch {
 		case skillModList.Flag(nil, "dotIsBurningGround"):
-			if actor.Output["BurningGroundDPS"] < actor.Output["TotalDotInstance"] {
+			if !utils.Has(actor.Output, "BurningGroundDPS") || actor.Output["BurningGroundDPS"] < actor.Output["TotalDotInstance"] {
 				actor.Output["BurningGroundDPS"] = max(actor.Output["BurningGroundDPS"], actor.Output["TotalDotInstance"])
+				actor.Output["BurningGroundFromIgnite"] = 0
 			}
 		case skillModList.Flag(nil, "dotIsCausticGround"):
-			if actor.Output["CausticGroundDPS"] < actor.Output["TotalDotInstance"] {
+			if !utils.Has(actor.Output, "CausticGroundDPS") || actor.Output["CausticGroundDPS"] < actor.Output["TotalDotInstance"] {
 				actor.Output["CausticGroundDPS"] = max(actor.Output["CausticGroundDPS"], actor.Output["TotalDotInstance"])
+				actor.Output["CausticGroundFromPoison"] = 0
 			}
 		case skillModList.Flag(nil, "dotIsCorruptingBlood"):
 			if actor.Output["CorruptingBloodDPS"] < actor.Output["TotalDotInstance"] {
@@ -6742,6 +6795,14 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 		}
 		actor.Output["MirageDPS"] = mirage.Output["TotalDPS"] * mirageCount
 		actor.Output["CombinedDPS"] += float64(mirage.Output["TotalDPS"] * mirageCount)
+		//pob:block:src/Modules/CalcOffence.lua:6270-6271
+		for _, ground := range []string{"BurningGroundDPS", "CausticGroundDPS"} {
+			if v, ok := mirage.Output[ground]; ok {
+				actor.Output["Mirage"+ground] = v
+			} else {
+				delete(actor.Output, "Mirage"+ground)
+			}
+		}
 
 		if mirage.Output["IgniteDPS"] > actor.Output["IgniteDPS"] {
 			actor.Output["MirageDPS"] += mirage.Output["IgniteDPS"]
@@ -6779,9 +6840,9 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 
 	//pob:block:src/Modules/CalcOffence.lua:6303-6304
 	totalDotDPS := (actor.Output["TotalDot"]) + (actor.Output["TotalPoisonDPS"]) +
-		(actor.Output["CausticGroundDPS"]) +
+		max(actor.Output["CausticGroundDPS"], actor.Output["MirageCausticGroundDPS"]) +
 		utils.OrDefault(actor.Output["TotalIgniteDPS"], actor.Output["IgniteDPS"]) +
-		(actor.Output["BurningGroundDPS"]) +
+		max(actor.Output["BurningGroundDPS"], actor.Output["MirageBurningGroundDPS"]) +
 		(actor.Output["BleedDPS"]) + (actor.Output["CorruptingBloodDPS"]) + (actor.Output["DecayDPS"])
 	actor.Output["TotalDotDPS"] = min(totalDotDPS, data.DotDpsCap)
 	//pob:block:src/Modules/CalcOffence.lua:6305-6307
@@ -6844,7 +6905,7 @@ func CalculateOffence(env *Environment, actor *Actor, activeSkill *ActiveSkill) 
 			if skillFlags[SkillFlagNotAverage] {
 				breakdown.AddLine("ImpaleDPS", utils.Ternary(actor.Output["HitSpeed"] != 0, luaSprintf("x %.2f ^8(hit rate)", actor.Output["HitSpeed"]), luaSprintf("x %.2f ^8(%s rate)", actor.Output["Speed"], utils.Ternary(skillFlags[SkillFlagAttack], "attack", "cast"))))
 			}
-			if skillData.DpsMultiplier != 0 {
+			if skillData.DpsMultiplier != 1 {
 				breakdown.AddLine("ImpaleDPS", luaSprintf("x %g ^8(dps multiplier for this skill)", skillData.DpsMultiplier))
 			}
 			if quantityMultiplier > 1 {

@@ -1439,6 +1439,8 @@ export declare namespace calculator {
     MinionUseMainHandWeapon: boolean;
     ArrowSpeedAppliesToAreaOfEffect: boolean;
     GainPercentBaseWandDamageToSpells: number;
+    GainPercentBaseDaggerDamageToSpells: number;
+    ChanceToTriggerOnFocus?: number;
     HitTimeOverride: number;
     TrapCooldown: number;
     MineDurationAppliesToSkill: boolean;

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding>
+	<Build className="Duelist" ascendClassName="None" level="90" mainSocketGroup="1" targetVersion="3_0" bandit="None" pantheonMajorGod="None" pantheonMinorGod="None" characterLevelAutoMode="false" viewMode="CALCS">
+	</Build>
+	<Tree activeSpec="1">
+		<Spec treeVersion="3_29" classId="4" ascendClassId="0" nodes=""/>
+	</Tree>
+	<Skills activeSkillSet="1">
+		<SkillSet id="1">
+			<Skill slot="Weapon 1" enabled="true" mainActiveSkill="1" mainActiveSkillCalcs="1">
+				<Gem gemId="Metadata/Items/Gems/SkillGemHeavyStrike" variantId="HeavyStrike" skillId="HeavyStrike" level="20" quality="0" enabled="true"/>
+			</Skill>
+		</SkillSet>
+	</Skills>
+	<Items activeItemSet="1">
+		<Item id="1">
+Rarity: NORMAL
+Rusted Sword
+Implicits: 0
+		</Item>
+		<ItemSet id="1">
+			<Slot name="Weapon 1" itemId="1"/>
+		</ItemSet>
+	</Items>
+	<Calcs>
+		<Input name="misc_buffMode" string="UNBUFFED"/>
+	</Calcs>
+	<Config activeConfigSet="1">
+		<ConfigSet id="1">
+			<Input name="customMods" string="40% chance to Impale Enemies on Hit with Attacks"/>
+		</ConfigSet>
+	</Config>
+</PathOfBuilding>

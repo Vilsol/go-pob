@@ -415,7 +415,13 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 	} else {
 		// Set weapon flags
 
-		//pob:src/Modules/CalcActiveSkill.lua:308-313
+		//pob:block:src/Modules/CalcActiveSkill.lua:308-313
+		if socketGroup, ok := activeSkill.SocketGroup.(*pob.Skill); ok && skillFlags[SkillFlag("forceSourceWeapon")] && socketGroup != nil && strings.HasPrefix(socketGroup.Source, "Item:") {
+			// Some item-granted attacks must use the weapon that grants the skill
+			sourceSlot := socketGroup.Slot
+			skillFlags[SkillFlagForceMainHand] = strings.HasPrefix(sourceSlot, "Weapon 1")
+			skillFlags[SkillFlag("forceOffHand")] = strings.HasPrefix(sourceSlot, "Weapon 2")
+		}
 
 		weaponTypes := [][]data.ItemClassName{activeGrantedEffect.WeaponTypes()}
 		for _, skillEffect := range activeSkill.EffectList {
@@ -424,7 +430,12 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 			}
 		}
 
-		weapon1Flags, weapon1Info := getWeaponFlags(env, activeSkill.Actor.WeaponData1, weaponTypes)
+		//pob:block:src/Modules/CalcActiveSkill.lua:320-323
+		var weapon1Flags mod.MFlag
+		var weapon1Info *data.WeaponTypeInfo
+		if !skillFlags[SkillFlag("forceOffHand")] {
+			weapon1Flags, weapon1Info = getWeaponFlags(env, activeSkill.Actor.WeaponData1, weaponTypes)
+		}
 		if weapon1Flags == 0 && activeSkill.SummonSkill != nil {
 			// Minion skills seem to ignore weapon types
 			weapon1Flags = data.WeaponTypes[data.None].ModFlag
@@ -451,8 +462,14 @@ func CalcBuildActiveSkillModList(env *Environment, activeSkill *ActiveSkill) {
 		if utils.MissingOrFalse(skillTypes, data.SkillTypeMainHandOnly) && utils.MissingOrFalse(skillFlags, SkillFlagForceMainHand) {
 			weapon2Flags, weapon2Info := getWeaponFlags(env, activeSkill.Actor.WeaponData2, weaponTypes)
 			if weapon2Flags != 0 {
-				//pob:src/Modules/CalcActiveSkill.lua:350
-				if skillFlags[SkillFlagAttack] || skillFlags[SkillFlagDotFromAttack] {
+				//pob:block:src/Modules/CalcActiveSkill.lua:346-353
+				if skillTypes[data.SkillType("DualWieldRequiresDifferentTypes")] && (activeSkill.Actor.WeaponData1.Type == activeSkill.Actor.WeaponData2.Type) && !(activeSkill.Actor.WeaponData2.CountsAsAll1H || activeSkill.Actor.WeaponData1.CountsAsAll1H) {
+					// Skill requires a different compatible off hand weapon to main hand weapon
+					skillFlags[SkillFlagDisable] = true
+					if activeSkill.DisableReason == "" {
+						activeSkill.DisableReason = "Weapon Types Need to be Different"
+					}
+				} else if skillFlags[SkillFlagAttack] || skillFlags[SkillFlagDotFromAttack] {
 					activeSkill.Weapon2Flags = weapon2Flags
 					skillFlags[SkillFlagWeapon2Attack] = true
 				}

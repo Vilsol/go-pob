@@ -739,6 +739,8 @@ type SkillData struct {
 	MinionUseMainHandWeapon                    bool
 	ArrowSpeedAppliesToAreaOfEffect            bool
 	GainPercentBaseWandDamageToSpells          float64
+	GainPercentBaseDaggerDamageToSpells        float64
+	ChanceToTriggerOnFocus                     *float64
 	HitTimeOverride                            float64
 	TrapCooldown                               float64
 	MineDurationAppliesToSkill                 bool

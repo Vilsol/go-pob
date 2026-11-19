@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding>
+	<Build className="Shadow" ascendClassName="None" level="90" mainSocketGroup="1" targetVersion="3_0" bandit="None" pantheonMajorGod="None" pantheonMinorGod="None" characterLevelAutoMode="false" viewMode="CALCS">
+	</Build>
+	<Tree activeSpec="1">
+		<Spec treeVersion="3_29" classId="6" ascendClassId="0" nodes=""/>
+	</Tree>
+	<Skills activeSkillSet="1">
+		<SkillSet id="1">
+			<Skill slot="Helmet" enabled="true" mainActiveSkill="1" mainActiveSkillCalcs="1">
+				<Gem gemId="Metadata/Items/Gems/SkillGemLightningTrap" variantId="LightningTrap" skillId="LightningTrap" level="20" quality="0" enabled="true"/>
+			</Skill>
+		</SkillSet>
+	</Skills>
+	<Items activeItemSet="1">
+		<Item id="1">
+Rarity: RARE
+Cooldown Crown
+Iron Hat
+Implicits: 0
+Socketed Projectile Spells have +2 seconds to Cooldown
+		</Item>
+		<ItemSet id="1">
+			<Slot name="Helmet" itemId="1"/>
+		</ItemSet>
+	</Items>
+	<Calcs>
+
+	</Calcs>
+	<Config activeConfigSet="1">
+		<ConfigSet id="1">
+
+		</ConfigSet>
+	</Config>
+</PathOfBuilding>

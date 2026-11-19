@@ -1418,6 +1418,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 	//pob:block:src/Modules/CalcDefence.lua:1667-1695
 	actor.Output["DebuffExpirationRate"] = modDB.Sum(mod.TypeBase, nil, "SelfDebuffExpirationRate")
 	actor.Output["DebuffExpirationModifier"] = 10000 / (100 + actor.Output["DebuffExpirationRate"])
+	actor.Output["showDebuffExpirationModifier"] = utils.Ternary(actor.Output["DebuffExpirationModifier"] != 100, 1.0, 0.0)
 	actor.Output["SelfBlindDuration"] = modDB.More(nil, "SelfBlindDuration") *
 		(100 + modDB.Sum(mod.TypeIncrease, nil, "SelfBlindDuration")) * actor.Output["DebuffExpirationModifier"] / 100
 
@@ -2878,6 +2879,10 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 		for _, damageType := range data.DamageType("").Values() {
 			damageTotal = damageTotal + float64(DamageIn[string(damageType)]*numHits)
 		}
+		//pob:block:src/Modules/CalcDefence.lua:390-395
+		// PoB's reducePoolsByDamage never takes Life below 0, so its Life >= 0 check also holds on a speed-up pass.
+		life = max(life, 0)
+		//pob:block:src/Modules/CalcDefence.lua:2800-2802
 		if life >= 0 && damageTotal >= maxDamage {
 			return math.Inf(1)
 		}
@@ -3382,6 +3387,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 	}
 
 	//pob:block:src/Modules/CalcDefence.lua:3413-3465
+	actor.Output["TotalBuildDegen"] = 0
 	for _, damageType := range data.DamageType("").Values() {
 		baseVal := modDB.Sum(mod.TypeBase, nil, string(damageType+"Degen"))
 		if baseVal <= 0 {
@@ -3429,7 +3435,10 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 			}
 		}
 	}
-	if _, totalDegenSet := actor.Output["TotalBuildDegen"]; totalDegenSet && actor.Output["TotalBuildDegen"] != 0 {
+	//pob:block:src/Modules/CalcDefence.lua:3466-3468
+	if actor.Output["TotalBuildDegen"] == 0 {
+		delete(actor.Output, "TotalBuildDegen")
+	} else {
 		actor.Output["NetLifeRegen"] = actor.Output["LifeRegenRecovery"]
 		actor.Output["NetManaRegen"] = actor.Output["ManaRegenRecovery"]
 		actor.Output["NetEnergyShieldRegen"] = actor.Output["EnergyShieldRegenRecovery"]
@@ -3788,7 +3797,7 @@ func CalculateDefence(environment *Environment, actor *Actor) {
 
 			actor.Output[string(damageType+"MaximumHitTaken")] = math.Floor(passIncomingDamage/enemyDamageMult + 0.5)
 		} else {
-			actor.Output[string(damageType+"MaximumHitTaken")] = math.Round(partMin / enemyDamageMult)
+			actor.Output[string(damageType+"MaximumHitTaken")] = math.Floor(partMin/enemyDamageMult + 0.5)
 		}
 		//pob:block:src/Modules/CalcDefence.lua:3340-3384
 		if actor.Breakdown != nil {

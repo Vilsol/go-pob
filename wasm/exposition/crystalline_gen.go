@@ -24174,7 +24174,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 	if crystallineMarshalCalculatorSkillDataShape.IsUndefined() {
 		crystallineMarshalCalculatorSkillDataShape = crystallineShape("calculator.SkillData",
-			[]string{"StagesMax", "PulseInterval", "PulseDamage", "SupportBonechill", "Cooldown", "StoredUses", "MirageUses", "RequiresManaReservation", "Triggered", "TriggeredByBrand", "TriggeredByBattleMageCry", "TriggerOnCrit", "CountsAttachedBrandsInDamage", "AttachedBrandCount", "TriggeredOnDeath", "TriggeredByAutoexertion", "SacrificeLifePercent", "SacrificeLifeAsChaos", "TriggeredByDamageTaken", "TriggeredWhileChannelling", "TriggeredByMeleeKill", "TriggeredByCospris", "TriggeredByMjolner", "TriggeredBySevenTeachings", "TriggeredByKineticFlux", "TriggeredByUnique", "TriggeredByFocus", "TriggeredByCraft", "TriggeredByManaSpent", "TriggeredByManaforged", "ManaForgedArrowsPercentThreshold", "TriggeredByParentAttack", "TriggeredByGeneralsCry", "TriggerTime", "TriggeredBySaviour", "CritChance", "SetOffHandPhysicalMin", "SetOffHandPhysicalMax", "PercentageLifeSacrificed", "PercentageSacrificedDealtAsChaos", "AdditionalRuinChance", "ManabondMissingManaGainPercent", "ManabondMissingUnreservedManaPercentage", "SetOffHandFireMin", "SetOffHandFireMax", "SetOffHandColdMin", "SetOffHandColdMax", "AttackTime", "CastTimeOverride", "CastTimeOverridesAttackTime", "TimeOverride", "FixedCastTime", "TriggerRate", "ShowAverage", "ManaReservationPercent", "TotemLevel", "CannotBeEvaded", "DoubleHitsWhenDualWielding", "DpsMultiplier", "DpsBaseMultiplier", "PodOverlapMultiplier", "DamagePerProjectile", "DelayPerProjectile", "MaxRageVortexSacrificePercentage", "FifthStrikeDamage", "FifthStrikeProjectiles", "BaseMultiplier", "DamageEffectiveness", "LifeLeechPerUse", "ManaLeechPerUse", "BleedDurationIsSkillDuration", "BleedIsSkillEffect", "Duration", "FrostBombDamagePer100ms", "BleedBasePercent", "Type", "AttackRate", "PhysicalMin", "PhysicalMax", "AttackSpeedInc", "CountsAsAll1H", "CountsAsDualWielding", "AddedUsingAxe", "AddedUsingSword", "AddedUsingDagger", "AddedUsingMace", "AddedUsingClaw", "PhysicalBonusMin", "PhysicalBonusMax", "LightningMin", "LightningMax", "LightningBonusMin", "LightningBonusMax", "ColdMin", "ColdMax", "ColdBonusMin", "ColdBonusMax", "FireMin", "FireMax", "FireBonusMin", "FireBonusMax", "ChaosMin", "ChaosMax", "ChaosBonusMin", "ChaosBonusMax", "LifeDealtAsChaos", "EnergyShieldDealtAsChaos", "LifeDealtAsFire", "SkeletonLife", "SelfDamageTakenLife", "SelfDamageTakenES", "Radius", "RadiusSecondary", "RadiusTertiary", "RadiusLabel", "RadiusSecondaryLabel", "RadiusTertiaryLabel", "RadiusExtra", "RadiusTertiaryBaseMargin", "ProjectileSpeedAppliesToMSAreaOfEffect", "DurationSecondary", "DurationTertiary", "MinionLevel", "MinionLevelIsEnemyLevel", "MinionLevelIsPlayerLevel", "MinionDamageEffectiveness", "FireDot", "RFLifeMultiplier", "RFESMultiplier", "RFManaMultiplier", "RFMultiplier", "PercentSacrificed", "TriggeredByCoC", "DotIsSpell", "RepeatFrequency", "RepeatInterval", "HitFrequency", "CremationFireRate", "CremationFireRateIncrease", "DamageInterval", "HitFrequencyPerBlade", "IncVolleyFrequency", "VaalBladeVortexBlade", "RepeatFrequencyIncrease", "BeamOverlapMultiplier", "ActiveArrowMultiplier", "TornadoShotSecondaryHitChance", "ShrapnelBallistaProjectileOverlap", "HoaOverkill", "HoaMoreBurn", "HoaOverkillPercent", "MoltenShellDamageMitigated", "VaalMoltenShellDamageMitigated", "MoltenShellReflect", "TriggeredByMirageArcher", "TriggeredBySnipe", "TriggeredBySacredWisps", "ChanceToTriggerOnCrit", "ColdDot", "CorpseExplosionLifeMultiplier", "SelfFireExplosionLifeMultiplier", "CorpseLife", "CorpseExplosionDamageType", "ChaosDot", "BaseManaCostIsAtLeastPercentUnreservedMana", "ManaReservationFlat", "LifeReservationFlat", "LifeReservationPercent", "ManaReservationFlatForced", "LifeReservationFlatForced", "ManaReservationPercentForced", "LifeReservationPercentForced", "ManaReservedBase", "ManaReservedPercent", "LifeReservedBase", "LifeReservedPercent", "AttackSpeedMultiplier", "MinionUseBowAndQuiver", "MinionUseMainHandWeapon", "ArrowSpeedAppliesToAreaOfEffect", "GainPercentBaseWandDamageToSpells", "HitTimeOverride", "TrapCooldown", "MineDurationAppliesToSkill", "Debuff", "DebuffSecondary", "DebuffTertiary", "ReserveDuration", "AuraDuration", "SoulPreventionDuration", "SkillEffectAppliesToSoulGainPrevention", "AuraCannotAffectSelf", "ThisIsNotABuff", "BuffNotPlayer", "BuffMinions", "BuffAllies", "AllowTotemBuff", "Enable", "DotIsArea", "DotIsProjectile", "DotIsAttack", "DotIsHit", "PhysicalDot", "LightningDot", "ExplodeCorpse", "HitChanceIsExplodeChance", "PhysicalEffectiveExplodePercentage", "LightningEffectiveExplodePercentage", "ColdEffectiveExplodePercentage", "FireEffectiveExplodePercentage", "ChaosEffectiveExplodePercentage", "PoisonIsSkillEffect", "PoisonDurationIsSkillDuration", "StackMultiplier", "RadiusIsWeaponRange", "Decay", "BaseStunDuration", "Range", "RangeBonus", "HitTimeMultiplier", "TotemFireOnce", "NumStages", "ProjectileSpeed", "StackCount", "SummonSpeed", "StrikeInterval", "RemainingDurationDamage"},
+			[]string{"StagesMax", "PulseInterval", "PulseDamage", "SupportBonechill", "Cooldown", "StoredUses", "MirageUses", "RequiresManaReservation", "Triggered", "TriggeredByBrand", "TriggeredByBattleMageCry", "TriggerOnCrit", "CountsAttachedBrandsInDamage", "AttachedBrandCount", "TriggeredOnDeath", "TriggeredByAutoexertion", "SacrificeLifePercent", "SacrificeLifeAsChaos", "TriggeredByDamageTaken", "TriggeredWhileChannelling", "TriggeredByMeleeKill", "TriggeredByCospris", "TriggeredByMjolner", "TriggeredBySevenTeachings", "TriggeredByKineticFlux", "TriggeredByUnique", "TriggeredByFocus", "TriggeredByCraft", "TriggeredByManaSpent", "TriggeredByManaforged", "ManaForgedArrowsPercentThreshold", "TriggeredByParentAttack", "TriggeredByGeneralsCry", "TriggerTime", "TriggeredBySaviour", "CritChance", "SetOffHandPhysicalMin", "SetOffHandPhysicalMax", "PercentageLifeSacrificed", "PercentageSacrificedDealtAsChaos", "AdditionalRuinChance", "ManabondMissingManaGainPercent", "ManabondMissingUnreservedManaPercentage", "SetOffHandFireMin", "SetOffHandFireMax", "SetOffHandColdMin", "SetOffHandColdMax", "AttackTime", "CastTimeOverride", "CastTimeOverridesAttackTime", "TimeOverride", "FixedCastTime", "TriggerRate", "ShowAverage", "ManaReservationPercent", "TotemLevel", "CannotBeEvaded", "DoubleHitsWhenDualWielding", "DpsMultiplier", "DpsBaseMultiplier", "PodOverlapMultiplier", "DamagePerProjectile", "DelayPerProjectile", "MaxRageVortexSacrificePercentage", "FifthStrikeDamage", "FifthStrikeProjectiles", "BaseMultiplier", "DamageEffectiveness", "LifeLeechPerUse", "ManaLeechPerUse", "BleedDurationIsSkillDuration", "BleedIsSkillEffect", "Duration", "FrostBombDamagePer100ms", "BleedBasePercent", "Type", "AttackRate", "PhysicalMin", "PhysicalMax", "AttackSpeedInc", "CountsAsAll1H", "CountsAsDualWielding", "AddedUsingAxe", "AddedUsingSword", "AddedUsingDagger", "AddedUsingMace", "AddedUsingClaw", "PhysicalBonusMin", "PhysicalBonusMax", "LightningMin", "LightningMax", "LightningBonusMin", "LightningBonusMax", "ColdMin", "ColdMax", "ColdBonusMin", "ColdBonusMax", "FireMin", "FireMax", "FireBonusMin", "FireBonusMax", "ChaosMin", "ChaosMax", "ChaosBonusMin", "ChaosBonusMax", "LifeDealtAsChaos", "EnergyShieldDealtAsChaos", "LifeDealtAsFire", "SkeletonLife", "SelfDamageTakenLife", "SelfDamageTakenES", "Radius", "RadiusSecondary", "RadiusTertiary", "RadiusLabel", "RadiusSecondaryLabel", "RadiusTertiaryLabel", "RadiusExtra", "RadiusTertiaryBaseMargin", "ProjectileSpeedAppliesToMSAreaOfEffect", "DurationSecondary", "DurationTertiary", "MinionLevel", "MinionLevelIsEnemyLevel", "MinionLevelIsPlayerLevel", "MinionDamageEffectiveness", "FireDot", "RFLifeMultiplier", "RFESMultiplier", "RFManaMultiplier", "RFMultiplier", "PercentSacrificed", "TriggeredByCoC", "DotIsSpell", "RepeatFrequency", "RepeatInterval", "HitFrequency", "CremationFireRate", "CremationFireRateIncrease", "DamageInterval", "HitFrequencyPerBlade", "IncVolleyFrequency", "VaalBladeVortexBlade", "RepeatFrequencyIncrease", "BeamOverlapMultiplier", "ActiveArrowMultiplier", "TornadoShotSecondaryHitChance", "ShrapnelBallistaProjectileOverlap", "HoaOverkill", "HoaMoreBurn", "HoaOverkillPercent", "MoltenShellDamageMitigated", "VaalMoltenShellDamageMitigated", "MoltenShellReflect", "TriggeredByMirageArcher", "TriggeredBySnipe", "TriggeredBySacredWisps", "ChanceToTriggerOnCrit", "ColdDot", "CorpseExplosionLifeMultiplier", "SelfFireExplosionLifeMultiplier", "CorpseLife", "CorpseExplosionDamageType", "ChaosDot", "BaseManaCostIsAtLeastPercentUnreservedMana", "ManaReservationFlat", "LifeReservationFlat", "LifeReservationPercent", "ManaReservationFlatForced", "LifeReservationFlatForced", "ManaReservationPercentForced", "LifeReservationPercentForced", "ManaReservedBase", "ManaReservedPercent", "LifeReservedBase", "LifeReservedPercent", "AttackSpeedMultiplier", "MinionUseBowAndQuiver", "MinionUseMainHandWeapon", "ArrowSpeedAppliesToAreaOfEffect", "GainPercentBaseWandDamageToSpells", "GainPercentBaseDaggerDamageToSpells", "ChanceToTriggerOnFocus", "HitTimeOverride", "TrapCooldown", "MineDurationAppliesToSkill", "Debuff", "DebuffSecondary", "DebuffTertiary", "ReserveDuration", "AuraDuration", "SoulPreventionDuration", "SkillEffectAppliesToSoulGainPrevention", "AuraCannotAffectSelf", "ThisIsNotABuff", "BuffNotPlayer", "BuffMinions", "BuffAllies", "AllowTotemBuff", "Enable", "DotIsArea", "DotIsProjectile", "DotIsAttack", "DotIsHit", "PhysicalDot", "LightningDot", "ExplodeCorpse", "HitChanceIsExplodeChance", "PhysicalEffectiveExplodePercentage", "LightningEffectiveExplodePercentage", "ColdEffectiveExplodePercentage", "FireEffectiveExplodePercentage", "ChaosEffectiveExplodePercentage", "PoisonIsSkillEffect", "PoisonDurationIsSkillDuration", "StackMultiplier", "RadiusIsWeaponRange", "Decay", "BaseStunDuration", "Range", "RangeBonus", "HitTimeMultiplier", "TotemFireOnce", "NumStages", "ProjectileSpeed", "StackCount", "SummonSpeed", "StrikeInterval", "RemainingDurationDamage"},
 			func(v *calculator.SkillData, entry *crystallineEntry, field int) any {
 				switch field {
 				case 0:
@@ -24684,90 +24684,100 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 				case 180:
 					return float64(v.GainPercentBaseWandDamageToSpells)
 				case 181:
-					return float64(v.HitTimeOverride)
+					return float64(v.GainPercentBaseDaggerDamageToSpells)
 				case 182:
-					return float64(v.TrapCooldown)
+					return func() any {
+						if v.ChanceToTriggerOnFocus == nil {
+							return nil
+						}
+
+						return float64((*v.ChanceToTriggerOnFocus))
+					}()
 				case 183:
-					return bool(v.MineDurationAppliesToSkill)
+					return float64(v.HitTimeOverride)
 				case 184:
-					return bool(v.Debuff)
+					return float64(v.TrapCooldown)
 				case 185:
-					return bool(v.DebuffSecondary)
+					return bool(v.MineDurationAppliesToSkill)
 				case 186:
-					return bool(v.DebuffTertiary)
+					return bool(v.Debuff)
 				case 187:
-					return float64(v.ReserveDuration)
+					return bool(v.DebuffSecondary)
 				case 188:
-					return float64(v.AuraDuration)
+					return bool(v.DebuffTertiary)
 				case 189:
-					return float64(v.SoulPreventionDuration)
+					return float64(v.ReserveDuration)
 				case 190:
-					return bool(v.SkillEffectAppliesToSoulGainPrevention)
+					return float64(v.AuraDuration)
 				case 191:
-					return bool(v.AuraCannotAffectSelf)
+					return float64(v.SoulPreventionDuration)
 				case 192:
-					return bool(v.ThisIsNotABuff)
+					return bool(v.SkillEffectAppliesToSoulGainPrevention)
 				case 193:
-					return bool(v.BuffNotPlayer)
+					return bool(v.AuraCannotAffectSelf)
 				case 194:
-					return bool(v.BuffMinions)
+					return bool(v.ThisIsNotABuff)
 				case 195:
-					return bool(v.BuffAllies)
+					return bool(v.BuffNotPlayer)
 				case 196:
-					return bool(v.AllowTotemBuff)
+					return bool(v.BuffMinions)
 				case 197:
-					return bool(v.Enable)
+					return bool(v.BuffAllies)
 				case 198:
-					return bool(v.DotIsArea)
+					return bool(v.AllowTotemBuff)
 				case 199:
-					return bool(v.DotIsProjectile)
+					return bool(v.Enable)
 				case 200:
-					return bool(v.DotIsAttack)
+					return bool(v.DotIsArea)
 				case 201:
-					return bool(v.DotIsHit)
+					return bool(v.DotIsProjectile)
 				case 202:
-					return float64(v.PhysicalDot)
+					return bool(v.DotIsAttack)
 				case 203:
-					return float64(v.LightningDot)
+					return bool(v.DotIsHit)
 				case 204:
-					return bool(v.ExplodeCorpse)
+					return float64(v.PhysicalDot)
 				case 205:
-					return bool(v.HitChanceIsExplodeChance)
+					return float64(v.LightningDot)
 				case 206:
-					return float64(v.PhysicalEffectiveExplodePercentage)
+					return bool(v.ExplodeCorpse)
 				case 207:
-					return float64(v.LightningEffectiveExplodePercentage)
+					return bool(v.HitChanceIsExplodeChance)
 				case 208:
-					return float64(v.ColdEffectiveExplodePercentage)
+					return float64(v.PhysicalEffectiveExplodePercentage)
 				case 209:
-					return float64(v.FireEffectiveExplodePercentage)
+					return float64(v.LightningEffectiveExplodePercentage)
 				case 210:
-					return float64(v.ChaosEffectiveExplodePercentage)
+					return float64(v.ColdEffectiveExplodePercentage)
 				case 211:
-					return bool(v.PoisonIsSkillEffect)
+					return float64(v.FireEffectiveExplodePercentage)
 				case 212:
-					return bool(v.PoisonDurationIsSkillDuration)
+					return float64(v.ChaosEffectiveExplodePercentage)
 				case 213:
-					return float64(v.StackMultiplier)
+					return bool(v.PoisonIsSkillEffect)
 				case 214:
-					return bool(v.RadiusIsWeaponRange)
+					return bool(v.PoisonDurationIsSkillDuration)
 				case 215:
-					return float64(v.Decay)
+					return float64(v.StackMultiplier)
 				case 216:
-					return float64(v.BaseStunDuration)
+					return bool(v.RadiusIsWeaponRange)
 				case 217:
-					return float64(v.Range)
+					return float64(v.Decay)
 				case 218:
-					return float64(v.RangeBonus)
+					return float64(v.BaseStunDuration)
 				case 219:
-					return float64(v.HitTimeMultiplier)
+					return float64(v.Range)
 				case 220:
-					return bool(v.TotemFireOnce)
+					return float64(v.RangeBonus)
 				case 221:
-					return float64(v.NumStages)
+					return float64(v.HitTimeMultiplier)
 				case 222:
-					return float64(v.ProjectileSpeed)
+					return bool(v.TotemFireOnce)
 				case 223:
+					return float64(v.NumStages)
+				case 224:
+					return float64(v.ProjectileSpeed)
+				case 225:
 					return func() any {
 						if v.StackCount == nil {
 							return nil
@@ -24775,7 +24785,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						return float64((*v.StackCount))
 					}()
-				case 224:
+				case 226:
 					return func() any {
 						if v.SummonSpeed == nil {
 							return nil
@@ -24783,9 +24793,9 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						return float64((*v.SummonSpeed))
 					}()
-				case 225:
+				case 227:
 					return float64(v.StrikeInterval)
-				case 226:
+				case 228:
 					return float64(v.RemainingDurationDamage)
 				}
 
@@ -26793,9 +26803,31 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 							return
 						}
 
-						v.HitTimeOverride = converted
+						v.GainPercentBaseDaggerDamageToSpells = converted
 					})(value)
 				case 182:
+					(func(value js.Value) {
+						converted, err := crystallineToPtrFloat64(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.ChanceToTriggerOnFocus = converted
+					})(value)
+				case 183:
+					(func(value js.Value) {
+						converted, err := crystallineToFloat64(value)
+						if err != nil {
+							crystallineFail(err.Error())
+
+							return
+						}
+
+						v.HitTimeOverride = converted
+					})(value)
+				case 184:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -26806,7 +26838,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.TrapCooldown = converted
 					})(value)
-				case 183:
+				case 185:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -26817,7 +26849,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.MineDurationAppliesToSkill = converted
 					})(value)
-				case 184:
+				case 186:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -26828,7 +26860,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.Debuff = converted
 					})(value)
-				case 185:
+				case 187:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -26839,7 +26871,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.DebuffSecondary = converted
 					})(value)
-				case 186:
+				case 188:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -26850,7 +26882,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.DebuffTertiary = converted
 					})(value)
-				case 187:
+				case 189:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -26861,7 +26893,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.ReserveDuration = converted
 					})(value)
-				case 188:
+				case 190:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -26872,7 +26904,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.AuraDuration = converted
 					})(value)
-				case 189:
+				case 191:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -26883,7 +26915,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.SoulPreventionDuration = converted
 					})(value)
-				case 190:
+				case 192:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -26894,7 +26926,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.SkillEffectAppliesToSoulGainPrevention = converted
 					})(value)
-				case 191:
+				case 193:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -26905,7 +26937,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.AuraCannotAffectSelf = converted
 					})(value)
-				case 192:
+				case 194:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -26916,7 +26948,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.ThisIsNotABuff = converted
 					})(value)
-				case 193:
+				case 195:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -26927,7 +26959,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.BuffNotPlayer = converted
 					})(value)
-				case 194:
+				case 196:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -26938,7 +26970,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.BuffMinions = converted
 					})(value)
-				case 195:
+				case 197:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -26949,7 +26981,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.BuffAllies = converted
 					})(value)
-				case 196:
+				case 198:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -26960,7 +26992,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.AllowTotemBuff = converted
 					})(value)
-				case 197:
+				case 199:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -26971,7 +27003,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.Enable = converted
 					})(value)
-				case 198:
+				case 200:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -26982,7 +27014,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.DotIsArea = converted
 					})(value)
-				case 199:
+				case 201:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -26993,7 +27025,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.DotIsProjectile = converted
 					})(value)
-				case 200:
+				case 202:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -27004,7 +27036,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.DotIsAttack = converted
 					})(value)
-				case 201:
+				case 203:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -27015,7 +27047,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.DotIsHit = converted
 					})(value)
-				case 202:
+				case 204:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -27026,7 +27058,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.PhysicalDot = converted
 					})(value)
-				case 203:
+				case 205:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -27037,7 +27069,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.LightningDot = converted
 					})(value)
-				case 204:
+				case 206:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -27048,7 +27080,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.ExplodeCorpse = converted
 					})(value)
-				case 205:
+				case 207:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -27059,7 +27091,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.HitChanceIsExplodeChance = converted
 					})(value)
-				case 206:
+				case 208:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -27070,7 +27102,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.PhysicalEffectiveExplodePercentage = converted
 					})(value)
-				case 207:
+				case 209:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -27081,7 +27113,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.LightningEffectiveExplodePercentage = converted
 					})(value)
-				case 208:
+				case 210:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -27092,7 +27124,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.ColdEffectiveExplodePercentage = converted
 					})(value)
-				case 209:
+				case 211:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -27103,7 +27135,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.FireEffectiveExplodePercentage = converted
 					})(value)
-				case 210:
+				case 212:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -27114,7 +27146,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.ChaosEffectiveExplodePercentage = converted
 					})(value)
-				case 211:
+				case 213:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -27125,7 +27157,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.PoisonIsSkillEffect = converted
 					})(value)
-				case 212:
+				case 214:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -27136,7 +27168,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.PoisonDurationIsSkillDuration = converted
 					})(value)
-				case 213:
+				case 215:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -27147,7 +27179,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.StackMultiplier = converted
 					})(value)
-				case 214:
+				case 216:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -27158,7 +27190,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.RadiusIsWeaponRange = converted
 					})(value)
-				case 215:
+				case 217:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -27169,7 +27201,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.Decay = converted
 					})(value)
-				case 216:
+				case 218:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -27180,7 +27212,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.BaseStunDuration = converted
 					})(value)
-				case 217:
+				case 219:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -27191,7 +27223,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.Range = converted
 					})(value)
-				case 218:
+				case 220:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -27202,7 +27234,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.RangeBonus = converted
 					})(value)
-				case 219:
+				case 221:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -27213,7 +27245,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.HitTimeMultiplier = converted
 					})(value)
-				case 220:
+				case 222:
 					(func(value js.Value) {
 						converted, err := crystallineToBool(value)
 						if err != nil {
@@ -27224,7 +27256,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.TotemFireOnce = converted
 					})(value)
-				case 221:
+				case 223:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -27235,7 +27267,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.NumStages = converted
 					})(value)
-				case 222:
+				case 224:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -27246,7 +27278,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.ProjectileSpeed = converted
 					})(value)
-				case 223:
+				case 225:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrFloat64(value)
 						if err != nil {
@@ -27257,7 +27289,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.StackCount = converted
 					})(value)
-				case 224:
+				case 226:
 					(func(value js.Value) {
 						converted, err := crystallineToPtrFloat64(value)
 						if err != nil {
@@ -27268,7 +27300,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.SummonSpeed = converted
 					})(value)
-				case 225:
+				case 227:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -27279,7 +27311,7 @@ func crystallineMarshalCalculatorSkillData(v *calculator.SkillData) any {
 
 						v.StrikeInterval = converted
 					})(value)
-				case 226:
+				case 228:
 					(func(value js.Value) {
 						converted, err := crystallineToFloat64(value)
 						if err != nil {
@@ -57783,7 +57815,7 @@ func crystallineToCalculatorSkillDPS(value js.Value) (calculator.SkillDPS, error
 	return out, nil
 }
 
-var crystallineKnownCalculatorSkillData = map[string]bool{"StagesMax": true, "PulseInterval": true, "PulseDamage": true, "SupportBonechill": true, "Cooldown": true, "StoredUses": true, "MirageUses": true, "RequiresManaReservation": true, "Triggered": true, "TriggeredByBrand": true, "TriggeredByBattleMageCry": true, "TriggerOnCrit": true, "CountsAttachedBrandsInDamage": true, "AttachedBrandCount": true, "TriggeredOnDeath": true, "TriggeredByAutoexertion": true, "SacrificeLifePercent": true, "SacrificeLifeAsChaos": true, "TriggeredByDamageTaken": true, "TriggeredWhileChannelling": true, "TriggeredByMeleeKill": true, "TriggeredByCospris": true, "TriggeredByMjolner": true, "TriggeredBySevenTeachings": true, "TriggeredByKineticFlux": true, "TriggeredByUnique": true, "TriggeredByFocus": true, "TriggeredByCraft": true, "TriggeredByManaSpent": true, "TriggeredByManaforged": true, "ManaForgedArrowsPercentThreshold": true, "TriggeredByParentAttack": true, "TriggeredByGeneralsCry": true, "TriggerTime": true, "TriggeredBySaviour": true, "CritChance": true, "SetOffHandPhysicalMin": true, "SetOffHandPhysicalMax": true, "PercentageLifeSacrificed": true, "PercentageSacrificedDealtAsChaos": true, "AdditionalRuinChance": true, "ManabondMissingManaGainPercent": true, "ManabondMissingUnreservedManaPercentage": true, "SetOffHandFireMin": true, "SetOffHandFireMax": true, "SetOffHandColdMin": true, "SetOffHandColdMax": true, "AttackTime": true, "CastTimeOverride": true, "CastTimeOverridesAttackTime": true, "TimeOverride": true, "FixedCastTime": true, "TriggerRate": true, "ShowAverage": true, "ManaReservationPercent": true, "TotemLevel": true, "CannotBeEvaded": true, "DoubleHitsWhenDualWielding": true, "DpsMultiplier": true, "DpsBaseMultiplier": true, "PodOverlapMultiplier": true, "DamagePerProjectile": true, "DelayPerProjectile": true, "MaxRageVortexSacrificePercentage": true, "FifthStrikeDamage": true, "FifthStrikeProjectiles": true, "BaseMultiplier": true, "DamageEffectiveness": true, "LifeLeechPerUse": true, "ManaLeechPerUse": true, "BleedDurationIsSkillDuration": true, "BleedIsSkillEffect": true, "Duration": true, "FrostBombDamagePer100ms": true, "BleedBasePercent": true, "Type": true, "AttackRate": true, "PhysicalMin": true, "PhysicalMax": true, "AttackSpeedInc": true, "CountsAsAll1H": true, "CountsAsDualWielding": true, "AddedUsingAxe": true, "AddedUsingSword": true, "AddedUsingDagger": true, "AddedUsingMace": true, "AddedUsingClaw": true, "PhysicalBonusMin": true, "PhysicalBonusMax": true, "LightningMin": true, "LightningMax": true, "LightningBonusMin": true, "LightningBonusMax": true, "ColdMin": true, "ColdMax": true, "ColdBonusMin": true, "ColdBonusMax": true, "FireMin": true, "FireMax": true, "FireBonusMin": true, "FireBonusMax": true, "ChaosMin": true, "ChaosMax": true, "ChaosBonusMin": true, "ChaosBonusMax": true, "LifeDealtAsChaos": true, "EnergyShieldDealtAsChaos": true, "LifeDealtAsFire": true, "SkeletonLife": true, "SelfDamageTakenLife": true, "SelfDamageTakenES": true, "Radius": true, "RadiusSecondary": true, "RadiusTertiary": true, "RadiusLabel": true, "RadiusSecondaryLabel": true, "RadiusTertiaryLabel": true, "RadiusExtra": true, "RadiusTertiaryBaseMargin": true, "ProjectileSpeedAppliesToMSAreaOfEffect": true, "DurationSecondary": true, "DurationTertiary": true, "MinionLevel": true, "MinionLevelIsEnemyLevel": true, "MinionLevelIsPlayerLevel": true, "MinionDamageEffectiveness": true, "FireDot": true, "RFLifeMultiplier": true, "RFESMultiplier": true, "RFManaMultiplier": true, "RFMultiplier": true, "PercentSacrificed": true, "TriggeredByCoC": true, "DotIsSpell": true, "RepeatFrequency": true, "RepeatInterval": true, "HitFrequency": true, "CremationFireRate": true, "CremationFireRateIncrease": true, "DamageInterval": true, "HitFrequencyPerBlade": true, "IncVolleyFrequency": true, "VaalBladeVortexBlade": true, "RepeatFrequencyIncrease": true, "BeamOverlapMultiplier": true, "ActiveArrowMultiplier": true, "TornadoShotSecondaryHitChance": true, "ShrapnelBallistaProjectileOverlap": true, "HoaOverkill": true, "HoaMoreBurn": true, "HoaOverkillPercent": true, "MoltenShellDamageMitigated": true, "VaalMoltenShellDamageMitigated": true, "MoltenShellReflect": true, "TriggeredByMirageArcher": true, "TriggeredBySnipe": true, "TriggeredBySacredWisps": true, "ChanceToTriggerOnCrit": true, "ColdDot": true, "CorpseExplosionLifeMultiplier": true, "SelfFireExplosionLifeMultiplier": true, "CorpseLife": true, "CorpseExplosionDamageType": true, "ChaosDot": true, "BaseManaCostIsAtLeastPercentUnreservedMana": true, "ManaReservationFlat": true, "LifeReservationFlat": true, "LifeReservationPercent": true, "ManaReservationFlatForced": true, "LifeReservationFlatForced": true, "ManaReservationPercentForced": true, "LifeReservationPercentForced": true, "ManaReservedBase": true, "ManaReservedPercent": true, "LifeReservedBase": true, "LifeReservedPercent": true, "AttackSpeedMultiplier": true, "MinionUseBowAndQuiver": true, "MinionUseMainHandWeapon": true, "ArrowSpeedAppliesToAreaOfEffect": true, "GainPercentBaseWandDamageToSpells": true, "HitTimeOverride": true, "TrapCooldown": true, "MineDurationAppliesToSkill": true, "Debuff": true, "DebuffSecondary": true, "DebuffTertiary": true, "ReserveDuration": true, "AuraDuration": true, "SoulPreventionDuration": true, "SkillEffectAppliesToSoulGainPrevention": true, "AuraCannotAffectSelf": true, "ThisIsNotABuff": true, "BuffNotPlayer": true, "BuffMinions": true, "BuffAllies": true, "AllowTotemBuff": true, "Enable": true, "DotIsArea": true, "DotIsProjectile": true, "DotIsAttack": true, "DotIsHit": true, "PhysicalDot": true, "LightningDot": true, "ExplodeCorpse": true, "HitChanceIsExplodeChance": true, "PhysicalEffectiveExplodePercentage": true, "LightningEffectiveExplodePercentage": true, "ColdEffectiveExplodePercentage": true, "FireEffectiveExplodePercentage": true, "ChaosEffectiveExplodePercentage": true, "PoisonIsSkillEffect": true, "PoisonDurationIsSkillDuration": true, "StackMultiplier": true, "RadiusIsWeaponRange": true, "Decay": true, "BaseStunDuration": true, "Range": true, "RangeBonus": true, "HitTimeMultiplier": true, "TotemFireOnce": true, "NumStages": true, "ProjectileSpeed": true, "StackCount": true, "SummonSpeed": true, "StrikeInterval": true, "RemainingDurationDamage": true}
+var crystallineKnownCalculatorSkillData = map[string]bool{"StagesMax": true, "PulseInterval": true, "PulseDamage": true, "SupportBonechill": true, "Cooldown": true, "StoredUses": true, "MirageUses": true, "RequiresManaReservation": true, "Triggered": true, "TriggeredByBrand": true, "TriggeredByBattleMageCry": true, "TriggerOnCrit": true, "CountsAttachedBrandsInDamage": true, "AttachedBrandCount": true, "TriggeredOnDeath": true, "TriggeredByAutoexertion": true, "SacrificeLifePercent": true, "SacrificeLifeAsChaos": true, "TriggeredByDamageTaken": true, "TriggeredWhileChannelling": true, "TriggeredByMeleeKill": true, "TriggeredByCospris": true, "TriggeredByMjolner": true, "TriggeredBySevenTeachings": true, "TriggeredByKineticFlux": true, "TriggeredByUnique": true, "TriggeredByFocus": true, "TriggeredByCraft": true, "TriggeredByManaSpent": true, "TriggeredByManaforged": true, "ManaForgedArrowsPercentThreshold": true, "TriggeredByParentAttack": true, "TriggeredByGeneralsCry": true, "TriggerTime": true, "TriggeredBySaviour": true, "CritChance": true, "SetOffHandPhysicalMin": true, "SetOffHandPhysicalMax": true, "PercentageLifeSacrificed": true, "PercentageSacrificedDealtAsChaos": true, "AdditionalRuinChance": true, "ManabondMissingManaGainPercent": true, "ManabondMissingUnreservedManaPercentage": true, "SetOffHandFireMin": true, "SetOffHandFireMax": true, "SetOffHandColdMin": true, "SetOffHandColdMax": true, "AttackTime": true, "CastTimeOverride": true, "CastTimeOverridesAttackTime": true, "TimeOverride": true, "FixedCastTime": true, "TriggerRate": true, "ShowAverage": true, "ManaReservationPercent": true, "TotemLevel": true, "CannotBeEvaded": true, "DoubleHitsWhenDualWielding": true, "DpsMultiplier": true, "DpsBaseMultiplier": true, "PodOverlapMultiplier": true, "DamagePerProjectile": true, "DelayPerProjectile": true, "MaxRageVortexSacrificePercentage": true, "FifthStrikeDamage": true, "FifthStrikeProjectiles": true, "BaseMultiplier": true, "DamageEffectiveness": true, "LifeLeechPerUse": true, "ManaLeechPerUse": true, "BleedDurationIsSkillDuration": true, "BleedIsSkillEffect": true, "Duration": true, "FrostBombDamagePer100ms": true, "BleedBasePercent": true, "Type": true, "AttackRate": true, "PhysicalMin": true, "PhysicalMax": true, "AttackSpeedInc": true, "CountsAsAll1H": true, "CountsAsDualWielding": true, "AddedUsingAxe": true, "AddedUsingSword": true, "AddedUsingDagger": true, "AddedUsingMace": true, "AddedUsingClaw": true, "PhysicalBonusMin": true, "PhysicalBonusMax": true, "LightningMin": true, "LightningMax": true, "LightningBonusMin": true, "LightningBonusMax": true, "ColdMin": true, "ColdMax": true, "ColdBonusMin": true, "ColdBonusMax": true, "FireMin": true, "FireMax": true, "FireBonusMin": true, "FireBonusMax": true, "ChaosMin": true, "ChaosMax": true, "ChaosBonusMin": true, "ChaosBonusMax": true, "LifeDealtAsChaos": true, "EnergyShieldDealtAsChaos": true, "LifeDealtAsFire": true, "SkeletonLife": true, "SelfDamageTakenLife": true, "SelfDamageTakenES": true, "Radius": true, "RadiusSecondary": true, "RadiusTertiary": true, "RadiusLabel": true, "RadiusSecondaryLabel": true, "RadiusTertiaryLabel": true, "RadiusExtra": true, "RadiusTertiaryBaseMargin": true, "ProjectileSpeedAppliesToMSAreaOfEffect": true, "DurationSecondary": true, "DurationTertiary": true, "MinionLevel": true, "MinionLevelIsEnemyLevel": true, "MinionLevelIsPlayerLevel": true, "MinionDamageEffectiveness": true, "FireDot": true, "RFLifeMultiplier": true, "RFESMultiplier": true, "RFManaMultiplier": true, "RFMultiplier": true, "PercentSacrificed": true, "TriggeredByCoC": true, "DotIsSpell": true, "RepeatFrequency": true, "RepeatInterval": true, "HitFrequency": true, "CremationFireRate": true, "CremationFireRateIncrease": true, "DamageInterval": true, "HitFrequencyPerBlade": true, "IncVolleyFrequency": true, "VaalBladeVortexBlade": true, "RepeatFrequencyIncrease": true, "BeamOverlapMultiplier": true, "ActiveArrowMultiplier": true, "TornadoShotSecondaryHitChance": true, "ShrapnelBallistaProjectileOverlap": true, "HoaOverkill": true, "HoaMoreBurn": true, "HoaOverkillPercent": true, "MoltenShellDamageMitigated": true, "VaalMoltenShellDamageMitigated": true, "MoltenShellReflect": true, "TriggeredByMirageArcher": true, "TriggeredBySnipe": true, "TriggeredBySacredWisps": true, "ChanceToTriggerOnCrit": true, "ColdDot": true, "CorpseExplosionLifeMultiplier": true, "SelfFireExplosionLifeMultiplier": true, "CorpseLife": true, "CorpseExplosionDamageType": true, "ChaosDot": true, "BaseManaCostIsAtLeastPercentUnreservedMana": true, "ManaReservationFlat": true, "LifeReservationFlat": true, "LifeReservationPercent": true, "ManaReservationFlatForced": true, "LifeReservationFlatForced": true, "ManaReservationPercentForced": true, "LifeReservationPercentForced": true, "ManaReservedBase": true, "ManaReservedPercent": true, "LifeReservedBase": true, "LifeReservedPercent": true, "AttackSpeedMultiplier": true, "MinionUseBowAndQuiver": true, "MinionUseMainHandWeapon": true, "ArrowSpeedAppliesToAreaOfEffect": true, "GainPercentBaseWandDamageToSpells": true, "GainPercentBaseDaggerDamageToSpells": true, "ChanceToTriggerOnFocus": true, "HitTimeOverride": true, "TrapCooldown": true, "MineDurationAppliesToSkill": true, "Debuff": true, "DebuffSecondary": true, "DebuffTertiary": true, "ReserveDuration": true, "AuraDuration": true, "SoulPreventionDuration": true, "SkillEffectAppliesToSoulGainPrevention": true, "AuraCannotAffectSelf": true, "ThisIsNotABuff": true, "BuffNotPlayer": true, "BuffMinions": true, "BuffAllies": true, "AllowTotemBuff": true, "Enable": true, "DotIsArea": true, "DotIsProjectile": true, "DotIsAttack": true, "DotIsHit": true, "PhysicalDot": true, "LightningDot": true, "ExplodeCorpse": true, "HitChanceIsExplodeChance": true, "PhysicalEffectiveExplodePercentage": true, "LightningEffectiveExplodePercentage": true, "ColdEffectiveExplodePercentage": true, "FireEffectiveExplodePercentage": true, "ChaosEffectiveExplodePercentage": true, "PoisonIsSkillEffect": true, "PoisonDurationIsSkillDuration": true, "StackMultiplier": true, "RadiusIsWeaponRange": true, "Decay": true, "BaseStunDuration": true, "Range": true, "RangeBonus": true, "HitTimeMultiplier": true, "TotemFireOnce": true, "NumStages": true, "ProjectileSpeed": true, "StackCount": true, "SummonSpeed": true, "StrikeInterval": true, "RemainingDurationDamage": true}
 
 func crystallineToCalculatorSkillData(value js.Value) (calculator.SkillData, error) {
 	var out calculator.SkillData
@@ -59441,6 +59473,24 @@ func crystallineToCalculatorSkillData(value js.Value) (calculator.SkillData, err
 		}
 
 		out.GainPercentBaseWandDamageToSpells = converted
+	}
+
+	if property := value.Get("GainPercentBaseDaggerDamageToSpells"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToFloat64(property)
+		if err != nil {
+			return out, errors.New("calculator.SkillData.GainPercentBaseDaggerDamageToSpells: " + err.Error())
+		}
+
+		out.GainPercentBaseDaggerDamageToSpells = converted
+	}
+
+	if property := value.Get("ChanceToTriggerOnFocus"); !property.IsUndefined() && !property.IsNull() {
+		converted, err := crystallineToPtrFloat64(property)
+		if err != nil {
+			return out, errors.New("calculator.SkillData.ChanceToTriggerOnFocus: " + err.Error())
+		}
+
+		out.ChanceToTriggerOnFocus = converted
 	}
 
 	if property := value.Get("HitTimeOverride"); !property.IsUndefined() && !property.IsNull() {
