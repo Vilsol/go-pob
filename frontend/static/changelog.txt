@@ -1,9 +1,23 @@
+VERSION[0.11.2][2026/11/19]
+
+--- Fixed ---
+* calculator: hostile minions, curses, trigger cooldowns, auras and party buffs follow PoB
+* calculator: weapon-granted skills, dual-wield type rules, trap cooldowns and defence details follow PoB
+* calculator2: PoE2 parser rows, ground flags, cooldowns, custom modifiers and minion labels follow PoB-PoE2
+* items: item mod lists, tooltips, saved item text and talisman base enchants follow PoB
+* mcp: shared caches are safe for concurrent servers, and tests no longer read the repository root
+* parser: about 130 mod lines parse as PoB 2.68.1 parses them
+
+
 VERSION[0.11.1][2026/11/18]
 
 --- Fixed ---
 * calculator: auras, triggers, totems and supports follow PoB's own conditions
 * data: the passive tree download retries a connection reset or a 5xx answer
 * item corruption, crafting, tooltips and editor gaps follow PoB 2.68.1
+
+--- Reverts ---
+* talisman base enchantment lookup, which loaded the whole crafting dataset on every item parse
 
 
 VERSION[0.11.0][2026/11/18]
