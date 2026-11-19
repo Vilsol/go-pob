@@ -61,11 +61,18 @@ type ModLine struct {
 	Suffix   bool
 	Unveiled bool
 
+	Enchant    bool
+	Exarch     bool
+	Eater      bool
+	Synthesis  bool
+	Unscalable bool
+
 	Disabled bool
 
 	Order *float64
 
 	RangeFromValue bool
+	AddedFromBase  bool
 
 	ModID            string
 	NewModID         string
@@ -155,6 +162,7 @@ type Item struct {
 	Note             string
 	Source           string
 	ClassRestriction string
+	HasModTags       bool
 	Unreleased       bool
 	UpgradePaths     []string
 
@@ -167,6 +175,8 @@ type Item struct {
 	Split                bool
 	Fractured            bool
 	Foulborn             bool
+	Veiled               bool
+	Vestigial            bool
 	Synthesised          bool
 	Crafted              bool
 	Scourge              bool
@@ -250,12 +260,13 @@ type Item struct {
 }
 
 type ItemGrantedSkill struct {
-	SkillID       string
-	Level         int
-	NoSupports    bool
-	Source        string
-	Triggered     bool
-	triggerChance float64
+	SkillID         string
+	Level           int
+	NoSupports      bool
+	Source          string
+	Triggered       bool
+	ItemRequirement *mod.ItemRequirement
+	triggerChance   float64
 }
 
 var dmgTypeList = []string{"Physical", "Lightning", "Cold", "Fire", "Chaos"}
@@ -263,7 +274,6 @@ var dmgTypeList = []string{"Physical", "Lightning", "Cold", "Fire", "Chaos"}
 var (
 	rarityRe         = regexp.MustCompile(`^Rarity: ([a-zA-Z]+)`)
 	specHexRe        = regexp.MustCompile(`^([a-zA-Z ()]+): ([0-9a-fA-F]+)$`)
-	specNumRe        = regexp.MustCompile(`^([a-zA-Z ()]+): \+?([0-9+\-.,]+)`)
 	specAnyRe        = regexp.MustCompile(`^([a-zA-Z ()]+): (.+)$`)
 	reqClassRe       = regexp.MustCompile(`^(Requires Class) (.+)$`)
 	classColonRe     = regexp.MustCompile(`^Class:: (.+)$`)
@@ -284,7 +294,6 @@ var (
 	levelRe             = regexp.MustCompile(`Level (\d+)`)
 	parenSuffixRe       = regexp.MustCompile(` \(.+\)`)
 	foilTypeRe          = regexp.MustCompile(`\(([^)]*)\)`)
-	augmentedRe         = regexp.MustCompile(` \(augmented\)`)
 	socketColorRe       = regexp.MustCompile(`[RGBWA]`)
 	alphaPrefixRe       = regexp.MustCompile(`^[a-zA-Z]+`)
 
@@ -344,6 +353,14 @@ func luaToNumber(s string) (float64, bool) {
 
 func intPtr(v int) *int { return &v }
 
+// LuaJIT's math.min(NaN, x) is x; Go's math.Min returns NaN.
+func luaMin(a, b float64) float64 {
+	if math.IsNaN(a) {
+		return b
+	}
+	return math.Min(a, b)
+}
+
 func modExtra(e *ModCacheEntry) string {
 	if e == nil {
 		return ""
@@ -355,7 +372,10 @@ func modExtra(e *ModCacheEntry) string {
 }
 
 //pob:src/Classes/Item.lua:28-49
-func getCatalystScalar(catalystID *int, tags []string, quality *int, prefix, suffix bool) float64 {
+func getCatalystScalar(catalystID *int, tags []string, quality *int, prefix, suffix, unscalable bool) float64 {
+	if unscalable {
+		return 1
+	}
 	if catalystID == nil || *catalystID < 1 || *catalystID > len(catalystTags) || len(tags) == 0 {
 		return 1
 	}
@@ -444,12 +464,18 @@ func parseModRangeElements(raw string) []modRange {
 	return out
 }
 
-// enchants added from the base data (countSavedModLines) are not ported, so every list counts in full
-//
+//pob:src/Classes/ItemsTab.lua:1269-1271
+func countSavedModLines(modLines []ModLine) int {
+	if len(modLines) > 0 && modLines[0].AddedFromBase {
+		return 0
+	}
+	return len(modLines)
+}
+
 //pob:block:src/Classes/ItemsTab.lua:1297-1330
 func (i *Item) applyModRanges(ranges []modRange) {
 	if len(ranges) == 0 ||
-		len(ranges) > len(i.EnchantModLines)+len(i.ScourgeModLines)+len(i.ImplicitModLines)+len(i.ExplicitModLines)+len(i.CrucibleModLines) {
+		len(ranges) > countSavedModLines(i.EnchantModLines)+len(i.ScourgeModLines)+len(i.ImplicitModLines)+len(i.ExplicitModLines)+len(i.CrucibleModLines) {
 		return
 	}
 	lists := [...][]ModLine{
@@ -463,14 +489,15 @@ func (i *Item) applyModRanges(ranges []modRange) {
 	for _, mr := range ranges {
 		id := mr.ID
 		for _, list := range lists {
-			if id <= len(list) {
+			savedLineCount := countSavedModLines(list)
+			if id <= savedLineCount {
 				if id >= 1 && !list[id-1].RangeFromValue {
 					v := mr.Range
 					list[id-1].Range = &v
 				}
 				break
 			}
-			id -= len(list)
+			id -= savedLineCount
 		}
 	}
 }
@@ -582,6 +609,10 @@ func (i *Item) parseRaw(raw string, rarity ItemRarity, highQuality bool) {
 
 	for l < len(i.rawLines) {
 		line := i.rawLines[l]
+		//pob:block:src/Classes/Item.lua:542-544
+		if line == "Veiled Prefix" || line == "Veiled Suffix" {
+			i.Veiled = true
+		}
 
 		switch {
 		//pob:block:src/Classes/Item.lua:545-547
@@ -758,6 +789,32 @@ func (i *Item) parseRaw(raw string, rarity ItemRarity, highQuality bool) {
 		i.NormaliseQuality()
 		if highQuality {
 			i.NormaliseQuality()
+		}
+	}
+	//pob:block:src/Classes/Item.lua:1632-1657
+	if be, ok := data.BaseEnchant(i.BaseName); i.Base != nil && ok && len(i.EnchantModLines) == 0 {
+		// Items saved before their base gained this enchant carry it as an implicit (Black Maw Talisman)
+		activeImplicitLines := map[string]bool{}
+		for _, ml := range i.ImplicitModLines {
+			if i.checkModLineVariant(ml) {
+				activeImplicitLines[ml.Line] = true
+			}
+		}
+		enchantIndex := 1
+		for _, line := range strings.Split(be.Enchant, "\n") {
+			if line == "" {
+				continue
+			}
+			if !activeImplicitLines[line] {
+				entry := ParseMod(line, false)
+				var modTags []string
+				if enchantIndex <= len(be.EnchantModTypes) {
+					modTags = be.EnchantModTypes[enchantIndex-1]
+				}
+				i.EnchantModLines = append(i.EnchantModLines, ModLine{Line: line, Crafted: true, Implicit: true, Enchant: true, AddedFromBase: true,
+					Extra: modExtra(entry), ModList: entry.ModList, ModTags: modTags})
+			}
+			enchantIndex++
 		}
 	}
 
@@ -946,12 +1003,12 @@ func (i *Item) mutateMod(modID, newModID string, mutated bool) bool {
 		return false
 	}
 	insertIdx := -1
-	var variantList map[int]bool
+	var variantList, versionList, variantGroupList map[int]bool
 	for k := 0; k < len(i.ExplicitModLines); {
 		ml := i.ExplicitModLines[k]
 		if ml.ModID == modID && i.checkModLineVariant(ml) {
 			if insertIdx < 0 {
-				insertIdx, variantList = k, ml.VariantList
+				insertIdx, variantList, versionList, variantGroupList = k, ml.VariantList, ml.VersionList, ml.VariantGroupList
 			}
 			i.ExplicitModLines = slices.Delete(i.ExplicitModLines, k, k+1)
 			continue
@@ -967,6 +1024,9 @@ func (i *Item) mutateMod(modID, newModID string, mutated bool) bool {
 		VariantList: variantList,
 		Mutated:     mutated,
 		ModGroup:    newModID,
+
+		VersionList:      versionList,
+		VariantGroupList: variantGroupList,
 	})
 	return true
 }
@@ -1072,7 +1132,30 @@ func (i *Item) checkModLineVariant(ml ModLine) bool {
 	return false
 }
 
-//pob:src/Classes/Item.lua:2534-2704
+//pob:src/Classes/Item.lua:2177-2193
+func (i *Item) getModLineVariantCount(ml ModLine) int {
+	if !i.AllowDuplicateVariants || ml.VariantList == nil {
+		if i.checkModLineVariant(ml) {
+			return 1
+		}
+		return 0
+	}
+	count := 0
+	if i.Variant != nil && ml.VariantList[*i.Variant] {
+		count++
+	}
+	for _, alt := range []struct {
+		has     bool
+		variant *int
+	}{{i.HasAltVariant, i.VariantAlt}, {i.HasAltVariant2, i.VariantAlt2}, {i.HasAltVariant3, i.VariantAlt3}, {i.HasAltVariant4, i.VariantAlt4}, {i.HasAltVariant5, i.VariantAlt5}} {
+		if alt.has && alt.variant != nil && ml.VariantList[*alt.variant] {
+			count++
+		}
+	}
+	return count
+}
+
+//pob:src/Classes/Item.lua:2573-2745
 func (i *Item) BuildModList() {
 	i.Mods = nil
 	i.WeaponData = nil
@@ -1101,18 +1184,20 @@ func (i *Item) BuildModList() {
 		}
 	}
 
+	//pob:block:src/Classes/Item.lua:2602-2633
 	processModLine := func(ml ModLine) {
 		if ml.Disabled {
 			return
 		}
-		if !i.checkModLineVariant(ml) || ml.Extra != "" {
+		variantCount := i.getModLineVariantCount(ml)
+		if variantCount == 0 || ml.Extra != "" {
 			return
 		}
 
 		mods := ml.ModList
 		if ml.Range != nil {
 			stripped := strings.ReplaceAll(ml.Line, "\n", " ")
-			//pob:block:src/Classes/Item.lua:2562
+			//pob:block:src/Classes/Item.lua:2561-2571
 			if rangedModLineRe.MatchString(ml.Line) {
 				scalar := ml.ValueScalar
 				if scalar == 0 {
@@ -1120,14 +1205,21 @@ func (i *Item) BuildModList() {
 				}
 				rolled := data.ApplyRange(stripped, *ml.Range, &scalar, ml.CorruptedRange)
 				entry := ParseMod(rolled, false)
-				if entry.ModList != nil && strings.TrimSpace(entry.Extra) == "" {
+				if data.IsZeroValueLine(rolled) {
+					mods = nil
+				} else if entry.ModList != nil && strings.TrimSpace(entry.Extra) == "" {
 					mods = entry.ModList
 				}
 			}
 		}
 
 		for _, m := range mods {
-			baseList = append(baseList, mod.SetSource(m.Clone(), mod.Source(source)))
+			for range variantCount {
+				baseList = append(baseList, mod.SetSource(m.Clone(), mod.Source(source)))
+			}
+		}
+		if len(ml.ModTags) > 0 {
+			i.HasModTags = true
 		}
 	}
 
@@ -1148,6 +1240,41 @@ func (i *Item) BuildModList() {
 	}
 	for _, ml := range i.CrucibleModLines {
 		processModLine(ml)
+	}
+
+	//pob:block:src/Classes/Item.lua:2652-2656
+	if i.Name == "Tabula Rasa, Simple Robe" || i.Name == "Skin of the Loyal, Simple Robe" ||
+		i.Name == "Skin of the Lords, Simple Robe" || i.Name == "The Apostate, Cabalist Regalia" {
+		baseList = append(baseList, mod.NewList("ArmourData", mod.ArmourData{Key: "EnergyShield", Value: 0}))
+		i.Requirements["int"] = 0
+	}
+
+	//pob:block:src/Classes/Item.lua:2657-2665
+	if calcLocalFlag(&baseList, "NoAttributeRequirements", 0) {
+		i.Requirements["strMod"] = 0
+		i.Requirements["dexMod"] = 0
+		i.Requirements["intMod"] = 0
+	} else {
+		i.Requirements["strMod"] = math.Floor((i.Requirements["str"] + calcLocal(&baseList, "StrRequirement", mod.TypeBase, 0)) * (1 + calcLocal(&baseList, "StrRequirement", mod.TypeIncrease, 0)/100))
+		i.Requirements["dexMod"] = math.Floor((i.Requirements["dex"] + calcLocal(&baseList, "DexRequirement", mod.TypeBase, 0)) * (1 + calcLocal(&baseList, "DexRequirement", mod.TypeIncrease, 0)/100))
+		i.Requirements["intMod"] = math.Floor((i.Requirements["int"] + calcLocal(&baseList, "IntRequirement", mod.TypeBase, 0)) * (1 + calcLocal(&baseList, "IntRequirement", mod.TypeIncrease, 0)/100))
+	}
+
+	//pob:block:src/Classes/Item.lua:2666-2680
+	for _, value := range utils.CastSlice[mod.ExtraSkill](asModList(baseList).List(nil, "ExtraSkill")) {
+		if value.SkillID == "" {
+			continue
+		}
+		i.GrantedSkills = append(i.GrantedSkills, ItemGrantedSkill{
+			SkillID:         value.SkillID,
+			Level:           value.Level,
+			NoSupports:      value.NoSupports,
+			Source:          source,
+			Triggered:       value.Triggered,
+			ItemRequirement: value.ItemRequirement,
+
+			triggerChance: value.TriggerChance,
+		})
 	}
 
 	//pob:block:src/Classes/Item.lua:2681-2728
@@ -1195,18 +1322,11 @@ func (i *Item) BuildModList() {
 		i.Sockets = newSockets
 	}
 
-	//pob:src/Classes/Item.lua:2729-2731
-	i.SocketColourAlwaysMatches = len(i.Sockets) > 0 && calcLocalFlag(&baseList, "SocketAlwaysMatches", 0)
+	//pob:block:src/Classes/Item.lua:2729-2731
+	i.SocketColourAlwaysMatches = calcLocalFlag(&baseList, "SocketAlwaysMatches", 0)
 
 	//pob:src/Classes/Item.lua:2732
 	i.SocketedJewelEffectModifier = 1 + calcLocal(&baseList, "SocketedJewelEffect", mod.TypeIncrease, 0)/100
-
-	//pob:block:src/Classes/Item.lua:2652-2656
-	if i.Name == "Tabula Rasa, Simple Robe" || i.Name == "Skin of the Loyal, Simple Robe" ||
-		i.Name == "Skin of the Lords, Simple Robe" || i.Name == "The Apostate, Cabalist Regalia" {
-		baseList = append(baseList, mod.NewList("ArmourData", mod.ArmourData{Key: "EnergyShield", Value: 0}))
-		i.Requirements["int"] = 0
-	}
 
 	if i.Base.Weapon != nil || i.Type == "Ring" {
 		i.WeaponData = map[int]map[string]float64{}
@@ -1220,31 +1340,6 @@ func (i *Item) BuildModList() {
 		i.Mods = i.buildModListForSlotNum(baseList, 0)
 	}
 
-	if calcLocalFlag(&baseList, "NoAttributeRequirements", 0) {
-		i.Requirements["strMod"] = 0
-		i.Requirements["dexMod"] = 0
-		i.Requirements["intMod"] = 0
-	} else {
-		i.Requirements["strMod"] = math.Floor((i.Requirements["str"] + calcLocal(&baseList, "StrRequirement", mod.TypeBase, 0)) * (1 + calcLocal(&baseList, "StrRequirement", mod.TypeIncrease, 0)/100))
-		i.Requirements["dexMod"] = math.Floor((i.Requirements["dex"] + calcLocal(&baseList, "DexRequirement", mod.TypeBase, 0)) * (1 + calcLocal(&baseList, "DexRequirement", mod.TypeIncrease, 0)/100))
-		i.Requirements["intMod"] = math.Floor((i.Requirements["int"] + calcLocal(&baseList, "IntRequirement", mod.TypeBase, 0)) * (1 + calcLocal(&baseList, "IntRequirement", mod.TypeIncrease, 0)/100))
-	}
-
-	//pob:block:src/Classes/Item.lua:1395-1406
-	for _, value := range utils.CastSlice[mod.ExtraSkill](asModList(baseList).List(nil, "ExtraSkill")) {
-		if value.SkillID == "" {
-			continue
-		}
-		i.GrantedSkills = append(i.GrantedSkills, ItemGrantedSkill{
-			SkillID:    value.SkillID,
-			Level:      value.Level,
-			NoSupports: value.NoSupports,
-			Source:     source,
-			Triggered:  value.Triggered,
-
-			triggerChance: value.TriggerChance,
-		})
-	}
 	i.BaseModList = baseList
 }
 
@@ -1603,27 +1698,27 @@ func (i *Item) buildModListForSlotNum(baseList []mod.Mod, slotNum int) []mod.Mod
 		}
 
 		if v, ok := armourData["Armour"]; ok && v > 0 {
-			if _, set := armourData["ArmourBasePercentile"]; !set && armourVariance != 0 {
+			if _, set := armourData["ArmourBasePercentile"]; !set {
 				p := (v/((1+(armourInc+armourEvasionInc+armourEnergyShieldInc+defencesInc)/100)*(1+qualityScalar/100)) - armourBase) / armourVariance
-				armourData["ArmourBasePercentile"] = utils.RoundTo(math.Max(math.Min(p, 1), 0), 4)
+				armourData["ArmourBasePercentile"] = utils.RoundTo(math.Max(luaMin(p, 1), 0), 4)
 			}
 		}
 		if v, ok := armourData["Evasion"]; ok && v > 0 {
-			if _, set := armourData["EvasionBasePercentile"]; !set && evasionVariance != 0 {
+			if _, set := armourData["EvasionBasePercentile"]; !set {
 				p := (v/((1+(evasionInc+armourEvasionInc+evasionEnergyShieldInc+defencesInc)/100)*(1+qualityScalar/100)) - evasionBase) / evasionVariance
-				armourData["EvasionBasePercentile"] = utils.RoundTo(math.Max(math.Min(p, 1), 0), 4)
+				armourData["EvasionBasePercentile"] = utils.RoundTo(math.Max(luaMin(p, 1), 0), 4)
 			}
 		}
 		if v, ok := armourData["EnergyShield"]; ok && v > 0 {
-			if _, set := armourData["EnergyShieldBasePercentile"]; !set && energyShieldVariance != 0 {
+			if _, set := armourData["EnergyShieldBasePercentile"]; !set {
 				p := (v/((1+(energyShieldInc+armourEnergyShieldInc+evasionEnergyShieldInc+defencesInc)/100)*(1+qualityScalar/100)) - energyShieldBase) / energyShieldVariance
-				armourData["EnergyShieldBasePercentile"] = utils.RoundTo(math.Max(math.Min(p, 1), 0), 4)
+				armourData["EnergyShieldBasePercentile"] = utils.RoundTo(math.Max(luaMin(p, 1), 0), 4)
 			}
 		}
 		if v, ok := armourData["Ward"]; ok && v > 0 {
-			if _, set := armourData["WardBasePercentile"]; !set && wardVariance != 0 {
+			if _, set := armourData["WardBasePercentile"]; !set {
 				p := (v/((1+(wardInc+defencesInc)/100)*(1+qualityScalar/100)) - wardBase) / wardVariance
-				armourData["WardBasePercentile"] = utils.RoundTo(math.Max(math.Min(p, 1), 0), 4)
+				armourData["WardBasePercentile"] = utils.RoundTo(math.Max(luaMin(p, 1), 0), 4)
 			}
 		}
 
@@ -1826,12 +1921,6 @@ func matchSpec(line string) (string, string) {
 		if v, ok := strings.CutPrefix(line, "Selected Variant Group: "); ok {
 			return "Selected Variant Group", v
 		}
-		if m := specNumRe.FindStringSubmatch(line); m != nil {
-			if _, ok := luaToNumber(m[2]); ok {
-				return m[1], m[2]
-			}
-		}
-
 		if m := specAnyRe.FindStringSubmatch(line); m != nil {
 			return m[1], m[2]
 		}
@@ -1951,11 +2040,11 @@ func (i *Item) applySpec(specName, specVal string, implicitLines *int, gameModeS
 	case "Source":
 		i.Source = specVal
 	case "Str", "Strength", "Dex", "Dexterity", "Int", "Intelligence":
-		if v, ok := luaToNumber(specVal); ok {
+		if v, ok := specToNumber(specVal); ok {
 			i.Requirements[strings.ToLower(specName[:3])] = v
 		}
 	case "Implicits":
-		if v, ok := luaToNumber(specVal); ok {
+		if v, ok := specToNumber(specVal); ok {
 			*implicitLines = int(v)
 		} else {
 			*implicitLines = 0
@@ -1966,7 +2055,7 @@ func (i *Item) applySpec(specName, specVal string, implicitLines *int, gameModeS
 			i.ArmourData = map[string]float64{}
 		}
 		key := strings.ReplaceAll(strings.ReplaceAll(specName, "Rating", ""), " ", "")
-		if v, ok := luaToNumber(augmentedRe.ReplaceAllString(specVal, "")); ok {
+		if v, ok := specToNumber(specVal); ok {
 			i.ArmourData[key] = v
 		}
 	case "Critical Strike Range", "Attacks per Second", "Weapon Range",
@@ -2021,7 +2110,7 @@ func (i *Item) applySpec(specName, specVal string, implicitLines *int, gameModeS
 			if i.ArmourData == nil {
 				i.ArmourData = map[string]float64{}
 			}
-			if v, ok := luaToNumber(specVal); ok {
+			if v, ok := specToNumber(specVal); ok {
 				i.ArmourData[specName] = v
 			} else {
 				i.ArmourData[specName] = 0
@@ -2064,7 +2153,11 @@ func (i *Item) parseModLine(line string, l int, mode string, implicitLines int, 
 	if rangeSpec != nil {
 		i.AdvancedCopy = true
 	}
-	enchant := strings.Contains(line, " (enchant)")
+	enchant := strings.Contains(line, "{enchant}") || strings.Contains(line, " (enchant)")
+	exarch := strings.Contains(line, "{exarch}") || strings.Contains(line, " (exarch)")
+	eater := strings.Contains(line, "{eater}") || strings.Contains(line, " (eater)")
+	synthesis := strings.Contains(line, "{synthesis}") || strings.Contains(line, " (synthesis)")
+	unscalable := strings.Contains(line, "{unscalable}") || strings.Contains(line, " (unscalable)")
 	classReq := strings.Contains(line, "Requires Class")
 	scourge := strings.Contains(line, "{scourge}") || strings.Contains(line, " (scourge)")
 	crafted := strings.Contains(line, "{crafted}") || strings.Contains(line, " (crafted)") || enchant
@@ -2072,6 +2165,10 @@ func (i *Item) parseModLine(line string, l int, mode string, implicitLines int, 
 	mutated := strings.Contains(line, "{mutated}")
 	crucible := strings.Contains(line, "{crucible}") || strings.Contains(line, " (crucible)")
 	vestigial := strings.Contains(line, "{vestigial}")
+	//pob:block:src/Classes/Item.lua:962-964
+	if vestigial {
+		i.Vestigial = true
+	}
 	disabled := strings.Contains(line, "{disabled}") || strings.Contains(line, " (disabled)")
 	prefix := strings.Contains(line, "{prefix}")
 	suffix := strings.Contains(line, "{suffix}")
@@ -2119,7 +2216,7 @@ func (i *Item) parseModLine(line string, l int, mode string, implicitLines int, 
 	}
 
 	line = stripBalancedBraces(line)
-	for _, s := range []string{" (fractured)", " (crafted)", " (implicit)", " (enchant)", " (scourge)"} {
+	for _, s := range []string{" (fractured)", " (crafted)", " (implicit)", " (enchant)", " (scourge)", " (exarch)", " (eater)", " (synthesis)", " (unscalable)"} {
 		line = strings.ReplaceAll(line, s, "")
 	}
 
@@ -2127,7 +2224,14 @@ func (i *Item) parseModLine(line string, l int, mode string, implicitLines int, 
 		i.AdvancedCopy = true
 	}
 
-	catalystScalar := getCatalystScalar(i.Catalyst, modTags, i.CatalystQuality, prefix, suffix)
+	//pob:block:src/Classes/Item.lua:1093-1099
+	catalystScalar := 1.0
+	if strings.HasSuffix(line, " - Unscalable Value") {
+		line = strings.TrimSuffix(line, " - Unscalable Value")
+		unscalable = true
+	} else {
+		catalystScalar = getCatalystScalar(i.Catalyst, modTags, i.CatalystQuality, prefix, suffix, unscalable)
+	}
 
 	var lineRange *float64
 	if rangeSpec != nil {
@@ -2237,6 +2341,12 @@ func (i *Item) parseModLine(line string, l int, mode string, implicitLines int, 
 
 		VersionList:      versionList,
 		VariantGroupList: variantGroupList,
+
+		Enchant:    enchant,
+		Exarch:     exarch,
+		Eater:      eater,
+		Synthesis:  synthesis,
+		Unscalable: unscalable,
 	}
 	i.registerVariantGroups(newLine)
 

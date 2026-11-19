@@ -49,7 +49,7 @@ func TestCatalystTagsMatchThePin(t *testing.T) {
 		case "suffix":
 			tags, suffix = []string{"life"}, true
 		}
-		got := getCatalystScalar(id, tags, quality, prefix, suffix)
+		got := getCatalystScalar(id, tags, quality, prefix, suffix, false)
 		want := 1.0
 		if c.scales {
 			want = 1.2

@@ -99,6 +99,25 @@ func TestCompareItemSlots(t *testing.T) {
 	}
 }
 
+// ItemsTab.lua:5032: comparing the item already in a slot calculates with that slot emptied.
+func TestCompareItemSlotsSameItemRemoves(t *testing.T) {
+	initItemsTabData(t)
+	build := loadCorpusBuild(t, "0280-elementalist-fireball.xml")
+	misc := GetMiscCalculator(build)
+	own := ParseItem(donorItem(t, "0280-elementalist-fireball.xml", "Ring 1"))
+	for _, c := range misc.CompareItemSlots(own) {
+		if c.SlotName != "Ring 1" {
+			continue
+		}
+		want := misc.Calc(&CalcOverride{RepSlotName: "Ring 1"})
+		if where, ok := outputsAgree(c.Env.Player.Output, want.Player.Output); !ok {
+			t.Errorf("Ring 1 compare differs from the slot emptied: %s", where)
+		}
+		return
+	}
+	t.Fatal("REFUSING: the ring did not compare in Ring 1")
+}
+
 // TestCompareItemSlotsEmptyFirst: ItemsTab.lua:5135-5152 sorts empty slots first.
 func TestCompareItemSlotsEmptyFirst(t *testing.T) {
 	initItemsTabData(t)

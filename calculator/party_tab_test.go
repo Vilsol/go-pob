@@ -297,3 +297,26 @@ func TestDisablePartyEffectsReachesTheCalculation(t *testing.T) {
 		t.Errorf("%s after Rebuild All = %v, PoB %v", stat, got, exp)
 	}
 }
+
+// PartyTab.lua:887-894 rewrites every tag whose actor is "parent" on Link mods.
+func TestPartyLinkRewritesEveryParentActor(t *testing.T) {
+	tab := newPartyTab()
+	list := newPartyBuffList()
+	tab.parseNamedBuffs(list, "Flame Link\n1\n10|Skill:FlameLink|Damage|INC|-|-|type=PerStat/stat=Str/div=10/actor=parent,type=ActorCondition/actor=parent/var=Burning\n---", "Link")
+	var buff *partyBuff
+	for _, group := range list.byType {
+		if b := group.buffs["Flame Link"]; b != nil {
+			buff = b
+		}
+	}
+	if buff == nil || len(buff.modList.Mods()) != 1 {
+		t.Fatalf("link buff not parsed (skipped %v)", tab.skipped)
+	}
+	tags := buff.modList.Mods()[0].Tags()
+	if ps, ok := tags[0].(*mod.PerStatTag); !ok || ps.TagActor != "partyMembers" || ps.Divide != 10 || ps.StatList[0] != "Str" {
+		t.Errorf("PerStat tag %#v", tags[0])
+	}
+	if ac, ok := tags[1].(*mod.ActorConditionTag); !ok || *ac.Actor != "partyMembers" || ac.VariableList[0] != "Burning" {
+		t.Errorf("ActorCondition tag %#v", tags[1])
+	}
+}

@@ -304,14 +304,8 @@ func DisplayItem(raw string) (DisplayItemInfo, bool) {
 	info.DefaultColor = item.defaultSocketColor()
 	info.Influence = influenceNames(item.Influence)
 	//pob:block:src/Classes/ItemsTab.lua:696-698
-	hasModTags := false
-	for _, ml := range item.ExplicitModLines {
-		if len(ml.ModTags) > 0 {
-			hasModTags = true
-		}
-	}
 	t := item.Base.Type
-	info.ShowsCatalyst = (item.Crafted || hasModTags) && (t == "Amulet" || t == "Ring" || t == "Belt")
+	info.ShowsCatalyst = (item.Crafted || item.HasModTags) && (t == "Amulet" || t == "Ring" || t == "Belt")
 	if item.Catalyst != nil {
 		info.Catalyst = *item.Catalyst
 	}

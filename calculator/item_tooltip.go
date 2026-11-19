@@ -227,6 +227,9 @@ func itemTooltipInfluence(item *Item) []string {
 		if item.Foulborn {
 			add("Foulborn")
 		}
+		if item.Veiled {
+			add("Veiled")
+		}
 		if inf.Cleansing {
 			add("Exarch")
 		}
@@ -250,6 +253,9 @@ func itemTooltipInfluence(item *Item) []string {
 		}
 		if inf.Adjudicator {
 			add("Warlord")
+		}
+		if item.Vestigial {
+			add("Vestigial")
 		}
 		if item.Synthesised && len(header) == 0 {
 			add("Synthesis")
@@ -621,11 +627,14 @@ func AddItemTooltip(item *Item, ctx ItemTooltipContext) ItemTooltip {
 			continue
 		}
 		for _, ml := range modList {
-			if !item.ItemModLineVisible(ml) {
+			variantCount := item.ItemModLineVariantCount(ml)
+			if variantCount == 0 {
 				continue
 			}
 			if line, ok := formattedModLine(ml, ctx.DBMode); ok {
-				t.addLine(line)
+				for range variantCount {
+					t.addLine(line)
+				}
 			}
 		}
 		t.addSeparator()

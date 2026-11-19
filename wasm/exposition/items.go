@@ -223,11 +223,14 @@ func socketLine(sockets []calculator.ItemSocket) string {
 func modLines(item *calculator.Item, lines []calculator.ModLine) []ItemModLine {
 	var out []ItemModLine
 	for _, ml := range lines {
-		if !item.ItemModLineVisible(ml) {
+		variantCount := item.ItemModLineVariantCount(ml)
+		if variantCount == 0 {
 			continue
 		}
 		if line, kind, ok := calculator.FormatModLine(ml); ok {
-			out = append(out, ItemModLine{Line: line, Kind: string(kind)})
+			for range variantCount {
+				out = append(out, ItemModLine{Line: line, Kind: string(kind)})
+			}
 		}
 	}
 	return out

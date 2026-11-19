@@ -87,6 +87,15 @@ var rdGenerators = []rdGenerator{
 		note:     "the item editor's crafting tables: data.enchantments by item type, data.enchantmentSource, and the bases' implicit / hidden / cannotBeAnointed. FROM go-pob-data since 2026-10-11 (mods.lua, masters.lua, essence.lua, enchant.lua, crucible.lua and bases.lua's tag / implicit half ported in scripts/gamedatadump; the Export/Bases templates and Data.lua's enchantmentSource, weaponTypeInfo and crucible unique lists are PoB-authored and read from POB_DIR). Against the PoB-derived dump: bases, enchantments, sources and the crucible lists equal; every mod table equal row for row but the statOrders, renumbered by 3.29.3.3's descriptions through strictly monotonic maps (0 inversions in either numbering); 3.29.3.3 drift: CurrencyEssenceFaridun1 has Level 0 (PoB tier 8) so it and its 11 essence-only Item mods drop, V2MinPowerChargesCorrupted is V2MinPowerChargesCorruptedNew, and two adjacent bench crafts (MinimumFrenzyCharges, MinimumPowerCharges) swap order.",
 	},
 	{
+		name:     "item-base-enchants",
+		source:   rdGameData,
+		out:      "data/item_base_enchants_generated.go",
+		emit:     "oracle/item_base_enchants_emit.py",
+		dump:     "item-craft-mods",
+		needsPob: true,
+		note:     "the bases that carry an enchant and its mod types (Item.lua:1632-1657 adds it to an item without enchants), from the same dump as item-craft-data but in a table of its own so item parsing does not load the crafting data",
+	},
+	{
 		name:     "item-db",
 		source:   rdPoBAuthored,
 		out:      "data/item_db_generated.go",

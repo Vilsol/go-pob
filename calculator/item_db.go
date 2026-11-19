@@ -582,7 +582,7 @@ func EquipItemInSet(build *pob.PathOfBuilding, setID int, id int, kind ItemDBKin
 		id = build.AddItem(text)
 	}
 	altSlot := strings.ReplaceAll(slotName, "1", "2")
-	if second && IsItemValidForSlot(build, item, altSlot) {
+	if second && isItemValidForSlotInSet(build, item, altSlot, *set) {
 		slotName = altSlot
 	}
 	if setID == build.Items.ActiveItemSet {
@@ -590,7 +590,7 @@ func EquipItemInSet(build *pob.PathOfBuilding, setID int, id int, kind ItemDBKin
 	} else {
 		build.SetSetSlotItem(setID, slotName, id)
 		if alt := build.SetSlotItemID(setID, altSlot); alt != 0 {
-			if altText, ok := buildItemText(build, alt); ok && !IsItemValidForSlot(build, ParseItem(altText), altSlot) {
+			if altText, ok := buildItemText(build, alt); ok && !isItemValidForSlotInSet(build, ParseItem(altText), altSlot, *set) {
 				build.SetSetSlotItem(setID, altSlot, 0)
 			}
 		}

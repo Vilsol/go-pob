@@ -1,9 +1,12 @@
 package calculator
 
 import (
+	"strings"
+
 	"github.com/Vilsol/go-pob-data/poe"
 
 	raw2 "github.com/Vilsol/go-pob/data/raw"
+	"github.com/Vilsol/go-pob/mod"
 	"github.com/Vilsol/go-pob/pob"
 )
 
@@ -38,6 +41,19 @@ func (env *Environment) GemSortCache(group int, gems []pob.Gem) []GemSortRow {
 				skillLists = append(skillLists, list)
 			}
 		}
+		crossLinked := env.crossLinkedSupportGroups()[strings.ReplaceAll(displayGroup.Slot, " Swap", "")]
+		for i := range groups {
+			other := &groups[i]
+			list, _ := pob.DisplaySkillListOf(other).([]*ActiveSkill)
+			if other.Slot == "" || len(list) == 0 {
+				continue
+			}
+			for _, crossLinkedSlot := range crossLinked {
+				if crossLinkedSlot == strings.ReplaceAll(other.Slot, " Swap", "") {
+					skillLists = append(skillLists, list)
+				}
+			}
+		}
 	}
 
 	for i, gem := range gems {
@@ -63,6 +79,26 @@ func (env *Environment) GemSortCache(group int, gems []pob.Gem) []GemSortRow {
 			}
 		}
 		out[i].Pending = out[i].CanSupport || (raw2.SkillHasGlobalEffect(row.GrantedEffectID) && !support)
+	}
+	return out
+}
+
+//pob:block:src/Modules/CalcSetup.lua:1655-1659
+func (env *Environment) crossLinkedSupportGroups() map[string][]string {
+	out := map[string][]string{}
+	if env.ModDB == nil {
+		return out
+	}
+	for _, linkedMod := range env.ModDB.Mods["LinkedSupport"] {
+		value, ok := linkedMod.Value().List().(mod.LinkedSupport)
+		if !ok {
+			continue
+		}
+		for _, tag := range linkedMod.Tags() {
+			if socketedIn, ok := tag.(*mod.SocketedInTag); ok && socketedIn.SlotName != "" {
+				out[socketedIn.SlotName] = append(out[socketedIn.SlotName], value.TargetSlotName)
+			}
+		}
 	}
 	return out
 }

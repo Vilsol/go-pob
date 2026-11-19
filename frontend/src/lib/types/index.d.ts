@@ -755,6 +755,7 @@ export declare namespace calculator {
     Note: string;
     Source: string;
     ClassRestriction: string;
+    HasModTags: boolean;
     Unreleased: boolean;
     UpgradePaths?: Array<string>;
     Corrupted: boolean;
@@ -766,6 +767,8 @@ export declare namespace calculator {
     Split: boolean;
     Fractured: boolean;
     Foulborn: boolean;
+    Veiled: boolean;
+    Vestigial: boolean;
     Synthesised: boolean;
     Crafted: boolean;
     Scourge: boolean;
@@ -943,6 +946,7 @@ export declare namespace calculator {
     NoSupports: boolean;
     Source: string;
     Triggered: boolean;
+    ItemRequirement?: mod.ItemRequirement;
     /** Releases the Go resources behind this wrapper. */
     release(): void;
     [Symbol.dispose](): void;
@@ -1069,9 +1073,15 @@ export declare namespace calculator {
     Prefix: boolean;
     Suffix: boolean;
     Unveiled: boolean;
+    Enchant: boolean;
+    Exarch: boolean;
+    Eater: boolean;
+    Synthesis: boolean;
+    Unscalable: boolean;
     Disabled: boolean;
     Order?: number;
     RangeFromValue: boolean;
+    AddedFromBase: boolean;
     ModID: string;
     NewModID: string;
     ModGroup: string;
@@ -1777,6 +1787,7 @@ export declare namespace calculator {
     readonly NoSupports: boolean;
     readonly Source: string;
     readonly Triggered: boolean;
+    readonly ItemRequirement?: mod.ItemRequirementPlain;
   }
   function CompareItemExpanded(raw: string, other: string): Promise<(Array<string> | undefined)>;
   function CompareJewelSlots(primary: pob.PathOfBuilding | undefined, compare: pob.PathOfBuilding | undefined): Promise<(Array<calculator.CompareJewelSlot> | undefined)>;
@@ -2550,6 +2561,13 @@ export declare namespace io {
   }
 }
 export declare namespace mod {
+  interface ItemRequirement {
+    Multiplier: string;
+    Count: number;
+    /** Releases the Go resources behind this wrapper. */
+    release(): void;
+    [Symbol.dispose](): void;
+  }
   type KeywordFlag = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1024 | 2048 | 4096 | 8192 | 16384 | 32768 | 65536 | 131072 | 262144 | 524288 | 1048576 | 2097152 | 4194304 | 8388608 | 16777216 | 33554432 | 67108864 | 134217728 | 268435456 | 1073741824 | -1073741825;
   const KeywordFlag: {
     readonly KeywordFlagAura: 1;
@@ -2692,6 +2710,10 @@ export declare namespace mod {
     readonly TypeBaseFlag: "BaseFlag";
     readonly TypeDisablerFlag: "Flag";
   };
+  interface ItemRequirementPlain {
+    readonly Multiplier: string;
+    readonly Count: number;
+  }
 }
 export declare namespace moddb {
   interface Actor {

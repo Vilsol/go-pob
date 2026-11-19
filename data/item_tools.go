@@ -22,9 +22,20 @@ var (
 	negLessRe        = regexp.MustCompile(`-(\d+%) less`)
 	scalableNumberRe = regexp.MustCompile(`\d+\.?\d*%? `)
 	realDecimalRe    = regexp.MustCompile(`\d+\.\d*`)
+	zeroLineStartRe  = regexp.MustCompile(`^\+?0%? `)
+	zeroLineMidRe    = regexp.MustCompile(` \+?0%? `)
+	zeroLineToRe     = regexp.MustCompile(`0 to [1-9]`)
+	zeroLinePctToRe  = regexp.MustCompile(`0% to \d+%`)
 )
 
 const defaultHighPrecision = 1
+
+//pob:src/Modules/ItemTools.lua:158-160
+func IsZeroValueLine(line string) bool {
+	return zeroLineStartRe.MatchString(line) ||
+		(zeroLineMidRe.MatchString(line) && !zeroLineToRe.MatchString(line) && !zeroLinePctToRe.MatchString(line)) ||
+		strings.Contains(line, " 0-0 ") || strings.Contains(line, " 0 to 0 ")
+}
 
 func luaNum(v float64) string {
 	return strconv.FormatFloat(v, 'g', 14, 64)

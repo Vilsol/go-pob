@@ -14,7 +14,7 @@ import (
 
 var gemSortKnownSkills = []string{"GeneralsCry", "SupportCrustaceousGrasp", "SupportAddedChaosDamage", "SupportIncreasedCriticalStrikes"}
 
-var gemSortKnownGroups = map[string]bool{"0102-gladiator-raise-spectre.xml/1": true, "0023-elementalist-summon-ice-golem-of-hordes.xml/1": true}
+var gemSortKnownGroups = map[string]bool{}
 
 // TestGemSortCacheAgainstPoB: Produced by oracle/gem_sort_cache.lua from the pinned PoB.
 func TestGemSortCacheAgainstPoB(t *testing.T) {

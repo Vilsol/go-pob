@@ -144,10 +144,11 @@ func (i *Item) CfgCorruptedIs(corrupted bool) bool {
 	return i.Corrupted == corrupted
 }
 
+//pob:src/Classes/Item.lua:289-333
 func (i *Item) CfgModifierMatches(searchCond, slot string) bool {
 	lower := func(dst []string, lines []ModLine) []string {
 		for _, ml := range lines {
-			if !i.checkModLineVariant(ml) {
+			if ml.Disabled || !i.checkModLineVariant(ml) {
 				continue
 			}
 			dst = append(dst, strings.ToLower(ml.Line))
@@ -158,5 +159,6 @@ func (i *Item) CfgModifierMatches(searchCond, slot string) bool {
 	other := lower(nil, i.EnchantModLines)
 	other = lower(other, i.ScourgeModLines)
 	other = lower(other, i.ImplicitModLines)
+	other = lower(other, i.CrucibleModLines)
 	return findModifierSubstring(explicit, other, searchCond, slot)
 }

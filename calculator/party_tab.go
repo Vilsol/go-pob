@@ -326,6 +326,14 @@ func (t *partyTab) parseNamedBuffs(list *partyBuffList, buf string, buffType str
 						if tt.TagActor == "parent" {
 							tt.TagActor = "partyMembers"
 						}
+					case *mod.PerStatTag:
+						if tt.TagActor == "parent" {
+							tt.TagActor = "partyMembers"
+						}
+					case *mod.ActorConditionTag:
+						if tt.Actor != nil && *tt.Actor == "parent" {
+							*tt.Actor = "partyMembers"
+						}
 					}
 				}
 			}
@@ -496,6 +504,49 @@ func buildPartyTag(fields map[string]string, order []string) (mod.Tag, *float64,
 			case "var":
 			case "neg":
 				c.Neg(fields[k] == "true")
+			default:
+				return false, nil
+			}
+			return true, nil
+		}
+	case "ActorCondition":
+		ac := mod.ActorCondition(fields["actor"], strings.Split(fields["var"], "|")...)
+		tag = ac
+		handled = func(k string) (bool, error) {
+			switch k {
+			case "actor", "var":
+			case "neg":
+				ac.Neg(fields[k] == "true")
+			default:
+				return false, nil
+			}
+			return true, nil
+		}
+	case "PerStat":
+		pt := mod.PerStat(0, fields["stat"])
+		tag = pt
+		handled = func(k string) (bool, error) {
+			switch k {
+			case "stat":
+			case "actor":
+				pt.Actor(fields[k])
+			case "limitVar":
+				pt.LimitVar(fields[k])
+			case "limitTotal":
+				pt.LimitTotal(fields[k] == "true")
+			case "div", "limit", "base":
+				v, err := num(k)
+				if err != nil {
+					return false, err
+				}
+				switch k {
+				case "div":
+					pt.Divide = v
+				case "limit":
+					pt.Limit(v)
+				case "base":
+					pt.Base = v
+				}
 			default:
 				return false, nil
 			}

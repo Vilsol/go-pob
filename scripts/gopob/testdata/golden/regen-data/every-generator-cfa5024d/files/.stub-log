@@ -28,6 +28,8 @@ go run gamedatadump flavour-text flavour-text.json
 emit flavour-text-emit flavour-text.json flavour_text_generated.go
 go run gamedatadump item-craft-mods item-craft-data.json
 emit item-craft-data-emit item-craft-data.json item_craft_data_generated.go
+go run gamedatadump item-craft-mods item-base-enchants.json
+emit item-base-enchants-emit item-base-enchants.json item_base_enchants_generated.go
 mise x -- luajit -e io.write(package.path)
 mise x -- luajit -e io.write(package.cpath)
 setarch -R luajit

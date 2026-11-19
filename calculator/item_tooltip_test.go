@@ -239,3 +239,34 @@ func TestEffectiveFlaskStatsIronAndLifeRate(t *testing.T) {
 		}
 	}
 }
+
+// ItemsTab.lua:4127-4128,4154-4156 add the Veiled and Vestigial headers (Item.lua:542-544, 962-964 set the flags).
+func TestItemTooltipVeiledVestigialHeaders(t *testing.T) {
+	requireGameData(t, "3.30")
+	veiled := ParseItem("Rarity: RARE\nTest\nGold Ring\nImplicits: 0\nVeiled Prefix")
+	if got := itemTooltipInfluence(veiled); !slices.Equal(got, []string{"Veiled", "Veiled"}) {
+		t.Errorf("veiled header %v", got)
+	}
+	vestigial := ParseItem("Rarity: RARE\nTest\nGold Ring\nHunter Item\nImplicits: 0\n{vestigial}+10 to Strength")
+	if got := itemTooltipInfluence(vestigial); !slices.Equal(got, []string{"Hunter", "Vestigial"}) {
+		t.Errorf("vestigial header %v", got)
+	}
+}
+
+// ItemsTab.lua:4580-4586 add a duplicate-variant line once per selected variant.
+func TestItemTooltipDuplicateVariantLines(t *testing.T) {
+	requireGameData(t, "3.30")
+	item := ParseItem("Rarity: UNIQUE\nTest\nHeavy Belt\nVariant: A\nVariant: B\nSelected Variant: 1\nHas Alt Variant: true\nSelected Alt Variant: 1\nAllow Duplicate Variants: true\nImplicits: 0\n{variant:1}+10 to Strength\n{variant:2}+7 to Dexterity")
+	n := 0
+	for _, l := range AddItemTooltip(item, ItemTooltipContext{}).Lines {
+		if strings.Contains(l.Text, "+10 to Strength") {
+			n++
+		}
+		if strings.Contains(l.Text, "Dexterity") {
+			t.Errorf("unselected variant shown: %q", l.Text)
+		}
+	}
+	if n != 2 {
+		t.Errorf("+10 to Strength shown %d times, want 2", n)
+	}
+}

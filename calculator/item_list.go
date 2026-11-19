@@ -204,8 +204,9 @@ func DeleteItemPrompt(build *pob.PathOfBuilding, itemID int) string {
 	if slot, set := equippedSlotForItem(build, orderedListSlots(build), itemID, false); slot != nil {
 		return item.Name + " is currently equipped in " + slot.label + inSet(set) + ".\nAre you sure you want to delete it?"
 	}
-	if title, ok := findEquippedAbyssJewel(build, item, itemID, true); ok {
-		return item.Name + " is currently equipped in an Abyssal Socket in set '" + title + "'.\nAre you sure you want to delete it?"
+	// PoB reads .title off the set title string, which is nil, so the prompt always names 'Default'.
+	if _, ok := findEquippedAbyssJewel(build, item, itemID, true); ok {
+		return item.Name + " is currently equipped in an Abyssal Socket in set 'Default'.\nAre you sure you want to delete it?"
 	}
 	if tree, ok := findSocketedJewel(build, item, itemID, true); ok {
 		return item.Name + " is currently equipped in passive tree '" + tree + "'.\nAre you sure you want to delete it?"

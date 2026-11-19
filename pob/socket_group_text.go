@@ -11,7 +11,6 @@ var (
 	pasteLabelRe = regexp.MustCompile(`Label: ([^\x00-\x1f\x7f]+)`)
 	pasteSlotRe  = regexp.MustCompile(`Slot: ([^\x00-\x1f\x7f]+)`)
 	pasteGemRe   = regexp.MustCompile(`([ A-Za-z']+) (\d+)/(\d+) ?([A-Za-z]*) (\d+)`)
-	sanitiseTags = regexp.MustCompile(`<[^<>]*>`)
 )
 
 //pob:src/Classes/SkillsTab.lua:695-707
@@ -85,7 +84,7 @@ func sanitiseText(text string) string {
 	if !strings.ContainsRune(text, '<') && !hasHighByte(text) {
 		return text
 	}
-	text = sanitiseTags.ReplaceAllString(text, "")
+	text = stripBalancedAngles(text)
 	for _, r := range [][2]string{
 		{"\u2010", "-"}, {"\u2011", "-"}, {"\u2012", "-"}, {"\u2013", "-"}, {"\u2014", "-"}, {"\u2015", "-"},
 		{"\u200b", ""},
@@ -130,4 +129,33 @@ func (b *PathOfBuilding) SpectreIDs() []string {
 		ids = append(ids, s.ID)
 	}
 	return ids
+}
+
+//pob:block:src/Modules/Common.lua:311
+func stripBalancedAngles(s string) string {
+	var out strings.Builder
+	for i := 0; i < len(s); i++ {
+		if s[i] != '<' {
+			out.WriteByte(s[i])
+			continue
+		}
+		depth, end := 0, -1
+		for j := i; j < len(s) && end < 0; j++ {
+			switch s[j] {
+			case '<':
+				depth++
+			case '>':
+				depth--
+				if depth == 0 {
+					end = j
+				}
+			}
+		}
+		if end < 0 {
+			out.WriteByte(s[i])
+			continue
+		}
+		i = end
+	}
+	return out.String()
 }

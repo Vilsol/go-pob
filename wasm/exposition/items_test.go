@@ -197,3 +197,15 @@ func TestSlotItemListsMatchesEachSlotsList(t *testing.T) {
 		t.Fatalf("REFUSING: only %d listed items", filled)
 	}
 }
+
+// ItemsTab.lua:4580-4586 list a duplicate-variant line once per selected variant.
+func TestModLinesDuplicateVariants(t *testing.T) {
+	if err := poe.InitializeAll(raw.DataContext(t.Context()), raw.LatestVersion, assetcache.AssetLoaderWrapper{Storage: storage.Get()}, nil); err != nil {
+		t.Fatal(err)
+	}
+	item := calculator.ParseItem("Rarity: UNIQUE\nTest\nHeavy Belt\nVariant: A\nVariant: B\nSelected Variant: 1\nHas Alt Variant: true\nSelected Alt Variant: 1\nAllow Duplicate Variants: true\nImplicits: 0\n{variant:1}+10 to Strength\n{variant:2}+7 to Dexterity")
+	got := modLines(item, item.ExplicitModLines)
+	if len(got) != 2 || got[0].Line != "+10 to Strength" || got[1].Line != "+10 to Strength" {
+		t.Errorf("explicits %v, want +10 to Strength twice", got)
+	}
+}

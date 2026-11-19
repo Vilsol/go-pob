@@ -2,6 +2,7 @@ package calculator
 
 import (
 	"regexp"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -147,9 +148,10 @@ func itemToItemData(item *Item) *ItemData {
 		}
 	}
 
+	//pob:block:src/Classes/Item.lua:298-308
 	appendLines := func(dst []string, lines []ModLine) []string {
 		for _, ml := range lines {
-			if !item.checkModLineVariant(ml) {
+			if ml.Disabled || !item.checkModLineVariant(ml) {
 				continue
 			}
 			dst = append(dst, strings.ToLower(ml.Line))
@@ -160,6 +162,7 @@ func itemToItemData(item *Item) *ItemData {
 	id.OtherModLines = appendLines(nil, item.EnchantModLines)
 	id.OtherModLines = appendLines(id.OtherModLines, item.ScourgeModLines)
 	id.OtherModLines = appendLines(id.OtherModLines, item.ImplicitModLines)
+	id.OtherModLines = appendLines(id.OtherModLines, item.CrucibleModLines)
 
 	if item.ArmourData != nil {
 		id.ArmourData = &ArmourData{
@@ -1281,4 +1284,14 @@ func resolveDisablerChains(itemDisablers, itemDisabled map[string]string) map[st
 	}
 
 	return trueDisabled
+}
+
+//pob:block:src/Modules/CalcSetup.lua:1500-1506
+func removeUnmetItemRequirements(env *Environment, granted []grantedSkill) []grantedSkill {
+	for index := len(granted) - 1; index >= 0; index-- {
+		if requirement := granted[index].ItemRequirement; requirement != nil && env.ItemModDB.GetMultiplier(requirement.Multiplier, nil, false) < requirement.Count {
+			granted = slices.Delete(granted, index, index+1)
+		}
+	}
+	return granted
 }

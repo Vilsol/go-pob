@@ -9,6 +9,7 @@ pin OK  content_sha256=0123456789abcdef…  <sandbox>/pob
   ~ tattoo-passives        data/tattoo_passives_generated.go
   ~ flavour-text           data/flavour_text_generated.go
   ~ item-craft-data        data/item_craft_data_generated.go
+  ~ item-base-enchants     data/item_base_enchants_generated.go
   ~ item-db                data/item_db_generated.go
   ~ skill-has-global-effect data/raw/has_global_effect.go
   ~ skill-base-mods        data/raw/skill_base_mods.go
@@ -30,7 +31,7 @@ pin OK  content_sha256=0123456789abcdef…  <sandbox>/pob
   ~ skill-text             data/raw/skill_text_generated.go
   ~ custom-mod-browser     data/custom_mod_browser_generated.go
 
-29 changed, 1 unchanged, 1 still hand-written, 0 deliberately not generable
+30 changed, 1 unchanged, 1 still hand-written, 0 deliberately not generable
 
 ⚠️ GENERATED per the manifest but NOT produced by this tool — it cannot
    refresh them, so a pin bump leaves them stale:

@@ -101,6 +101,9 @@ func writeRawModLine(ml ModLine) string {
 	if ml.Crafted {
 		line = "{crafted}" + line
 	}
+	if ml.Enchant {
+		line = "{enchant}" + line
+	}
 	if ml.Custom {
 		line = "{custom}" + line
 	}
@@ -125,10 +128,23 @@ func writeRawModLine(ml ModLine) string {
 	if ml.Suffix {
 		line = "{suffix}" + line
 	}
+	if ml.Exarch {
+		line = "{exarch}" + line
+	}
+	if ml.Eater {
+		line = "{eater}" + line
+	}
+	if ml.Synthesis {
+		line = "{synthesis}" + line
+	}
+	if ml.Unscalable {
+		line = "{unscalable}" + line
+	}
 	if ml.Vestigial {
 		line = "{vestigial}" + line
 	}
-	if len(ml.ModTags) > 0 {
+	hasNewSelection := ml.VersionList != nil || ml.VariantGroupList != nil
+	if hasNewSelection && len(ml.ModTags) > 0 {
 		line = "{tags:" + strings.Join(ml.ModTags, ",") + "}" + line
 	}
 	if len(ml.VariantGroupList) > 0 {
@@ -149,6 +165,9 @@ func writeRawModLine(ml ModLine) string {
 	if len(ml.VersionList) > 0 {
 		line = "{version:" + idSpec(ml.VersionList) + "}" + strings.ReplaceAll(line, "\n", "\n{version:"+idSpec(ml.VersionList)+"}")
 	}
+	if !hasNewSelection && len(ml.ModTags) > 0 {
+		line = "{tags:" + strings.Join(ml.ModTags, ",") + "}" + line
+	}
 	return line
 }
 
@@ -162,6 +181,17 @@ func buildRawText(item *Item) string {
 		add(item.Title, item.BaseName)
 	} else {
 		add(item.NamePrefix + item.BaseName + item.NameSuffix)
+	}
+	//pob:block:src/Classes/Item.lua:1810-1819
+	if item.ArmourData != nil {
+		for _, key := range []string{"Armour", "Evasion", "EnergyShield", "Ward"} {
+			if item.ArmourData[key] > 0 {
+				add(strings.ReplaceAll(key, "EnergyShield", "Energy Shield") + ": " + luaNum(item.ArmourData[key]))
+				if p, ok := item.ArmourData[key+"BasePercentile"]; ok {
+					add(key + "BasePercentile: " + luaNum(p))
+				}
+			}
+		}
 	}
 	if item.Intangibility != nil {
 		add("Intangibility: " + itoa(item.Intangibility) + "%")
@@ -187,6 +217,15 @@ func buildRawText(item *Item) string {
 	}
 	if item.CatalystQuality != nil {
 		add("CatalystQuality: " + itoa(item.CatalystQuality))
+	}
+	//pob:block:src/Classes/Item.lua:1854-1861
+	if cj := readClusterJewelData(item); cj != nil {
+		if cj.skill != "" {
+			add("Cluster Jewel Skill: " + cj.skill)
+		}
+		if cj.sizeIsSet {
+			add("Cluster Jewel Node Count: " + strconv.Itoa(cj.nodeCount))
+		}
 	}
 	if item.TalismanTier != nil {
 		add("Talisman Tier: " + itoa(item.TalismanTier))

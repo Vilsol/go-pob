@@ -504,3 +504,25 @@ func TestComparisonSlotActiveOnly(t *testing.T) {
 	}
 	check([][2]string{{slot(73, ""), "Weapon 1 Swap"}, {slot(6, ""), "Weapon 1 Swap"}, {slot(0, wand), "Weapon 1 Swap"}})
 }
+
+// ItemListControl.lua:352-355 index .title on the set title string, so the abyssal prompt always names 'Default'.
+func TestDeleteItemPromptAbyssalSetName(t *testing.T) {
+	initItemsTabData(t)
+	build := loadCorpusBuild(t, itemList0339)
+	other := 1
+	if build.Items.ActiveItemSet == 1 {
+		other = 2
+	}
+	for k := range build.Items.ItemSets {
+		if build.Items.ItemSets[k].ID == fmt.Sprint(other) {
+			title := "Bossing"
+			build.Items.ItemSets[k].Title = &title
+		}
+	}
+	jewel := build.AddItem("Rarity: RARE\nTest Eye\nMurderous Eye Jewel\nImplicits: 0\n+10 to maximum Life")
+	build.SetSetSlotItem(other, "Belt Abyssal Socket 1", jewel)
+	want := "Test Eye, Murderous Eye Jewel is currently equipped in an Abyssal Socket in set 'Default'.\nAre you sure you want to delete it?"
+	if got := DeleteItemPrompt(build, jewel); got != want {
+		t.Errorf("got %q", got)
+	}
+}

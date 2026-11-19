@@ -39,10 +39,18 @@ func setSlotItem(set pob.ItemSet, byID map[int]string, slotName string) *Item {
 
 var slotTypeIDRe = regexp.MustCompile(`^([A-Za-z ]+) (\d+)$`)
 
-//pob:src/Classes/ItemsTab.lua:2560-2606
+//pob:src/Classes/ItemsTab.lua:2639-2692
 func IsItemValidForSlot(build *pob.PathOfBuilding, item *Item, slotName string) bool {
 	return itemValidForSlot(item, slotName, slotTypeOf(slotName), func(weapon1Slot string) *Item {
 		return activeSetSlotItem(build, weapon1Slot)
+	})
+}
+
+//pob:src/Classes/ItemsTab.lua:2639-2692
+func isItemValidForSlotInSet(build *pob.PathOfBuilding, item *Item, slotName string, set pob.ItemSet) bool {
+	_, byID := setItems(build)
+	return itemValidForSlot(item, slotName, slotTypeOf(slotName), func(weapon1Slot string) *Item {
+		return setSlotItem(set, byID, weapon1Slot)
 	})
 }
 
@@ -182,7 +190,12 @@ func (m *MiscCalculator) CompareItemSlots(item *Item) []ItemSlotCompare {
 			ItemSlotCompare: ItemSlotCompare{SlotName: s.name, Label: slotLabel(s), Replacing: selItem},
 			selItemID:       selItemID,
 		}
-		e.Env = m.Calc(&CalcOverride{RepSlotName: s.name, RepItem: item})
+		//pob:block:src/Classes/ItemsTab.lua:5032
+		repItem := item
+		if selItem != nil && sameItemText(selItem.Raw, item.Raw) {
+			repItem = nil
+		}
+		e.Env = m.Calc(&CalcOverride{RepSlotName: s.name, RepItem: repItem})
 		e.isSameUnique = isUnique && selItem != nil && item.Name == selItem.Name
 		if isUnique && e.isSameUnique && item.Limit != nil {
 			currentSameUniqueCount++
@@ -529,6 +542,10 @@ func formatModLine(ml ModLine, dbMode bool) (string, ModLineKind, bool) {
 
 func (i *Item) ItemModLineVisible(ml ModLine) bool {
 	return i.checkModLineVariant(ml)
+}
+
+func (i *Item) ItemModLineVariantCount(ml ModLine) int {
+	return i.getModLineVariantCount(ml)
 }
 
 func OrderedItemSlotNames() []string {

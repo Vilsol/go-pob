@@ -556,6 +556,9 @@ calculator/item_craft.go            PORT       src/Classes/ItemsTab.lua,src/Clas
 data/item_craft_data.go             PORT       src/Modules/Data.lua
 data/item_craft_data_generated.go   GENERATED  scripts/gopob/itemcraftdataemit.go
 scripts/gopob/itemcraftdataemit.go               GO-NATIVE  emits data/item_craft_data_generated.go from oracle/item_craft_data.lua; ports no Lua logic
+data/item_base_enchants.go          PORT       src/Classes/Item.lua
+data/item_base_enchants_generated.go GENERATED scripts/gopob/itembaseenchantsemit.go
+scripts/gopob/itembaseenchantsemit.go            GO-NATIVE  emits data/item_base_enchants_generated.go from the item-craft-mods dump; ports no Lua logic
 calculator/item_corrupt.go          PORT       src/Classes/ItemsTab.lua,src/Classes/Item.lua
 calculator/item_implicit.go         PORT       src/Classes/ItemsTab.lua
 calculator/item_custom_mod.go       PORT       src/Classes/ItemsTab.lua,src/Classes/Item.lua

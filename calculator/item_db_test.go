@@ -751,3 +751,25 @@ func TestSharedItems(t *testing.T) {
 		t.Fatalf("dropped on Body Armour: %v %d", ok, added)
 	}
 }
+
+// ItemsTab.lua:1701,1709 validate the alt slot against the target set's Weapon 1.
+func TestEquipItemInSetChecksTargetSetWeapon(t *testing.T) {
+	initItemsTabData(t)
+	build := loadCorpusBuild(t, itemList0339)
+	other := 1
+	if build.Items.ActiveItemSet == 1 {
+		other = 2
+	}
+	quiver := build.AddItem("Rarity: NORMAL\nSerrated Arrow Quiver")
+	build.SetSetSlotItem(other, "Weapon 1", 0)
+	build.SetSetSlotItem(other, "Weapon 2", quiver)
+	if active, _ := setItems(build); IsItemValidForSlot(build, ParseItem("Rarity: NORMAL\nSerrated Arrow Quiver"), "Weapon 2") {
+		t.Fatalf("REFUSING: a quiver is valid beside the active set's Weapon 1 (%d)", setSlotItemID(active, "Weapon 1"))
+	}
+	if !EquipItemInSet(build, other, 0, ItemDBUnique, "Lioneye's Glare, Imperial Bow", false) {
+		t.Fatal("the bow did not go to the other set")
+	}
+	if got := build.SetSlotItemID(other, "Weapon 2"); got != quiver {
+		t.Errorf("set %d Weapon 2 = %d, want the quiver %d kept beside its bow", other, got, quiver)
+	}
+}

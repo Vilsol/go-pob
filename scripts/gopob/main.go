@@ -66,6 +66,7 @@ const usage = `gopob <subcommand> [flags]
   stat-descriptions-emit <dump.json> <out.go>
   skill-text-emit <dump.json> <out.go>
   item-craft-data-emit <dump.json> <out.go>
+  item-base-enchants-emit <dump.json> <out.go>
   item-db-emit <dump.json> <out.go>
   pantheons-emit <dump.json> <out.go>
   cluster-jewels-emit <dump.json> <out.go>
@@ -381,6 +382,8 @@ func main() {
 		os.Exit(oracleSkillTextEmit(os.Args[2:]))
 	case "item-craft-data-emit":
 		os.Exit(oracleItemCraftDataEmit(os.Args[2:]))
+	case "item-base-enchants-emit":
+		os.Exit(oracleItemBaseEnchantsEmit(os.Args[2:]))
 	case "item-db-emit":
 		os.Exit(oracleItemDBEmit(os.Args[2:]))
 	case "pantheons-emit":

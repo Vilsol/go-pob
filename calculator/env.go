@@ -929,7 +929,7 @@ func initEnvSpecKeep(build *pob.PathOfBuilding, envCache *EnvironmentCache, mode
 
 		if env.Mode == OutputModeMain {
 			//pob:block:src/Modules/CalcSetup.lua:1490
-			processGrantedSkillSocketGroups(build, append(slices.Clone(env.grantedSkillsNodes), itemGrantedSkills...))
+			processGrantedSkillSocketGroups(build, removeUnmetItemRequirements(env, append(slices.Clone(env.grantedSkillsNodes), itemGrantedSkills...)))
 			/*
 				TODO -- Process extra skills granted by items or tree nodes
 				local markList = wipeTable(tempTable1)
