@@ -240,8 +240,8 @@ func TestTriageDropsPythonIsStableAcrossHashSeeds(t *testing.T) {
 
 // TestHasConsumerAgreesWithRealGrep: THE ONE PLACE THE PORT IS NOT A TRANSLITERATION, SO IT OWES A CONTROL.
 func TestHasConsumerAgreesWithRealGrep(t *testing.T) {
-	repo := repoRoot(t)
-	t.Chdir(repo)
+	// links to the searched trees: a chdir to the repository root keys Go's test cache on its every entry
+	t.Chdir(filepath.Join("testdata", "consumer-root"))
 
 	src, err := os.ReadFile("calculator/mod_parser.go")
 	if err != nil {

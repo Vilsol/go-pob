@@ -34,7 +34,7 @@ func TestWasmSourcesCoverEveryPackageTheWasmCompiles(t *testing.T) {
 		}
 	}
 	cmd := exec.CommandContext(t.Context(), "go", "list", "-deps", "-f", "{{if not .Standard}}{{.Dir}}{{range .EmbedFiles}} {{.}}{{end}}{{end}}", "./wasm", "./wasm2")
-	cmd.Dir = root
+	inDir(cmd, root)
 	cmd.Env = append(os.Environ(), "GOOS=js", "GOARCH=wasm")
 	out, err := cmd.Output()
 	if err != nil {

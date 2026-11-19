@@ -22,7 +22,7 @@ func TestLintGoCacheIsPerWorktree(t *testing.T) {
 		t.Fatal(err)
 	}
 	cmd := exec.CommandContext(t.Context(), mise, "run", "lint-go")
-	cmd.Dir = repo
+	inDir(cmd, repo)
 	cmd.Env = append(os.Environ(), "PATH="+bin+string(os.PathListSeparator)+os.Getenv("PATH"), "GOLANGCI_LINT_CACHE=/shared")
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("mise run lint-go: %v\n%s", err, out)
@@ -35,8 +35,7 @@ func TestLintGoCacheIsPerWorktree(t *testing.T) {
 	if !strings.HasPrefix(cache, repo+string(os.PathSeparator)) {
 		t.Fatalf("GOLANGCI_LINT_CACHE=%q, want a directory under %s", cache, repo)
 	}
-	check := exec.CommandContext(t.Context(), "git", "check-ignore", "-q", cache)
-	check.Dir = repo
+	check := exec.CommandContext(t.Context(), "git", "-C", repo, "check-ignore", "-q", cache)
 	if err := check.Run(); err != nil {
 		t.Fatalf("%s is not gitignored: %v", cache, err)
 	}

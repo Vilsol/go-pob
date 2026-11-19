@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"syscall"
 	"testing"
 
 	"github.com/Vilsol/go-pob/scripts/gopob/internal/difftest"
@@ -33,6 +34,12 @@ func repoRoot(t *testing.T) string {
 		t.Fatalf("cannot resolve the repo root: %v", err)
 	}
 	return r
+}
+
+// inDir runs cmd in dir without os.StartProcess's stat of dir, which keys Go's test cache on dir's every entry.
+func inDir(cmd *exec.Cmd, dir string) {
+	cmd.Dir = dir
+	cmd.SysProcAttr = &syscall.SysProcAttr{}
 }
 
 func pobDir(t *testing.T) string {
@@ -62,8 +69,7 @@ func buildPort(t *testing.T, repo string) string {
 		portBinDir = dir
 	}
 	bin := filepath.Join(portBinDir, strconv.Itoa(len(portBins)), difftest.ExeName("gopob"))
-	cmd := exec.CommandContext(context.Background(), "go", "build", "-o", bin, "./scripts/gopob")
-	cmd.Dir = repo
+	cmd := exec.CommandContext(context.Background(), "go", "build", "-C", repo, "-o", bin, "./scripts/gopob")
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("building the port: %v\n%s", err, out)
 	}

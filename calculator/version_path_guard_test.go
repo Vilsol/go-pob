@@ -4,10 +4,11 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"io/fs"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -41,35 +42,21 @@ func TestNoHardcodedVersionPaths(t *testing.T) {
 		".instruments": true, "vendor": true,
 	}
 
-	err := filepath.WalkDir(repo, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return nil //nolint:nilerr
+	files := trackedGoFiles(t, repo, skipDirs)
+	for _, rel := range files {
+		if filepath.Base(rel) == "version_path_guard_test.go" {
+			continue
 		}
-		if d.IsDir() {
-			if skipDirs[d.Name()] {
-				return fs.SkipDir
-			}
-			return nil
-		}
-		if !strings.HasSuffix(d.Name(), ".go") {
-			return nil
-		}
-		if d.Name() == "version_path_guard_test.go" {
-			return nil
-		}
+		path := filepath.Join(repo, rel)
 		//nolint:gosec // G122: walks this repo's own source tree; no untrusted symlinks in play.
 		src, readErr := os.ReadFile(path)
 		if readErr != nil {
-			return nil //nolint:nilerr // one unreadable file must not abort the scan
-		}
-		rel, relErr := filepath.Rel(repo, path)
-		if relErr != nil {
-			rel = path
+			continue // one unreadable file must not abort the scan
 		}
 		fset := token.NewFileSet()
 		f, parseErr := parser.ParseFile(fset, path, src, parser.ParseComments)
 		if parseErr != nil {
-			return nil //nolint:nilerr
+			continue
 		}
 		ast.Inspect(f, func(n ast.Node) bool {
 			bl, ok := n.(*ast.BasicLit)
@@ -89,13 +76,9 @@ func TestNoHardcodedVersionPaths(t *testing.T) {
 			}
 			return true
 		})
-		return nil
-	})
-	if err != nil {
-		t.Fatalf("REFUSING: could not walk %s: %v", repo, err)
 	}
 
-	if scanned := countGoFiles(t, repo, skipDirs); scanned < 100 {
+	if scanned := len(files); scanned < 100 {
 		t.Fatalf("REFUSING: the walk saw %d .go files, expected hundreds. A broken walk reports a "+
 			"clean tree in exactly the same way a clean tree does.", scanned)
 	}
@@ -112,25 +95,23 @@ func TestNoHardcodedVersionPaths(t *testing.T) {
 	}
 }
 
-func countGoFiles(t *testing.T, repo string, skipDirs map[string]bool) int {
+// trackedGoFiles lists the repository's tracked .go files outside skipDirs, relative to repo. Asking git rather than
+// walking keeps Go's test cache from keying on every entry of the repository root.
+func trackedGoFiles(t *testing.T, repo string, skipDirs map[string]bool) []string {
 	t.Helper()
-	n := 0
-	_ = filepath.WalkDir(repo, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return nil //nolint:nilerr // same tolerance as the scan it is counting for
+	out, err := exec.CommandContext(t.Context(), "git", "-C", repo, "ls-files", "-z", "--", "*.go").Output()
+	if err != nil {
+		t.Fatalf("REFUSING: could not list %s: %v", repo, err)
+	}
+	var files []string
+	for _, rel := range strings.Split(strings.TrimSuffix(string(out), "\x00"), "\x00") {
+		dirs := strings.Split(rel, "/")
+		if slices.ContainsFunc(dirs[:len(dirs)-1], func(d string) bool { return skipDirs[d] }) {
+			continue
 		}
-		if d.IsDir() {
-			if skipDirs[d.Name()] {
-				return fs.SkipDir
-			}
-			return nil
-		}
-		if strings.HasSuffix(d.Name(), ".go") {
-			n++
-		}
-		return nil
-	})
-	return n
+		files = append(files, filepath.FromSlash(rel))
+	}
+	return files
 }
 
 // TestHardcodedVersionPathDetectorSeparatesPathsFromProse is the two-way control.

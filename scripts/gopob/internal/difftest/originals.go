@@ -169,8 +169,7 @@ func goBinary(repo string) (string, error) {
 			return
 		}
 		bin := filepath.Join(dir, ExeName("gopob"))
-		cmd := exec.Command("go", "build", "-o", bin, "./scripts/gopob") //nolint:gosec,noctx
-		cmd.Dir = repo
+		cmd := exec.Command("go", "build", "-C", repo, "-o", bin, "./scripts/gopob") //nolint:gosec,noctx
 		if out, err := cmd.CombinedOutput(); err != nil {
 			errGoBin = fmt.Errorf("difftest: building the port: %w: %s", err, out)
 			return

@@ -1,8 +1,8 @@
 package main
 
 import (
+	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 	"testing"
 
@@ -15,9 +15,14 @@ func atRealSelect(t *testing.T, changed ...string) atSelection {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if repo, err = filepath.EvalSymlinks(repo); err != nil {
+	// pwd -P resolves symlinks as EvalSymlinks would, without the lstat of the root that keys the test cache on it
+	pwd := exec.CommandContext(t.Context(), "pwd", "-P")
+	inDir(pwd, repo)
+	out, err := pwd.Output()
+	if err != nil {
 		t.Fatal(err)
 	}
+	repo = strings.TrimSpace(string(out))
 	pkgs, err := atListPackages(repo)
 	if err != nil {
 		t.Fatal(err)
@@ -43,7 +48,7 @@ func TestAffectedTestsModChangeMatchesGoListDepsTest(t *testing.T) {
 	nonImporters := 0
 	for _, p := range atListedForTest(t) {
 		cmd := exec.CommandContext(t.Context(), "go", "list", "-deps", "-test", p)
-		cmd.Dir = repo
+		inDir(cmd, repo)
 		out, err := cmd.Output()
 		if err != nil {
 			t.Fatalf("go list -deps -test %s: %v", p, err)
@@ -73,7 +78,7 @@ func atListedForTest(t *testing.T) []string {
 	t.Helper()
 	repo, _ := root.Resolve()
 	cmd := exec.CommandContext(t.Context(), "go", "list", "./...")
-	cmd.Dir = repo
+	inDir(cmd, repo)
 	out, err := cmd.Output()
 	if err != nil {
 		t.Fatal(err)
@@ -127,6 +132,15 @@ func TestAffectedTestsGoModSelectsEverything(t *testing.T) {
 }
 
 func TestAffectedTestsRefusesAnUnresolvableBase(t *testing.T) {
+	// a scratch checkout: resolving the real root lstats it, which keys the test cache on its every entry
+	sb := t.TempDir()
+	if err := os.WriteFile(sb+"/go.mod", []byte("module "+root.Module+"\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if out, err := exec.CommandContext(t.Context(), "git", "-C", sb, "init", "-q").CombinedOutput(); err != nil {
+		t.Fatalf("git init: %v %s", err, out)
+	}
+	t.Setenv("GOPOB_ROOT", sb)
 	t.Setenv("BASE", "no-such-ref-affected-tests")
 	if rc := affectedTests([]string{"--dry"}); rc != root.RefusalCode {
 		t.Fatalf("rc %d, want %d", rc, root.RefusalCode)

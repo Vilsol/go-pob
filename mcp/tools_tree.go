@@ -6,6 +6,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/Vilsol/go-pob/calculator"
 	"github.com/Vilsol/go-pob/data"
@@ -21,7 +22,10 @@ type treeNode struct {
 	Node       data.Node
 }
 
-var treeIndexes = map[pob.TreeVersion][]treeNode{}
+var (
+	treeIndexMu sync.Mutex
+	treeIndexes = map[pob.TreeVersion][]treeNode{}
+)
 
 func nodeType(n data.Node) string {
 	switch {
@@ -41,6 +45,8 @@ func nodeType(n data.Node) string {
 
 // treeIndex lists the tree's allocatable nodes: no class or ascendancy starts, proxies or cluster nodes.
 func treeIndex(v pob.TreeVersion) ([]treeNode, *ToolError) {
+	treeIndexMu.Lock()
+	defer treeIndexMu.Unlock()
 	if list, ok := treeIndexes[v]; ok {
 		return list, nil
 	}

@@ -151,7 +151,7 @@ func TestCitationAuditSweepMatchesTheRealTree(t *testing.T) {
 		t.Helper()
 		//nolint:gosec // argv is this test's own literal: python3 + the script, or the built binary
 		cmd := exec.CommandContext(t.Context(), argv[0], argv[1:]...)
-		cmd.Dir = repo
+		inDir(cmd, repo)
 		cmd.Env = append(os.Environ(), "SWEEP=1")
 		out, _ := cmd.Output()
 		return string(out), cmd.ProcessState.ExitCode()

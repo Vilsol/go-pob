@@ -15,6 +15,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"syscall"
 
 	"github.com/Vilsol/go-pob/scripts/gopob/internal/root"
 )
@@ -52,6 +53,8 @@ func atRefuse(msg string) int {
 func atGit(repo string, args ...string) ([]string, error) {
 	cmd := exec.CommandContext(context.Background(), "git", args...) //nolint:gosec // git with this tool's own arguments and BASE
 	cmd.Dir = repo
+	// a non-nil SysProcAttr skips StartProcess's stat of repo, which keys the tests' cache on every root entry
+	cmd.SysProcAttr = &syscall.SysProcAttr{}
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 	out, err := cmd.Output()
@@ -70,6 +73,7 @@ func atGit(repo string, args ...string) ([]string, error) {
 func atListPackages(repo string) ([]*atPackage, error) {
 	cmd := exec.CommandContext(context.Background(), "go", "list", "-e", "-json=ImportPath,Dir,Deps,TestImports,XTestImports,GoFiles,TestGoFiles,XTestGoFiles,Error", "./...")
 	cmd.Dir = repo
+	cmd.SysProcAttr = &syscall.SysProcAttr{}
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 	out, err := cmd.Output()

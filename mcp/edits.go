@@ -3,22 +3,31 @@ package mcp
 import (
 	"encoding/json"
 	"slices"
+	"sync"
 
 	"github.com/Vilsol/go-pob/calculator"
 	"github.com/Vilsol/go-pob/pob"
 )
 
-var warnCache = map[*calculator.Environment][]string{}
+var (
+	warnCacheMu sync.Mutex
+	warnCache   = map[*calculator.Environment][]string{}
+)
 
 // cachedWarnings memoises warningsOf per environment; callers hold the server lock.
 func cachedWarnings(env *calculator.Environment) []string {
-	if w, ok := warnCache[env]; ok {
+	warnCacheMu.Lock()
+	w, ok := warnCache[env]
+	warnCacheMu.Unlock()
+	if ok {
 		return w
 	}
+	w = warningsOf(env)
+	warnCacheMu.Lock()
+	defer warnCacheMu.Unlock()
 	if len(warnCache) > 64 {
 		warnCache = map[*calculator.Environment][]string{}
 	}
-	w := warningsOf(env)
 	warnCache[env] = w
 	return w
 }

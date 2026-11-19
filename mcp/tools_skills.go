@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/Vilsol/go-pob-data/poe"
 
@@ -26,12 +27,8 @@ type gemEntry struct {
 	levelReq  int
 }
 
-var gemList []gemEntry
-
-func gems() []gemEntry {
-	if gemList != nil {
-		return gemList
-	}
+var gems = sync.OnceValue(func() []gemEntry {
+	var gemList []gemEntry
 	add := func(gemID, variant string, row raw.PoBGem) {
 		skill := raw.PoBSkills[row.GrantedEffectID]
 		if gemID == "" || skill.HideFromGemList || skill.Legacy {
@@ -54,7 +51,7 @@ func gems() []gemEntry {
 	}
 	slices.SortFunc(gemList, func(a, b gemEntry) int { return strings.Compare(a.Name, b.Name) })
 	return gemList
-}
+})
 
 //pob:block:src/Classes/GemSelectControl.lua:126
 func (g *gemEntry) LevelReq() int {

@@ -240,7 +240,7 @@ func ldRunPy(t *testing.T, repo, mode, arg string) string {
 	}
 
 	cmd := exec.CommandContext(t.Context(), "python3", "-c", ldCanonPy, mode, arg)
-	cmd.Dir = repo
+	inDir(cmd, repo)
 	out, err := cmd.Output()
 	if err != nil {
 		t.Fatalf("python3 (%s %s): %v", mode, arg, err)
