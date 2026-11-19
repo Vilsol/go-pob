@@ -113,7 +113,7 @@ var gatedPoBTables = []pobTablePair{
 	{"calc_perform.go", "cursePriority", "Modules/Data.lua", "cursePriority", 20, nil},
 	{"mod_parser.go", "flagTypes", "Modules/ModParser.lua", "flagTypes", 30,
 		[]string{"hexproof", `hindered,? with (%d+)%% reduced movement speed`,
-			`hindered, with (\d+)\% reduced movement speed`}},
+			`hindered,? with (\d+)% reduced movement speed`}},
 	{"mod_parser.go", "penTypes", "Modules/ModParser.lua", "penTypes", 6, nil},
 }
 

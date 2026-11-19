@@ -26,9 +26,8 @@ func TestEvasionAppliesToSpellDamageRowParses(t *testing.T) {
 
 	nMods, nExtra := parseMod("Increases and Reductions to Spell Damage also apply to Attacks", 1)
 	testza.AssertEqual(t, "", nExtra)
-	testza.AssertEqual(t, 2, len(nMods))
-	if len(nMods) == 2 {
+	testza.AssertEqual(t, 1, len(nMods), "ModParser.lua:3520 is a bare flag; CalcOffence.lua:653 supplies the 100")
+	if len(nMods) == 1 {
 		testza.AssertEqual(t, "SpellDamageAppliesToAttacks", nMods[0].Name())
-		testza.AssertEqual(t, "ImprovedSpellDamageAppliesToAttacks", nMods[1].Name())
 	}
 }
