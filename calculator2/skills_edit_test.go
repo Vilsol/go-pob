@@ -444,3 +444,33 @@ func TestSkillsEditOracleIsCurrent(t *testing.T) {
 		}
 	}
 }
+
+// PoB-PoE2's SkillsTab:PasteSocketGroup over the custom-mods warrior: a "Spectre: …" or "Companion: …" line pastes
+// the Summon Spectre or Tamed Companion gem (SkillsTab.lua:713-721), whatever the minion's name.
+func TestPasteSpectreAndCompanionLines(t *testing.T) {
+	raw, err := os.ReadFile("testdata/defence_custom_mods.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, c := range []struct{ text, nameSpec, skillID, gemID string }{
+		{"Spectre: Foo 20/0  1", "Summon Spectre", "SummonSpectrePlayer", "Metadata/Items/Gems/SkillGemSummonSpectre"},
+		{"Companion: Bar 19/0  1", "Tamed Companion", "SummonBeastPlayer", "Metadata/Items/Gems/SkillGemSummonBeast"},
+	} {
+		build, err := pob2.ParseBuild(raw)
+		if err != nil {
+			t.Fatal(err)
+		}
+		env, err := BuildOutput(build, Options{Tree: loadTestTree(t)})
+		if err != nil {
+			t.Fatal(err)
+		}
+		index, err := PasteSocketGroup(build, env, c.text)
+		if err != nil || index == 0 {
+			t.Fatalf("%q: pasted at %d: %v", c.text, index, err)
+		}
+		gems := (*savedSkillList(build))[index-1].Gems
+		if len(gems) != 1 || gems[0].NameSpec != c.nameSpec || gems[0].SkillID == nil || *gems[0].SkillID != c.skillID || gems[0].GemID == nil || *gems[0].GemID != c.gemID {
+			t.Errorf("%q: gems %+v, PoB-PoE2 %s %s %s", c.text, gems, c.nameSpec, c.skillID, c.gemID)
+		}
+	}
+}

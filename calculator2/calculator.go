@@ -226,13 +226,28 @@ func activeConfigSetID(build *pob2.PathOfBuilding2) int {
 	return build.Config.ActiveConfigSet
 }
 
-// customModifierBlocks is the active config set's customModsList.
+// customModifierBlocks is the active config set's customModsList, after ConfigTab:Load moves a legacy customMods
+// input into it.
+//
+//pob2:block:src/Classes/ConfigTab.lua:962-974
 func customModifierBlocks(build *pob2.PathOfBuilding2) []pob2.CustomModifierBlock {
 	blocks := build.Config.CustomModifierBlocks
+	inputs := build.Config.Inputs
 	for _, set := range build.Config.ConfigSets {
 		if set.ID == activeConfigSetID(build) {
 			blocks = set.CustomModifierBlocks
+			inputs = set.Inputs
 		}
+	}
+	legacyText := ""
+	for _, in := range inputs {
+		if in.Name == "customMods" && in.String != nil {
+			legacyText = *in.String
+		}
+	}
+	if legacyText != "" && (len(blocks) == 0 || len(blocks) == 1 && blocks[0].Text == "") {
+		title, enabled := "Default", true
+		return []pob2.CustomModifierBlock{{Title: &title, Enabled: &enabled, Text: legacyText}}
 	}
 	return blocks
 }
@@ -655,6 +670,26 @@ func (env *Environment) ConfigRelevance(u *UsedTables, query ConfigRelevance) Co
 	}
 }
 
+// skillSelectLabel is a main skill list entry's label: "From <rarity colour><name>" for an explode source's skill,
+// else the skill's display name.
+//
+//pob2:block:src/Modules/Build.lua:2083-2086
+func skillSelectLabel(activeSkill *ActiveSkill) string {
+	if srcInstance := activeSkill.ActiveEffect.SrcInstance; srcInstance != nil {
+		switch src := srcInstance.ExplodeSource.(type) {
+		case *Item:
+			rarity := src.Rarity
+			if rarity == "" {
+				rarity = "NORMAL"
+			}
+			return "From " + rarityColors[rarity] + src.Name
+		case *tree2.SpecNode:
+			return "From " + rarityColors["NORMAL"] + src.Name
+		}
+	}
+	return getActiveSkillDisplayName(activeSkill)
+}
+
 // SocketGroupView is one entry of the sidebar's main socket group list: its displayLabel and the
 // labels of its displaySkillList.
 type SocketGroupView struct {
@@ -678,7 +713,7 @@ func getActiveSkillDisplayName(activeSkill *ActiveSkill) string {
 
 // SocketGroupViews is RefreshSkillSelectControls' socket group and main skill lists. The display label
 // and skill list are the ones CalcSetup sets in "MAIN" mode; displaySkillList is the group's skills
-// from the player's activeSkillList, in creation order. An explode source's "From" label is not ported.
+// from the player's activeSkillList, in creation order.
 //
 //pob2:block:src/Modules/CalcSetup.lua:2406-2431
 //pob2:block:src/Modules/Build.lua:2062-2087
@@ -718,7 +753,7 @@ func SocketGroupViews(env *Environment) []SocketGroupView {
 		if group.UsingSkillSet == env.WeaponSet {
 			for _, activeSkill := range env.Player.ActiveSkillList {
 				if activeSkill.SocketGroup == group {
-					view.Skills = append(view.Skills, getActiveSkillDisplayName(activeSkill))
+					view.Skills = append(view.Skills, skillSelectLabel(activeSkill))
 				}
 			}
 		}

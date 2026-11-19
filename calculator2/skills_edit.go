@@ -1094,7 +1094,7 @@ var (
 )
 
 // PasteSocketGroup is Ctrl+V on the Skills tab: a group read from the text goes after the last, if it has a gem. It
-// returns the new group's index, or 0. A Spectre or Companion's minion is not looked up.
+// returns the new group's index, or 0. A Spectre or Companion's minion is not looked up in data.spectres.
 //
 //pob2:src/Classes/SkillsTab.lua:674-762
 func PasteSocketGroup(build *pob2.PathOfBuilding2, env *Environment, text string) (int, error) {
@@ -1137,6 +1137,12 @@ func PasteSocketGroup(build *pob2.PathOfBuilding2, env *Environment, text string
 		// Ignore invalid or mismatched skillId
 		if grantedEffect := data.effect(skillID); skillID != "" && (grantedEffect == nil || grantedEffect.BaseTypeName != nameSpec) {
 			skillID = ""
+		}
+		//pob2:block:src/Classes/SkillsTab.lua:713-721
+		if strings.Contains(nameSpec, "Spectre") {
+			nameSpec = "Summon Spectre"
+		} else if strings.Contains(nameSpec, "Companion") {
+			nameSpec = "Tamed Companion"
 		}
 		level, _ := strconv.Atoi(m[2])
 		quality, _ := strconv.Atoi(m[3])

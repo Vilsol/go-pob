@@ -798,7 +798,7 @@ func (tab *ItemsTab) SetDisplayItemRune(i int, runeName string) error {
 	return nil
 }
 
-// SetDisplayItemSocketCount is the editor's socket count; more than 6 is 6.
+// SetDisplayItemSocketCount is the editor's socket count; more than 6 resets the edit box and leaves the item.
 //
 //pob2:block:src/Classes/ItemsTab.lua:613-624
 func (tab *ItemsTab) SetDisplayItemSocketCount(count int) error {
@@ -806,7 +806,9 @@ func (tab *ItemsTab) SetDisplayItemSocketCount(count int) error {
 	if item == nil {
 		return errNoDisplayItem
 	}
-	count = min(max(count, 0), 6)
+	if count > 6 {
+		return nil
+	}
 	item.ItemSocketCount = count
 	item.UpdateRunes()
 	item.BuildAndParseRaw()

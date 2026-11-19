@@ -284,8 +284,9 @@ func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSk
 	if skillModList.Flag(skillCfg, "CanCreateHazards") {
 		output["HazardRearmChance"] = math.Min(sum("HazardRearmChance"), 100)
 		skillModList.AddMod(newMod("DPS", mod.TypeMore, output["HazardRearmChance"], "Chance To Rearm"))
-		// The oracle builds the breakdown, so the uncapped chance is what it shows.
-		output["HazardRearmChance"] = sum("HazardRearmChance")
+		if breakdown != nil {
+			output["HazardRearmChance"] = sum("HazardRearmChance")
+		}
 	}
 	if activeSkill.SkillTypes["Link"] {
 		output["LinkEffectMod"] = calcLibMod(skillModList, skillCfg, "LinkEffect", "BuffEffect")
@@ -407,10 +408,6 @@ func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSk
 
 		output["Cooldown"] = cooldown
 		output["EffectiveCooldown"] = cooldown
-		// The oracle builds the breakdown, where the average cooldown is taken.
-		if cooldownMode == "AVERAGE" && noCooldownChance > 0 {
-			output["EffectiveCooldown"] = effectiveCooldown
-		}
 		//pob2:block:src/Modules/CalcOffence.lua:1816-1836
 		if breakdown != nil {
 			// skillData.cooldown or 0 + addedCooldown is skillData.cooldown or (0 + addedCooldown)
@@ -422,6 +419,7 @@ func offenceSkillTypeStats(env *Environment, actor *Actor, activeSkill *ActiveSk
 				sFormat("%.2fs ^8(base)", baseCooldown),
 				sFormat("/ %.2f ^8(increased/reduced cooldown recovery)", 1+skillModList.Sum(mod.TypeIncrease, skillCfg, "CooldownRecovery")/100))
 			if cooldownMode == "AVERAGE" && noCooldownChance > 0 {
+				output["EffectiveCooldown"] = effectiveCooldown
 				lines := append([]string{"Effective Cooldown:"}, breakdown.Entries["Cooldown"].Lines...)
 				lines = append(lines,
 					sFormat("* %.2f ^8(effect of %d%% chance to not consume cooldown)", effectiveCooldownMultiplier, noCooldownChance*100),

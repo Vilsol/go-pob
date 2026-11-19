@@ -4,10 +4,12 @@ import (
 	"bufio"
 	"compress/gzip"
 	"encoding/json"
+	"maps"
 	"math"
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"testing"
@@ -155,5 +157,71 @@ func TestItemComparesMatchPoB(t *testing.T) {
 	t.Logf("%d blocks, %d stats graded", blocks, stats)
 	if blocks == 0 {
 		t.Fatal("no blocks graded")
+	}
+}
+
+// PoB-PoE2's spec:CollectGrantedPassiveNodesFromItems over the custom-mods warrior grants nothing with no override,
+// and node 62152 with { repSlotName = "Amulet", repItem = <amulet allocating a sinister jewel socket> }
+// (PassiveSpec.lua:1218-1220).
+func TestOverrideItemGrantsPassiveSocket(t *testing.T) {
+	raw, err := os.ReadFile("testdata/defence_custom_mods.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	build, err := pob2.ParseBuild(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tab := NewItemsTab(build, loadTestTree(t), nil)
+	env, err := BuildOutput(build, Options{Tree: loadTestTree(t), Items: tab})
+	if err != nil {
+		t.Fatal(err)
+	}
+	item := ParseItem("Rarity: RARE\nTest Pendant\nGold Amulet\nAllocates 1 Sinister Jewel Socket", tab.modSource)
+	item.BuildModList()
+	for _, c := range []struct {
+		override calcOverride
+		want     []int
+	}{
+		{calcOverride{}, nil},
+		{calcOverride{RepSlotName: "Amulet", RepItem: item}, []int{62152}},
+	} {
+		granted := collectGrantedPassiveNodesFromItems(env.Spec, tab, env.Spec.AllocNodes, false, c.override, newModList(), 1)
+		if got := slices.Sorted(maps.Keys(granted)); !slices.Equal(got, c.want) {
+			t.Errorf("override %q: granted %v, PoB-PoE2 %v", c.override.RepSlotName, got, c.want)
+		}
+	}
+}
+
+// PoB-PoE2's calcFunc({ repSlotName = "Body Armour", repItem = <armour with a disabled bonded rune line and 100%
+// increased effect of socketed augments> }) over the custom-mods warrior: the line has no bonded list, so its
+// scaled mods land in the base list (Item.lua:2838), Life 547 -> 570; without the line Life stays 547.
+func TestDisabledBondedRuneLineScalesIntoBaseList(t *testing.T) {
+	raw, err := os.ReadFile("testdata/defence_custom_mods.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	build, err := pob2.ParseBuild(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tab := NewItemsTab(build, loadTestTree(t), nil)
+	env, err := BuildOutput(build, Options{Tree: loadTestTree(t), Items: tab})
+	if err != nil {
+		t.Fatal(err)
+	}
+	misc := NewMiscCalculator(env)
+	for _, c := range []struct {
+		raw  string
+		life float64
+	}{
+		{"Rarity: RARE\nTest Shell\nVaal Cuirass\nSockets: S\nRune: Iron Rune\nImplicits: 1\n{enchant}{rune}{disabled}Bonded: +40 to maximum Life\n100% increased effect of Socketed Augment Items", 570},
+		{"Rarity: RARE\nTest Shell\nVaal Cuirass\nSockets: S\nRune: Iron Rune\nImplicits: 0\n100% increased effect of Socketed Augment Items", 547},
+	} {
+		item := ParseItem(c.raw, tab.modSource)
+		item.BuildModList()
+		if got := misc.Calc(ItemOverride{RepSlotName: "Body Armour", RepItem: item}).Player.Output["Life"]; got != c.life {
+			t.Errorf("Life %v, PoB-PoE2 %v for\n%s", got, c.life, c.raw)
+		}
 	}
 }

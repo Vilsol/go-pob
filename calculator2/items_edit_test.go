@@ -286,3 +286,28 @@ func TestItemsEditOracleIsCurrent(t *testing.T) {
 		}
 	}
 }
+
+// PoB-PoE2's socket count edit box over a one-socket body armour, typing 1, 9 then 3: the item holds 1, 1 and 3
+// sockets, the 9 only resetting the box to 6 (ItemsTab.lua:614-618).
+func TestDisplayItemSocketCountAboveSix(t *testing.T) {
+	raw, err := os.ReadFile("testdata/defence_custom_mods.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	build, err := pob2.ParseBuild(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tab := NewItemsTab(build, loadTestTree(t), nil)
+	if err := tab.CreateDisplayItemFromRaw("Rarity: RARE\nTest Shell\nVaal Cuirass\nSockets: S\nRune: Iron Rune\nImplicits: 0\n100% increased effect of Socketed Augment Items", true); err != nil {
+		t.Fatal(err)
+	}
+	for _, c := range []struct{ typed, want int }{{1, 1}, {9, 1}, {3, 3}} {
+		if err := tab.SetDisplayItemSocketCount(c.typed); err != nil {
+			t.Fatal(err)
+		}
+		if got := tab.DisplayItem.ItemSocketCount; got != c.want {
+			t.Errorf("typed %d: %d sockets, PoB-PoE2 %d", c.typed, got, c.want)
+		}
+	}
+}

@@ -1,6 +1,7 @@
 package calculator2
 
 import (
+	"os"
 	"testing"
 
 	"github.com/Vilsol/go-pob/pob2"
@@ -63,4 +64,39 @@ func equalSets(a, b []ConfigSetView) bool {
 		}
 	}
 	return true
+}
+
+// PoB-PoE2's ConfigTab:Load moves a legacy customMods input into the Default block when the set has no block text,
+// so the custom-mods warrior with its block replaced by customMods "+10 to Strength" has Str 50 (40 without it); a
+// block with text wins, "+5 to Strength" giving 45.
+func TestLegacyCustomModsInput(t *testing.T) {
+	raw, err := os.ReadFile("testdata/defence_custom_mods.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	legacy := "+10 to Strength"
+	for _, c := range []struct {
+		name   string
+		blocks []pob2.CustomModifierBlock
+		str    float64
+	}{
+		{"no block", nil, 50},
+		{"empty block", []pob2.CustomModifierBlock{{Text: ""}}, 50},
+		{"block with text", []pob2.CustomModifierBlock{{Text: "+5 to Strength"}}, 45},
+	} {
+		build, err := pob2.ParseBuild(raw)
+		if err != nil {
+			t.Fatal(err)
+		}
+		set := &build.Config.ConfigSets[0]
+		set.CustomModifierBlocks = c.blocks
+		set.Inputs = append(set.Inputs, pob2.Input{Name: "customMods", String: &legacy})
+		env, err := BuildOutput(build, Options{Tree: loadTestTree(t)})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got := env.Player.Output["Str"]; got != c.str {
+			t.Errorf("%s: Str %v, PoB-PoE2 %v", c.name, got, c.str)
+		}
+	}
 }

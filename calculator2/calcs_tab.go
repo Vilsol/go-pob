@@ -161,7 +161,7 @@ func SkillSelect(build *pob2.PathOfBuilding2, env *Environment, mainGroup int, c
 		return controls
 	}
 	for _, activeSkill := range displaySkillList {
-		controls.Skills = append(controls.Skills, getActiveSkillDisplayName(activeSkill))
+		controls.Skills = append(controls.Skills, skillSelectLabel(activeSkill))
 	}
 	controls.SkillEnabled = len(displaySkillList) > 1
 	controls.MainActiveSkill = mainActiveSkill

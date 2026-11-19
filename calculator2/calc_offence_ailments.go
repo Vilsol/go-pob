@@ -612,6 +612,7 @@ func (h *offenceHit) offenceAilments() {
 					if groundMult > 0 {
 						groundDPSUncapped := baseVal * effectMod * rateMod * effMult * groundMult / 100
 						globalOutput["CausticGroundDPS"] = math.Min(groundDPSUncapped, miscConstant("DotDpsCap"))
+						h.actor.setOutputFlag("CausticGroundFromPoison", true)
 						if globalBreakdown != nil {
 							globalBreakdown.set("CausticGroundDPS",
 								sFormat("%.1f ^8(single poison damage per second)", baseVal*effectMod*rateMod),
@@ -1228,6 +1229,7 @@ func (h *offenceHit) offenceDots() {
 		total := baseDropsBurningGround * (1 + inc/100) * more * (1 + mult/100) * effMult
 		if v, ok := output["BurningGroundDPS"]; !ok || v < total {
 			output["BurningGroundDPS"] = total
+			actor.setOutputFlag("BurningGroundFromIgnite", false)
 		}
 	}
 
@@ -1346,12 +1348,14 @@ func (h *offenceHit) offenceDots() {
 		output["TotalDotCalcSection"] = output["TotalDotInstance"]
 		if v, ok := output["BurningGroundDPS"]; !ok || v < output["TotalDotInstance"] {
 			output["BurningGroundDPS"] = math.Max(v, output["TotalDotInstance"])
+			actor.setOutputFlag("BurningGroundFromIgnite", false)
 		}
 	case skillModList.Flag(nil, "dotIsCausticGround"):
 		output["TotalDot"] = 0
 		output["TotalDotCalcSection"] = output["TotalDotInstance"]
 		if v, ok := output["CausticGroundDPS"]; !ok || v < output["TotalDotInstance"] {
 			output["CausticGroundDPS"] = math.Max(v, output["TotalDotInstance"])
+			actor.setOutputFlag("CausticGroundFromPoison", false)
 		}
 	case skillModList.Flag(nil, "dotIsCorruptingBlood"):
 		output["TotalDot"] = 0

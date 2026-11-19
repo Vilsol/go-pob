@@ -3,6 +3,7 @@ package calculator2
 import (
 	"math"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 	"testing"
@@ -302,4 +303,92 @@ func TestMainGroupRestartReadsOverrideMainSocketGroup(t *testing.T) {
 	testza.AssertEqual(t, 1, env.WeaponSet)
 	testza.AssertEqual(t, "Skeletal Sniper Minion", env.Player.MainSkill.ActiveEffect.GrantedEffect.Name)
 	testza.AssertEqual(t, 1, build.Build.MainSocketGroup)
+}
+
+// The expected values are PoB-PoE2's for the same file, loaded headless: the shield's generated Raise Shield group
+// (3, the Calcs tab's skill) merges into the user's legacy group (2), and skill_number follows it to 2.
+func TestMergedGrantedGroupKeepsCalcsSkill(t *testing.T) {
+	raw, err := os.ReadFile("testdata/granted_group_merge_calcs.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	build, err := pob2.ParseBuild(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tree := loadTestTree(t)
+	env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := make([]string, 0, len(env.SocketGroupList))
+	for _, g := range env.SocketGroupList {
+		skill := ""
+		if len(g.GemList) > 0 {
+			skill = g.GemList[0].SkillID
+		}
+		got = append(got, g.Source+"|"+g.Slot+"|"+skill)
+	}
+	want := []string{"||", "Item:2:Reinforced Vaal Tower Shield of the Lynx|Weapon 2 Swap|ShieldBlockPlayer", "Item:9:Mind Song, Twisted Wand|Weapon 1 Swap|CoilingBoltsPlayer", "Default Attack|Weapon 1|Melee1HMacePlayer"}
+	if !slices.Equal(got, want) {
+		t.Errorf("groups %q, PoB-PoE2 %q", got, want)
+	}
+	if n := readCalcsInputs(build).SkillNumber; n != 2 {
+		t.Errorf("skill_number %d, PoB-PoE2 2", n)
+	}
+}
+
+// PoB-PoE2 clears a gem's minion skill choice when its skill creates no minion (CalcActiveSkill.lua:1044-1051): the
+// Flame Wall fixture with skillMinionSkill 2 and skillMinionSkillCalcs 3 loads with both nil.
+func TestNoMinionClearsMinionSkill(t *testing.T) {
+	raw, err := os.ReadFile("testdata/dot_eff_mult.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	build, err := pob2.ParseBuild(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	gem := &build.Skills.SkillSets[0].Skills[0].Gems[0]
+	two, three := 2, 3
+	gem.SkillMinionSkill, gem.SkillMinionSkillCalcs = &two, &three
+	tree := loadTestTree(t)
+	env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	inst := env.SocketGroupList[0].GemList[0]
+	if inst.SkillMinionSkill != nil || inst.SkillMinionSkillCalcs != nil {
+		t.Errorf("Flame Wall keeps minion skill %v / %v, PoB-PoE2 nil / nil", inst.SkillMinionSkill, inst.SkillMinionSkillCalcs)
+	}
+}
+
+// PoB-PoE2's main skill list for the explode fixture's groups (RefreshSkillSelectControls, loaded headless): an
+// explode source's skill is labelled "From <rarity colour><source name>".
+func TestExplodeSourceSkillLabels(t *testing.T) {
+	raw, err := os.ReadFile("testdata/explode_sources.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	build, err := pob2.ParseBuild(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tree := loadTestTree(t)
+	env, err := BuildOutput(build, Options{Tree: tree, Items: NewItemsTab(build, tree, nil)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := [][]string{{"Mace Strike"}, {"From ^xFFFF77Doom Knuckle, Wooden Club", "From ^xFFFF77Storm Loop, Iron Ring"}}
+	if len(env.SocketGroupList) != len(want) {
+		t.Fatalf("%d groups, PoB-PoE2 %d", len(env.SocketGroupList), len(want))
+	}
+	for i, w := range want {
+		if got := SkillSelect(build, env, i+1, false).Skills; !slices.Equal(got, w) {
+			t.Errorf("group %d: %q, PoB-PoE2 %q", i+1, got, w)
+		}
+		if got := SocketGroupViews(env)[i].Skills; !slices.Equal(got, w) {
+			t.Errorf("group %d view: %q, PoB-PoE2 %q", i+1, got, w)
+		}
+	}
 }

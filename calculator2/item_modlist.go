@@ -826,10 +826,7 @@ func (i *Item) BuildModList() {
 			effectModifier += i.SocketedRuneEffectModifier
 		}
 		target := &baseList
-		if ml.Bonded {
-			if ml.BondedModList == nil {
-				continue
-			}
+		if ml.Bonded && ml.BondedModList != nil {
 			target = &ml.BondedModList
 		}
 		if effectModifier != 0 && i.CheckModLineVariant(ml) && ml.Extra == "" && !ml.SocketedRuneEffectAlreadyApplied {

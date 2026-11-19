@@ -138,7 +138,10 @@ func CustomModifierBlocks(build *pob2.PathOfBuilding2) []pob2.CustomModifierBloc
 func SetCustomModifierBlocks(build *pob2.PathOfBuilding2, blocks []pob2.CustomModifierBlock) {
 	configSets(build)
 	if i := configSetIndex(build, activeConfigSetID(build)); i >= 0 {
-		build.Config.ConfigSets[i].CustomModifierBlocks = blocks
+		set := &build.Config.ConfigSets[i]
+		set.CustomModifierBlocks = blocks
+		// ConfigTab:Load has already moved a legacy customMods input into the blocks and cleared it.
+		set.Inputs = slices.DeleteFunc(set.Inputs, func(in pob2.Input) bool { return in.Name == "customMods" })
 	}
 }
 

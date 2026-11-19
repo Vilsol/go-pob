@@ -90,3 +90,36 @@ func TestDefenceSkillReservationFixture(t *testing.T) {
 		}
 	}
 }
+
+// PoB-PoE2's output.CappingES over the custom-mods warrior with "Are you on Low Energy Shield?" set true, set
+// false and absent: true, false and nil, with EnergyShieldRecoveryCap 27.3, 78 and 78.
+func TestDefenceCappingESOutput(t *testing.T) {
+	raw, err := os.ReadFile("testdata/defence_custom_mods.xml")
+	testza.AssertNoError(t, err)
+	for _, c := range []struct {
+		name     string
+		input    *bool
+		set, val bool
+		cap      float64
+	}{
+		{"true", new(true), true, true, 27.3},
+		{"false", new(false), true, false, 78},
+		{"absent", nil, false, false, 78},
+	} {
+		build, err := pob2.ParseBuild(raw)
+		testza.AssertNoError(t, err)
+		if c.input != nil {
+			set := &build.Config.ConfigSets[0]
+			set.Inputs = append(set.Inputs, pob2.Input{Name: "conditionLowEnergyShield", Boolean: c.input})
+		}
+		env, err := BuildOutput(build, Options{Tree: loadTestTree(t)})
+		testza.AssertNoError(t, err)
+		val, set := env.Player.OutputFlags["CappingES"]
+		if set != c.set || val != c.val {
+			t.Errorf("%s: CappingES %v (set %v), PoB-PoE2 %v (set %v)", c.name, val, set, c.val, c.set)
+		}
+		if got := env.Player.Output["EnergyShieldRecoveryCap"]; math.Abs(got-c.cap) > 1e-9 {
+			t.Errorf("%s: EnergyShieldRecoveryCap %v, PoB-PoE2 %v", c.name, got, c.cap)
+		}
+	}
+}

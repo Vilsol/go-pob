@@ -1102,8 +1102,13 @@ func primaryDefences(env *Environment, actor *Actor) {
 	output["Gear:Evasion"] = gearEvasion
 	armourCap := modDB.Flag(nil, "ArmourESRecoveryCap")
 	evasionCap := modDB.Flag(nil, "EvasionESRecoveryCap")
-	lowES := env.ConfigInput["conditionLowEnergyShield"].Boolean
+	lowESInput := env.ConfigInput["conditionLowEnergyShield"]
+	lowES := lowESInput.Boolean
 	cappingES := armourCap && output["Armour"] < output["EnergyShield"] || evasionCap && output["Evasion"] < output["EnergyShield"] || lowES
+	// A false conjunct chain yields configInput's value: true, false or nil.
+	if cappingES || lowESInput.IsBoolean {
+		actor.setOutputFlag("CappingES", cappingES)
+	}
 	if cappingES {
 		switch {
 		case armourCap && evasionCap:

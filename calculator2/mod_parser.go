@@ -2214,6 +2214,11 @@ var modTagList = map[string]modNameListType{
 			return modNameListType{tag: mod.ItemCondition(caps[0]).Search(caps[1])}
 		},
 	},
+	`if both equipped ([\w\s]+) have a?n? ?([\w\s]+) modifiers?`: {
+		fn: func(caps []string) modNameListType {
+			return modNameListType{tag: mod.ItemCondition(caps[0][:len(caps[0])-1]).Search(caps[1]).WithBothSlots()}
+		},
+	},
 	`if there are no ([\w\s]+) modifiers on equipped ([\w\s]+)`: {
 		fn: func(caps []string) modNameListType {
 			return modNameListType{tag: mod.ItemCondition(caps[1]).Search(caps[0]).Negate(true)}
@@ -6587,30 +6592,33 @@ var specialModList = map[string]interface{}{
 	},
 	`([\w\s]+) reserves no mana`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
-			MOD("SkillData", "LIST", mod.SkillData{Key: "ManaReservationFlat", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Blessing").Neg(true)),
-			MOD("SkillData", "LIST", mod.SkillData{Key: "LifeReservationFlat", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Blessing").Neg(true)),
-			MOD("SkillData", "LIST", mod.SkillData{Key: "ManaReservationPercent", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Blessing").Neg(true)),
-			MOD("SkillData", "LIST", mod.SkillData{Key: "LifeReservationPercent", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Blessing").Neg(true)),
+			MOD("SkillData", "LIST", mod.SkillData{Key: "manaReservationFlat", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Blessing").Neg(true)),
+			MOD("SkillData", "LIST", mod.SkillData{Key: "lifeReservationFlat", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Blessing").Neg(true)),
+			MOD("SkillData", "LIST", mod.SkillData{Key: "manaReservationPercent", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Blessing").Neg(true)),
+			MOD("SkillData", "LIST", mod.SkillData{Key: "lifeReservationPercent", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Blessing").Neg(true)),
 		}, ""
 	},
 	`([\w\s]+) has no reservation`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
-			MOD("SkillData", "LIST", mod.SkillData{Key: "ManaReservationFlat", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Blessing").Neg(true)),
-			MOD("SkillData", "LIST", mod.SkillData{Key: "LifeReservationFlat", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Blessing").Neg(true)),
-			MOD("SkillData", "LIST", mod.SkillData{Key: "ManaReservationPercent", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Blessing").Neg(true)),
-			MOD("SkillData", "LIST", mod.SkillData{Key: "LifeReservationPercent", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Blessing").Neg(true)),
+			MOD("SkillData", "LIST", mod.SkillData{Key: "manaReservationFlat", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Blessing").Neg(true)),
+			MOD("SkillData", "LIST", mod.SkillData{Key: "lifeReservationFlat", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Blessing").Neg(true)),
+			MOD("SkillData", "LIST", mod.SkillData{Key: "manaReservationPercent", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Blessing").Neg(true)),
+			MOD("SkillData", "LIST", mod.SkillData{Key: "lifeReservationPercent", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Blessing").Neg(true)),
 		}, ""
 	},
 	`([\w\s]+) has no reservation if cast as an aura`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{
-			MOD("SkillData", "LIST", mod.SkillData{Key: "ManaReservationFlat", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Aura")).Tag(mod.SkillType("Blessing").Neg(true)),
-			MOD("SkillData", "LIST", mod.SkillData{Key: "LifeReservationFlat", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Aura")).Tag(mod.SkillType("Blessing").Neg(true)),
-			MOD("SkillData", "LIST", mod.SkillData{Key: "ManaReservationPercent", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Aura")).Tag(mod.SkillType("Blessing").Neg(true)),
-			MOD("SkillData", "LIST", mod.SkillData{Key: "LifeReservationPercent", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Aura")).Tag(mod.SkillType("Blessing").Neg(true)),
+			MOD("SkillData", "LIST", mod.SkillData{Key: "manaReservationFlat", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Aura")).Tag(mod.SkillType("Blessing").Neg(true)),
+			MOD("SkillData", "LIST", mod.SkillData{Key: "lifeReservationFlat", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Aura")).Tag(mod.SkillType("Blessing").Neg(true)),
+			MOD("SkillData", "LIST", mod.SkillData{Key: "manaReservationPercent", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Aura")).Tag(mod.SkillType("Blessing").Neg(true)),
+			MOD("SkillData", "LIST", mod.SkillData{Key: "lifeReservationPercent", Value: 0}).Tag(mod.SkillId(extraSkillIDForName(captures[0]))).Tag(mod.SkillType("Aura")).Tag(mod.SkillType("Blessing").Neg(true)),
 		}, ""
 	},
 	"banner skills reserve no mana":     []mod.Mod{MOD("SkillData", "LIST", mod.SkillData{Key: "manaReservationPercent", Value: 0}).Tag(mod.SkillType("Banner"), mod.SkillType("Blessing").Neg(true)), MOD("SkillData", "LIST", mod.SkillData{Key: "lifeReservationPercent", Value: 0}).Tag(mod.SkillType("Banner"), mod.SkillType("Blessing").Neg(true))},
 	"banner skills have no reservation": []mod.Mod{MOD("SkillData", "LIST", mod.SkillData{Key: "manaReservationPercent", Value: 0}).Tag(mod.SkillType("Banner"), mod.SkillType("Blessing").Neg(true)), MOD("SkillData", "LIST", mod.SkillData{Key: "lifeReservationPercent", Value: 0}).Tag(mod.SkillType("Banner"), mod.SkillType("Blessing").Neg(true))},
+	`skills reserve (\d+)% less (.+)`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD(titleCaseAfterNonWord(captures[1])+"Reserved", "MORE", -num)}, ""
+	},
 	`minions have (\d+)% reduced reservation`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("Reserved", "INC", -num).Tag(mod.SkillType("Minion"))}, ""
 	},
@@ -7096,6 +7104,9 @@ var specialModList = map[string]interface{}{
 	`(\d+)% increased decoy totem life`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("TotemLife", "INC", num).Tag(mod.SkillName("Decoy Totem"))}, ""
 	},
+	`(\d+)% increased ice spear critical hit chance in second form`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("CritChance", "INC", num).Tag(mod.SkillName("Ice Spear").Transfigured(true), mod.SkillPartList(2, 4))}, ""
+	},
 	`shock nova ring deals (\d+)% increased damage`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("Damage", "INC", num).Tag(mod.SkillName("Shock Nova").Transfigured(true), mod.SkillPart(int(1)))}, ""
 	},
@@ -7154,6 +7165,9 @@ var specialModList = map[string]interface{}{
 	},
 	`caustic arrow has (\d+)% chance to inflict withered on hit for (\d+) seconds base duration`: []mod.Mod{MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: FLAG("Condition:CanWither")}).Tag(mod.SkillName("Caustic Arrow").Transfigured(true))},
 	`venom gyre has a (\d+)% chance to inflict withered for (\d+) seconds on hit`:                []mod.Mod{MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: FLAG("Condition:CanWither")}).Tag(mod.SkillName("Venom Gyre"))},
+	`sigil of power's buff also grants (\d+)% increased critical hit chance per stage`: func(num float64, captures []string) ([]mod.Mod, string) {
+		return []mod.Mod{MOD("CritChance", "INC", num).Tag(mod.Multiplier("SigilOfPowerStage").Limit(4), mod.GlobalEffect("Buff").Name("Sigil of Power"))}, ""
+	},
 	`cobra lash chains (\d+) additional times`: func(num float64, captures []string) ([]mod.Mod, string) {
 		return []mod.Mod{MOD("ExtraSkillMod", "LIST", mod.ExtraSkillMod{Mod: MOD("ChainCountMax", "BASE", num)}).Tag(mod.SkillName("Cobra Lash"))}, ""
 	},
@@ -7568,10 +7582,9 @@ var flagTypes = map[string]modNameListType{
 var skillNameListCompiled map[string]CompiledList[modNameListType]
 var preSkillNameListCompiled map[string]CompiledList[modNameListType]
 
-// poe2.Gem carries no skillTypes or statSets, so the Buff "grants" rows (6577-6586) are not built.
-//
 //pob2:block:src/Modules/ModParser.lua:6557-6621
 func initializeSkillNameList() {
+	skills, _ := loadSkillData()
 	skillNameListCompiled = make(map[string]CompiledList[modNameListType])
 	skillNameListCompiled[" corpse cremation "] = CompiledList[modNameListType]{
 		Regex: lazyRegex(` corpse cremation `),
@@ -7621,6 +7634,25 @@ func initializeSkillNameList() {
 				addToSkill: mod.SkillName(skillName).Transfigured(true),
 				tag:        mod.GlobalEffect("Buff"),
 			})
+		}
+		if skills != nil {
+			if grantedEffect, ok := skills.skills.Effect(gemData.GrantedEffectID); ok {
+				hasBuffStatSet := false
+				for _, statSet := range grantedEffect.StatSets {
+					if statSet.BaseFlags["buff"] {
+						hasBuffStatSet = true
+						break
+					}
+				}
+				if grantedEffect.SkillTypes["Buff"] || hasBuffStatSet {
+					grants := modNameListType{
+						addToSkill: mod.SkillName(skillName).Transfigured(true),
+						tag:        mod.GlobalEffect("Buff"),
+					}
+					add(preSkillNameListCompiled, "^"+skillNameLower+" grants ", grants)
+					add(preSkillNameListCompiled, "^"+skillNameLower+" grants a?n? ?additional ", grants)
+				}
+			}
 		}
 		if tags["aura"] || tags["herald"] {
 			affectedBy := modNameListType{
@@ -8645,7 +8677,6 @@ func parseMod(line string, order int) ([]mod.Mod, string) {
 	flags := mod.MFlag(0)
 	keywordFlags := mod.KeywordFlag(0)
 	tagList := make([]mod.Tag, 0)
-	tagList = append(tagList, formTags...)
 	misc := modNameListType{}
 	for _, datum := range []*modNameListType{modName, preFlag, modFlag, modTag, modTag2, skillTag} {
 		if datum == nil {
@@ -8707,6 +8738,7 @@ func parseMod(line string, order int) ([]mod.Mod, string) {
 		misc.onlyAddToBanners = misc.onlyAddToBanners || datum.onlyAddToBanners
 		misc.actorEnemy = misc.actorEnemy || datum.actorEnemy
 	}
+	tagList = append(tagList, formTags...)
 
 	// Generate modifier list
 	nameList := modName

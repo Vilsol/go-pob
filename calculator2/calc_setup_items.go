@@ -530,7 +530,7 @@ func mergeItems(env *Environment, nodesModsList *moddb.ModList, canUseBonded boo
 	ignoreJewelLimits = ignoreJewelLimits && env.ConfigInput["ignoreJewelLimits"].Boolean
 
 	//pob2:block:src/Modules/CalcSetup.lua:1183-1191
-	grantedNodes := collectGrantedPassiveNodesFromItems(env.Spec, tab, env.AllocNodes, ignoreJewelLimits, nodesModsList, env.WeaponSet)
+	grantedNodes := collectGrantedPassiveNodesFromItems(env.Spec, tab, env.AllocNodes, ignoreJewelLimits, env.override, nodesModsList, env.WeaponSet)
 	if env.Mode == "MAIN" {
 		// ItemsTab:UpdateSockets only relabels the socket controls.
 		env.Spec.SetGrantedPassiveNodes(grantedNodes)
@@ -1086,10 +1086,13 @@ func grantedPassiveOf(v any) (tree2.GrantedPassive, bool) {
 }
 
 //pob2:src/Classes/PassiveSpec.lua:1196-1222
-func getItemForGrantedPassiveSlot(spec *tree2.PassiveSpec, tab *ItemsTab, slot *ItemSlot, allocNodes map[int]*tree2.SpecNode, activeWeaponSet int, nodesModsList *moddb.ModList) *Item {
+func getItemForGrantedPassiveSlot(spec *tree2.PassiveSpec, tab *ItemsTab, slot *ItemSlot, allocNodes map[int]*tree2.SpecNode, override calcOverride, activeWeaponSet int, nodesModsList *moddb.ModList) *Item {
 	if slot.NodeID != 0 {
 		if allocNodes[slot.NodeID] == nil {
 			return nil
+		}
+		if slot.SlotName == override.RepSlotName {
+			return override.RepItem
 		}
 		itemID := spec.Jewels[slot.NodeID]
 		if s := tab.Sockets[slot.NodeID]; itemID == 0 && s != nil {
@@ -1103,6 +1106,9 @@ func getItemForGrantedPassiveSlot(spec *tree2.PassiveSpec, tab *ItemsTab, slot *
 	if slot.SlotName == "Ring 3" && !nodesModsList.Flag(nil, "AdditionalRingSlot") {
 		return nil
 	}
+	if slot.SlotName == override.RepSlotName {
+		return override.RepItem
+	}
 	return tab.Items[slot.SelItemID]
 }
 
@@ -1111,7 +1117,7 @@ func getItemForGrantedPassiveSlot(spec *tree2.PassiveSpec, tab *ItemsTab, slot *
 // grants another.
 //
 //pob2:src/Classes/PassiveSpec.lua:1256-1307
-func collectGrantedPassiveNodesFromItems(spec *tree2.PassiveSpec, tab *ItemsTab, baseAllocNodes map[int]*tree2.SpecNode, ignoreJewelLimits bool, nodesModsList *moddb.ModList, activeWeaponSet int) map[int]*tree2.SpecNode {
+func collectGrantedPassiveNodesFromItems(spec *tree2.PassiveSpec, tab *ItemsTab, baseAllocNodes map[int]*tree2.SpecNode, ignoreJewelLimits bool, override calcOverride, nodesModsList *moddb.ModList, activeWeaponSet int) map[int]*tree2.SpecNode {
 	granted := map[int]*tree2.SpecNode{}
 	allocNodes := map[int]*tree2.SpecNode{}
 	for id, node := range baseAllocNodes {
@@ -1124,7 +1130,7 @@ func collectGrantedPassiveNodesFromItems(spec *tree2.PassiveSpec, tab *ItemsTab,
 	for safety := 0; changed && safety < 8; safety++ {
 		changed = false
 		for _, slot := range tab.OrderedSlots {
-			item := getItemForGrantedPassiveSlot(spec, tab, slot, allocNodes, activeWeaponSet, nodesModsList)
+			item := getItemForGrantedPassiveSlot(spec, tab, slot, allocNodes, override, activeWeaponSet, nodesModsList)
 			if item == nil || item.ModList == nil {
 				continue
 			}

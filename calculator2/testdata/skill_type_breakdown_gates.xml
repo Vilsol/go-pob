@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathOfBuilding2>
+	<Build ascendClassName="None" characterLevelAutoMode="false" className="Huntress" level="60" mainSocketGroup="1" targetVersion="0_1" viewMode="TREE">
+	</Build>
+	<Config activeConfigSet="1">
+		<ConfigSet id="1" title="Default">
+			<CustomModifierBlock enabled="true" title="Default">Hazards have 150% chance to rearm after they are triggered
+Skills have 30% chance to not consume a Cooldown when used</CustomModifierBlock>
+			<Input name="cooldownMode" string="AVERAGE"/>
+		</ConfigSet>
+	</Config>
+	<Items activeItemSet="1" useSecondWeaponSet="false">
+		<Item id="1">
+			Rarity: NORMAL
+Hardwood Spear
+Item Level: 80
+LevelReq: 1
+Implicits: 0
+		</Item>
+		<ItemSet id="1" title="Default" useSecondWeaponSet="false">
+			<Slot itemId="1" name="Weapon 1"/>
+		</ItemSet>
+	</Items>
+	<Skills activeSkillSet="1" defaultGemLevel="normalMaximum" defaultGemQuality="0">
+		<SkillSet id="1">
+			<Skill enabled="true" includeInFullDPS="nil" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gems/SkillGemSpearfield" level="10" nameSpec="Spearfield" quality="0" skillId="SpearfieldPlayer" variantId="Spearfield">
+					<StatSetIndex grantedEffect="SpearfieldPlayer" index="2"/>
+				</Gem>
+			</Skill>
+			<Skill enabled="true" includeInFullDPS="nil" label="" mainActiveSkill="1" mainActiveSkillCalcs="nil" set1="true" set2="true">
+				<Gem corruptLevel="0" corrupted="nil" count="1" enableGlobal1="true" enableGlobal2="true" enabled="true" gemId="Metadata/Items/Gems/SkillGemFrostBomb" level="10" nameSpec="Frost Bomb" quality="0" skillId="FrostBombPlayer" variantId="FrostBomb"/>
+			</Skill>
+		</SkillSet>
+	</Skills>
+	<Tree activeSpec="1">
+		<Spec ascendClassId="0" classId="9" masteryEffects="" nodes="" secondaryAscendClassId="nil" treeVersion="0_5">
+		</Spec>
+	</Tree>
+</PathOfBuilding2>

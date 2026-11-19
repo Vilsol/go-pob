@@ -119,6 +119,8 @@ func createMinion(env *Environment, activeSkill *ActiveSkill) {
 			srcInstance.SkillMinion = ""
 			srcInstance.SkillMinionItemSetCalcs = 0
 			srcInstance.SkillMinionItemSet = 0
+			srcInstance.SkillMinionSkill = nil
+			srcInstance.SkillMinionSkillCalcs = nil
 		}
 		return
 	}

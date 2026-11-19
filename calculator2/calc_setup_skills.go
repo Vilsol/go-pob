@@ -746,6 +746,9 @@ func setupSkills(env *Environment, accelerate accelerate) bool {
 				if mainGroup == group {
 					mainGroup = legacyGroup
 				}
+				if calcsGroup == group {
+					calcsGroup = legacyGroup
+				}
 			}
 			if legacyGroup != nil {
 				group = legacyGroup
